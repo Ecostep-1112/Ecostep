@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install:*)",
+      "Bash(curl:*)",
+      "Bash(\"C:\\Program Files\\GitHub CLI\\gh.exe\" auth login)",
+      "Bash(\"C:\\Program Files\\GitHub CLI\\gh.exe\" auth status)",
+      "Bash(\"C:\\Program Files\\GitHub CLI\\gh.exe\" auth login --with-token)",
+      "Bash(gh auth:*)",
+      "Bash(where gh)",
+      "Bash(claude config set installation unknown)",
+      "Bash(claude config set --global installation npm-global)",
+      "Bash(claude config set --global installMethod npm-global)",
+      "Bash(claude ide connect cursor)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

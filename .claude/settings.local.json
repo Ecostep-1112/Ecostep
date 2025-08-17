@@ -11,9 +11,18 @@
       "Bash(claude config set installation unknown)",
       "Bash(claude config set --global installation npm-global)",
       "Bash(claude config set --global installMethod npm-global)",
-      "Bash(claude ide connect cursor)"
+      "Bash(claude ide connect cursor)",
+      "Bash(git remote add:*)",
+      "Bash(git push:*)",
+      "Bash(\"C:\\Program Files\\GitHub CLI\\gh.exe\" auth setup-git)",
+      "Bash(npm run dev:*)",
+      "Bash(where code)",
+      "Bash(where cursor)",
+      "Bash(claude ide status)",
+      "Bash(git add:*)"
     ],
     "deny": [],
-    "ask": []
+    "ask": [],
+    "defaultMode": "acceptEdits"
   }
 }

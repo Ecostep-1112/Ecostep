@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ChevronRight, Settings, Home, Target, Gift, Users, MoreHorizontal, Check, X, TrendingUp, Calendar, MapPin, Share2, ChevronDown, BarChart3, Plus, Camera, Sun, Moon, Globe, Search, HelpCircle, Phone, Book } from 'lucide-react';
 
-const EcoLifeApp = () => {
+const EcostepApp = () => {
   const [activeTab, setActiveTab] = useState('home');
   const [activeSubTab, setActiveSubTab] = useState('habit');
   const [challengeDay, setChallengeDay] = useState(4);
@@ -1147,4 +1147,4 @@ const EcoLifeApp = () => {
   );
 };
 
-export default EcoLifeApp;
+export default EcostepApp;

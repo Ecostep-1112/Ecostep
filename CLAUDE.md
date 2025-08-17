@@ -44,3 +44,36 @@ Ecostep is a mobile app concept that combines environmental protection with a fi
 - Focus on creating responsive mobile layouts
 - Implement gamification elements to encourage environmental behavior
 - Ensure smooth transitions between tabs and screens
+
+## Technical Stack
+- **Frontend**: React + Vite
+- **Styling**: Tailwind CSS
+- **Database**: Supabase (connected and configured)
+- **Version Control**: Git + GitHub (repository: https://github.com/Ecostep-1112/Ecostep)
+- **Future**: Will migrate to Expo/React Native for App Store deployment
+
+## Project Setup
+- **Development Server**: `npm run dev`
+- **Build**: `npm run build`
+- **Environment Variables**: Configured in `.env.local`
+  - Supabase URL and API keys are set up
+  - Do not commit `.env.local` file (already in .gitignore)
+
+## Git Workflow
+After making changes:
+1. `git add .` - Stage changes
+2. `git commit -m "Description of changes"` - Commit
+3. `git push` - Push to GitHub
+
+## Database Integration
+- Supabase client is configured at `src/lib/supabase.js`
+- Use `import { supabase } from '@/lib/supabase'` to access database
+- Authentication and database operations ready to implement
+
+## Development Priorities
+1. Complete UI/UX design in React (web)
+2. Implement core features and game mechanics
+3. Set up database schema in Supabase
+4. Test with users via web browser
+5. Once design is finalized (~80%), migrate to Expo for native app
+

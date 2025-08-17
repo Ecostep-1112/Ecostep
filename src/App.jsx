@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ChevronRight, Settings, Home, Target, Gift, Users, MoreHorizontal, Check, X, TrendingUp, Calendar, MapPin, Share2, ChevronDown, BarChart3, Plus, Camera, Sun, Moon, Globe, Search, HelpCircle, Phone, Book } from 'lucide-react';
+import FishIcons from './components/FishIcons';
 
 const EcostepApp = () => {
   const [activeTab, setActiveTab] = useState('home');
@@ -73,24 +74,24 @@ const EcostepApp = () => {
 
   const fishData = {
     bronze: [
-      { name: '코리도라스', emoji: '🐡', description: '귀여운 점박이 패턴', image: 'https://upload.wikimedia.org/wikipedia/commons/9/99/Corydoras_sterbai.jpg' },
-      { name: '체리바브', emoji: '🐟', description: '선명한 적색', image: 'https://upload.wikimedia.org/wikipedia/commons/b/be/Cherry_Barb_700.jpg' },
-      { name: '네온테트라', emoji: '🐠', description: '전기적 색상의 군영미', image: 'https://upload.wikimedia.org/wikipedia/commons/5/5e/Paracheirodon_innesi.jpg' }
+      { name: '코리도라스', description: '귀여운 점박이 패턴' },
+      { name: '체리바브', description: '선명한 적색' },
+      { name: '네온테트라', description: '전기적 색상의 군영미' }
     ],
     silver: [
-      { name: '아피스토그라마', emoji: '🐡', description: '작지만 화려한 시클리드', image: 'https://upload.wikimedia.org/wikipedia/commons/d/d6/Apistogramma_cacatuoides.jpg' },
-      { name: '람 시클리드', emoji: '🐟', description: '화려한 색상, 온순함', image: 'https://upload.wikimedia.org/wikipedia/commons/4/4b/Blue_ram.jpg' },
-      { name: '구피', emoji: '🐠', description: '고급 라인 육종품', image: 'https://upload.wikimedia.org/wikipedia/commons/2/26/Guppy_male.jpg' }
+      { name: '아피스토그라마', description: '작지만 화려한 시클리드' },
+      { name: '람시클리드', description: '화려한 색상, 온순함' },
+      { name: '구피', description: '고급 라인 육종품' }
     ],
     gold: [
-      { name: '엔젤피쉬', emoji: '🐡', description: '우아한 체형', image: 'https://upload.wikimedia.org/wikipedia/commons/4/47/Pterophyllum_scalare.jpg' },
-      { name: '킬리피쉬', emoji: '🐟', description: '폭발적 색상', image: 'https://upload.wikimedia.org/wikipedia/commons/a/a7/Fundulopanchax_gardneri.jpg' },
-      { name: '베타', emoji: '🐠', description: '화려한 지느러미', image: 'https://upload.wikimedia.org/wikipedia/commons/7/76/Betta_splendens_male.jpg' }
+      { name: '엔젤피쉬', description: '우아한 체형' },
+      { name: '킬리피쉬', description: '폭발적 색상' },
+      { name: '베타', description: '화려한 지느러미' }
     ],
     platinum: [
-      { name: '디스커스', emoji: '🐟', description: '열대어의 왕', image: 'https://upload.wikimedia.org/wikipedia/commons/9/9b/Discus_fish.jpg' },
-      { name: '만다린 피쉬', emoji: '🐠', description: '형광 오렌지/블루', image: 'https://upload.wikimedia.org/wikipedia/commons/1/14/Synchiropus_splendidus.jpg' },
-      { name: '플라티넘 아로와나', emoji: '🐉', description: '은백색 광택의 드래곤', image: 'https://upload.wikimedia.org/wikipedia/commons/2/2a/Scleropages_formosus.jpg' }
+      { name: '디스커스', description: '열대어의 왕' },
+      { name: '만다린피쉬', description: '형광 오렌지/블루' },
+      { name: '플라티넘아로와나', description: '은백색 광택의 드래곤' }
     ]
   };
 
@@ -117,11 +118,11 @@ const EcostepApp = () => {
             <div className="absolute inset-0 flex items-center justify-center gap-2">
               {/* 구매한 물고기 중 일부 표시 */}
               {purchasedFish.slice(0, 3).map((fishName, i) => {
-                const fish = Object.values(fishData).flat().find(f => f.name === fishName);
-                return fish ? (
-                  <span key={i} className="text-5xl animate-pulse" style={{animationDelay: `${i * 0.3}s`}}>
-                    {fish.emoji}
-                  </span>
+                const FishIcon = FishIcons[fishName.replace(' ', '')];
+                return FishIcon ? (
+                  <div key={i} className="animate-pulse" style={{animationDelay: `${i * 0.3}s`}}>
+                    <FishIcon size={40} />
+                  </div>
                 ) : null;
               })}
             </div>
@@ -557,7 +558,7 @@ const EcostepApp = () => {
               <div className="grid grid-cols-3 gap-2">
                 {fishes.map((fish, i) => {
                   const isPurchased = purchasedFish.includes(fish.name);
-                  const isLocked = rank === 'platinum';
+                  const isLocked = false; // 플래티넘도 잠금 해제
                   
                   return (
                     <button 
@@ -565,9 +566,12 @@ const EcostepApp = () => {
                       className={`${isLocked ? 'bg-gray-100 opacity-50' : isPurchased ? 'bg-green-50 border-green-300' : cardBg} border ${isPurchased ? 'border-green-300' : borderColor} rounded-lg p-2 relative`}
                       disabled={isLocked || isPurchased}
                     >
-                      {/* 물고기 이미지 또는 이모지 */}
-                      <div className={`text-2xl mb-1 ${isLocked ? 'blur-sm' : ''}`}>
-                        {fish.emoji}
+                      {/* 물고기 SVG 아이콘 */}
+                      <div className={`mb-1 flex justify-center ${isLocked ? 'blur-sm' : ''}`}>
+                        {(() => {
+                          const FishIcon = FishIcons[fish.name.replace(' ', '')];
+                          return FishIcon ? <FishIcon size={30} /> : null;
+                        })()}
                       </div>
                       
                       {/* 물고기 이름 */}
@@ -1060,8 +1064,11 @@ const EcostepApp = () => {
                         } ${cardBg}`}
                         disabled={!selectedFish.includes(purchasedFish.indexOf(fish.name)) && selectedFish.length >= fishCount}
                       >
-                        <div className="text-lg">
-                          {fish.emoji}
+                        <div className="flex justify-center">
+                          {(() => {
+                            const FishIcon = FishIcons[fish.name.replace(' ', '')];
+                            return FishIcon ? <FishIcon size={20} /> : null;
+                          })()}
                         </div>
                         <p className={`text-[10px] ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>{fish.name}</p>
                       </button>

@@ -23,7 +23,7 @@ const EcostepApp = () => {
   const [isRandomFish, setIsRandomFish] = useState(true);
   const [selectedFish, setSelectedFish] = useState([]);
   const [selectedDecorations, setSelectedDecorations] = useState([]);
-  const [purchasedFish, setPurchasedFish] = useState(['금붕어', '구피', '네온테트라', '엔젤피시']);
+  const [purchasedFish, setPurchasedFish] = useState(['네온테트라', '체리바브', '구피', '베타']);
   const [customChallenge, setCustomChallenge] = useState('');
   const [showCustomChallenge, setShowCustomChallenge] = useState(false);
   const [customPlasticItem, setCustomPlasticItem] = useState('');
@@ -72,10 +72,26 @@ const EcostepApp = () => {
   ];
 
   const fishData = {
-    bronze: ['금붕어', '구피', '네온테트라'],
-    silver: ['엔젤피시', '디스커스', '베타'],
-    gold: ['아로와나', '플라워혼', '블루탱'],
-    platinum: ['아시안아로와나', '플래티넘아로와나', '폴카닷스팅레이']
+    bronze: [
+      { name: '코리도라스', emoji: '🐡', description: '귀여운 점박이 패턴', image: 'https://upload.wikimedia.org/wikipedia/commons/9/99/Corydoras_sterbai.jpg' },
+      { name: '체리바브', emoji: '🐟', description: '선명한 적색', image: 'https://upload.wikimedia.org/wikipedia/commons/b/be/Cherry_Barb_700.jpg' },
+      { name: '네온테트라', emoji: '🐠', description: '전기적 색상의 군영미', image: 'https://upload.wikimedia.org/wikipedia/commons/5/5e/Paracheirodon_innesi.jpg' }
+    ],
+    silver: [
+      { name: '아피스토그라마', emoji: '🐡', description: '작지만 화려한 시클리드', image: 'https://upload.wikimedia.org/wikipedia/commons/d/d6/Apistogramma_cacatuoides.jpg' },
+      { name: '람 시클리드', emoji: '🐟', description: '화려한 색상, 온순함', image: 'https://upload.wikimedia.org/wikipedia/commons/4/4b/Blue_ram.jpg' },
+      { name: '구피', emoji: '🐠', description: '고급 라인 육종품', image: 'https://upload.wikimedia.org/wikipedia/commons/2/26/Guppy_male.jpg' }
+    ],
+    gold: [
+      { name: '엔젤피쉬', emoji: '🐡', description: '우아한 체형', image: 'https://upload.wikimedia.org/wikipedia/commons/4/47/Pterophyllum_scalare.jpg' },
+      { name: '킬리피쉬', emoji: '🐟', description: '폭발적 색상', image: 'https://upload.wikimedia.org/wikipedia/commons/a/a7/Fundulopanchax_gardneri.jpg' },
+      { name: '베타', emoji: '🐠', description: '화려한 지느러미', image: 'https://upload.wikimedia.org/wikipedia/commons/7/76/Betta_splendens_male.jpg' }
+    ],
+    platinum: [
+      { name: '디스커스', emoji: '🐟', description: '열대어의 왕', image: 'https://upload.wikimedia.org/wikipedia/commons/9/9b/Discus_fish.jpg' },
+      { name: '만다린 피쉬', emoji: '🐠', description: '형광 오렌지/블루', image: 'https://upload.wikimedia.org/wikipedia/commons/1/14/Synchiropus_splendidus.jpg' },
+      { name: '플라티넘 아로와나', emoji: '🐉', description: '은백색 광택의 드래곤', image: 'https://upload.wikimedia.org/wikipedia/commons/2/2a/Scleropages_formosus.jpg' }
+    ]
   };
 
   const decorations = ['해초', '산호', '성', '돌', '조개', '해마상'];
@@ -98,8 +114,16 @@ const EcostepApp = () => {
             </button>
           </div>
           <div className="bg-blue-100 rounded-xl h-48 relative overflow-hidden">
-            <div className="absolute inset-0 flex items-center justify-center">
-              <span className="text-6xl">🐠🐟🐡</span>
+            <div className="absolute inset-0 flex items-center justify-center gap-2">
+              {/* 구매한 물고기 중 일부 표시 */}
+              {purchasedFish.slice(0, 3).map((fishName, i) => {
+                const fish = Object.values(fishData).flat().find(f => f.name === fishName);
+                return fish ? (
+                  <span key={i} className="text-5xl animate-pulse" style={{animationDelay: `${i * 0.3}s`}}>
+                    {fish.emoji}
+                  </span>
+                ) : null;
+              })}
             </div>
             <div className="absolute bottom-0 left-4">🌿</div>
             <div className="absolute bottom-0 right-4">🪸</div>
@@ -532,24 +556,33 @@ const EcostepApp = () => {
               </h4>
               <div className="grid grid-cols-3 gap-2">
                 {fishes.map((fish, i) => {
-                  const isPurchased = purchasedFish.includes(fish);
+                  const isPurchased = purchasedFish.includes(fish.name);
                   const isLocked = rank === 'platinum';
                   
                   return (
                     <button 
                       key={i} 
-                      className={`${isLocked ? 'bg-gray-100 opacity-50' : isPurchased ? 'bg-green-50 border-green-300' : cardBg} border ${isPurchased ? 'border-green-300' : borderColor} rounded-lg p-3`}
+                      className={`${isLocked ? 'bg-gray-100 opacity-50' : isPurchased ? 'bg-green-50 border-green-300' : cardBg} border ${isPurchased ? 'border-green-300' : borderColor} rounded-lg p-2 relative`}
                       disabled={isLocked || isPurchased}
                     >
+                      {/* 물고기 이미지 또는 이모지 */}
                       <div className={`text-2xl mb-1 ${isLocked ? 'blur-sm' : ''}`}>
-                        {rank === 'bronze' ? '🐠' : rank === 'silver' ? '🐟' : rank === 'gold' ? '🐡' : '🦈'}
+                        {fish.emoji}
                       </div>
-                      <p className={`text-[10px] leading-tight ${isLocked ? 'text-gray-400' : isPurchased ? 'text-green-600' : isDarkMode ? 'text-gray-300' : 'text-gray-700'} break-words`}>
-                        {fish}
+                      
+                      {/* 물고기 이름 */}
+                      <p className={`text-[10px] leading-tight ${isLocked ? 'text-gray-400' : isPurchased ? 'text-green-600' : isDarkMode ? 'text-gray-300' : 'text-gray-700'} break-words font-medium`}>
+                        {fish.name}
                       </p>
+                      
+                      {/* 설명 */}
+                      <p className={`text-[8px] ${isDarkMode ? 'text-gray-500' : 'text-gray-400'} mt-0.5`}>
+                        {fish.description}
+                      </p>
+                      
                       {!isLocked && (
                         <p className={`text-xs mt-1 ${isPurchased ? 'text-green-500 font-medium' : 'text-blue-500'}`}>
-                          {isPurchased ? '구매완료' : `${(rank === 'bronze' ? 100 : rank === 'silver' ? 300 : 500) + i * 100}포인트`}
+                          {isPurchased ? '구매완료' : `${(rank === 'bronze' ? 100 : rank === 'silver' ? 300 : 500) + i * 100}P`}
                         </p>
                       )}
                     </button>
@@ -1002,7 +1035,7 @@ const EcostepApp = () => {
           <div className="mb-6">
             <h4 className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} mb-2`}>물고기 선택 ({selectedFish.length}/{fishCount})</h4>
             {Object.entries(fishData).map(([rank, fishes]) => {
-              const purchasedInRank = fishes.filter(fish => purchasedFish.includes(fish));
+              const purchasedInRank = fishes.filter(fish => purchasedFish.includes(fish.name));
               if (purchasedInRank.length === 0) return null;
               
               return (
@@ -1013,9 +1046,9 @@ const EcostepApp = () => {
                   <div className="grid grid-cols-3 gap-2">
                     {purchasedInRank.map((fish, i) => (
                       <button
-                        key={fish}
+                        key={fish.name}
                         onClick={() => {
-                          const fishIndex = purchasedFish.indexOf(fish);
+                          const fishIndex = purchasedFish.indexOf(fish.name);
                           if (selectedFish.includes(fishIndex)) {
                             setSelectedFish(selectedFish.filter(f => f !== fishIndex));
                           } else if (selectedFish.length < fishCount) {
@@ -1023,14 +1056,14 @@ const EcostepApp = () => {
                           }
                         }}
                         className={`p-2 rounded-lg border ${
-                          selectedFish.includes(purchasedFish.indexOf(fish)) ? 'border-blue-500 bg-blue-50' : borderColor
+                          selectedFish.includes(purchasedFish.indexOf(fish.name)) ? 'border-blue-500 bg-blue-50' : borderColor
                         } ${cardBg}`}
-                        disabled={!selectedFish.includes(purchasedFish.indexOf(fish)) && selectedFish.length >= fishCount}
+                        disabled={!selectedFish.includes(purchasedFish.indexOf(fish.name)) && selectedFish.length >= fishCount}
                       >
                         <div className="text-lg">
-                          {rank === 'bronze' ? '🐠' : rank === 'silver' ? '🐟' : '🐡'}
+                          {fish.emoji}
                         </div>
-                        <p className={`text-[10px] ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>{fish}</p>
+                        <p className={`text-[10px] ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>{fish.name}</p>
                       </button>
                     ))}
                   </div>

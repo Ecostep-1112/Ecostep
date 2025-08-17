@@ -87,17 +87,17 @@ const EcostepApp = () => {
   const inputBg = isDarkMode ? 'bg-gray-700' : 'bg-gray-50';
 
   const HomeTab = () => (
-    <div className={`flex-1 overflow-y-auto pb-20 ${bgColor}`}>
+    <div className={`flex-1 overflow-y-auto custom-scrollbar scrollbar-hide-idle pb-20 ${bgColor}`}>
       <div className="min-h-full">
         {/* 어항 섹션 */}
-        <div className="bg-blue-500 rounded-2xl mx-4 mt-4 p-4">
+        <div className="bg-blue-500 rounded-2xl mx-3 mt-4 p-4">
           <div className="flex justify-between items-center mb-3">
             <h3 className="text-white text-sm font-medium">나의 어항</h3>
             <button onClick={() => setShowAquariumSettings(true)}>
               <Settings className="w-4 h-4 text-white" />
             </button>
           </div>
-          <div className="bg-blue-400/30 rounded-xl h-48 relative overflow-hidden">
+          <div className="bg-blue-100 rounded-xl h-48 relative overflow-hidden">
             <div className="absolute inset-0 flex items-center justify-center">
               <span className="text-6xl">🐠🐟🐡</span>
             </div>
@@ -116,14 +116,14 @@ const EcostepApp = () => {
         </div>
 
         {/* 연속 사용 알림 */}
-        <div className={`mx-4 mt-4 p-3 ${isDarkMode ? 'bg-green-900/20 border-green-800' : 'bg-green-50 border-green-200'} border rounded-xl`}>
+        <div className={`mx-3 mt-4 p-3 ${isDarkMode ? 'bg-gray-800 border-green-800' : 'bg-green-50 border-green-200'} border rounded-xl`}>
           <div className="flex items-center">
             <span className="text-green-500 text-sm font-medium">🔥 23일 연속 달성!</span>
           </div>
         </div>
 
         {/* 통계 카드 */}
-        <div className="mx-4 mt-4">
+        <div className="mx-3 mt-4">
           <div className={`${isDarkMode ? 'bg-gray-800' : 'bg-gray-50'} rounded-xl p-4`}>
             <div className="flex justify-between items-center mb-2">
               <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} text-xs`}>플라스틱 절약량</span>
@@ -138,10 +138,10 @@ const EcostepApp = () => {
   );
 
   const ChallengeTab = () => (
-    <div className={`flex-1 overflow-y-auto pb-20 ${bgColor}`}>
+    <div className={`flex-1 overflow-y-auto custom-scrollbar scrollbar-hide-idle pb-20 ${bgColor}`}>
       <div className="min-h-full">
         {/* 서브탭 */}
-        <div className={`flex mx-4 mt-4 ${isDarkMode ? 'bg-gray-800' : 'bg-gray-100'} rounded-lg p-1`}>
+        <div className={`flex mx-2 mt-4 ${isDarkMode ? 'bg-gray-800' : 'bg-gray-100'} rounded-lg p-1`}>
           <button
             onClick={() => setActiveSubTab('habit')}
             className={`flex-1 py-2 rounded text-sm font-medium transition-all ${
@@ -161,12 +161,12 @@ const EcostepApp = () => {
         </div>
 
         {activeSubTab === 'habit' ? (
-          <div className="mx-4 mt-4 space-y-4">
+          <div className="mx-3 mt-4 space-y-4">
             {/* 현재 챌린지 */}
             <div className={`${cardBg} border ${borderColor} rounded-xl p-4`}>
               <div className="flex justify-between items-center mb-3">
                 <h3 className={`${textColor} text-sm font-medium`}>현재 챌린지</h3>
-                <span className="bg-blue-500/20 text-blue-500 px-2 py-1 rounded text-xs">Weekly</span>
+                <span className="bg-blue-100 text-blue-500 px-2 py-1 rounded text-xs">Weekly</span>
               </div>
               
               {!showCustomChallenge ? (
@@ -264,7 +264,7 @@ const EcostepApp = () => {
             {/* 지난 챌린지 */}
             <div className={`${cardBg} border ${borderColor} rounded-xl p-4`}>
               <h3 className={`${textColor} text-sm font-medium mb-3`}>지난 챌린지</h3>
-              <div className="space-y-3 max-h-60 overflow-y-auto">
+              <div className="space-y-3 max-h-60 overflow-y-auto custom-scrollbar scrollbar-hide-idle">
                 {(showAllPastChallenges ? pastChallenges : pastChallenges.slice(0, 3)).map((challenge, index) => (
                   <div key={index}>
                     <div className="flex justify-between items-center mb-1">
@@ -291,7 +291,7 @@ const EcostepApp = () => {
             </div>
           </div>
         ) : (
-          <div className="mx-4 mt-4 space-y-4">
+          <div className="mx-3 mt-4 space-y-4">
             {/* 목표 설정 */}
             <div className={`${cardBg} border ${borderColor} rounded-xl p-4`}>
               <h3 className={`${textColor} text-sm font-medium mb-3`}>이번 주 목표 설정</h3>
@@ -454,10 +454,10 @@ const EcostepApp = () => {
   );
 
   const RewardTab = () => (
-    <div className={`flex-1 overflow-y-auto pb-20 ${bgColor}`}>
+    <div className={`flex-1 overflow-y-auto custom-scrollbar scrollbar-hide-idle pb-20 ${bgColor}`}>
       <div className="min-h-full">
         {/* 현재 랭크 */}
-        <div className={`mx-4 mt-4 ${cardBg} border ${borderColor} rounded-xl p-6`}>
+        <div className={`mx-3 mt-4 ${cardBg} border ${borderColor} rounded-xl p-6`}>
           <h3 className={`${textColor} text-center text-sm font-medium mb-4`}>현재 랭크</h3>
           <div className="flex justify-center mb-4">
             <div className="relative">
@@ -492,7 +492,7 @@ const EcostepApp = () => {
         </div>
 
         {/* 랭킹 보상 */}
-        <div className="mx-4 mt-4">
+        <div className="mx-3 mt-4">
           <h3 className={`${textColor} text-sm font-medium mb-3`}>랭킹 보상</h3>
           <div className="flex justify-between gap-3">
             <div className={`flex-1 ${cardBg} border ${borderColor} rounded-xl p-3`}>
@@ -509,8 +509,8 @@ const EcostepApp = () => {
               <p className={`text-xs text-center ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>골드</p>
               <p className={`text-xs text-center ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>적용</p>
             </div>
-            <div className="flex-1 bg-blue-500/10 border border-blue-500/30 rounded-xl p-3">
-              <div className="w-full aspect-square bg-blue-500/20 rounded-lg mb-2 flex items-center justify-center">
+            <div className="flex-1 bg-blue-50 border border-blue-200 rounded-xl p-3">
+              <div className="w-full aspect-square bg-blue-100 rounded-lg mb-2 flex items-center justify-center">
                 <span className="text-2xl">👑</span>
               </div>
               <p className="text-xs text-center text-blue-500">플래티넘</p>
@@ -519,10 +519,10 @@ const EcostepApp = () => {
           </div>
         </div>
 
-        <div className="mx-4 mt-6 border-t border-gray-200"></div>
+        <div className="mx-3 mt-6 border-t border-gray-200"></div>
 
         {/* 물고기 */}
-        <div className="mx-4 mt-4">
+        <div className="mx-3 mt-4">
           <h3 className={`${textColor} text-sm font-medium mb-3`}>물고기</h3>
           
           {Object.entries(fishData).map(([rank, fishes]) => (
@@ -560,10 +560,10 @@ const EcostepApp = () => {
           ))}
         </div>
 
-        <div className="mx-4 mt-4 border-t border-gray-200"></div>
+        <div className="mx-3 mt-4 border-t border-gray-200"></div>
 
         {/* 어항 장식품 */}
-        <div className="mx-4 mt-4">
+        <div className="mx-3 mt-4">
           <h3 className={`${textColor} text-sm font-medium mb-3`}>어항 장식품</h3>
           <div className="grid grid-cols-3 gap-2">
             {['🌿 해초', '🪸 산호', '🏛️ 성'].map((item, i) => (
@@ -580,10 +580,10 @@ const EcostepApp = () => {
   );
 
   const CommunityTab = () => (
-    <div className={`flex-1 overflow-y-auto pb-20 ${bgColor}`}>
+    <div className={`flex-1 overflow-y-auto custom-scrollbar scrollbar-hide-idle pb-20 ${bgColor}`}>
       <div className="min-h-full">
         {/* 친구 초대 */}
-        <div className={`mx-4 mt-4 ${cardBg} border ${borderColor} rounded-xl p-4`}>
+        <div className={`mx-3 mt-4 ${cardBg} border ${borderColor} rounded-xl p-4`}>
           <h3 className={`${textColor} text-sm font-medium mb-2`}>커뮤니티</h3>
           <p className={`${isDarkMode ? 'text-gray-400' : 'text-gray-500'} text-xs mb-3`}>친구들과 함께 지구를 지켜요!</p>
           <div className="flex gap-2 mb-3">
@@ -609,7 +609,7 @@ const EcostepApp = () => {
         </div>
 
         {/* 친구 랭킹 */}
-        <div className={`mx-4 mt-4 ${cardBg} border ${borderColor} rounded-xl p-4`}>
+        <div className={`mx-3 mt-4 ${cardBg} border ${borderColor} rounded-xl p-4`}>
           <h3 className={`${textColor} text-sm font-medium mb-3`}>내 친구 랭킹 TOP 3</h3>
           <div className="space-y-3">
             <div className="flex items-center justify-between">
@@ -641,7 +641,7 @@ const EcostepApp = () => {
         </div>
 
         {/* 전체 랭킹 */}
-        <div className={`mx-4 mt-4 ${cardBg} border ${borderColor} rounded-xl p-4`}>
+        <div className={`mx-3 mt-4 ${cardBg} border ${borderColor} rounded-xl p-4`}>
           <h3 className={`${textColor} text-sm font-medium mb-3`}>전체 랭킹</h3>
           <div className="space-y-2">
             {[
@@ -675,10 +675,10 @@ const EcostepApp = () => {
   );
 
   const MoreTab = () => (
-    <div className={`flex-1 overflow-y-auto pb-20 ${bgColor}`}>
+    <div className={`flex-1 overflow-y-auto custom-scrollbar scrollbar-hide-idle pb-20 ${bgColor}`}>
       <div className="min-h-full">
         {/* 환경 뉴스 */}
-        <div className={`mx-4 mt-4 ${cardBg} border ${borderColor} rounded-xl p-4`}>
+        <div className={`mx-3 mt-4 ${cardBg} border ${borderColor} rounded-xl p-4`}>
           <h3 className={`${textColor} text-sm font-medium mb-3`}>환경 뉴스</h3>
           <div className="space-y-3">
             {[
@@ -698,7 +698,7 @@ const EcostepApp = () => {
         </div>
 
         {/* 제로웨이스트 맵 */}
-        <div className={`mx-4 mt-4 ${cardBg} border ${borderColor} rounded-xl p-4`}>
+        <div className={`mx-3 mt-4 ${cardBg} border ${borderColor} rounded-xl p-4`}>
           <h3 className={`${textColor} text-sm font-medium mb-3`}>제로웨이스트 맵</h3>
           <div className={`${inputBg} rounded-lg h-32 mb-3 flex items-center justify-center`}>
             <MapPin className="w-8 h-8 text-blue-500" />
@@ -721,7 +721,7 @@ const EcostepApp = () => {
         </div>
 
         {/* 도움말 */}
-        <div className={`mx-4 mt-4 ${cardBg} border ${borderColor} rounded-xl p-4`}>
+        <div className={`mx-3 mt-4 ${cardBg} border ${borderColor} rounded-xl p-4`}>
           <h3 className={`${textColor} text-sm font-medium mb-3`}>도움말</h3>
           <div className="space-y-2">
             <button className={`w-full flex items-center justify-between p-3 ${inputBg} rounded-lg`}>
@@ -753,7 +753,7 @@ const EcostepApp = () => {
         <h2 className={`text-base font-medium ${textColor}`}>설정</h2>
       </div>
       
-      <div className="mx-4 mt-4 space-y-2">
+      <div className="mx-3 mt-4 space-y-2">
         {/* 프로필 섹션 - 동일한 크기 */}
         <button 
           onClick={() => setShowProfile(true)}
@@ -826,7 +826,7 @@ const EcostepApp = () => {
         </div>
       </div>
       
-      <div className="mx-4 space-y-3">
+      <div className="mx-3 space-y-3">
         <div className={`${cardBg} border ${borderColor} rounded-xl p-4`}>
           <label className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>이름</label>
           <p className={`text-sm font-medium mt-1 ${textColor}`}>송일</p>
@@ -869,7 +869,7 @@ const EcostepApp = () => {
         <h2 className={`text-base font-medium ${textColor}`}>화면 테마</h2>
       </div>
       
-      <div className="mx-4 mt-4 space-y-2">
+      <div className="mx-3 mt-4 space-y-2">
         <button 
           onClick={() => setIsDarkMode(false)}
           className={`w-full ${cardBg} border ${borderColor} rounded-xl p-4 flex items-center justify-between ${!isDarkMode ? 'border-blue-500' : ''}`}
@@ -904,7 +904,7 @@ const EcostepApp = () => {
         <h2 className={`text-base font-medium ${textColor}`}>언어</h2>
       </div>
       
-      <div className="mx-4 mt-4 space-y-2">
+      <div className="mx-3 mt-4 space-y-2">
         <button 
           onClick={() => setLanguage('ko')}
           className={`w-full ${cardBg} border ${borderColor} rounded-xl p-4 flex items-center justify-between ${language === 'ko' ? 'border-blue-500' : ''}`}
@@ -933,7 +933,7 @@ const EcostepApp = () => {
         <h2 className={`text-base font-medium ${textColor}`}>알림</h2>
       </div>
       
-      <div className="mx-4 mt-4">
+      <div className="mx-3 mt-4">
         <div className={`${cardBg} border ${borderColor} rounded-xl p-4 flex items-center justify-between`}>
           <span className={`text-sm ${textColor}`}>알림 받기</span>
           <button 
@@ -956,7 +956,7 @@ const EcostepApp = () => {
         <h2 className={`text-base font-medium ${textColor}`}>어항 설정</h2>
       </div>
       
-      <div className="mx-4 mt-4">
+      <div className="mx-3 mt-4">
         <h3 className={`text-sm font-medium mb-3 ${textColor}`}>어항 선택</h3>
         <div className="flex gap-3 mb-6">
           {['실버', '골드', '플래티넘'].map((type) => (
@@ -1074,14 +1074,14 @@ const EcostepApp = () => {
   return (
     <div className={`flex items-center justify-center min-h-screen ${isDarkMode ? 'bg-black' : 'bg-gray-100'} p-4`}>
       {/* 핸드폰 프레임 - 더 현실적인 디자인 */}
-      <div className="relative w-full max-w-[390px] h-[844px] bg-gray-900 rounded-[2.5rem] p-[3px] shadow-2xl">
+      <div className="relative w-full max-w-[375px] h-[812px] bg-gray-900 rounded-[2.5rem] p-[3px] shadow-2xl">
         {/* 핸드폰 베젤 */}
         <div className="w-full h-full bg-black rounded-[2.3rem] p-[8px]">
         
         {/* 화면 영역 */}
         <div className={`w-full h-full ${bgColor} rounded-[2rem] overflow-hidden flex flex-col`}>
           {/* 상태바 */}
-          <div className="bg-blue-500 px-4 py-3 flex justify-between items-center">
+          <div className="bg-blue-500 px-3 py-3 flex justify-between items-center">
             <h1 className="text-white text-sm">송일님 환영합니다</h1>
             <div className="flex items-center gap-3">
               <div className="flex items-center bg-white/20 px-2 py-1 rounded">

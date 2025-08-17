@@ -19,7 +19,9 @@
       "Bash(where code)",
       "Bash(where cursor)",
       "Bash(claude ide status)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git tag:*)",
+      "Bash(git commit:*)"
     ],
     "deny": [],
     "ask": [],

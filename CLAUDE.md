@@ -77,3 +77,5 @@ After making changes:
 4. Test with users via web browser
 5. Once design is finalized (~80%), migrate to Expo for native app
 
+## 작업 
+1. 작업을 진행하기 전에, 항상 한 번 더 생각해보고, 차근차근 순차적으로 진행해주세요. 

@@ -74,24 +74,24 @@ const EcostepApp = () => {
 
   const fishData = {
     bronze: [
-      { name: '코리도라스', description: '귀여운 점박이 패턴' },
-      { name: '체리바브', description: '선명한 적색' },
-      { name: '네온테트라', description: '전기적 색상의 군영미' }
+      { name: '코리도라스', description: '바닥 청소 요정' },
+      { name: '체리바브', description: '체리 같은 귀요미' },
+      { name: '네온테트라', description: '반짝이는 보석' }
     ],
     silver: [
-      { name: '아피스토그라마', description: '작지만 화려한 시클리드' },
-      { name: '람시클리드', description: '화려한 색상, 온순함' },
-      { name: '구피', description: '고급 라인 육종품' }
+      { name: '아피스토그라마', description: '포켓 드래곤' },
+      { name: '람시클리드', description: '온화한 젠틀맨' },
+      { name: '구피', description: '꼬리 댄싱퀸' }
     ],
     gold: [
-      { name: '엔젤피쉬', description: '우아한 체형' },
-      { name: '킬리피쉬', description: '폭발적 색상' },
-      { name: '베타', description: '화려한 지느러미' }
+      { name: '엔젤피쉬', description: '수중의 천사' },
+      { name: '킬리피쉬', description: '자유로운 모험가' },
+      { name: '베타', description: '실크 드레스 퀸' }
     ],
     platinum: [
-      { name: '디스커스', description: '열대어의 왕' },
-      { name: '만다린피쉬', description: '형광 오렌지/블루' },
-      { name: '플라티넘아로와나', description: '은백색 광택의 드래곤' }
+      { name: '디스커스', description: '수중 황제' },
+      { name: '만다린피쉬', description: '네온 아티스트' },
+      { name: '플라티넘아로와나', description: '전설의 용' }
     ]
   };
 

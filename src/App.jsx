@@ -91,7 +91,7 @@ const EcostepApp = () => {
     platinum: [
       { name: '디스커스', description: '수중 황제' },
       { name: '만다린피쉬', description: '네온 아티스트' },
-      { name: '플라티넘아로와나', description: '전설의 용' }
+      { name: '아로와나', description: '전설의 용' }
     ]
   };
 
@@ -555,7 +555,7 @@ const EcostepApp = () => {
               <h4 className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} text-xs mb-2 capitalize`}>
                 {rank === 'bronze' ? '브론즈' : rank === 'silver' ? '실버' : rank === 'gold' ? '골드' : '플래티넘'}
               </h4>
-              <div className="grid grid-cols-3 gap-2">
+              <div className="grid grid-cols-3 gap-1.5">
                 {fishes.map((fish, i) => {
                   const isPurchased = purchasedFish.includes(fish.name);
                   const isLocked = false; // 플래티넘도 잠금 해제
@@ -563,32 +563,40 @@ const EcostepApp = () => {
                   return (
                     <button 
                       key={i} 
-                      className={`${isLocked ? 'bg-gray-100 opacity-50' : isPurchased ? 'bg-green-50 border-green-300' : cardBg} border ${isPurchased ? 'border-green-300' : borderColor} rounded-lg p-2 relative`}
+                      className={`${isLocked ? 'bg-gray-100 opacity-50' : isPurchased ? 'bg-green-50 border-green-300' : cardBg} border ${isPurchased ? 'border-green-300' : borderColor} rounded-lg relative flex flex-col items-center justify-between h-[125px] p-2`}
                       disabled={isLocked || isPurchased}
                     >
-                      {/* 물고기 SVG 아이콘 */}
-                      <div className={`mb-1 flex justify-center ${isLocked ? 'blur-sm' : ''}`}>
+                      {/* 물고기 SVG 아이콘 - 더 크게, 중앙 정렬 */}
+                      <div className={`h-[42px] w-full flex items-center justify-center ${isLocked ? 'blur-sm' : ''}`}>
                         {(() => {
                           const FishIcon = FishIcons[fish.name.replace(' ', '')];
-                          return FishIcon ? <FishIcon size={30} /> : null;
+                          // 특정 물고기는 더 크게 표시
+                          const iconSize = ['네온테트라', '아피스토그라마', '킬리피쉬'].includes(fish.name) ? 48 : 36;
+                          return FishIcon ? <FishIcon size={iconSize} /> : null;
                         })()}
                       </div>
                       
-                      {/* 물고기 이름 */}
-                      <p className={`text-[10px] leading-tight ${isLocked ? 'text-gray-400' : isPurchased ? 'text-green-600' : isDarkMode ? 'text-gray-300' : 'text-gray-700'} break-words font-medium`}>
-                        {fish.name}
-                      </p>
-                      
-                      {/* 설명 */}
-                      <p className={`text-[8px] ${isDarkMode ? 'text-gray-500' : 'text-gray-400'} mt-0.5`}>
-                        {fish.description}
-                      </p>
-                      
-                      {!isLocked && (
-                        <p className={`text-xs mt-1 ${isPurchased ? 'text-green-500 font-medium' : 'text-blue-500'}`}>
-                          {isPurchased ? '구매완료' : `${(rank === 'bronze' ? 100 : rank === 'silver' ? 300 : 500) + i * 100}P`}
+                      {/* 텍스트 영역 - 중앙 정렬 */}
+                      <div className="flex-1 flex flex-col items-center justify-center w-full px-1">
+                        {/* 물고기 이름 - 더 크게 */}
+                        <p className={`text-[11px] leading-tight ${isLocked ? 'text-gray-400' : isPurchased ? 'text-green-600' : isDarkMode ? 'text-gray-300' : 'text-gray-700'} text-center font-medium`}>
+                          {fish.name}
                         </p>
-                      )}
+                        
+                        {/* 설명 - 더 크게 */}
+                        <p className={`text-[9px] ${isDarkMode ? 'text-gray-500' : 'text-gray-400'} mt-0.5 text-center leading-tight`}>
+                          {fish.description}
+                        </p>
+                      </div>
+                      
+                      {/* 가격/구매완료 - 하단 고정 */}
+                      <div className="h-[20px] flex items-center justify-center w-full">
+                        {!isLocked && (
+                          <p className={`text-xs ${isPurchased ? 'text-green-500 font-medium' : 'text-blue-500'} text-center`}>
+                            {isPurchased ? '구매완료' : `${(rank === 'bronze' ? 100 : rank === 'silver' ? 300 : 500) + i * 100}P`}
+                          </p>
+                        )}
+                      </div>
                     </button>
                   );
                 })}
@@ -602,12 +610,25 @@ const EcostepApp = () => {
         {/* 어항 장식품 */}
         <div className="mx-3 mt-4">
           <h3 className={`${textColor} text-sm font-medium mb-3`}>어항 장식품</h3>
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-3 gap-1.5">
             {['🌿 해초', '🪸 산호', '🏛️ 성'].map((item, i) => (
-              <button key={i} className={`${cardBg} border ${borderColor} rounded-lg p-3`}>
-                <div className="text-2xl mb-1">{item.split(' ')[0]}</div>
-                <p className={`text-xs ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>{item.split(' ')[1]}</p>
-                <p className="text-xs text-blue-500">{50 + i * 30}포인트</p>
+              <button key={i} className={`${cardBg} border ${borderColor} rounded-lg relative flex flex-col items-center justify-between h-[125px] p-2`}>
+                {/* 아이콘 - 고정 높이 영역 */}
+                <div className="h-[42px] w-full flex items-center justify-center">
+                  <span className="text-3xl">{item.split(' ')[0]}</span>
+                </div>
+                
+                {/* 텍스트 영역 - 중앙 정렬 */}
+                <div className="flex-1 flex flex-col items-center justify-center w-full">
+                  <p className={`text-[11px] ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} text-center font-medium`}>
+                    {item.split(' ')[1]}
+                  </p>
+                </div>
+                
+                {/* 가격 - 하단 고정 */}
+                <div className="h-[20px] flex items-center justify-center w-full">
+                  <p className="text-xs text-blue-500 text-center">{50 + i * 30}포인트</p>
+                </div>
               </button>
             ))}
           </div>

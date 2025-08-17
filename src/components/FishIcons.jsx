@@ -249,7 +249,7 @@ const FishIcons = {
   // 7위: 구피 - 작은 몸 거대한 꼬리 (몸통:꼬리 = 1:3.5)
   구피: ({ size = 45, color = '#FF69B4' }) => (
     <svg width={size * 1.6} height={size * 1.1} viewBox="0 0 144 99">
-      <g>
+      <g transform="translate(22, 0)">
         {/* 아주 작은 몸통 */}
         <ellipse cx="20" cy="49" rx="9" ry="6" fill="#87CEEB" />
         <ellipse cx="20" cy="49" rx="7" ry="4.5" fill="#ADD8E6" />
@@ -389,7 +389,7 @@ const FishIcons = {
   // 4위: 베타 - 길고 흐르는 지느러미와 부채꼴 꼬리
   베타: ({ size = 50, color = '#8B008B' }) => (
     <svg width={size * 1.3} height={size * 1.2} viewBox="0 0 130 120">
-      <g>
+      <g transform="translate(25, 0)">
         {/* 작은 몸통 - 지느러미가 더 부각되도록 */}
         <ellipse cx="40" cy="60" rx="15" ry="12" fill={color} />
         <ellipse cx="40" cy="60" rx="13" ry="10" fill="#9370DB" />
@@ -596,7 +596,7 @@ const FishIcons = {
   ),
 
   // 1위: 플라티넘 아로와나 - 용의 왕
-  플라티넘아로와나: ({ size = 60, color = '#C0C0C0' }) => (
+  아로와나: ({ size = 60, color = '#C0C0C0' }) => (
     <svg width={size * 1.8} height={size * 0.6} viewBox="0 0 216 72">
       <g>
         {/* 매우 긴 용 같은 몸통 - 더 날씬하고 길게 */}

@@ -2,54 +2,46 @@ import React from 'react';
 
 // 물고기 SVG 아이콘 컴포넌트
 const FishIcons = {
-  // 12위: 코리도라스 - 메기과 특유의 수염과 평평한 바닥형 몸
+  // 12위: 코리도라스 - 귀여운 바닥 메기
   코리도라스: ({ size = 40, color = '#8B7355' }) => (
-    <svg width={size * 1.1} height={size * 0.7} viewBox="0 0 88 56">
+    <svg width={size * 1.1} height={size * 0.8} viewBox="0 0 88 64">
       <g>
-        {/* 납작하고 평평한 바닥형 몸통 - 코리도라스의 핵심 특징 */}
-        <ellipse cx="44" cy="35" rx="26" ry="10" fill={color} />
-        <ellipse cx="44" cy="33" rx="24" ry="8" fill="#A0826D" />
-        {/* 아래쪽이 평평한 배 부분 */}
-        <ellipse cx="44" cy="38" rx="20" ry="5" fill="#D2B48C" />
-        <rect x="24" y="35" width="40" height="5" fill="#D2B48C" opacity="0.8" />
+        {/* 둥글둥글한 귀여운 몸통 */}
+        <ellipse cx="44" cy="35" rx="25" ry="14" fill={color} />
+        <ellipse cx="44" cy="35" rx="23" ry="12" fill="#A0826D" />
+        <ellipse cx="44" cy="37" rx="20" ry="10" fill="#C8B88B" opacity="0.8" />
         
-        {/* 6개의 수염 - 코리도라스의 상징 (더 굵고 선명하게) */}
-        {/* 위쪽 수염 2개 */}
-        <path d="M 20 32 Q 14 28 8 25" stroke="#3C2414" strokeWidth="2.5" fill="none" strokeLinecap="round" />
-        <path d="M 20 33 Q 14 30 8 28" stroke="#3C2414" strokeWidth="2.5" fill="none" strokeLinecap="round" />
-        {/* 중간 수염 2개 - 가장 두드러지게 */}
-        <path d="M 20 35 Q 13 35 6 34" stroke="#3C2414" strokeWidth="3" fill="none" strokeLinecap="round" />
-        <path d="M 20 36 Q 13 37 6 38" stroke="#3C2414" strokeWidth="3" fill="none" strokeLinecap="round" />
-        {/* 아래쪽 수염 2개 */}
-        <path d="M 20 38 Q 14 41 8 44" stroke="#3C2414" strokeWidth="2.5" fill="none" strokeLinecap="round" />
-        <path d="M 20 39 Q 14 43 8 46" stroke="#3C2414" strokeWidth="2.5" fill="none" strokeLinecap="round" />
+        {/* 귀여운 배 부분 */}
+        <ellipse cx="44" cy="40" rx="18" ry="8" fill="#D2B48C" />
         
-        {/* 수염 하이라이트 효과 */}
-        <path d="M 20 35 Q 13 35 6 34" stroke="#6B5D54" strokeWidth="1.5" fill="none" strokeLinecap="round" opacity="0.6" />
-        <path d="M 20 36 Q 13 37 6 38" stroke="#6B5D54" strokeWidth="1.5" fill="none" strokeLinecap="round" opacity="0.6" />
+        {/* 간단한 귀여운 수염 3개 */}
+        <path d="M 22 36 Q 16 35 10 34" stroke="#5C4033" strokeWidth="2.5" fill="none" strokeLinecap="round" />
+        <path d="M 22 38 Q 16 38 10 38" stroke="#5C4033" strokeWidth="3" fill="none" strokeLinecap="round" />
+        <path d="M 22 40 Q 16 41 10 42" stroke="#5C4033" strokeWidth="2.5" fill="none" strokeLinecap="round" />
         
-        {/* 삼각형 등지느러미 - 앞쪽이 높음 */}
-        <path d="M 35 25 L 38 15 L 42 20 L 46 15 L 50 20 L 54 15 L 57 25" fill={color} />
-        <path d="M 37 25 L 40 17 L 44 22 L 48 17 L 52 22 L 55 25" fill="#6B5D54" opacity="0.7" />
+        {/* 단순한 삼각형 등지느러미 1개 */}
+        <path d="M 38 25 L 44 18 L 50 25" fill={color} />
+        <path d="M 40 25 L 44 20 L 48 25" fill="#6B5D54" opacity="0.7" />
         
-        {/* 바닥에 닿는 가슴지느러미 */}
-        <ellipse cx="28" cy="38" rx="7" ry="3" fill="#8B7355" transform="rotate(-35 28 38)" />
-        <ellipse cx="60" cy="38" rx="7" ry="3" fill="#8B7355" transform="rotate(35 60 38)" />
+        {/* 작고 귀여운 부채꼴 꼬리지느러미 */}
+        <path d="M 68 35 Q 78 28 80 35 Q 78 42 68 35" fill={color} />
+        <path d="M 66 35 Q 74 30 76 35 Q 74 40 66 35" fill="#A0826D" opacity="0.8" />
         
-        {/* 꼬리지느러미 */}
-        <path d="M 70 35 L 82 26 L 80 35 L 82 44 L 70 35" fill={color} />
-        <path d="M 68 35 L 78 28 L 76 35 L 78 42 L 68 35" fill="#A0826D" opacity="0.8" />
+        {/* 크고 귀여운 눈 */}
+        <circle cx="28" cy="32" r="4.5" fill="black" />
+        <circle cx="28.5" cy="31.5" r="2" fill="white" />
+        <circle cx="27.5" cy="33.5" r="0.8" fill="#666" opacity="0.5" />
         
-        {/* 눈 */}
-        <circle cx="26" cy="31" r="3" fill="black" />
-        <circle cx="26.5" cy="30.5" r="1.2" fill="white" />
+        {/* 귀여운 입 */}
+        <ellipse cx="22" cy="37" rx="2" ry="1.5" fill="#6B5D54" opacity="0.7" />
         
-        {/* 점박이 무늬 - 코리도라스 특유의 패턴 */}
-        <circle cx="38" cy="33" r="2.5" fill="#6B5D54" opacity="0.7" />
-        <circle cx="46" cy="34" r="3" fill="#6B5D54" opacity="0.7" />
-        <circle cx="54" cy="33" r="2.5" fill="#6B5D54" opacity="0.7" />
-        <circle cx="42" cy="37" r="2" fill="#6B5D54" opacity="0.7" />
-        <circle cx="50" cy="37" r="2" fill="#6B5D54" opacity="0.7" />
+        {/* 단순한 점박이 무늬 3개 */}
+        <circle cx="44" cy="33" r="3" fill="#6B5D54" opacity="0.5" />
+        <circle cx="52" cy="35" r="2.5" fill="#6B5D54" opacity="0.5" />
+        <circle cx="36" cy="35" r="2.5" fill="#6B5D54" opacity="0.5" />
+        
+        {/* 부드러운 하이라이트 */}
+        <ellipse cx="44" cy="30" rx="15" ry="8" fill="#FFFFFF" opacity="0.1" />
       </g>
     </svg>
   ),
@@ -444,64 +436,88 @@ const FishIcons = {
     </svg>
   ),
 
-  // 3위: 디스커스 - 약간 타원형 원반과 큰 눈
+  // 3위: 디스커스 - 플래티넘 랭크의 살아있는 보석
   디스커스: ({ size = 55, color = '#FF8C00' }) => (
-    <svg width={size * 1.1} height={size} viewBox="0 0 121 110">
+    <svg width={size * 1.2} height={size * 1.1} viewBox="0 0 132 121">
       <g>
-        {/* 약간 타원형 몸통 - 가로가 더 긴 자연스러운 비율 (1.2:1) */}
-        <ellipse cx="60" cy="55" rx="42" ry="35" fill={color} />
-        <ellipse cx="60" cy="55" rx="39" ry="33" fill="#FFA500" />
-        <ellipse cx="60" cy="55" rx="36" ry="30" fill="#FFB347" opacity="0.8" />
-        <ellipse cx="60" cy="55" rx="30" ry="25" fill="#FFDAB9" opacity="0.6" />
+        {/* 하트형에 가까운 원반 몸통 - 위쪽이 살짝 볼록 */}
+        <path d="M 66 25 Q 35 25 20 45 Q 15 66 20 87 Q 35 107 66 107 Q 97 107 112 87 Q 117 66 112 45 Q 97 25 66 25" 
+              fill="url(#discusGradient)" />
         
-        {/* 우아한 등지느러미와 뒷지느러미 - 원반형 몸을 감싸듯이 */}
-        <path d="M 60 18 Q 35 23 22 38 Q 15 55 22 72 Q 35 87 60 92 Q 85 87 98 72 Q 105 55 98 38 Q 85 23 60 18" 
-              fill="#FF6347" opacity="0.7" />
-        <path d="M 60 20 Q 37 25 25 40 Q 18 55 25 70 Q 37 85 60 90 Q 83 85 95 70 Q 102 55 95 40 Q 83 25 60 20" 
-              fill="#FF8C00" opacity="0.5" />
+        {/* 화려한 그라데이션 정의 */}
+        <defs>
+          <radialGradient id="discusGradient" cx="50%" cy="45%">
+            <stop offset="0%" stopColor="#FFD700" />
+            <stop offset="30%" stopColor="#FF6347" />
+            <stop offset="60%" stopColor="#FF8C00" />
+            <stop offset="90%" stopColor="#DC143C" />
+            <stop offset="100%" stopColor="#B22222" />
+          </radialGradient>
+          <linearGradient id="finGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#FFA500" opacity="0.9" />
+            <stop offset="50%" stopColor="#FF6347" opacity="0.7" />
+            <stop offset="100%" stopColor="#FF1493" opacity="0.5" />
+          </linearGradient>
+        </defs>
         
-        {/* 지느러미 디테일 - 방사형 선 */}
-        <path d="M 60 22 L 55 25 M 60 22 L 65 25 M 60 22 L 50 28 M 60 22 L 70 28" 
-              stroke="#D2691E" strokeWidth="1" opacity="0.6" />
-        <path d="M 60 88 L 55 85 M 60 88 L 65 85 M 60 88 L 50 82 M 60 88 L 70 82" 
-              stroke="#D2691E" strokeWidth="1" opacity="0.6" />
+        {/* 몸을 감싸는 우아한 등지느러미 */}
+        <path d="M 66 18 Q 30 22 15 42 Q 10 66 15 90 Q 30 110 66 114 Q 102 110 117 90 Q 122 66 117 42 Q 102 22 66 18" 
+              fill="url(#finGradient)" opacity="0.8" />
         
-        {/* 세로 줄무늬 - 디스커스 특유의 패턴 */}
-        <rect x="38" y="35" width="3" height="40" fill="#8B4513" opacity="0.6" />
-        <rect x="46" y="30" width="3" height="50" fill="#8B4513" opacity="0.6" />
-        <rect x="54" y="25" width="3" height="60" fill="#8B4513" opacity="0.6" />
-        <rect x="62" y="25" width="3" height="60" fill="#8B4513" opacity="0.6" />
-        <rect x="70" y="30" width="3" height="50" fill="#8B4513" opacity="0.6" />
-        <rect x="78" y="35" width="3" height="40" fill="#8B4513" opacity="0.6" />
-        <rect x="85" y="40" width="2.5" height="30" fill="#8B4513" opacity="0.4" />
+        {/* 등지느러미 물결 디테일 */}
+        <path d="M 66 20 Q 50 22 35 30 M 66 20 Q 82 22 97 30 M 66 20 Q 45 24 25 35 M 66 20 Q 87 24 107 35" 
+              stroke="#FFD700" strokeWidth="1" opacity="0.4" />
         
-        {/* 우아한 꼬리지느러미 */}
-        <ellipse cx="102" cy="55" rx="8" ry="14" fill="#FF6347" />
-        <ellipse cx="100" cy="55" rx="6" ry="12" fill="#FF8C00" opacity="0.8" />
-        <path d="M 100 43 L 100 55 L 100 67" stroke="#FFD700" strokeWidth="1.5" opacity="0.7" />
+        {/* 뒷지느러미 물결 디테일 */}
+        <path d="M 66 112 Q 50 110 35 102 M 66 112 Q 82 110 97 102 M 66 112 Q 45 108 25 97 M 66 112 Q 87 108 107 97" 
+              stroke="#FFD700" strokeWidth="1" opacity="0.4" />
         
-        {/* 가슴지느러미 */}
-        <ellipse cx="30" cy="60" rx="12" ry="6" fill="#FFA500" opacity="0.7" transform="rotate(-20 30 60)" />
-        <path d="M 25 58 L 30 60 L 35 58" stroke="#FF6347" strokeWidth="1" opacity="0.5" />
+        {/* 삼각형 꼬리지느러미 - 디스커스의 필수 요소 */}
+        <path d="M 112 66 L 128 48 L 125 66 L 128 84 L 112 66" fill="url(#finGradient)" />
+        <path d="M 110 66 L 124 50 L 121 66 L 124 82 L 110 66" fill="#FF6347" opacity="0.7" />
+        <path d="M 108 66 L 120 52 L 117 66 L 120 80 L 108 66" fill="#FFD700" opacity="0.5" />
         
-        {/* 크고 귀여운 눈 - 디스커스의 매력 포인트 */}
-        <circle cx="40" cy="50" r="6" fill="#DC143C" />
-        <circle cx="40" cy="50" r="5.5" fill="black" />
-        <circle cx="40.5" cy="49.5" r="2.5" fill="white" />
-        <circle cx="39.5" cy="51.5" r="0.8" fill="#666" opacity="0.5" />
+        {/* 은은한 줄무늬 패턴 */}
+        <path d="M 45 40 Q 45 66 45 92" stroke="#8B0000" strokeWidth="2" opacity="0.3" />
+        <path d="M 55 35 Q 55 66 55 97" stroke="#8B0000" strokeWidth="2.5" opacity="0.3" />
+        <path d="M 66 30 Q 66 66 66 102" stroke="#8B0000" strokeWidth="3" opacity="0.3" />
+        <path d="M 77 35 Q 77 66 77 97" stroke="#8B0000" strokeWidth="2.5" opacity="0.3" />
+        <path d="M 87 40 Q 87 66 87 92" stroke="#8B0000" strokeWidth="2" opacity="0.3" />
         
-        {/* 귀여운 입 */}
-        <ellipse cx="34" cy="55" rx="2" ry="1.5" fill="#8B4513" opacity="0.6" />
+        {/* 화려한 점무늬 */}
+        <circle cx="50" cy="50" r="3" fill="#00CED1" opacity="0.7" />
+        <circle cx="70" cy="55" r="3.5" fill="#00BFFF" opacity="0.7" />
+        <circle cx="55" cy="70" r="3" fill="#1E90FF" opacity="0.7" />
+        <circle cx="75" cy="75" r="2.5" fill="#00CED1" opacity="0.6" />
+        <circle cx="60" cy="45" r="2.5" fill="#4169E1" opacity="0.6" />
+        <circle cx="80" cy="60" r="2" fill="#00BFFF" opacity="0.5" />
         
-        {/* 청록색 반점 - 디스커스의 화려한 색상 */}
-        <circle cx="60" cy="45" r="2.5" fill="#00CED1" opacity="0.6" />
-        <circle cx="66" cy="55" r="3" fill="#00CED1" opacity="0.6" />
-        <circle cx="60" cy="65" r="2.5" fill="#00CED1" opacity="0.6" />
-        <circle cx="52" cy="53" r="2" fill="#00BFFF" opacity="0.5" />
-        <circle cx="70" cy="48" r="2" fill="#00BFFF" opacity="0.5" />
+        {/* 우아한 가슴지느러미 */}
+        <ellipse cx="30" cy="70" rx="15" ry="8" fill="url(#finGradient)" opacity="0.8" transform="rotate(-25 30 70)" />
+        <path d="M 25 70 Q 22 75 25 73 Q 22 78 28 75" fill="#FF6347" opacity="0.5" />
         
-        {/* 반짝임 효과 */}
-        <ellipse cx="60" cy="55" rx="34" ry="28" fill="none" stroke="#FFFFFF" strokeWidth="0.5" opacity="0.3" />
+        {/* 초대형 귀여운 눈 - 1.5배 크게 */}
+        <circle cx="40" cy="55" r="9" fill="#8B0000" />
+        <circle cx="40" cy="55" r="8.5" fill="black" />
+        <circle cx="41" cy="54" r="4" fill="white" />
+        <circle cx="39" cy="57" r="1.5" fill="#888" opacity="0.5" />
+        <circle cx="42" cy="53" r="1" fill="#FFF" opacity="0.8" />
+        
+        {/* 작고 귀여운 입 */}
+        <ellipse cx="32" cy="62" rx="2.5" ry="2" fill="#8B4513" opacity="0.7" />
+        
+        {/* 플래티넘 반짝임 효과 */}
+        <ellipse cx="66" cy="60" rx="35" ry="30" fill="none" stroke="#FFFFFF" strokeWidth="1" opacity="0.4" />
+        <ellipse cx="66" cy="60" rx="30" ry="25" fill="none" stroke="#FFD700" strokeWidth="0.5" opacity="0.3" />
+        
+        {/* 미세한 하이라이트 */}
+        <ellipse cx="55" cy="45" rx="15" ry="20" fill="#FFFFFF" opacity="0.15" />
+        <ellipse cx="75" cy="50" rx="12" ry="15" fill="#FFD700" opacity="0.1" />
+        
+        {/* 고급스러운 광택 */}
+        <circle cx="50" cy="40" r="2" fill="#FFFFFF" opacity="0.6" />
+        <circle cx="70" cy="45" r="1.5" fill="#FFFFFF" opacity="0.5" />
+        <circle cx="60" cy="35" r="1" fill="#FFFFFF" opacity="0.7" />
       </g>
     </svg>
   ),

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { ChevronRight, Settings, Home, Target, Gift, Users, MoreHorizontal, Check, X, TrendingUp, Calendar, MapPin, Share2, ChevronDown, BarChart3, Plus, Camera, Sun, Moon, Globe, Search, HelpCircle, Phone, Book } from 'lucide-react';
+import { ChevronRight, Settings, Home, Target, Gift, Users, MoreHorizontal, Check, X, TrendingUp, Calendar, MapPin, Share2, ChevronDown, BarChart3, Plus, Camera, Sun, Moon, Globe, Search, HelpCircle, Phone, Book, ChevronUp, Leaf, RefreshCw } from 'lucide-react';
 import FishIcons from './components/FishIcons';
+import { generateRandomTip } from './services/claudeApi';
 
 const EcostepApp = () => {
   const [activeTab, setActiveTab] = useState('home');
@@ -34,6 +35,31 @@ const EcostepApp = () => {
   const [customChallenges, setCustomChallenges] = useState([]);
   const [customPlasticItems, setCustomPlasticItems] = useState([]);
   const [showAllPlaces, setShowAllPlaces] = useState(false);
+  const [expandedTip, setExpandedTip] = useState(null);
+  const [environmentalTips, setEnvironmentalTips] = useState([
+    {
+      id: 1,
+      title: '플라스틱 병 재사용하기',
+      preview: '페트병을 화분으로 활용하면 쓰레기도 줄이고 식물도 키울 수 있어요',
+      content: '사용한 페트병을 깨끗이 씻어 화분으로 재활용해보세요. 병 아래쪽을 잘라 배수구를 만들고, 흙을 담아 허브나 다육식물을 키울 수 있습니다. 이렇게 하면 플라스틱 쓰레기를 줄이고 실내 공기 정화 효과도 얻을 수 있어요. 창가에 여러 개를 걸어두면 작은 텃밭을 만들 수도 있습니다.',
+      category: '재활용 팁'
+    },
+    {
+      id: 2,
+      title: '대나무 칫솔 사용하기',
+      preview: '플라스틱 칫솔 대신 생분해 가능한 대나무 칫솔로 바꿔보세요',
+      content: '일반 플라스틱 칫솔은 썩는데 400년이 걸립니다. 대나무 칫솔은 100% 생분해가 가능하며, 사용 후 퇴비로 만들 수 있습니다. 대나무는 빠르게 자라는 지속 가능한 자원이며, 항균 효과도 있어 위생적입니다. 3개월마다 교체하는 칫솔, 이제는 지구를 생각하며 선택해보세요.',
+      category: '생활 습관'
+    },
+    {
+      id: 3,
+      title: '샴푸바와 비누 사용하기',
+      preview: '액체 샴푸 대신 고체 샴푸바를 사용하면 플라스틱 용기를 줄일 수 있어요',
+      content: '샴푸바 하나는 액체 샴푸 2-3병 분량과 같습니다. 플라스틱 용기가 필요 없고, 여행할 때도 편리하며, 화학 방부제가 적어 두피에도 좋습니다. 천연 재료로 만든 샴푸바는 머리카락을 건강하게 하고, 환경도 보호합니다. 처음엔 거품이 적게 느껴질 수 있지만, 적응하면 오히려 더 깨끗해집니다.',
+      category: '욕실 제로웨이스트'
+    }
+  ]);
+  const [isLoadingTip, setIsLoadingTip] = useState(false);
 
   // 제로웨이스트 장소 데이터
   const zeroWastePlaces = [
@@ -776,23 +802,91 @@ const EcostepApp = () => {
   const MoreTab = () => (
     <div className={`flex-1 overflow-y-auto custom-scrollbar scrollbar-hide-idle pb-20 ${bgColor}`}>
       <div className="min-h-full">
-        {/* 환경 뉴스 */}
+        {/* 오늘의 환경 상식 */}
         <div className={`mx-3 mt-4 ${cardBg} border ${borderColor} rounded-xl p-4`}>
-          <h3 className={`${textColor} text-sm font-medium mb-3`}>환경 뉴스</h3>
+          <div className="flex justify-between items-center mb-3">
+            <div className="flex items-center">
+              <Leaf className={`w-4 h-4 text-green-500 mr-2`} />
+              <h3 className={`${textColor} text-sm font-medium`}>오늘의 환경 상식</h3>
+            </div>
+            <button 
+              onClick={async () => {
+                setIsLoadingTip(true);
+                // Claude API를 통한 새로운 팁 생성
+                // 실제 환경에서는 백엔드 API를 통해 호출
+                try {
+                  const newTip = generateRandomTip();
+                  setEnvironmentalTips([newTip, ...environmentalTips.slice(0, 2)]);
+                } catch (error) {
+                  console.error('팁 생성 실패:', error);
+                } finally {
+                  setIsLoadingTip(false);
+                }
+              }}
+              className="text-blue-500 hover:text-blue-600 transition-colors"
+            >
+              <RefreshCw className={`w-4 h-4 ${isLoadingTip ? 'animate-spin' : ''}`} />
+            </button>
+          </div>
+          
           <div className="space-y-3">
-            {[
-              { title: 'EU 플라스틱 규제 확대', date: '2024.05.15' },
-              { title: '한국 플라스틱 사용량 OECD 1위', date: '2024.04.28' },
-              { title: '생분해 포장재 기술 혁신', date: '2024.04.15' }
-            ].map((news, index) => (
-              <div key={index} className={`border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-100'} pb-2`}>
-                <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} mb-1`}>{news.title}</p>
-                <div className="flex justify-between items-center">
-                  <span className={`text-xs ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>{news.date}</span>
-                  <button className="text-blue-500 text-xs">더보기 →</button>
+            {environmentalTips.map((tip) => (
+              <div key={tip.id} className={`border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-100'} pb-3 last:border-0`}>
+                <div 
+                  className="cursor-pointer"
+                  onClick={() => setExpandedTip(expandedTip === tip.id ? null : tip.id)}
+                >
+                  <div className="flex justify-between items-start">
+                    <div className="flex-1 pr-2">
+                      <span className={`inline-block text-[10px] px-2 py-0.5 rounded-full mb-1 ${
+                        isDarkMode ? 'bg-green-900 text-green-300' : 'bg-green-100 text-green-700'
+                      }`}>
+                        {tip.category}
+                      </span>
+                      <p className={`text-sm font-medium ${isDarkMode ? 'text-gray-200' : 'text-gray-800'} mb-1`}>
+                        {tip.title}
+                      </p>
+                      <p className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} line-clamp-2`}>
+                        {tip.preview}
+                      </p>
+                    </div>
+                    <button className="flex-shrink-0 mt-1">
+                      {expandedTip === tip.id ? (
+                        <ChevronUp className={`w-4 h-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
+                      ) : (
+                        <ChevronDown className={`w-4 h-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
+                      )}
+                    </button>
+                  </div>
+                </div>
+                
+                {/* 확장된 내용 */}
+                <div className={`overflow-hidden transition-all duration-300 ease-in-out ${
+                  expandedTip === tip.id ? 'max-h-96 opacity-100 mt-3' : 'max-h-0 opacity-0'
+                }`}>
+                  <div className={`${isDarkMode ? 'bg-gray-800' : 'bg-gray-50'} rounded-lg p-3`}>
+                    <p className={`text-sm leading-relaxed ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                      {tip.content}
+                    </p>
+                    <div className="flex items-center justify-between mt-3 pt-3 border-t ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}">
+                      <button className="text-blue-500 text-xs flex items-center">
+                        <Share2 className="w-3 h-3 mr-1" />
+                        공유하기
+                      </button>
+                      <span className={`text-xs ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                        💚 도움이 되었나요?
+                      </span>
+                    </div>
+                  </div>
                 </div>
               </div>
             ))}
+          </div>
+          
+          <div className={`mt-3 pt-3 border-t ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
+            <p className={`text-xs ${isDarkMode ? 'text-gray-500' : 'text-gray-400'} text-center`}>
+              매일 새로운 환경 팁을 확인하세요 🌱
+            </p>
           </div>
         </div>
 

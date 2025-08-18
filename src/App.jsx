@@ -33,6 +33,47 @@ const EcostepApp = () => {
   const [showAllPastChallenges, setShowAllPastChallenges] = useState(false);
   const [customChallenges, setCustomChallenges] = useState([]);
   const [customPlasticItems, setCustomPlasticItems] = useState([]);
+  const [showAllPlaces, setShowAllPlaces] = useState(false);
+
+  // 제로웨이스트 장소 데이터
+  const zeroWastePlaces = [
+    { name: '알맹상점 서울역점', description: '리필 전문 매장', address: '서울시 용산구 한강대로 405', lat: 37.5547, lng: 126.9707 },
+    { name: '더피커 성수', description: '친환경 편집숍', address: '서울시 성동구 왕십리로 115', lat: 37.5447, lng: 127.0557 },
+    { name: '송파 나눔장터', description: '재활용품 거래소', address: '서울시 송파구 올림픽로 240', lat: 37.5145, lng: 127.1065 },
+    { name: '지구샵 홍대점', description: '플라스틱 프리 카페', address: '서울시 마포구 와우산로 29', lat: 37.5563, lng: 126.9220 },
+    { name: '채움소 연남점', description: '세제 리필 스테이션', address: '서울시 마포구 성미산로 190', lat: 37.5665, lng: 126.9251 },
+    { name: '덕분애 제로웨이스트샵', description: '친환경 생활용품', address: '서울시 강남구 선릉로 428', lat: 37.5040, lng: 127.0492 },
+    { name: '허그어웨일', description: '업사이클링 매장', address: '서울시 종로구 윤보선길 35', lat: 37.5773, lng: 126.9681 },
+    { name: '보틀팩토리', description: '텀블러 전문점', address: '서울시 강남구 강남대로 390', lat: 37.4979, lng: 127.0276 },
+    { name: '제로그램', description: '무포장 식료품점', address: '서울시 서대문구 연세로 11길', lat: 37.5585, lng: 126.9388 },
+    { name: '리필리', description: '화장품 리필샵', address: '서울시 중구 을지로 281', lat: 37.5663, lng: 127.0090 },
+    { name: '동네정미소', description: '곡물 리필매장', address: '서울시 은평구 통일로 684', lat: 37.6027, lng: 126.9288 },
+    { name: '얼스어스', description: '비건 제로웨이스트', address: '서울시 용산구 이태원로 228', lat: 37.5340, lng: 126.9948 }
+  ];
+
+  // 네이버 맵 연동 함수
+  const openInNaverMap = (place) => {
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    const encodedName = encodeURIComponent(place.name);
+    const encodedAddress = encodeURIComponent(place.address);
+    
+    if (isMobile) {
+      // 모바일: 네이버 지도 앱 실행 시도
+      const appUrl = `nmap://place?lat=${place.lat}&lng=${place.lng}&name=${encodedName}&appname=com.ecostep`;
+      const webUrl = `https://map.naver.com/v5/search/${encodedAddress}`;
+      
+      // 앱 실행 시도
+      window.location.href = appUrl;
+      
+      // 앱이 없을 경우 웹 지도로 이동
+      setTimeout(() => {
+        window.open(webUrl, '_blank');
+      }, 1000);
+    } else {
+      // 데스크톱: 웹 지도로 바로 이동
+      window.open(`https://map.naver.com/v5/search/${encodedAddress}`, '_blank');
+    }
+  };
 
   const challenges = [
     '플라스틱 빨대 안쓰기',
@@ -758,24 +799,22 @@ const EcostepApp = () => {
         {/* 제로웨이스트 맵 */}
         <div className={`mx-3 mt-4 ${cardBg} border ${borderColor} rounded-xl p-4`}>
           <h3 className={`${textColor} text-sm font-medium mb-3`}>제로웨이스트 맵</h3>
-          <div className={`${inputBg} rounded-lg h-32 mb-3 flex items-center justify-center`}>
-            <MapPin className="w-8 h-8 text-blue-500" />
-          </div>
-          <div className="space-y-2">
-            {[
-              { name: 'The Package Free Shop', distance: '1.2km' },
-              { name: 'GreenFill Station', distance: '0.8km' },
-              { name: '재활용센터', distance: '2.5km' }
-            ].map((place, index) => (
-              <div key={index} className="flex justify-between items-center">
-                <span className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>{place.name}</span>
-                <span className={`text-sm ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>{place.distance}</span>
+          <div className="space-y-3 max-h-64 overflow-y-auto custom-scrollbar">
+            {zeroWastePlaces.map((place, index) => (
+              <div key={index} className={`border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-100'} pb-2`}>
+                <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} mb-1`}>{place.name}</p>
+                <div className="flex justify-between items-center">
+                  <span className={`text-xs ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>{place.description}</span>
+                  <button 
+                    onClick={() => openInNaverMap(place)}
+                    className="text-blue-500 text-xs"
+                  >
+                    이동 →
+                  </button>
+                </div>
               </div>
             ))}
           </div>
-          <button className="w-full bg-blue-500 text-white py-2 rounded-lg mt-3 text-sm">
-            지도 보기
-          </button>
         </div>
 
         {/* 도움말 */}

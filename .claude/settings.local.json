@@ -21,7 +21,8 @@
       "Bash(claude ide status)",
       "Bash(git add:*)",
       "Bash(git tag:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(git checkout:*)"
     ],
     "deny": [],
     "ask": [],

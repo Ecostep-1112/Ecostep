@@ -78,7 +78,30 @@ const EcoLifeApp = () => {
     platinum: ['아시안아로와나', '플래티넘아로와나', '폴카닷스팅레이']
   };
 
-  const decorations = ['해초', '산호', '성', '돌', '조개', '해마상'];
+  const decorationsData = {
+    bronze: [
+      { name: '해초', icon: '🌿', description: '자연스러운 수초', price: 100 },
+      { name: '용암석', icon: '🪨', description: '신비로운 화산석', price: 150 },
+      { name: '작은 동굴', icon: '🕳️', description: '아늑한 은신처', price: 200 }
+    ],
+    silver: [
+      { name: '산호', icon: '🪸', description: '화려한 바다 정원', price: 250 },
+      { name: '드리프트우드', icon: '🪵', description: '오래된 바다 목재', price: 300 },
+      { name: '조개껍질', icon: '🐚', description: '바다의 보석함', price: 350 }
+    ],
+    gold: [
+      { name: '그리스 신전', icon: '🏛️', description: '고대 문명의 흔적', price: 400 },
+      { name: '보물상자', icon: '💰', description: '해적의 황금 보물', price: 450 },
+      { name: '해적선', icon: '⛵', description: '전설의 침몰선', price: 500 }
+    ],
+    platinum: [
+      { name: '크리스탈 동굴', icon: '💎', description: '신비한 크리스탈', price: 600 },
+      { name: 'LED 해파리', icon: '✨', description: '빛나는 수중 요정', price: 700 },
+      { name: '아틀란티스 유적', icon: '🏰', description: '잃어버린 문명', price: 800 }
+    ]
+  };
+  
+  const [purchasedDecorations, setPurchasedDecorations] = useState(['해초', '산호']);
 
   const bgColor = isDarkMode ? 'bg-gray-900' : 'bg-white';
   const textColor = isDarkMode ? 'text-white' : 'text-gray-900';
@@ -565,15 +588,40 @@ const EcoLifeApp = () => {
         {/* 어항 장식품 */}
         <div className="mx-4 mt-4">
           <h3 className={`${textColor} text-sm font-medium mb-3`}>어항 장식품</h3>
-          <div className="grid grid-cols-3 gap-2">
-            {['🌿 해초', '🪸 산호', '🏛️ 성'].map((item, i) => (
-              <button key={i} className={`${cardBg} border ${borderColor} rounded-lg p-3`}>
-                <div className="text-2xl mb-1">{item.split(' ')[0]}</div>
-                <p className={`text-xs ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>{item.split(' ')[1]}</p>
-                <p className="text-xs text-blue-500">{50 + i * 30}포인트</p>
-              </button>
-            ))}
-          </div>
+          
+          {Object.entries(decorationsData).map(([rank, decorations]) => (
+            <div key={rank} className="mb-4">
+              <h4 className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} text-xs mb-2 capitalize`}>
+                {rank === 'bronze' ? '브론즈' : rank === 'silver' ? '실버' : rank === 'gold' ? '골드' : '플래티넘'}
+              </h4>
+              <div className="grid grid-cols-3 gap-2">
+                {decorations.map((deco, i) => {
+                  const isPurchased = purchasedDecorations.includes(deco.name);
+                  const isLocked = rank === 'platinum';
+                  
+                  return (
+                    <button 
+                      key={i} 
+                      className={`${isLocked ? 'bg-gray-100 opacity-50' : isPurchased ? 'bg-green-50 border-green-300' : cardBg} border ${isPurchased ? 'border-green-300' : borderColor} rounded-lg p-3`}
+                      disabled={isLocked || isPurchased}
+                    >
+                      <div className={`text-2xl mb-1 ${isLocked ? 'blur-sm' : ''}`}>
+                        {deco.icon}
+                      </div>
+                      <p className={`text-[10px] leading-tight ${isLocked ? 'text-gray-400' : isPurchased ? 'text-green-600' : isDarkMode ? 'text-gray-300' : 'text-gray-700'} break-words`}>
+                        {deco.name}
+                      </p>
+                      {!isLocked && (
+                        <p className={`text-xs mt-1 ${isPurchased ? 'text-green-500 font-medium' : 'text-blue-500'}`}>
+                          {isPurchased ? '구매완료' : `${deco.price}포인트`}
+                        </p>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </div>
@@ -1042,26 +1090,31 @@ const EcoLifeApp = () => {
 
         <h3 className={`text-sm font-medium mb-3 ${textColor}`}>어항 꾸미기</h3>
         <div className="grid grid-cols-3 gap-2 mb-6">
-          {decorations.map((deco, i) => (
-            <button
-              key={i}
-              onClick={() => {
-                if (selectedDecorations.includes(i)) {
-                  setSelectedDecorations(selectedDecorations.filter(d => d !== i));
-                } else {
-                  setSelectedDecorations([...selectedDecorations, i]);
-                }
-              }}
-              className={`p-3 rounded-lg border ${
-                selectedDecorations.includes(i) ? 'border-blue-500 bg-blue-50' : borderColor
-              } ${cardBg}`}
-            >
-              <div className="text-2xl mb-1">
-                {deco === '해초' ? '🌿' : deco === '산호' ? '🪸' : deco === '성' ? '🏛️' : deco === '돌' ? '🪨' : deco === '조개' ? '🐚' : '🌊'}
-              </div>
-              <p className={`text-xs ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>{deco}</p>
-            </button>
-          ))}
+          {purchasedDecorations.map((decoName, i) => {
+            const deco = Object.values(decorationsData).flat().find(d => d.name === decoName);
+            if (!deco) return null;
+            
+            return (
+              <button
+                key={i}
+                onClick={() => {
+                  if (selectedDecorations.includes(i)) {
+                    setSelectedDecorations(selectedDecorations.filter(d => d !== i));
+                  } else {
+                    setSelectedDecorations([...selectedDecorations, i]);
+                  }
+                }}
+                className={`p-3 rounded-lg border ${
+                  selectedDecorations.includes(i) ? 'border-blue-500 bg-blue-50' : borderColor
+                } ${cardBg}`}
+              >
+                <div className="text-2xl mb-1">
+                  {deco.icon}
+                </div>
+                <p className={`text-xs ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>{deco.name}</p>
+              </button>
+            );
+          })}
         </div>
 
         <button className="w-full bg-blue-500 text-white py-2.5 rounded-lg text-sm font-medium">

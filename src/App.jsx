@@ -1,7 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import { ChevronRight, Settings, Home, Target, Gift, Users, MoreHorizontal, Check, X, TrendingUp, Calendar, MapPin, Share2, ChevronDown, BarChart3, Plus, Camera, Sun, Moon, Globe, Search, HelpCircle, Phone, Book } from 'lucide-react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { ChevronRight, Settings, Home, Target, Gift, Users, MoreHorizontal, Check, X, TrendingUp, Calendar, MapPin, Share2, ChevronDown, BarChart3, Plus, Camera, Sun, Moon, Globe, Search, HelpCircle, Phone, Book, Lock } from 'lucide-react';
 import FishIcons from './components/FishIcons';
 import DecorationIcons from './components/DecorationIcons';
+import BasicTank from './components/tanks/BasicTank';
+import SilverTank from './components/tanks/SilverTank';
+import GoldTank from './components/tanks/GoldTank';
+import PlatinumTank from './components/tanks/PlatinumTank';
 
 const EcostepApp = () => {
   const [activeTab, setActiveTab] = useState('home');
@@ -34,6 +38,11 @@ const EcostepApp = () => {
   const [showAllPastChallenges, setShowAllPastChallenges] = useState(false);
   const [customChallenges, setCustomChallenges] = useState([]);
   const [customPlasticItems, setCustomPlasticItems] = useState([]);
+  const [currentTank, setCurrentTank] = useState('basic');
+  const [unlockedTanks, setUnlockedTanks] = useState(['basic', 'silver', 'gold']); // 실버, 골드 잠금 해제
+  const [userRanking, setUserRanking] = useState('gold'); // 골드 랭킹으로 설정
+  const [tankName, setTankName] = useState('나의 어항');
+  const [isEditingTankName, setIsEditingTankName] = useState(false);
 
   const challenges = [
     '플라스틱 빨대 안쓰기',
@@ -121,38 +130,120 @@ const EcostepApp = () => {
   
   const [purchasedDecorations, setPurchasedDecorations] = useState(['해초', '산호']);
 
+  // localStorage에서 상태 불러오기
+  useEffect(() => {
+    const savedTank = localStorage.getItem('currentTank');
+    const savedUnlockedTanks = localStorage.getItem('unlockedTanks');
+    const savedRanking = localStorage.getItem('userRanking');
+    const savedTankName = localStorage.getItem('tankName');
+    
+    if (savedTank) setCurrentTank(savedTank);
+    if (savedUnlockedTanks) setUnlockedTanks(JSON.parse(savedUnlockedTanks));
+    if (savedRanking) setUserRanking(savedRanking);
+    if (savedTankName) setTankName(savedTankName);
+  }, []);
+
+  // 상태 변경시 localStorage에 저장
+  useEffect(() => {
+    localStorage.setItem('currentTank', currentTank);
+  }, [currentTank]);
+
+  useEffect(() => {
+    localStorage.setItem('unlockedTanks', JSON.stringify(unlockedTanks));
+  }, [unlockedTanks]);
+
+  useEffect(() => {
+    localStorage.setItem('userRanking', userRanking);
+  }, [userRanking]);
+
+  useEffect(() => {
+    localStorage.setItem('tankName', tankName);
+  }, [tankName]);
+
   const bgColor = isDarkMode ? 'bg-gray-900' : 'bg-white';
   const textColor = isDarkMode ? 'text-white' : 'text-gray-900';
   const borderColor = isDarkMode ? 'border-gray-700' : 'border-gray-200';
   const cardBg = isDarkMode ? 'bg-gray-800' : 'bg-white';
   const inputBg = isDarkMode ? 'bg-gray-700' : 'bg-gray-50';
 
-  const HomeTab = () => (
-    <div className={`flex-1 overflow-y-auto custom-scrollbar scrollbar-hide-idle pb-20 ${bgColor}`}>
-      <div className="min-h-full">
-        {/* 어항 섹션 */}
-        <div className="bg-blue-500 rounded-2xl mx-3 mt-4 p-4">
-          <div className="flex justify-between items-center mb-3">
-            <h3 className="text-white text-sm font-medium">나의 어항</h3>
-            <button onClick={() => setShowAquariumSettings(true)}>
-              <Settings className="w-4 h-4 text-white" />
-            </button>
-          </div>
-          <div className="bg-blue-100 rounded-xl h-48 relative overflow-hidden">
-            <div className="absolute inset-0 flex items-center justify-center gap-2">
-              {/* 구매한 물고기 중 일부 표시 */}
-              {purchasedFish.slice(0, 3).map((fishName, i) => {
-                const FishIcon = FishIcons[fishName.replace(' ', '')];
-                return FishIcon ? (
-                  <div key={i} className="animate-pulse" style={{animationDelay: `${i * 0.3}s`}}>
-                    <FishIcon size={40} />
+  const HomeTab = () => {
+    const CurrentTankComponent = 
+      currentTank === 'silver' ? SilverTank :
+      currentTank === 'gold' ? GoldTank :
+      currentTank === 'platinum' ? PlatinumTank :
+      BasicTank;
+    
+    return (
+      <div className={`flex-1 overflow-y-auto custom-scrollbar scrollbar-hide-idle pb-20 ${bgColor}`}>
+        <div className="min-h-full">
+          {/* 어항 섹션 */}
+          <div className="bg-gradient-to-b from-blue-500 to-blue-600 rounded-2xl mx-3 mt-4 p-4">
+            <div className="flex justify-between items-center mb-3">
+              <div className="flex-1">
+                <h3 
+                  className="text-white text-sm font-medium cursor-pointer hover:text-blue-100 transition-colors inline-block"
+                  onClick={() => setShowAquariumSettings(true)}
+                >
+                  {tankName}
+                </h3>
+                <p className="text-blue-100 text-xs mt-0.5">
+                  {currentTank === 'basic' ? '기본 어항' : 
+                   currentTank === 'silver' ? '실버 어항' :
+                   currentTank === 'gold' ? '골드 어항' :
+                   '플래티넘 어항'}
+                </p>
+              </div>
+              <div className="flex gap-2">
+                <button 
+                  onClick={() => setShowAquariumSettings(true)}
+                  className="bg-white bg-opacity-20 hover:bg-opacity-30 transition-colors px-3 py-1.5 rounded-lg flex items-center gap-1"
+                >
+                  <span className="text-xs text-white">어항 변경</span>
+                </button>
+                <button 
+                  onClick={() => setShowAquariumSettings(true)}
+                  className="bg-white bg-opacity-20 hover:bg-opacity-30 transition-colors p-1.5 rounded-lg"
+                >
+                  <Settings className="w-4 h-4 text-white" />
+                </button>
+              </div>
+            </div>
+            <div className="h-64 relative overflow-visible">
+              {/* 선택된 어항 표시 - 크기 확대 */}
+              <div className="absolute inset-0 scale-110 animate-tankFadeIn tank-transition">
+                <CurrentTankComponent className="w-full h-full" />
+              </div>
+              
+              {/* 물고기들 어항 위에 표시 */}
+              <div className="absolute inset-0 flex items-center justify-center gap-3 pointer-events-none z-10">
+                {/* 구매한 물고기 중 일부 표시 */}
+                {purchasedFish.slice(0, 3).map((fishName, i) => {
+                  const FishIcon = FishIcons[fishName.replace(' ', '')];
+                  return FishIcon ? (
+                  <div 
+                    key={i} 
+                    className="animate-swim"
+                    style={{
+                      animationDelay: `${i * 0.5}s`,
+                      animationDuration: `${4 + i}s`
+                    }}
+                  >
+                    <FishIcon size={45} />
+                    {/* 물고기 그림자 */}
+                    <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-8 h-2 bg-black opacity-10 blur-sm rounded-full mt-8" />
                   </div>
                 ) : null;
-              })}
+                })}
+              </div>
+              
+              {/* 장식품 - 어항 내부로 이동 */}
+              <div className="absolute bottom-10 left-20 z-5 animate-sway" style={{animationDuration: '3s'}}>
+                <span className="text-2xl">🌿</span>
+              </div>
+              <div className="absolute bottom-10 right-20 z-5 animate-sway" style={{animationDuration: '3.5s', animationDelay: '0.5s'}}>
+                <span className="text-2xl">🪸</span>
+              </div>
             </div>
-            <div className="absolute bottom-0 left-4">🌿</div>
-            <div className="absolute bottom-0 right-4">🪸</div>
-          </div>
           <div className="mt-3 bg-white/10 rounded-lg p-2">
             <div className="flex justify-between items-center">
               <span className="text-white text-xs">수질</span>
@@ -184,7 +275,8 @@ const EcostepApp = () => {
         </div>
       </div>
     </div>
-  );
+    );
+  };
 
   const ChallengeTab = () => (
     <div className={`flex-1 overflow-y-auto custom-scrollbar scrollbar-hide-idle pb-20 ${bgColor}`}>
@@ -540,30 +632,118 @@ const EcostepApp = () => {
           </div>
         </div>
 
-        {/* 랭킹 보상 */}
+        {/* 랭킹 보상 - 어항 */}
         <div className="mx-3 mt-4">
-          <h3 className={`${textColor} text-sm font-medium mb-3`}>랭킹 보상</h3>
-          <div className="flex justify-between gap-3">
-            <div className={`flex-1 ${cardBg} border ${borderColor} rounded-xl p-3`}>
-              <div className={`w-full aspect-square ${inputBg} rounded-lg mb-2 flex items-center justify-center`}>
-                <span className="text-2xl">🪙</span>
+          <h3 className={`${textColor} text-sm font-medium mb-3`}>어항 컬렉션</h3>
+          <div className="space-y-3">
+            <div className="flex gap-3">
+            {/* 기본 어항 */}
+            <button
+              onClick={() => setCurrentTank('basic')}
+              className={`flex-1 ${currentTank === 'basic' ? 'bg-blue-50 border-blue-300 scale-105 shadow-lg' : `${cardBg} hover:scale-105 transition-transform`} border ${currentTank === 'basic' ? 'border-blue-300' : borderColor} rounded-xl p-3 relative transition-all duration-300 tank-hover`}
+            >
+              <div className={`w-full aspect-square rounded-lg mb-2 flex items-center justify-center relative overflow-visible`}>
+                <BasicTank isPreview={true} />
+                {currentTank === 'basic' && (
+                  <div className="absolute -top-1 -right-1 w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
+                    <Check className="w-4 h-4 text-white" />
+                  </div>
+                )}
               </div>
-              <p className={`text-xs text-center ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>실버</p>
-              <p className={`text-xs text-center ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>적용</p>
+              <p className={`text-xs text-center ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>기본 어항</p>
+              <p className={`text-xs text-center ${currentTank === 'basic' ? 'text-blue-500 font-medium' : isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                {currentTank === 'basic' ? '사용중' : '기본 제공'}
+              </p>
+            </button>
+            
+            {/* 실버 어항 */}
+            <button
+              onClick={() => {
+                if (unlockedTanks.includes('silver')) {
+                  setCurrentTank('silver');
+                }
+              }}
+              disabled={!unlockedTanks.includes('silver')}
+              className={`flex-1 ${unlockedTanks.includes('silver') ? (currentTank === 'silver' ? 'bg-blue-50 border-blue-300 scale-105 shadow-lg' : `${cardBg} hover:scale-105 transition-transform`) : 'bg-gray-100 cursor-not-allowed'} border ${unlockedTanks.includes('silver') ? (currentTank === 'silver' ? 'border-blue-300' : borderColor) : 'border-gray-300'} rounded-xl p-3 relative transition-all duration-300 tank-hover`}
+            >
+              <div className={`w-full aspect-square rounded-lg mb-2 flex items-center justify-center relative overflow-visible`}>
+                <SilverTank isPreview={true} />
+                {!unlockedTanks.includes('silver') && (
+                  <div className="absolute inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center rounded-lg">
+                    <Lock className="w-6 h-6 text-white" />
+                  </div>
+                )}
+                {currentTank === 'silver' && unlockedTanks.includes('silver') && (
+                  <div className="absolute -top-1 -right-1 w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
+                    <Check className="w-4 h-4 text-white" />
+                  </div>
+                )}
+              </div>
+              <p className={`text-xs text-center ${unlockedTanks.includes('silver') ? (isDarkMode ? 'text-gray-300' : 'text-gray-700') : 'text-gray-500'}`}>실버 어항</p>
+              <p className={`text-xs text-center ${unlockedTanks.includes('silver') ? (currentTank === 'silver' ? 'text-blue-500 font-medium' : isDarkMode ? 'text-gray-500' : 'text-gray-400') : 'text-gray-400'}`}>
+                {unlockedTanks.includes('silver') ? (currentTank === 'silver' ? '사용중' : '선택 가능') : '실버 달성시'}
+              </p>
+            </button>
             </div>
-            <div className={`flex-1 ${cardBg} border ${borderColor} rounded-xl p-3`}>
-              <div className={`w-full aspect-square ${inputBg} rounded-lg mb-2 flex items-center justify-center`}>
-                <span className="text-2xl">🥇</span>
+            
+            <div className="flex gap-3">
+            {/* 골드 어항 */}
+            <button
+              onClick={() => {
+                if (unlockedTanks.includes('gold')) {
+                  setCurrentTank('gold');
+                }
+              }}
+              disabled={!unlockedTanks.includes('gold')}
+              className={`flex-1 ${unlockedTanks.includes('gold') ? (currentTank === 'gold' ? 'bg-blue-50 border-blue-300 scale-105 shadow-lg' : `${cardBg} hover:scale-105 transition-transform`) : 'bg-gray-100 cursor-not-allowed'} border ${unlockedTanks.includes('gold') ? (currentTank === 'gold' ? 'border-blue-300' : borderColor) : 'border-gray-300'} rounded-xl p-3 relative transition-all duration-300 tank-hover`}
+            >
+              <div className={`w-full aspect-square rounded-lg mb-2 flex items-center justify-center relative overflow-visible`}>
+                <GoldTank isPreview={true} />
+                {!unlockedTanks.includes('gold') && (
+                  <div className="absolute inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center rounded-lg">
+                    <Lock className="w-6 h-6 text-white" />
+                  </div>
+                )}
+                {currentTank === 'gold' && unlockedTanks.includes('gold') && (
+                  <div className="absolute -top-1 -right-1 w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
+                    <Check className="w-4 h-4 text-white" />
+                  </div>
+                )}
               </div>
-              <p className={`text-xs text-center ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>골드</p>
-              <p className={`text-xs text-center ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>적용</p>
-            </div>
-            <div className="flex-1 bg-blue-50 border border-blue-200 rounded-xl p-3">
-              <div className="w-full aspect-square bg-blue-100 rounded-lg mb-2 flex items-center justify-center">
-                <span className="text-2xl">👑</span>
+              <p className={`text-xs text-center ${unlockedTanks.includes('gold') ? (isDarkMode ? 'text-gray-300' : 'text-gray-700') : 'text-gray-500'}`}>골드 어항</p>
+              <p className={`text-xs text-center ${unlockedTanks.includes('gold') ? (currentTank === 'gold' ? 'text-blue-500 font-medium' : isDarkMode ? 'text-gray-500' : 'text-gray-400') : 'text-gray-400'}`}>
+                {unlockedTanks.includes('gold') ? (currentTank === 'gold' ? '사용중' : '선택 가능') : '골드 달성시'}
+              </p>
+            </button>
+            
+            {/* 플래티넘 어항 */}
+            <button
+              onClick={() => {
+                if (unlockedTanks.includes('platinum')) {
+                  setCurrentTank('platinum');
+                }
+              }}
+              disabled={!unlockedTanks.includes('platinum')}
+              className={`flex-1 ${unlockedTanks.includes('platinum') ? (currentTank === 'platinum' ? 'bg-blue-50 border-blue-300 scale-105 shadow-lg' : `${cardBg} hover:scale-105 transition-transform`) : 'bg-gray-100 cursor-not-allowed'} border ${unlockedTanks.includes('platinum') ? (currentTank === 'platinum' ? 'border-blue-300' : borderColor) : 'border-gray-300'} rounded-xl p-3 relative transition-all duration-300 tank-hover`}
+            >
+              <div className={`w-full aspect-square rounded-lg mb-2 flex items-center justify-center relative overflow-visible`}>
+                <PlatinumTank isPreview={true} />
+                {!unlockedTanks.includes('platinum') && (
+                  <div className="absolute inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center rounded-lg">
+                    <Lock className="w-6 h-6 text-white" />
+                  </div>
+                )}
+                {currentTank === 'platinum' && unlockedTanks.includes('platinum') && (
+                  <div className="absolute -top-1 -right-1 w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
+                    <Check className="w-4 h-4 text-white" />
+                  </div>
+                )}
               </div>
-              <p className="text-xs text-center text-blue-500">플래티넘</p>
-              <p className="text-xs text-center text-blue-400">획득</p>
+              <p className={`text-xs text-center ${unlockedTanks.includes('platinum') ? (isDarkMode ? 'text-gray-300' : 'text-gray-700') : 'text-gray-500'}`}>플래티넘 어항</p>
+              <p className={`text-xs text-center ${unlockedTanks.includes('platinum') ? (currentTank === 'platinum' ? 'text-blue-500 font-medium' : isDarkMode ? 'text-gray-500' : 'text-gray-400') : 'text-gray-400'}`}>
+                {unlockedTanks.includes('platinum') ? (currentTank === 'platinum' ? '사용중' : '선택 가능') : '플래티넘 달성시'}
+              </p>
+            </button>
             </div>
           </div>
         </div>
@@ -695,7 +875,66 @@ const EcostepApp = () => {
     </div>
   );
 
-  const CommunityTab = () => (
+  // 전역 랭킹 체크 함수
+  const checkRankingAchievements = useCallback(() => {
+    const totalSaved = 18.7; // 실제로는 사용자의 총 절약량을 계산
+    
+    // 랭킹 기준 (kg)
+    const rankThresholds = {
+      silver: 10,
+      gold: 25,
+      platinum: 50
+    };
+    
+    // 랭킹 업데이트
+    let newRanking = 'bronze';
+    let newUnlockedTanks = [...unlockedTanks];
+    let notification = null;
+    
+    if (totalSaved >= rankThresholds.platinum) {
+      newRanking = 'platinum';
+      if (!unlockedTanks.includes('platinum')) {
+        newUnlockedTanks.push('platinum');
+        notification = '🎉 플래티넘 랭킹 달성! 플래티넘 어항이 해제되었습니다!';
+      }
+      if (!unlockedTanks.includes('gold')) newUnlockedTanks.push('gold');
+      if (!unlockedTanks.includes('silver')) newUnlockedTanks.push('silver');
+    } else if (totalSaved >= rankThresholds.gold) {
+      newRanking = 'gold';
+      if (!unlockedTanks.includes('gold')) {
+        newUnlockedTanks.push('gold');
+        notification = '🎉 골드 랭킹 달성! 골드 어항이 해제되었습니다!';
+      }
+      if (!unlockedTanks.includes('silver')) newUnlockedTanks.push('silver');
+    } else if (totalSaved >= rankThresholds.silver) {
+      newRanking = 'silver';
+      if (!unlockedTanks.includes('silver')) {
+        newUnlockedTanks.push('silver');
+        notification = '🎉 실버 랭킹 달성! 실버 어항이 해제되었습니다!';
+      }
+    }
+    
+    if (notification) {
+      alert(notification);
+    }
+    
+    setUserRanking(newRanking);
+    setUnlockedTanks(newUnlockedTanks);
+  }, [unlockedTanks]);
+
+  // 랭킹 체크를 앱 시작시 실행
+  useEffect(() => {
+    checkRankingAchievements();
+  }, []);
+
+  const CommunityTab = () => {
+    
+    // 컴포넌트 마운트시 랭킹 체크
+    useEffect(() => {
+      checkRankingAchievements();
+    }, []);
+    
+    return (
     <div className={`flex-1 overflow-y-auto custom-scrollbar scrollbar-hide-idle pb-20 ${bgColor}`}>
       <div className="min-h-full">
         {/* 친구 초대 */}
@@ -786,9 +1025,54 @@ const EcostepApp = () => {
             </div>
           </div>
         </div>
+        
+        {/* 현재 랭킹 표시 */}
+        <div className={`mx-3 mt-4 ${cardBg} border ${borderColor} rounded-xl p-4`}>
+          <h3 className={`${textColor} text-sm font-medium mb-2`}>나의 랭킹</h3>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className={`px-3 py-1 rounded-full text-xs font-medium ${
+                userRanking === 'platinum' ? 'bg-purple-100 text-purple-700' :
+                userRanking === 'gold' ? 'bg-yellow-100 text-yellow-700' :
+                userRanking === 'silver' ? 'bg-gray-100 text-gray-700' :
+                'bg-orange-100 text-orange-700'
+              }`}>
+                {userRanking === 'platinum' ? '💎 플래티넘' :
+                 userRanking === 'gold' ? '🥇 골드' :
+                 userRanking === 'silver' ? '🥈 실버' :
+                 '🥉 브론즈'}
+              </div>
+              <span className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                총 절약량: 18.7kg
+              </span>
+            </div>
+            <button 
+              onClick={checkRankingAchievements}
+              className="text-blue-500 text-xs"
+            >
+              업데이트
+            </button>
+          </div>
+          <div className="mt-3">
+            <div className="text-xs text-gray-500 mb-1">다음 랭킹까지</div>
+            <div className="w-full bg-gray-200 rounded-full h-2">
+              <div 
+                className="bg-blue-500 h-2 rounded-full"
+                style={{width: userRanking === 'silver' ? '75%' : userRanking === 'bronze' ? '87%' : '100%'}}
+              />
+            </div>
+            <div className="text-xs text-gray-500 mt-1">
+              {userRanking === 'bronze' ? '실버까지 1.3kg' :
+               userRanking === 'silver' ? '골드까지 6.3kg' :
+               userRanking === 'gold' ? '플래티넘까지 31.3kg' :
+               '최고 랭킹 달성!'}
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-  );
+    );
+  };
 
   const MoreTab = () => (
     <div className={`flex-1 overflow-y-auto custom-scrollbar scrollbar-hide-idle pb-20 ${bgColor}`}>
@@ -1063,56 +1347,132 @@ const EcostepApp = () => {
     </div>
   );
 
-  const AquariumSettings = () => (
-    <div className={`flex-1 ${bgColor}`}>
-      <div className={`${bgColor} p-4 flex items-center border-b ${borderColor}`}>
-        <button onClick={() => setShowAquariumSettings(false)} className="mr-3">
-          <ChevronRight className={`w-5 h-5 rotate-180 ${textColor}`} />
-        </button>
-        <h2 className={`text-base font-medium ${textColor}`}>어항 설정</h2>
-      </div>
-      
-      <div className="mx-3 mt-4">
-        <h3 className={`text-sm font-medium mb-3 ${textColor}`}>어항 선택</h3>
-        <div className="flex gap-3 mb-6">
-          {['실버', '골드', '플래티넘'].map((type) => (
-            <button
-              key={type}
-              className={`flex-1 border ${borderColor} rounded-xl p-3 ${cardBg}`}
-            >
-              <div className={`w-full aspect-square ${inputBg} rounded-lg mb-2`}></div>
-              <p className={`text-xs text-center ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>{type}</p>
-            </button>
-          ))}
+  const AquariumSettings = () => {
+    const [selectedTankTemp, setSelectedTankTemp] = useState(currentTank);
+    
+    const tanks = [
+      { id: 'basic', name: '기본 어항', component: BasicTank, always: true },
+      { id: 'silver', name: '실버 어항', component: SilverTank, rank: 'silver' },
+      { id: 'gold', name: '골드 어항', component: GoldTank, rank: 'gold' },
+      { id: 'platinum', name: '플래티넘 어항', component: PlatinumTank, rank: 'platinum' }
+    ];
+    
+    const handleTankSelect = (tankId) => {
+      if (tankId === 'basic' || unlockedTanks.includes(tankId)) {
+        setSelectedTankTemp(tankId);
+      }
+    };
+    
+    const handleApply = () => {
+      setCurrentTank(selectedTankTemp);
+      setShowAquariumSettings(false);
+    };
+    
+    return (
+      <div className={`flex-1 ${bgColor} overflow-y-auto`}>
+        <div className={`${bgColor} p-4 flex items-center border-b ${borderColor}`}>
+          <button onClick={() => setShowAquariumSettings(false)} className="mr-3">
+            <ChevronRight className={`w-5 h-5 rotate-180 ${textColor}`} />
+          </button>
+          <h2 className={`text-base font-medium ${textColor}`}>어항 설정</h2>
         </div>
-
-        <h3 className={`text-sm font-medium mb-3 ${textColor}`}>물고기 설정</h3>
-        <div className={`${inputBg} rounded-lg p-3 mb-3`}>
-          <div className="flex items-center justify-between mb-3">
-            <span className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>물고기 수: {fishCount}마리</span>
-            <div className="flex items-center gap-2">
-              <button 
-                onClick={() => setFishCount(Math.max(1, fishCount - 1))}
-                className={`w-8 h-8 ${cardBg} border ${borderColor} rounded flex items-center justify-center`}
-              >-</button>
-              <span className={`text-sm font-medium px-3 ${textColor}`}>{fishCount}</span>
-              <button 
-                onClick={() => setFishCount(Math.min(purchasedFish.length, fishCount + 1))}
-                className={`w-8 h-8 ${cardBg} border ${borderColor} rounded flex items-center justify-center`}
-              >+</button>
+        
+        <div className="mx-3 mt-4">
+          <h3 className={`text-sm font-medium mb-3 ${textColor}`}>어항 선택</h3>
+          
+          {/* 현재 선택된 어항 미리보기 */}
+          <div className="mb-4">
+            <div className="w-full h-48 flex items-center justify-center relative">
+              {(() => {
+                const SelectedTank = tanks.find(t => t.id === selectedTankTemp)?.component || BasicTank;
+                return <SelectedTank className="w-full h-full" />;
+              })()}
             </div>
+            <p className={`text-center text-sm mt-2 ${textColor} font-medium`}>
+              현재 선택: {tanks.find(t => t.id === selectedTankTemp)?.name || '기본 어항'}
+            </p>
           </div>
           
-          <div className="flex items-center">
-            <input 
-              type="checkbox" 
-              checked={isRandomFish}
-              onChange={() => setIsRandomFish(!isRandomFish)}
-              className="mr-2"
-            />
-            <label className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>랜덤 선택</label>
+          {/* 어항 선택 그리드 */}
+          <div className="grid grid-cols-2 gap-3 mb-6">
+            {tanks.map((tank) => {
+              const isUnlocked = tank.always || unlockedTanks.includes(tank.id);
+              const isSelected = selectedTankTemp === tank.id;
+              const TankComponent = tank.component;
+              
+              return (
+                <button
+                  key={tank.id}
+                  onClick={() => handleTankSelect(tank.id)}
+                  disabled={!isUnlocked}
+                  className={`border rounded-xl p-3 relative transition-all ${
+                    isSelected 
+                      ? 'bg-blue-50 border-blue-300 scale-105 shadow-lg' 
+                      : isUnlocked 
+                        ? `${cardBg} ${borderColor} hover:scale-105 hover:shadow-md` 
+                        : 'bg-gray-100 border-gray-300 opacity-60'
+                  }`}
+                >
+                  <div className={`w-full aspect-square mb-2 flex items-center justify-center relative overflow-visible`}>
+                    <TankComponent isPreview={true} />
+                    {!isUnlocked && (
+                      <div className="absolute inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center rounded-lg">
+                        <Lock className="w-8 h-8 text-white" />
+                      </div>
+                    )}
+                    {isSelected && isUnlocked && (
+                      <div className="absolute top-0 right-0 w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
+                        <Check className="w-4 h-4 text-white" />
+                      </div>
+                    )}
+                  </div>
+                  <p className={`text-xs text-center ${isUnlocked ? (isDarkMode ? 'text-gray-300' : 'text-gray-700') : 'text-gray-500'}`}>
+                    {tank.name}
+                  </p>
+                  <p className={`text-xs text-center ${
+                    isUnlocked 
+                      ? isSelected 
+                        ? 'text-blue-500 font-medium' 
+                        : isDarkMode ? 'text-gray-500' : 'text-gray-400'
+                      : 'text-gray-400'
+                  }`}>
+                    {isUnlocked 
+                      ? (isSelected ? '선택됨' : '보유')
+                      : tank.rank ? `${tank.rank === 'silver' ? '실버' : tank.rank === 'gold' ? '골드' : '플래티넘'}` : '잠김'
+                    }
+                  </p>
+                </button>
+              );
+            })}
           </div>
-        </div>
+
+          <h3 className={`text-sm font-medium mb-3 ${textColor}`}>물고기 설정</h3>
+          <div className={`${inputBg} rounded-lg p-3 mb-3`}>
+            <div className="flex items-center justify-between mb-3">
+              <span className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>물고기 수: {fishCount}마리</span>
+              <div className="flex items-center gap-2">
+                <button 
+                  onClick={() => setFishCount(Math.max(1, fishCount - 1))}
+                  className={`w-8 h-8 ${cardBg} border ${borderColor} rounded flex items-center justify-center`}
+                >-</button>
+                <span className={`text-sm font-medium px-3 ${textColor}`}>{fishCount}</span>
+                <button 
+                  onClick={() => setFishCount(Math.min(purchasedFish.length, fishCount + 1))}
+                  className={`w-8 h-8 ${cardBg} border ${borderColor} rounded flex items-center justify-center`}
+                >+</button>
+              </div>
+            </div>
+            
+            <div className="flex items-center">
+              <input 
+                type="checkbox" 
+                checked={isRandomFish}
+                onChange={() => setIsRandomFish(!isRandomFish)}
+                className="mr-2"
+              />
+              <label className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>랜덤 선택</label>
+            </div>
+          </div>
 
         {!isRandomFish && (
           <div className="mb-6">
@@ -1188,12 +1548,16 @@ const EcostepApp = () => {
           })}
         </div>
 
-        <button className="w-full bg-blue-500 text-white py-2.5 rounded-lg text-sm font-medium">
+        <button 
+          onClick={handleApply}
+          className="w-full bg-blue-500 text-white py-2.5 rounded-lg text-sm font-medium hover:bg-blue-600 transition-colors"
+        >
           적용하기
         </button>
       </div>
     </div>
-  );
+    );
+  };
 
   return (
     <div className={`flex items-center justify-center min-h-screen ${isDarkMode ? 'bg-black' : 'bg-gray-100'} p-4`}>

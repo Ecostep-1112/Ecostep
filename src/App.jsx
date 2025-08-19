@@ -124,6 +124,8 @@ const EcostepApp = () => {
                 setCustomChallenges={setCustomChallenges}
                 customPlasticItems={customPlasticItems}
                 setCustomPlasticItems={setCustomPlasticItems}
+                points={points}
+                setPoints={setPoints}
               />}
               {activeTab === 'reward' && <RewardsPage isDarkMode={isDarkMode} purchasedFish={purchasedFish} fishData={fishData} />}
               {activeTab === 'community' && <CommunityPage isDarkMode={isDarkMode} />}

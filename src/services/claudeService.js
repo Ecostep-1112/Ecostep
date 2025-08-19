@@ -2,7 +2,7 @@
 // 실제 운영 환경에서는 백엔드 서버를 통해 API를 호출해야 합니다
 // 프론트엔드에서 직접 API 키를 사용하는 것은 보안상 권장되지 않습니다
 
-const CLAUDE_API_KEY = process.env.REACT_APP_CLAUDE_API_KEY || 'your-api-key-here';
+const CLAUDE_API_KEY = import.meta.env.VITE_CLAUDE_API_KEY || 'your-api-key-here';
 const CLAUDE_API_URL = 'https://api.anthropic.com/v1/messages';
 
 export const generateEnvironmentalTip = async () => {

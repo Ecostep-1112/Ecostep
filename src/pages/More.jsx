@@ -37,10 +37,13 @@ const More = ({ isDarkMode }) => {
     setErrorMessage('');
     try {
       const newTip = await generateEnvironmentalTip();
-      // 최신 팁을 맨 앞에 추가하고 최대 5개까지만 유지
+      // 기존 팁 중 첫 번째를 새로운 팁으로 교체
       setEnvironmentalTips(prevTips => {
-        const updatedTips = [newTip, ...prevTips];
-        return updatedTips.slice(0, 5);
+        if (prevTips.length === 0) {
+          return [newTip];
+        }
+        // 첫 번째 팁만 교체하고 나머지는 유지
+        return [newTip, ...prevTips.slice(1)];
       });
     } catch (error) {
       console.error('팁 생성 실패:', error);

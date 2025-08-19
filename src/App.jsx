@@ -39,8 +39,9 @@ const EcostepApp = () => {
   const [customChallenges, setCustomChallenges] = useState([]);
   const [customPlasticItems, setCustomPlasticItems] = useState([]);
   const [currentTank, setCurrentTank] = useState('basic');
-  const [unlockedTanks, setUnlockedTanks] = useState(['basic', 'silver', 'gold']); // 실버, 골드 잠금 해제
+  const [unlockedTanks, setUnlockedTanks] = useState(['basic', 'silver', 'gold', 'platinum']); // 모든 어항 잠금 해제
   const [userRanking, setUserRanking] = useState('gold'); // 골드 랭킹으로 설정
+  const [claimedTanks, setClaimedTanks] = useState([]); // 수령 완료한 어항 목록
   const [tankName, setTankName] = useState('나의 어항');
   const [isEditingTankName, setIsEditingTankName] = useState(false);
 
@@ -634,117 +635,139 @@ const EcostepApp = () => {
 
         {/* 랭킹 보상 - 어항 */}
         <div className="mx-3 mt-4">
-          <h3 className={`${textColor} text-sm font-medium mb-3`}>어항 컬렉션</h3>
-          <div className="space-y-3">
-            <div className="flex gap-3">
-            {/* 기본 어항 */}
-            <button
-              onClick={() => setCurrentTank('basic')}
-              className={`flex-1 ${currentTank === 'basic' ? 'bg-blue-50 border-blue-300 scale-105 shadow-lg' : `${cardBg} hover:scale-105 transition-transform`} border ${currentTank === 'basic' ? 'border-blue-300' : borderColor} rounded-xl p-3 relative transition-all duration-300 tank-hover`}
-            >
-              <div className={`w-full aspect-square rounded-lg mb-2 flex items-center justify-center relative overflow-visible`}>
-                <BasicTank isPreview={true} />
-                {currentTank === 'basic' && (
-                  <div className="absolute -top-1 -right-1 w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
-                    <Check className="w-4 h-4 text-white" />
-                  </div>
-                )}
-              </div>
-              <p className={`text-xs text-center ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>기본 어항</p>
-              <p className={`text-xs text-center ${currentTank === 'basic' ? 'text-blue-500 font-medium' : isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>
-                {currentTank === 'basic' ? '사용중' : '기본 제공'}
-              </p>
-            </button>
-            
+          <h3 className={`${textColor} text-sm font-medium mb-3`}>랭킹 보상</h3>
+          <div className="grid grid-cols-3 gap-1.5">
             {/* 실버 어항 */}
             <button
               onClick={() => {
-                if (unlockedTanks.includes('silver')) {
-                  setCurrentTank('silver');
+                const canClaim = userRanking === 'silver' || userRanking === 'gold' || userRanking === 'platinum';
+                if (canClaim && !claimedTanks.includes('silver')) {
+                  setClaimedTanks([...claimedTanks, 'silver']);
                 }
               }}
-              disabled={!unlockedTanks.includes('silver')}
-              className={`flex-1 ${unlockedTanks.includes('silver') ? (currentTank === 'silver' ? 'bg-blue-50 border-blue-300 scale-105 shadow-lg' : `${cardBg} hover:scale-105 transition-transform`) : 'bg-gray-100 cursor-not-allowed'} border ${unlockedTanks.includes('silver') ? (currentTank === 'silver' ? 'border-blue-300' : borderColor) : 'border-gray-300'} rounded-xl p-3 relative transition-all duration-300 tank-hover`}
+              disabled={claimedTanks.includes('silver') || (userRanking !== 'silver' && userRanking !== 'gold' && userRanking !== 'platinum')}
+              className={`${claimedTanks.includes('silver') ? 'bg-green-50 border-green-300' : (userRanking === 'silver' || userRanking === 'gold' || userRanking === 'platinum') ? `${cardBg} hover:bg-blue-50` : 'bg-gray-100 cursor-not-allowed'} border ${claimedTanks.includes('silver') ? 'border-green-300' : borderColor} rounded-lg relative flex flex-col items-center justify-between h-[125px] p-2 transition-colors overflow-hidden`}
             >
-              <div className={`w-full aspect-square rounded-lg mb-2 flex items-center justify-center relative overflow-visible`}>
-                <SilverTank isPreview={true} />
-                {!unlockedTanks.includes('silver') && (
-                  <div className="absolute inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center rounded-lg">
-                    <Lock className="w-6 h-6 text-white" />
-                  </div>
-                )}
-                {currentTank === 'silver' && unlockedTanks.includes('silver') && (
-                  <div className="absolute -top-1 -right-1 w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
-                    <Check className="w-4 h-4 text-white" />
-                  </div>
-                )}
+              {/* 블러 효과를 받을 컨테이너 */}
+              <div className={`w-full h-full flex flex-col items-center justify-between ${(userRanking !== 'silver' && userRanking !== 'gold' && userRanking !== 'platinum') ? 'filter blur-[1px]' : ''}`}>
+                <div className={`h-[42px] w-full flex items-center justify-center relative`}>
+                  <SilverTank isPreview={true} />
+                </div>
+                
+                <div className="flex-1 flex flex-col items-center justify-center w-full px-1">
+                  <p className={`text-[11px] leading-tight ${claimedTanks.includes('silver') ? 'text-green-700' : (userRanking === 'silver' || userRanking === 'gold' || userRanking === 'platinum') ? (isDarkMode ? 'text-gray-300' : 'text-gray-700') : 'text-gray-500'} text-center font-medium`}>
+                    실버 어항
+                  </p>
+                  <p className={`text-[9px] ${isDarkMode ? 'text-gray-500' : 'text-gray-400'} mt-0.5 text-center leading-tight`}>
+                    실버 랭킹 보상
+                  </p>
+                </div>
+                
+                <div className="h-[20px] flex items-center justify-center w-full">
+                  <p className={`text-xs ${claimedTanks.includes('silver') ? 'text-green-500 font-medium' : (userRanking === 'silver' || userRanking === 'gold' || userRanking === 'platinum') ? 'text-blue-500 font-medium' : 'text-gray-400'} text-center`}>
+                    {claimedTanks.includes('silver') ? '수령 완료' : (userRanking === 'silver' || userRanking === 'gold' || userRanking === 'platinum') ? '수령 가능' : '실버 도달'}
+                  </p>
+                </div>
               </div>
-              <p className={`text-xs text-center ${unlockedTanks.includes('silver') ? (isDarkMode ? 'text-gray-300' : 'text-gray-700') : 'text-gray-500'}`}>실버 어항</p>
-              <p className={`text-xs text-center ${unlockedTanks.includes('silver') ? (currentTank === 'silver' ? 'text-blue-500 font-medium' : isDarkMode ? 'text-gray-500' : 'text-gray-400') : 'text-gray-400'}`}>
-                {unlockedTanks.includes('silver') ? (currentTank === 'silver' ? '사용중' : '선택 가능') : '실버 달성시'}
-              </p>
+              
+              {/* 잠금 오버레이와 자물쇠 */}
+              {userRanking !== 'silver' && userRanking !== 'gold' && userRanking !== 'platinum' && (
+                <>
+                  <div className="absolute inset-0 bg-white bg-opacity-40 rounded-lg"></div>
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <Lock className="w-5 h-5 text-gray-600 opacity-80" />
+                  </div>
+                </>
+              )}
             </button>
-            </div>
             
-            <div className="flex gap-3">
             {/* 골드 어항 */}
             <button
               onClick={() => {
-                if (unlockedTanks.includes('gold')) {
-                  setCurrentTank('gold');
+                const canClaim = userRanking === 'gold' || userRanking === 'platinum';
+                if (canClaim && !claimedTanks.includes('gold')) {
+                  setClaimedTanks([...claimedTanks, 'gold']);
                 }
               }}
-              disabled={!unlockedTanks.includes('gold')}
-              className={`flex-1 ${unlockedTanks.includes('gold') ? (currentTank === 'gold' ? 'bg-blue-50 border-blue-300 scale-105 shadow-lg' : `${cardBg} hover:scale-105 transition-transform`) : 'bg-gray-100 cursor-not-allowed'} border ${unlockedTanks.includes('gold') ? (currentTank === 'gold' ? 'border-blue-300' : borderColor) : 'border-gray-300'} rounded-xl p-3 relative transition-all duration-300 tank-hover`}
+              disabled={claimedTanks.includes('gold') || (userRanking !== 'gold' && userRanking !== 'platinum')}
+              className={`${claimedTanks.includes('gold') ? 'bg-green-50 border-green-300' : (userRanking === 'gold' || userRanking === 'platinum') ? `${cardBg} hover:bg-blue-50` : 'bg-gray-100 cursor-not-allowed'} border ${claimedTanks.includes('gold') ? 'border-green-300' : borderColor} rounded-lg relative flex flex-col items-center justify-between h-[125px] p-2 transition-colors overflow-hidden`}
             >
-              <div className={`w-full aspect-square rounded-lg mb-2 flex items-center justify-center relative overflow-visible`}>
-                <GoldTank isPreview={true} />
-                {!unlockedTanks.includes('gold') && (
-                  <div className="absolute inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center rounded-lg">
-                    <Lock className="w-6 h-6 text-white" />
-                  </div>
-                )}
-                {currentTank === 'gold' && unlockedTanks.includes('gold') && (
-                  <div className="absolute -top-1 -right-1 w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
-                    <Check className="w-4 h-4 text-white" />
-                  </div>
-                )}
+              {/* 블러 효과를 받을 컨테이너 */}
+              <div className={`w-full h-full flex flex-col items-center justify-between ${(userRanking !== 'gold' && userRanking !== 'platinum') ? 'filter blur-[1px]' : ''}`}>
+                <div className={`h-[42px] w-full flex items-center justify-center relative`}>
+                  <GoldTank isPreview={true} />
+                </div>
+                
+                <div className="flex-1 flex flex-col items-center justify-center w-full px-1">
+                  <p className={`text-[11px] leading-tight ${claimedTanks.includes('gold') ? 'text-green-700' : (userRanking === 'gold' || userRanking === 'platinum') ? (isDarkMode ? 'text-gray-300' : 'text-gray-700') : 'text-gray-500'} text-center font-medium`}>
+                    골드 어항
+                  </p>
+                  <p className={`text-[9px] ${isDarkMode ? 'text-gray-500' : 'text-gray-400'} mt-0.5 text-center leading-tight`}>
+                    골드 랭킹 보상
+                  </p>
+                </div>
+                
+                <div className="h-[20px] flex items-center justify-center w-full">
+                  <p className={`text-xs ${claimedTanks.includes('gold') ? 'text-green-500 font-medium' : (userRanking === 'gold' || userRanking === 'platinum') ? 'text-blue-500 font-medium' : 'text-gray-400'} text-center`}>
+                    {claimedTanks.includes('gold') ? '수령 완료' : (userRanking === 'gold' || userRanking === 'platinum') ? '수령 가능' : '골드 도달'}
+                  </p>
+                </div>
               </div>
-              <p className={`text-xs text-center ${unlockedTanks.includes('gold') ? (isDarkMode ? 'text-gray-300' : 'text-gray-700') : 'text-gray-500'}`}>골드 어항</p>
-              <p className={`text-xs text-center ${unlockedTanks.includes('gold') ? (currentTank === 'gold' ? 'text-blue-500 font-medium' : isDarkMode ? 'text-gray-500' : 'text-gray-400') : 'text-gray-400'}`}>
-                {unlockedTanks.includes('gold') ? (currentTank === 'gold' ? '사용중' : '선택 가능') : '골드 달성시'}
-              </p>
+              
+              {/* 잠금 오버레이와 자물쇠 */}
+              {userRanking !== 'gold' && userRanking !== 'platinum' && (
+                <>
+                  <div className="absolute inset-0 bg-white bg-opacity-40 rounded-lg"></div>
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <Lock className="w-5 h-5 text-gray-600 opacity-80" />
+                  </div>
+                </>
+              )}
             </button>
             
             {/* 플래티넘 어항 */}
             <button
               onClick={() => {
-                if (unlockedTanks.includes('platinum')) {
-                  setCurrentTank('platinum');
+                const canClaim = userRanking === 'platinum';
+                if (canClaim && !claimedTanks.includes('platinum')) {
+                  setClaimedTanks([...claimedTanks, 'platinum']);
                 }
               }}
-              disabled={!unlockedTanks.includes('platinum')}
-              className={`flex-1 ${unlockedTanks.includes('platinum') ? (currentTank === 'platinum' ? 'bg-blue-50 border-blue-300 scale-105 shadow-lg' : `${cardBg} hover:scale-105 transition-transform`) : 'bg-gray-100 cursor-not-allowed'} border ${unlockedTanks.includes('platinum') ? (currentTank === 'platinum' ? 'border-blue-300' : borderColor) : 'border-gray-300'} rounded-xl p-3 relative transition-all duration-300 tank-hover`}
+              disabled={claimedTanks.includes('platinum') || userRanking !== 'platinum'}
+              className={`${claimedTanks.includes('platinum') ? 'bg-green-50 border-green-300' : userRanking === 'platinum' ? `${cardBg} hover:bg-blue-50` : 'bg-gray-100 cursor-not-allowed'} border ${claimedTanks.includes('platinum') ? 'border-green-300' : borderColor} rounded-lg relative flex flex-col items-center justify-between h-[125px] p-2 transition-colors overflow-hidden`}
             >
-              <div className={`w-full aspect-square rounded-lg mb-2 flex items-center justify-center relative overflow-visible`}>
-                <PlatinumTank isPreview={true} />
-                {!unlockedTanks.includes('platinum') && (
-                  <div className="absolute inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center rounded-lg">
-                    <Lock className="w-6 h-6 text-white" />
-                  </div>
-                )}
-                {currentTank === 'platinum' && unlockedTanks.includes('platinum') && (
-                  <div className="absolute -top-1 -right-1 w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
-                    <Check className="w-4 h-4 text-white" />
-                  </div>
-                )}
+              {/* 블러 효과를 받을 컨테이너 */}
+              <div className={`w-full h-full flex flex-col items-center justify-between ${userRanking !== 'platinum' ? 'filter blur-[1px]' : ''}`}>
+                <div className={`h-[42px] w-full flex items-center justify-center relative`}>
+                  <PlatinumTank isPreview={true} />
+                </div>
+                
+                <div className="flex-1 flex flex-col items-center justify-center w-full px-1">
+                  <p className={`text-[11px] leading-tight ${claimedTanks.includes('platinum') ? 'text-green-700' : userRanking === 'platinum' ? (isDarkMode ? 'text-gray-300' : 'text-gray-700') : 'text-gray-500'} text-center font-medium`}>
+                    플래티넘 어항
+                  </p>
+                  <p className={`text-[9px] ${isDarkMode ? 'text-gray-500' : 'text-gray-400'} mt-0.5 text-center leading-tight`}>
+                    플래티넘 랭킹 보상
+                  </p>
+                </div>
+                
+                <div className="h-[20px] flex items-center justify-center w-full">
+                  <p className={`text-xs ${claimedTanks.includes('platinum') ? 'text-green-500 font-medium' : userRanking === 'platinum' ? 'text-blue-500 font-medium' : 'text-gray-400'} text-center`}>
+                    {claimedTanks.includes('platinum') ? '수령 완료' : userRanking === 'platinum' ? '수령 가능' : '플래티넘 도달'}
+                  </p>
+                </div>
               </div>
-              <p className={`text-xs text-center ${unlockedTanks.includes('platinum') ? (isDarkMode ? 'text-gray-300' : 'text-gray-700') : 'text-gray-500'}`}>플래티넘 어항</p>
-              <p className={`text-xs text-center ${unlockedTanks.includes('platinum') ? (currentTank === 'platinum' ? 'text-blue-500 font-medium' : isDarkMode ? 'text-gray-500' : 'text-gray-400') : 'text-gray-400'}`}>
-                {unlockedTanks.includes('platinum') ? (currentTank === 'platinum' ? '사용중' : '선택 가능') : '플래티넘 달성시'}
-              </p>
+              
+              {/* 잠금 오버레이와 자물쇠 */}
+              {userRanking !== 'platinum' && (
+                <>
+                  <div className="absolute inset-0 bg-white bg-opacity-40 rounded-lg"></div>
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <Lock className="w-5 h-5 text-gray-600 opacity-80" />
+                  </div>
+                </>
+              )}
             </button>
-            </div>
           </div>
         </div>
 

@@ -6,9 +6,10 @@ const GoldTank = ({ className = "", isPreview = false }) => {
   return (
     <div className={`relative ${size} ${className}`}>
       <svg 
-        viewBox="0 0 400 300" 
+        viewBox="35 42 330 216" 
         className="w-full h-full"
         xmlns="http://www.w3.org/2000/svg"
+        preserveAspectRatio="none"
       >
         {/* 골드 어항 - 화려한 황금 장식과 보석 포인트 */}
         
@@ -27,75 +28,78 @@ const GoldTank = ({ className = "", isPreview = false }) => {
           </filter>
         </defs>
         
-        {/* 그림자 효과 */}
-        <ellipse 
-          cx="200" 
-          cy="268" 
-          rx="165" 
-          ry="15" 
-          fill="#000000" 
-          opacity="0.2"
-        />
         
-        {/* 장식적 상단 곡선 */}
-        <path 
-          d="M 40 45 Q 200 30, 360 45 L 360 250 L 40 250 Z"
+        {/* 직사각형 어항 프레임 */}
+        <rect 
+          x="40" 
+          y="45" 
+          width="320" 
+          height="205"
           fill="none"
           stroke="url(#goldFrameGradient)"
           strokeWidth="4"
         />
         
         {/* 물 효과 - 럭셔리 */}
-        <path 
-          d="M 44 62 Q 200 47, 356 62 L 356 246 L 44 246 Z"
+        <rect 
+          x="44" 
+          y="49" 
+          width="312" 
+          height="197"
           fill="url(#luxuryWaterGold)"
           opacity="0.5"
         />
         
-        {/* 수면 파동 */}
-        <ellipse 
-          cx="200" 
-          cy="64" 
-          rx="155" 
-          ry="4" 
+        {/* 수면 효과 - 직선 */}
+        <rect 
+          x="44" 
+          y="50" 
+          width="312" 
+          height="4" 
           fill="url(#goldWaterSurface)"
           opacity="0.6"
           className="animate-wave"
         />
         
-        {/* 황금 프레임 - 상단 장식 */}
-        <path 
-          d="M 40 45 Q 200 30, 360 45 L 360 52 Q 200 37, 40 52 Z"
+        {/* 황금 프레임 - 상단 테두리 */}
+        <rect 
+          x="40" 
+          y="45" 
+          width="320" 
+          height="7"
           fill="url(#goldLuxuryGradient)"
           filter="url(#goldGlow)"
         />
         
-        {/* 보석 장식 */}
+        {/* 보석 장식 - 상단 테두리에 위치 */}
         <g filter="url(#goldGlow)">
-          <circle cx="100" cy="42" r="4" fill="url(#rubyGem)"/>
-          <circle cx="200" cy="38" r="5" fill="url(#emeraldGem)"/>
-          <circle cx="300" cy="42" r="4" fill="url(#sapphireGem)"/>
+          <circle cx="100" cy="48" r="4" fill="url(#rubyGem)"/>
+          <circle cx="200" cy="48" r="5" fill="url(#emeraldGem)"/>
+          <circle cx="300" cy="48" r="4" fill="url(#sapphireGem)"/>
         </g>
         
         {/* 대각선 조명 효과 */}
         <path 
-          d="M 50 45 L 220 180 L 190 210 L 50 120 Z"
+          d="M 50 50 L 220 180 L 190 210 L 50 120 Z"
           fill="url(#goldDiagonalLight)"
           opacity="0.4"
         />
         
-        {/* 황금빛 하이라이트 */}
-        <path 
-          d="M 43 48 Q 43 150, 43 247 L 68 232 Q 68 140, 68 58 Z"
+        {/* 황금빛 하이라이트 - 직선 */}
+        <rect 
+          x="44" 
+          y="49" 
+          width="25" 
+          height="197"
           fill="url(#goldShineEffect)"
           opacity="0.8"
         />
         
-        {/* 장식 패턴 - 아르데코 스타일 */}
+        {/* 상단 테두리 장식 패턴 */}
         <g opacity="0.6">
-          <path d="M 60 55 L 65 50 L 70 55" stroke="url(#goldAccent)" strokeWidth="1.5" fill="none"/>
-          <path d="M 190 53 L 200 48 L 210 53" stroke="url(#goldAccent)" strokeWidth="2" fill="none"/>
-          <path d="M 330 55 L 335 50 L 340 55" stroke="url(#goldAccent)" strokeWidth="1.5" fill="none"/>
+          <rect x="60" y="46" width="10" height="5" fill="url(#goldAccent)"/>
+          <rect x="195" y="46" width="10" height="5" fill="url(#goldAccent)"/>
+          <rect x="330" y="46" width="10" height="5" fill="url(#goldAccent)"/>
         </g>
         
         {/* 미세 기포 - 황금빛 */}

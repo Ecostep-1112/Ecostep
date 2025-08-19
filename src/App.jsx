@@ -178,8 +178,8 @@ const EcostepApp = () => {
       <div className={`flex-1 overflow-y-auto custom-scrollbar scrollbar-hide-idle pb-20 ${bgColor}`}>
         <div className="min-h-full">
           {/* 어항 섹션 */}
-          <div className="bg-gradient-to-b from-blue-500 to-blue-600 rounded-2xl mx-3 mt-4 p-4">
-            <div className="flex justify-between items-center mb-3">
+          <div className="bg-gradient-to-b from-blue-500 to-blue-600 rounded-2xl mx-3 mt-4 p-2">
+            <div className="flex justify-between items-center mb-1">
               <div className="flex-1">
                 <h3 
                   className="text-white text-sm font-medium cursor-pointer hover:text-blue-100 transition-colors inline-block"
@@ -187,20 +187,8 @@ const EcostepApp = () => {
                 >
                   {tankName}
                 </h3>
-                <p className="text-blue-100 text-xs mt-0.5">
-                  {currentTank === 'basic' ? '기본 어항' : 
-                   currentTank === 'silver' ? '실버 어항' :
-                   currentTank === 'gold' ? '골드 어항' :
-                   '플래티넘 어항'}
-                </p>
               </div>
               <div className="flex gap-2">
-                <button 
-                  onClick={() => setShowAquariumSettings(true)}
-                  className="bg-white bg-opacity-20 hover:bg-opacity-30 transition-colors px-3 py-1.5 rounded-lg flex items-center gap-1"
-                >
-                  <span className="text-xs text-white">어항 변경</span>
-                </button>
                 <button 
                   onClick={() => setShowAquariumSettings(true)}
                   className="bg-white bg-opacity-20 hover:bg-opacity-30 transition-colors p-1.5 rounded-lg"
@@ -209,9 +197,10 @@ const EcostepApp = () => {
                 </button>
               </div>
             </div>
-            <div className="h-64 relative overflow-visible">
-              {/* 선택된 어항 표시 - 크기 확대 */}
-              <div className="absolute inset-0 scale-110 animate-tankFadeIn tank-transition">
+            {/* 어항 컨테이너 - 정사각형 */}
+            <div className="relative w-full" style={{ aspectRatio: '1/1' }}>
+              {/* 선택된 어항 표시 - 전체 너비 사용 */}
+              <div className="absolute inset-0 animate-tankFadeIn tank-transition">
                 <CurrentTankComponent className="w-full h-full" />
               </div>
               
@@ -230,22 +219,38 @@ const EcostepApp = () => {
                     }}
                   >
                     <FishIcon size={45} />
-                    {/* 물고기 그림자 */}
-                    <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-8 h-2 bg-black opacity-10 blur-sm rounded-full mt-8" />
                   </div>
                 ) : null;
                 })}
               </div>
               
-              {/* 장식품 - 어항 내부로 이동 */}
-              <div className="absolute bottom-10 left-20 z-5 animate-sway" style={{animationDuration: '3s'}}>
-                <span className="text-2xl">🌿</span>
-              </div>
-              <div className="absolute bottom-10 right-20 z-5 animate-sway" style={{animationDuration: '3.5s', animationDelay: '0.5s'}}>
-                <span className="text-2xl">🪸</span>
-              </div>
+              {/* 사용자 보유 장식품 표시 - 어항 안쪽 */}
+              {purchasedDecorations.slice(0, 3).map((decoName, i) => {
+                const positions = [
+                  { bottom: '18%', left: '20%' },
+                  { bottom: '18%', right: '20%' },
+                  { bottom: '18%', left: '50%', transform: 'translateX(-50%)' }
+                ];
+                const deco = Object.values(decorationsData).flat().find(d => d.name === decoName);
+                if (!deco) return null;
+                const DecoIcon = DecorationIcons[deco.icon];
+                
+                return DecoIcon ? (
+                  <div 
+                    key={i}
+                    className="absolute z-5 animate-sway"
+                    style={{
+                      ...positions[i],
+                      animationDuration: `${3 + i * 0.5}s`,
+                      animationDelay: `${i * 0.3}s`
+                    }}
+                  >
+                    <DecoIcon size={25} />
+                  </div>
+                ) : null;
+              })}
             </div>
-          <div className="mt-3 bg-white/10 rounded-lg p-2">
+          <div className="mt-2 bg-white/10 rounded-lg p-1.5">
             <div className="flex justify-between items-center">
               <span className="text-white text-xs">수질</span>
               <span className="text-white text-xs font-medium">85%</span>

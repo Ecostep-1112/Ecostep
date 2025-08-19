@@ -6,9 +6,10 @@ const BasicTank = ({ className = "", isPreview = false }) => {
   return (
     <div className={`relative ${size} ${className}`}>
       <svg 
-        viewBox="0 0 400 300" 
+        viewBox="45 45 310 210" 
         className="w-full h-full"
         xmlns="http://www.w3.org/2000/svg"
+        preserveAspectRatio="none"
       >
         {/* 기본 어항 - 투명한 유리 어항 */}
         
@@ -18,18 +19,16 @@ const BasicTank = ({ className = "", isPreview = false }) => {
           y="70" 
           width="300" 
           height="180" 
-          rx="2"
           fill="url(#waterGradientBasic)"
           opacity="0.3"
         />
         
-        {/* 메인 어항 유리 */}
+        {/* 메인 어항 유리 - 직사각형 */}
         <rect 
           x="50" 
           y="50" 
           width="300" 
           height="200" 
-          rx="3"
           fill="none"
           stroke="url(#glassGradientBasic)"
           strokeWidth="3"

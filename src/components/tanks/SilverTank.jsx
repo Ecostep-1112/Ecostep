@@ -6,9 +6,10 @@ const SilverTank = ({ className = "", isPreview = false }) => {
   return (
     <div className={`relative ${size} ${className}`}>
       <svg 
-        viewBox="0 0 400 300" 
+        viewBox="40 40 320 215" 
         className="w-full h-full"
         xmlns="http://www.w3.org/2000/svg"
+        preserveAspectRatio="none"
       >
         {/* 실버 어항 - 심플한 크롬 테두리 + 은은한 반사 */}
         
@@ -26,15 +27,6 @@ const SilverTank = ({ className = "", isPreview = false }) => {
           </filter>
         </defs>
         
-        {/* 그림자 효과 */}
-        <ellipse 
-          cx="200" 
-          cy="265" 
-          rx="155" 
-          ry="12" 
-          fill="#000000" 
-          opacity="0.15"
-        />
         
         {/* 물 효과 - 깊이감 있는 그라데이션 */}
         <rect 
@@ -42,7 +34,6 @@ const SilverTank = ({ className = "", isPreview = false }) => {
           y="65" 
           width="310" 
           height="185" 
-          rx="6"
           fill="url(#waterGradientSilverDeep)"
           opacity="0.6"
         />
@@ -58,13 +49,12 @@ const SilverTank = ({ className = "", isPreview = false }) => {
           className="animate-wave"
         />
         
-        {/* 메인 어항 - 크롬 프레임 */}
+        {/* 메인 어항 - 크롬 프레임 - 직사각형 */}
         <rect 
           x="45" 
           y="45" 
           width="310" 
           height="205" 
-          rx="6"
           fill="none"
           stroke="url(#chromeGradient)"
           strokeWidth="3"
@@ -91,7 +81,6 @@ const SilverTank = ({ className = "", isPreview = false }) => {
           y="45" 
           width="310" 
           height="5" 
-          rx="2"
           fill="url(#chromeTopRim)"
         />
         

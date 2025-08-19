@@ -6,33 +6,31 @@ const PlatinumTank = ({ className = "", isPreview = false }) => {
   return (
     <div className={`relative ${size} ${className}`}>
       <svg 
-        viewBox="0 0 400 300" 
+        viewBox="30 45 340 210" 
         className="w-full h-full"
         xmlns="http://www.w3.org/2000/svg"
+        preserveAspectRatio="none"
       >
         {/* 플래티넘 어항 - 프리미엄 홀로그램 효과 */}
         
-        {/* 그림자 효과 */}
-        <ellipse 
-          cx="200" 
-          cy="268" 
-          rx="170" 
-          ry="20" 
-          fill="url(#platinumShadow)" 
-          opacity="0.3"
-        />
         
-        {/* 메인 어항 - 다이아몬드 컷 형태 */}
-        <path 
-          d="M 35 60 L 365 60 L 355 250 L 45 250 Z"
+        {/* 메인 어항 - 직사각형 프리미엄 */}
+        <rect 
+          x="35" 
+          y="60" 
+          width="330" 
+          height="190"
           fill="none"
           stroke="url(#platinumMainGradient)"
           strokeWidth="6"
         />
         
         {/* 물 효과 - 홀로그램 */}
-        <path 
-          d="M 42 70 L 358 70 L 348 245 L 48 245 Z"
+        <rect 
+          x="41" 
+          y="66" 
+          width="318" 
+          height="178"
           fill="url(#hologramWater)"
           opacity="0.45"
         />
@@ -43,7 +41,6 @@ const PlatinumTank = ({ className = "", isPreview = false }) => {
           y="50" 
           width="330" 
           height="15" 
-          rx="3"
           fill="url(#platinumTopFrame)"
         />
         

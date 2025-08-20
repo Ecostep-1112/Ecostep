@@ -97,8 +97,8 @@ const EcostepApp = () => {
     localStorage.setItem('tankName', tankName);
   }, [tankName]);
 
-  const bgColor = isDarkMode ? 'bg-gray-900' : 'bg-white';
-  const borderColor = isDarkMode ? 'border-gray-700' : 'border-gray-200';
+  const bgColor = isDarkMode ? 'bg-black' : 'bg-white';
+  const borderColor = isDarkMode ? 'border-gray-800' : 'border-gray-200';
 
   return (
     <div className={`flex items-center justify-center min-h-screen ${isDarkMode ? 'bg-black' : 'bg-gray-100'} p-4`}>
@@ -110,15 +110,25 @@ const EcostepApp = () => {
         {/* 화면 영역 */}
         <div className={`w-full h-full ${bgColor} rounded-[2rem] overflow-hidden flex flex-col`}>
           {/* 상태바 */}
-          <div className="bg-blue-500 px-3 py-3 flex justify-between items-center">
-            <h1 className="text-white text-sm">송일님 환영합니다</h1>
+          <div className={`${isDarkMode ? 'bg-gray-900' : 'bg-white'} px-3 py-3 flex justify-between items-center relative`}>
+            <h1 className={`${isDarkMode ? 'text-white' : 'text-gray-800'} text-sm font-medium`}>
+              {activeTab === 'home' && '홈'}
+              {activeTab === 'challenge' && '챌린지'}
+              {activeTab === 'reward' && '보상'}
+              {activeTab === 'community' && '커뮤니티'}
+              {activeTab === 'more' && '기타'}
+            </h1>
             <div className="flex items-center gap-3">
-              <div className="flex items-center bg-white/20 px-2 py-1 rounded">
-                <span className="text-white text-xs font-medium">{points}P</span>
+              <div className={`flex items-center px-2 py-1 rounded ${isDarkMode ? 'bg-white/20' : 'bg-gray-100'}`}>
+                <span className={`${isDarkMode ? 'text-white' : 'text-gray-700'} text-xs font-medium`}>{points}P</span>
               </div>
               <button onClick={() => setShowSettings(true)}>
-                <Settings className="w-5 h-5 text-white" />
+                <Settings className={`w-5 h-5 ${isDarkMode ? 'text-white' : 'text-gray-700'}`} />
               </button>
+            </div>
+            {/* 그라데이션 테두리 */}
+            <div className="absolute bottom-0 left-0 right-0 h-[1px] overflow-hidden">
+              <div className={`h-full w-full ${isDarkMode ? 'bg-gradient-to-r from-transparent via-gray-700 to-transparent' : 'bg-gradient-to-r from-transparent via-gray-300 to-transparent'}`}></div>
             </div>
           </div>
 

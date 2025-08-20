@@ -1,7 +1,7 @@
 import React from 'react';
 
 const GoldTank = ({ className = "", isPreview = false }) => {
-  const size = isPreview ? "w-20 h-16" : "w-full h-full";
+  const size = isPreview ? "w-full h-full" : "w-full h-full";
   
   return (
     <div className={`relative ${size} ${className}`}>

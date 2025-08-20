@@ -655,7 +655,7 @@ const EcostepApp = () => {
             >
               {/* 블러 효과를 받을 컨테이너 */}
               <div className={`w-full h-full flex flex-col items-center justify-between ${(userRanking !== 'silver' && userRanking !== 'gold' && userRanking !== 'platinum') ? 'filter blur-[1px]' : ''}`}>
-                <div className={`h-[42px] w-full flex items-center justify-center relative`}>
+                <div className={`h-[35px] w-full flex items-center justify-center relative px-1`}>
                   <SilverTank isPreview={true} />
                 </div>
                 
@@ -699,7 +699,7 @@ const EcostepApp = () => {
             >
               {/* 블러 효과를 받을 컨테이너 */}
               <div className={`w-full h-full flex flex-col items-center justify-between ${(userRanking !== 'gold' && userRanking !== 'platinum') ? 'filter blur-[1px]' : ''}`}>
-                <div className={`h-[42px] w-full flex items-center justify-center relative`}>
+                <div className={`h-[35px] w-full flex items-center justify-center relative px-1`}>
                   <GoldTank isPreview={true} />
                 </div>
                 
@@ -743,7 +743,7 @@ const EcostepApp = () => {
             >
               {/* 블러 효과를 받을 컨테이너 */}
               <div className={`w-full h-full flex flex-col items-center justify-between ${userRanking !== 'platinum' ? 'filter blur-[1px]' : ''}`}>
-                <div className={`h-[42px] w-full flex items-center justify-center relative`}>
+                <div className={`h-[35px] w-full flex items-center justify-center relative px-1`}>
                   <PlatinumTank isPreview={true} />
                 </div>
                 

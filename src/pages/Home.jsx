@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Settings, TrendingUp } from 'lucide-react';
 import FishIcons from '../components/FishIcons';
 import DecorationIcons from '../components/DecorationIcons';
+import WaterSurface from '../components/WaterSurface';
+import BubbleSystem from '../components/BubbleSystem';
 
 const Home = ({ 
   isDarkMode, 
@@ -14,6 +16,16 @@ const Home = ({
 }) => {
   const bgColor = isDarkMode ? 'bg-gray-900' : 'bg-white';
   const textColor = isDarkMode ? 'text-white' : 'text-gray-900';
+  const [fishPositions, setFishPositions] = useState([]);
+  
+  // 물고기 위치 업데이트 (간단한 시뮬레이션)
+  useEffect(() => {
+    const positions = purchasedFish.slice(0, 3).map((_, i) => ({
+      x: 100 + i * 80,
+      y: 100 + Math.sin(i * Math.PI / 3) * 30
+    }));
+    setFishPositions(positions);
+  }, [purchasedFish]);
 
   return (
     <div className={`flex-1 overflow-y-auto custom-scrollbar scrollbar-hide-idle pb-20 ${bgColor}`}>
@@ -22,9 +34,15 @@ const Home = ({
         <div className="relative bg-gradient-to-b from-blue-500 to-blue-600 mt-0" style={{ aspectRatio: '1/1' }}>
           {/* 상단 그라데이션 구분선 */}
           <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/60 to-transparent"></div>
+          
+          {/* 물 표면 효과 컴포넌트 */}
+          <WaterSurface />
+          
+          {/* 기포 시스템 */}
+          <BubbleSystem fishPositions={fishPositions} />
             
           {/* 물고기들 어항 위에 표시 */}
-          <div className="absolute inset-0 flex items-center justify-center gap-3 pointer-events-none z-10">
+          <div className="absolute inset-0 flex items-center justify-center gap-3 pointer-events-none z-[4]">
               {/* 구매한 물고기 중 일부 표시 */}
               {purchasedFish.slice(0, 3).map((fishName, i) => {
                 const FishIcon = FishIcons[fishName.replace(' ', '')];
@@ -57,7 +75,7 @@ const Home = ({
               return DecoIcon ? (
                 <div 
                   key={i}
-                  className="absolute z-5 animate-sway"
+                  className="absolute z-[2] animate-sway"
                   style={{
                     ...positions[i],
                     animationDuration: `${3 + i * 0.5}s`,

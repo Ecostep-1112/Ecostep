@@ -1,0 +1,22 @@
+{
+  "bronze": [
+    { "name": "코리도라스", "description": "바닥 청소 요정" },
+    { "name": "체리바브", "description": "체리 같은 귀요미" },
+    { "name": "네온테트라", "description": "반짝이는 보석" }
+  ],
+  "silver": [
+    { "name": "아피스토그라마", "description": "포켓 드래곤" },
+    { "name": "람시클리드", "description": "온화한 젠틀맨" },
+    { "name": "구피", "description": "꼬리 댄싱퀸" }
+  ],
+  "gold": [
+    { "name": "엔젤피쉬", "description": "수중의 천사" },
+    { "name": "킬리피쉬", "description": "자유로운 모험가" },
+    { "name": "베타", "description": "실크 드레스 퀸" }
+  ],
+  "platinum": [
+    { "name": "디스커스", "description": "수중 황제" },
+    { "name": "만다린피쉬", "description": "네온 아티스트" },
+    { "name": "아로와나", "description": "전설의 용" }
+  ]
+}

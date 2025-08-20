@@ -23,3 +23,134 @@
     display: none; /* Chrome, Safari, Opera */
   }
 }
+
+/* 물고기 수영 애니메이션 */
+@keyframes swim {
+  0%, 100% {
+    transform: translateX(0) translateY(0) rotate(0deg);
+  }
+  25% {
+    transform: translateX(20px) translateY(-10px) rotate(5deg);
+  }
+  50% {
+    transform: translateX(-15px) translateY(5px) rotate(-3deg);
+  }
+  75% {
+    transform: translateX(10px) translateY(-5px) rotate(2deg);
+  }
+}
+
+/* 수초 흔들림 애니메이션 */
+@keyframes sway {
+  0%, 100% {
+    transform: rotate(-3deg) translateX(0);
+  }
+  50% {
+    transform: rotate(3deg) translateX(2px);
+  }
+}
+
+/* 물결 애니메이션 */
+@keyframes wave {
+  0%, 100% {
+    transform: translateY(0) scaleY(1);
+  }
+  50% {
+    transform: translateY(-2px) scaleY(1.05);
+  }
+}
+
+/* 어항 전환 애니메이션 */
+@keyframes tankFadeIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* 반짝임 애니메이션 */
+@keyframes sparkle {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+}
+
+/* 물방울 상승 애니메이션 */
+@keyframes bubbleRise {
+  0% {
+    transform: translateY(0) translateX(0);
+    opacity: 0.7;
+  }
+  25% {
+    transform: translateY(-25%) translateX(5px);
+  }
+  50% {
+    transform: translateY(-50%) translateX(-3px);
+  }
+  75% {
+    transform: translateY(-75%) translateX(2px);
+  }
+  100% {
+    transform: translateY(-100%) translateX(0);
+    opacity: 0;
+  }
+}
+
+/* 홀로그램 효과 */
+@keyframes hologram {
+  0% {
+    filter: hue-rotate(0deg);
+  }
+  100% {
+    filter: hue-rotate(360deg);
+  }
+}
+
+.animate-swim {
+  animation: swim 4s ease-in-out infinite;
+}
+
+.animate-sway {
+  animation: sway 3s ease-in-out infinite;
+  transform-origin: bottom center;
+}
+
+.animate-wave {
+  animation: wave 2s ease-in-out infinite;
+}
+
+.animate-tankFadeIn {
+  animation: tankFadeIn 0.5s ease-out forwards;
+}
+
+.animate-sparkle {
+  animation: sparkle 2s ease-in-out infinite;
+}
+
+.animate-bubbleRise {
+  animation: bubbleRise 4s ease-in-out infinite;
+}
+
+.animate-hologram {
+  animation: hologram 5s linear infinite;
+}
+
+/* 어항 전환 트랜지션 */
+.tank-transition {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 호버 효과 강화 */
+.tank-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}

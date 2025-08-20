@@ -35,23 +35,15 @@ const EcostepApp = () => {
   const [purchasedFish, setPurchasedFish] = useState(['네온테트라', '체리바브', '구피', '베타']);
   const [customChallenges, setCustomChallenges] = useState([]);
   const [customPlasticItems, setCustomPlasticItems] = useState([]);
-
-
-
+  const [currentTank, setCurrentTank] = useState('basic');
+  const [unlockedTanks, setUnlockedTanks] = useState(['basic', 'silver', 'gold', 'platinum']); // 모든 어항 잠금 해제
+  const [userRanking, setUserRanking] = useState('gold'); // 골드 랭킹으로 설정
+  const [claimedTanks, setClaimedTanks] = useState([]); // 수령 완료한 어항 목록
+  const [tankName, setTankName] = useState('나의 어항');
+  const [isEditingTankName, setIsEditingTankName] = useState(false);
 
   const bgColor = isDarkMode ? 'bg-gray-900' : 'bg-white';
   const borderColor = isDarkMode ? 'border-gray-700' : 'border-gray-200';
-
-
-
-
-
-
-
-
-
-
-
 
   return (
     <div className={`flex items-center justify-center min-h-screen ${isDarkMode ? 'bg-black' : 'bg-gray-100'} p-4`}>

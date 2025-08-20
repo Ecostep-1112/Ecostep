@@ -115,6 +115,97 @@
   }
 }
 
+/* 수초 흔들림 애니메이션 */
+@keyframes seaweed {
+  0%, 100% {
+    transform: translateX(0) rotate(0deg);
+  }
+  25% {
+    transform: translateX(2px) rotate(2deg);
+  }
+  50% {
+    transform: translateX(-1px) rotate(-1deg);
+  }
+  75% {
+    transform: translateX(1px) rotate(1deg);
+  }
+}
+
+/* 부드러운 수초 흔들림 애니메이션 */
+@keyframes gentle-sway {
+  0%, 100% {
+    transform: translateX(0) rotate(0deg);
+  }
+  33% {
+    transform: translateX(1.5px) rotate(0.5deg);
+  }
+  66% {
+    transform: translateX(-1.5px) rotate(-0.5deg);
+  }
+}
+
+/* 수초 상단만 흔들림 애니메이션 */
+@keyframes grass-wave {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(1px);
+  }
+  75% {
+    transform: translateX(-1px);
+  }
+}
+
+/* 다양한 수초 움직임 애니메이션 */
+@keyframes grass-sway-0 {
+  0%, 100% { transform: translateX(0) rotate(0deg); }
+  50% { transform: translateX(0.8px) rotate(0.5deg); }
+}
+
+@keyframes grass-sway-1 {
+  0%, 100% { transform: translateX(0) rotate(0deg); }
+  30% { transform: translateX(-0.6px) rotate(-0.3deg); }
+  70% { transform: translateX(0.6px) rotate(0.3deg); }
+}
+
+@keyframes grass-sway-2 {
+  0%, 100% { transform: translateX(0) rotate(0deg); }
+  40% { transform: translateX(1px) rotate(0.4deg); }
+  80% { transform: translateX(-0.5px) rotate(-0.2deg); }
+}
+
+@keyframes grass-sway-3 {
+  0%, 100% { transform: translateX(0) rotate(0deg); }
+  25% { transform: translateX(-0.7px) rotate(-0.4deg); }
+  75% { transform: translateX(0.7px) rotate(0.4deg); }
+}
+
+@keyframes grass-sway-4 {
+  0%, 100% { transform: translateX(0) rotate(0deg); }
+  35% { transform: translateX(0.5px) rotate(0.2deg); }
+  65% { transform: translateX(-0.8px) rotate(-0.3deg); }
+}
+
+.animate-seaweed {
+  animation: seaweed 3s ease-in-out infinite;
+  transform-origin: bottom center;
+}
+
+.animate-gentle-sway {
+  animation: gentle-sway 3s ease-in-out infinite;
+  transform-origin: bottom center;
+}
+
+.grass-top {
+  animation: grass-wave 2.5s ease-in-out infinite;
+  transform-origin: bottom center;
+}
+
+.grass-blade {
+  transform-origin: bottom center;
+}
+
 .animate-swim {
   animation: swim 4s ease-in-out infinite;
 }

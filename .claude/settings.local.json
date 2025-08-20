@@ -22,7 +22,15 @@
       "Bash(git add:*)",
       "Bash(git tag:*)",
       "Bash(git commit:*)",
-      "Bash(git checkout:*)"
+      "Bash(git checkout:*)",
+      "Bash(claude doctor)",
+      "Bash(npm i:*)",
+      "Bash(npm cache clean:*)",
+      "Bash(npm uninstall:*)",
+      "Bash(git branch:*)",
+      "Bash(git restore:*)",
+      "Bash(del \"C:\\Users\\user\\Desktop\\Ecostep\\src\\components\\AquariumGravel.jsx\")",
+      "Bash(rm:*)"
     ],
     "deny": [],
     "ask": [],

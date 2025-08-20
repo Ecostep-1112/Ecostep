@@ -21,27 +21,36 @@ const PlatinumTank = ({ className = "", isPreview = false }) => {
           width="330" 
           height="190"
           fill="none"
-          stroke="url(#platinumMainGradient)"
-          strokeWidth="6"
+          stroke="rgba(255, 255, 255, 0.3)"
+          strokeWidth="1"
+          rx="15"
+          ry="15"
         />
         
         {/* 물 효과 - 홀로그램 */}
         <rect 
-          x="41" 
-          y="66" 
-          width="318" 
-          height="178"
+          x="36" 
+          y="61" 
+          width="328" 
+          height="188"
           fill="url(#hologramWater)"
-          opacity="0.45"
+          opacity="0.8"
+          rx="14"
+          ry="14"
         />
         
-        {/* 상단 프리미엄 프레임 */}
+        {/* 내부 광택 효과 */}
         <rect 
-          x="35" 
-          y="50" 
-          width="330" 
-          height="15" 
-          fill="url(#platinumTopFrame)"
+          x="36" 
+          y="61" 
+          width="328" 
+          height="188" 
+          fill="none"
+          stroke="url(#innerGlowPlatinum)"
+          strokeWidth="0.5"
+          rx="14"
+          ry="14"
+          opacity="0.7"
         />
         
         {/* 홀로그램 반사 효과 - 무지개빛 */}
@@ -118,6 +127,17 @@ const PlatinumTank = ({ className = "", isPreview = false }) => {
         
         {/* 그라디언트 정의 */}
         <defs>
+          <linearGradient id="innerGlowPlatinum" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.8"/>
+            <stop offset="100%" stopColor="#FFFFFF" stopOpacity="0.3"/>
+          </linearGradient>
+          
+          {/* 홀로그램 물 효과 */}
+          <linearGradient id="hologramWater" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#87CEEB" stopOpacity="0.6"/>
+            <stop offset="100%" stopColor="#20B2AA" stopOpacity="0.9"/>
+          </linearGradient>
+          
           {/* 메인 플래티넘 그라데이션 */}
           <linearGradient id="platinumMainGradient" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stopColor="#E5E4E2"/>

@@ -36,18 +36,22 @@ const GoldTank = ({ className = "", isPreview = false }) => {
           width="320" 
           height="205"
           fill="none"
-          stroke="url(#goldFrameGradient)"
-          strokeWidth="4"
+          stroke="rgba(255, 255, 255, 0.3)"
+          strokeWidth="1"
+          rx="15"
+          ry="15"
         />
         
         {/* 물 효과 - 럭셔리 */}
         <rect 
-          x="44" 
+          x="41" 
           y="49" 
-          width="312" 
-          height="197"
+          width="318" 
+          height="200"
           fill="url(#luxuryWaterGold)"
-          opacity="0.5"
+          opacity="0.75"
+          rx="14"
+          ry="14"
         />
         
         {/* 수면 효과 - 직선 */}
@@ -61,14 +65,18 @@ const GoldTank = ({ className = "", isPreview = false }) => {
           className="animate-wave"
         />
         
-        {/* 황금 프레임 - 상단 테두리 */}
+        {/* 내부 광택 효과 */}
         <rect 
-          x="40" 
-          y="45" 
-          width="320" 
-          height="7"
-          fill="url(#goldLuxuryGradient)"
-          filter="url(#goldGlow)"
+          x="41" 
+          y="46" 
+          width="318" 
+          height="203" 
+          fill="none"
+          stroke="url(#innerGlowGold)"
+          strokeWidth="0.5"
+          rx="14"
+          ry="14"
+          opacity="0.65"
         />
         
         {/* 보석 장식 - 상단 테두리에 위치 */}
@@ -140,6 +148,11 @@ const GoldTank = ({ className = "", isPreview = false }) => {
         
         {/* 그라디언트 정의 */}
         <defs>
+          <linearGradient id="innerGlowGold" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.75"/>
+            <stop offset="100%" stopColor="#FFFFFF" stopOpacity="0.25"/>
+          </linearGradient>
+          
           {/* 황금 프레임 */}
           <linearGradient id="goldFrameGradient" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stopColor="#FFD700"/>
@@ -201,10 +214,8 @@ const GoldTank = ({ className = "", isPreview = false }) => {
           
           {/* 럭셔리 물 */}
           <linearGradient id="luxuryWaterGold" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#87CEEB" stopOpacity="0.2"/>
-            <stop offset="30%" stopColor="#6495ED" stopOpacity="0.3"/>
-            <stop offset="60%" stopColor="#4682B4" stopOpacity="0.4"/>
-            <stop offset="100%" stopColor="#4169E1" stopOpacity="0.5"/>
+            <stop offset="0%" stopColor="#87CEEB" stopOpacity="0.55"/>
+            <stop offset="100%" stopColor="#20B2AA" stopOpacity="0.85"/>
           </linearGradient>
           
           {/* 수면 효과 */}

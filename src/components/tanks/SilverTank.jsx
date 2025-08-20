@@ -30,12 +30,14 @@ const SilverTank = ({ className = "", isPreview = false }) => {
         
         {/* 물 효과 - 깊이감 있는 그라데이션 */}
         <rect 
-          x="45" 
+          x="46" 
           y="65" 
-          width="310" 
-          height="185" 
+          width="308" 
+          height="184" 
           fill="url(#waterGradientSilverDeep)"
-          opacity="0.6"
+          opacity="0.7"
+          rx="14"
+          ry="14"
         />
         
         {/* 수면 파동 효과 */}
@@ -56,8 +58,10 @@ const SilverTank = ({ className = "", isPreview = false }) => {
           width="310" 
           height="205" 
           fill="none"
-          stroke="url(#chromeGradient)"
-          strokeWidth="3"
+          stroke="rgba(255, 255, 255, 0.3)"
+          strokeWidth="1"
+          rx="15"
+          ry="15"
         />
         
         {/* 대각선 조명 - 좌상단에서 우하단 */}
@@ -70,18 +74,23 @@ const SilverTank = ({ className = "", isPreview = false }) => {
         
         {/* 크롬 하이라이트 */}
         <path 
-          d="M 48 48 L 48 247 L 58 237 L 58 58 Z"
+          d="M 50 60 L 50 240 L 57 233 L 57 67 Z"
           fill="url(#chromeShine)"
-          opacity="0.7"
+          opacity="0.4"
         />
         
-        {/* 상단 크롬 림 */}
+        {/* 내부 광택 효과 */}
         <rect 
-          x="45" 
-          y="45" 
-          width="310" 
-          height="5" 
-          fill="url(#chromeTopRim)"
+          x="46" 
+          y="46" 
+          width="308" 
+          height="203" 
+          fill="none"
+          stroke="url(#innerGlowSilver)"
+          strokeWidth="0.5"
+          rx="14"
+          ry="14"
+          opacity="0.6"
         />
         
         {/* 미세 기포 애니메이션 */}
@@ -146,6 +155,11 @@ const SilverTank = ({ className = "", isPreview = false }) => {
         
         {/* 그라디언트 정의 */}
         <defs>
+          <linearGradient id="innerGlowSilver" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.7"/>
+            <stop offset="100%" stopColor="#FFFFFF" stopOpacity="0.2"/>
+          </linearGradient>
+          
           {/* 크롬 그라데이션 */}
           <linearGradient id="chromeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stopColor="#F0F0F0"/>
@@ -178,10 +192,8 @@ const SilverTank = ({ className = "", isPreview = false }) => {
           
           {/* 깊이감 있는 물 */}
           <linearGradient id="waterGradientSilverDeep" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#B0E0E6" stopOpacity="0.2"/>
-            <stop offset="30%" stopColor="#87CEEB" stopOpacity="0.3"/>
-            <stop offset="60%" stopColor="#6495ED" stopOpacity="0.4"/>
-            <stop offset="100%" stopColor="#4682B4" stopOpacity="0.6"/>
+            <stop offset="0%" stopColor="#87CEEB" stopOpacity="0.5"/>
+            <stop offset="100%" stopColor="#20B2AA" stopOpacity="0.8"/>
           </linearGradient>
           
           {/* 수면 효과 */}

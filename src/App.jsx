@@ -339,6 +339,7 @@ const EcostepApp = () => {
                 setPurchasedFish={setPurchasedFish}
                 fishData={fishData}
                 userRanking={userRanking}
+                setUserRanking={setUserRanking}
                 claimedTanks={claimedTanks}
                 setClaimedTanks={setClaimedTanks}
                 purchasedDecorations={purchasedDecorations}

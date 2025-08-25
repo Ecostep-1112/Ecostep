@@ -9,7 +9,7 @@ const GoldTank = ({ className = "", isPreview = false }) => {
         viewBox="0 0 100 100" 
         className="w-full h-full"
         xmlns="http://www.w3.org/2000/svg"
-        preserveAspectRatio="xMidYMid meet"
+        preserveAspectRatio="none"
       >
         {/* 골드 어항 - 심플한 색상만 */}
         

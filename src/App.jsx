@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Settings, Home, Target, Gift, Users, MoreHorizontal } from 'lucide-react';
+import { FiSettings, FiHome, FiTarget, FiGift, FiUsers, FiMoreHorizontal } from 'react-icons/fi';
 import HomePage from './pages/Home';
 import ChallengePage from './pages/Challenge';
 import RewardsPage from './pages/Rewards';
@@ -123,7 +123,7 @@ const EcostepApp = () => {
                 <span className={`${isDarkMode ? 'text-white' : 'text-gray-700'} text-xs font-medium`}>{points}P</span>
               </div>
               <button onClick={() => setShowSettings(true)}>
-                <Settings className={`w-5 h-5 ${isDarkMode ? 'text-white' : 'text-gray-700'}`} />
+                <FiSettings className={`w-5 h-5 ${isDarkMode ? 'text-white' : 'text-gray-700'}`} />
               </button>
             </div>
             {/* 그라데이션 테두리 */}
@@ -180,6 +180,7 @@ const EcostepApp = () => {
                 tankName={tankName}
                 purchasedDecorations={purchasedDecorations}
                 decorationsData={decorationsData}
+                selectedDecorations={selectedDecorations}
               />}
               {activeTab === 'challenge' && <ChallengePage 
                 isDarkMode={isDarkMode}
@@ -219,11 +220,11 @@ const EcostepApp = () => {
             <div className={`${bgColor} border-t ${borderColor}`}>
               <div className="flex justify-around py-2">
                 {[
-                  { id: 'home', icon: Home, label: '홈' },
-                  { id: 'challenge', icon: Target, label: '챌린지' },
-                  { id: 'reward', icon: Gift, label: '보상' },
-                  { id: 'community', icon: Users, label: '커뮤니티' },
-                  { id: 'more', icon: MoreHorizontal, label: '기타' }
+                  { id: 'home', icon: FiHome, label: '홈' },
+                  { id: 'challenge', icon: FiTarget, label: '챌린지' },
+                  { id: 'reward', icon: FiGift, label: '보상' },
+                  { id: 'community', icon: FiUsers, label: '커뮤니티' },
+                  { id: 'more', icon: FiMoreHorizontal, label: '기타' }
                 ].map((tab) => {
                   const Icon = tab.icon;
                   return (

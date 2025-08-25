@@ -1,5 +1,5 @@
 import React from 'react';
-import { ChevronRight } from 'lucide-react';
+import { FiChevronRight } from 'react-icons/fi';
 
 const SettingsScreen = ({ 
   isDarkMode, 
@@ -20,7 +20,7 @@ const SettingsScreen = ({
     <div className={`flex-1 ${bgColor}`}>
       <div className={`${bgColor} p-4 flex items-center border-b ${borderColor}`}>
         <button onClick={() => setShowSettings(false)} className="mr-3">
-          <ChevronRight className={`w-5 h-5 rotate-180 ${textColor}`} />
+          <FiChevronRight className={`w-5 h-5 rotate-180 ${textColor}`} />
         </button>
         <h2 className={`text-base font-medium ${textColor}`}>설정</h2>
       </div>
@@ -38,7 +38,7 @@ const SettingsScreen = ({
             <p className={`text-sm font-medium ${textColor}`}>송일님의 정보</p>
             <p className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>내 정보</p>
           </div>
-          <ChevronRight className={`w-4 h-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-400'}`} />
+          <FiChevronRight className={`w-4 h-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-400'}`} />
         </button>
 
         <button 
@@ -50,7 +50,7 @@ const SettingsScreen = ({
             <span className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} mr-2`}>
               {language === 'ko' ? '한국어' : 'English'}
             </span>
-            <ChevronRight className={`w-4 h-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-400'}`} />
+            <FiChevronRight className={`w-4 h-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-400'}`} />
           </div>
         </button>
         
@@ -63,7 +63,7 @@ const SettingsScreen = ({
             <span className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} mr-2`}>
               {notifications ? '켜짐' : '꺼짐'}
             </span>
-            <ChevronRight className={`w-4 h-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-400'}`} />
+            <FiChevronRight className={`w-4 h-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-400'}`} />
           </div>
         </button>
         
@@ -76,7 +76,7 @@ const SettingsScreen = ({
             <span className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} mr-2`}>
               {isDarkMode ? '다크' : '라이트'}
             </span>
-            <ChevronRight className={`w-4 h-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-400'}`} />
+            <FiChevronRight className={`w-4 h-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-400'}`} />
           </div>
         </button>
       </div>

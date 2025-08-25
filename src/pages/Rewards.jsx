@@ -1,5 +1,5 @@
 import React from 'react';
-import { Lock } from 'lucide-react';
+import { FiLock } from 'react-icons/fi';
 import FishIcons from '../components/FishIcons';
 import DecorationIcons from '../components/DecorationIcons';
 import SilverTank from '../components/tanks/SilverTank';
@@ -146,7 +146,7 @@ const Rewards = ({
                 <>
                   <div className="absolute inset-0 bg-white bg-opacity-40 rounded-lg"></div>
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <Lock className="w-5 h-5 text-gray-600 opacity-80" />
+                    <FiLock className="w-5 h-5 text-gray-600 opacity-80" />
                   </div>
                 </>
               )}
@@ -190,7 +190,7 @@ const Rewards = ({
                 <>
                   <div className="absolute inset-0 bg-white bg-opacity-40 rounded-lg"></div>
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <Lock className="w-5 h-5 text-gray-600 opacity-80" />
+                    <FiLock className="w-5 h-5 text-gray-600 opacity-80" />
                   </div>
                 </>
               )}
@@ -234,7 +234,7 @@ const Rewards = ({
                 <>
                   <div className="absolute inset-0 bg-white bg-opacity-40 rounded-lg"></div>
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <Lock className="w-5 h-5 text-gray-600 opacity-80" />
+                    <FiLock className="w-5 h-5 text-gray-600 opacity-80" />
                   </div>
                 </>
               )}

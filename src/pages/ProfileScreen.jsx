@@ -1,5 +1,5 @@
 import React from 'react';
-import { ChevronRight, Camera, Plus } from 'lucide-react';
+import { FiChevronRight, FiCamera, FiPlus } from 'react-icons/fi';
 
 const ProfileScreen = ({ isDarkMode, setShowProfile }) => {
   const bgColor = isDarkMode ? 'bg-gray-900' : 'bg-white';
@@ -11,7 +11,7 @@ const ProfileScreen = ({ isDarkMode, setShowProfile }) => {
     <div className={`flex-1 ${bgColor}`}>
       <div className={`${bgColor} p-4 flex items-center border-b ${borderColor}`}>
         <button onClick={() => setShowProfile(false)} className="mr-3">
-          <ChevronRight className={`w-5 h-5 rotate-180 ${textColor}`} />
+          <FiChevronRight className={`w-5 h-5 rotate-180 ${textColor}`} />
         </button>
         <h2 className={`text-base font-medium ${textColor}`}>송일님의 정보</h2>
       </div>
@@ -20,10 +20,10 @@ const ProfileScreen = ({ isDarkMode, setShowProfile }) => {
       <div className="flex justify-center mt-6 mb-4">
         <div className="relative">
           <div className="w-24 h-24 bg-blue-100 rounded-full flex items-center justify-center">
-            <Camera className="w-8 h-8 text-blue-500" />
+            <FiCamera className="w-8 h-8 text-blue-500" />
           </div>
           <button className="absolute bottom-0 right-0 w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
-            <Plus className="w-4 h-4 text-white" />
+            <FiPlus className="w-4 h-4 text-white" />
           </button>
         </div>
       </div>

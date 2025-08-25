@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Settings, TrendingUp } from 'lucide-react';
+import { FiSettings, FiTrendingUp } from 'react-icons/fi';
 import FishIcons from '../components/FishIcons';
 import DecorationIcons from '../components/DecorationIcons';
 import WaterSurface from '../components/WaterSurface';
@@ -12,7 +12,8 @@ const Home = ({
   currentTank = 'basic',
   tankName = '나의 어항',
   purchasedDecorations = [],
-  decorationsData = {}
+  decorationsData = {},
+  selectedDecorations = []
 }) => {
   const bgColor = isDarkMode ? 'bg-gray-900' : 'bg-white';
   const textColor = isDarkMode ? 'text-white' : 'text-gray-900';
@@ -31,7 +32,12 @@ const Home = ({
     <div className={`flex-1 overflow-y-auto custom-scrollbar scrollbar-hide-idle pb-20 ${bgColor}`}>
       <div className="min-h-full">
         {/* 어항 섹션 - 전체 너비, 파란 박스가 직접 어항 역할 */}
-        <div className="relative bg-gradient-to-b from-blue-500 to-blue-600 mt-0" style={{ aspectRatio: '1/1' }}>
+        <div className={`relative mt-0 ${
+          currentTank === 'basic' ? 'bg-gradient-to-b from-blue-500 to-blue-600' :
+          currentTank === 'silver' ? 'bg-gradient-to-b from-gray-400 to-gray-500' :
+          currentTank === 'gold' ? 'bg-gradient-to-b from-yellow-400 to-yellow-500' :
+          'bg-gradient-to-b from-purple-400 to-purple-500'
+        }`} style={{ aspectRatio: '1/1' }}>
           {/* 상단 그라데이션 구분선 */}
           <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/60 to-transparent"></div>
           
@@ -41,36 +47,26 @@ const Home = ({
           {/* 기포 시스템 */}
           <BubbleSystem fishPositions={fishPositions} />
             
-          {/* 물고기들 어항 위에 표시 */}
-          <div className="absolute inset-0 flex items-center justify-center gap-3 pointer-events-none z-[4]">
-              {/* 구매한 물고기 중 일부 표시 */}
-              {purchasedFish.slice(0, 3).map((fishName, i) => {
-                const FishIcon = FishIcons[fishName.replace(' ', '')];
-                return FishIcon ? (
-                <div 
-                  key={i} 
-                  className="animate-swim"
-                  style={{
-                    animationDelay: `${i * 0.5}s`,
-                    animationDuration: `${4 + i}s`
-                  }}
-                >
-                  <FishIcon size={45} />
+          {/* 물고기 표시 (정적) */}
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-[4]">
+            {purchasedFish.slice(0, 3).map((fishName, i) => {
+              const FishIcon = FishIcons[fishName.replace(' ', '')];
+              return FishIcon ? (
+                <div key={i} className="mx-2">
+                  <FishIcon size={35} />
                 </div>
               ) : null;
-              })}
+            })}
           </div>
           
-          {/* 사용자 보유 장식품 표시 - 어항 안쪽 */}
-            {purchasedDecorations.slice(0, 3).map((decoName, i) => {
+          {/* 사용자가 선택한 장식품 표시 - 어항 안쪽 */}
+            {selectedDecorations.slice(0, 3).map((decoName, i) => {
               const positions = [
                 { bottom: '18%', left: '20%' },
                 { bottom: '18%', right: '20%' },
                 { bottom: '18%', left: '50%', transform: 'translateX(-50%)' }
               ];
-              const deco = Object.values(decorationsData).flat().find(d => d.name === decoName);
-              if (!deco) return null;
-              const DecoIcon = DecorationIcons[deco.icon];
+              const DecoIcon = DecorationIcons[decoName];
               
               return DecoIcon ? (
                 <div 
@@ -97,7 +93,7 @@ const Home = ({
                 {/* 수질 정보 영역 */}
                 <div className="flex-1 px-3 py-1.5 bg-white/5 rounded-lg">
                   <div className="flex justify-between items-center mb-1">
-                    <span className="text-white text-xs">수질</span>
+                    <span className="text-white text-xs">{tankName}</span>
                     <span className="text-white text-xs font-medium">85%</span>
                   </div>
                   <div className="w-full bg-white/20 rounded-full h-1.5">
@@ -113,7 +109,7 @@ const Home = ({
                   onClick={() => setShowAquariumSettings(true)}
                   className="px-2 bg-white/20 hover:bg-white/30 transition-colors rounded-lg flex items-center justify-center"
                 >
-                  <Settings className="w-3 h-3 text-white" />
+                  <FiSettings className="w-3 h-3 text-white" />
                 </button>
               </div>
             </div>
@@ -132,7 +128,7 @@ const Home = ({
           <div className={`${isDarkMode ? 'bg-gray-800' : 'bg-gray-50'} rounded-xl p-4`}>
             <div className="flex justify-between items-center mb-2">
               <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} text-xs`}>플라스틱 절약량</span>
-              <TrendingUp className="w-4 h-4 text-green-500" />
+              <FiTrendingUp className="w-4 h-4 text-green-500" />
             </div>
             <p className={`text-2xl font-bold ${textColor}`}>18.7kg</p>
             <p className={`${isDarkMode ? 'text-gray-400' : 'text-gray-500'} text-xs mt-1`}>자동차 3일 운행량, 나무 2그루 효과</p>

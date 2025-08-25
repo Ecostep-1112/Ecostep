@@ -7,6 +7,7 @@ import CommunityPage from './pages/Community';
 import MorePage from './pages/More';
 import SettingsScreen from './pages/SettingsScreen';
 import ProfileScreen from './pages/ProfileScreen';
+import FriendsList from './pages/FriendsList';
 import { ThemeSettings, LanguageSettings, NotificationSettings, AquariumSettings } from './pages/Settings';
 import fishData from './data/fishData.json';
 
@@ -42,6 +43,7 @@ const EcostepApp = () => {
   const [tankName, setTankName] = useState('나의 어항');
   const [isEditingTankName, setIsEditingTankName] = useState(false);
   const [purchasedDecorations, setPurchasedDecorations] = useState(['해초', '산호']);
+  const [showFriendsList, setShowFriendsList] = useState(false);
 
   // master의 decorationsData
   const decorationsData = {
@@ -199,13 +201,14 @@ const EcostepApp = () => {
                 setClaimedTanks={setClaimedTanks}
                 purchasedDecorations={purchasedDecorations}
               />}
-              {activeTab === 'community' && <CommunityPage isDarkMode={isDarkMode} />}
-              {activeTab === 'more' && <MorePage isDarkMode={isDarkMode} />}
+              {activeTab === 'community' && !showFriendsList && <CommunityPage isDarkMode={isDarkMode} onShowFriendsList={() => setShowFriendsList(true)} />}
+              {activeTab === 'community' && showFriendsList && <FriendsList isDarkMode={isDarkMode} onBack={() => setShowFriendsList(false)} />}
+              {activeTab === 'more' && <MorePage isDarkMode={isDarkMode} userPoints={points} setUserPoints={setPoints} />}
             </>
           )}
 
           {/* 하단 네비게이션 */}
-          {!showSettings && !showProfile && !showAquariumSettings && !showThemeSettings && !showLanguageSettings && !showNotificationSettings && (
+          {!showSettings && !showProfile && !showAquariumSettings && !showThemeSettings && !showLanguageSettings && !showNotificationSettings && !showFriendsList && (
             <div className={`${bgColor} border-t ${borderColor}`}>
               <div className="flex justify-around py-2">
                 {[

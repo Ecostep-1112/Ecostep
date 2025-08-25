@@ -1,28 +1,24 @@
 import React, { useState, useEffect } from 'react';
-import { Leaf, RefreshCw, Share2, ChevronDown, ChevronUp, Book, Phone, ChevronRight } from 'lucide-react';
+import { Leaf, Share2, ChevronDown, ChevronUp, Book, Phone, ChevronRight, Check } from 'lucide-react';
 import { generateEnvironmentalTip } from '../services/claudeService';
 
-const More = ({ isDarkMode }) => {
+const More = ({ isDarkMode, userPoints, setUserPoints }) => {
   const [expandedTip, setExpandedTip] = useState(null);
   const [isLoadingTip, setIsLoadingTip] = useState(false);
-  const [environmentalTips, setEnvironmentalTips] = useState([]);
+  const [environmentalTip, setEnvironmentalTip] = useState(null);
   const [errorMessage, setErrorMessage] = useState('');
+  const [hasCheckedTip, setHasCheckedTip] = useState(false);
 
   // 컴포넌트 마운트 시 초기 팁 로드
   useEffect(() => {
-    loadInitialTips();
+    loadInitialTip();
   }, []);
 
-  const loadInitialTips = async () => {
+  const loadInitialTip = async () => {
     setIsLoadingTip(true);
     try {
-      // 초기 3개의 팁 생성
-      const tips = [];
-      for (let i = 0; i < 3; i++) {
-        const tip = await generateEnvironmentalTip();
-        tips.push(tip);
-      }
-      setEnvironmentalTips(tips);
+      const tip = await generateEnvironmentalTip();
+      setEnvironmentalTip(tip);
       setErrorMessage('');
     } catch (error) {
       console.error('팁 로드 실패:', error);
@@ -32,24 +28,12 @@ const More = ({ isDarkMode }) => {
     }
   };
 
-  const handleRefreshTip = async () => {
-    setIsLoadingTip(true);
-    setErrorMessage('');
-    try {
-      const newTip = await generateEnvironmentalTip();
-      // 기존 팁 중 첫 번째를 새로운 팁으로 교체
-      setEnvironmentalTips(prevTips => {
-        if (prevTips.length === 0) {
-          return [newTip];
-        }
-        // 첫 번째 팁만 교체하고 나머지는 유지
-        return [newTip, ...prevTips.slice(1)];
-      });
-    } catch (error) {
-      console.error('팁 생성 실패:', error);
-      setErrorMessage('새로운 팁을 생성하는 데 실패했습니다.');
-    } finally {
-      setIsLoadingTip(false);
+  const handleCheckTip = () => {
+    if (!hasCheckedTip && environmentalTip) {
+      setHasCheckedTip(true);
+      if (setUserPoints) {
+        setUserPoints(prev => prev + 10);
+      }
     }
   };
 
@@ -103,54 +87,42 @@ const More = ({ isDarkMode }) => {
               <Leaf className={`w-4 h-4 text-green-500 mr-2`} />
               <h3 className={`${textColor} text-sm font-medium`}>오늘의 환경 상식</h3>
             </div>
-            <button 
-              onClick={handleRefreshTip}
-              className="text-blue-500 hover:text-blue-600 transition-colors"
-              disabled={isLoadingTip}
-            >
-              <RefreshCw className={`w-4 h-4 ${isLoadingTip ? 'animate-spin' : ''}`} />
-            </button>
+            {hasCheckedTip && (
+              <span className="text-green-500 text-xs font-medium">+10 포인트 획득!</span>
+            )}
           </div>
           
           {errorMessage && (
             <div className="text-red-500 text-sm mb-3">{errorMessage}</div>
           )}
           
-          {isLoadingTip && environmentalTips.length === 0 ? (
+          {isLoadingTip && !environmentalTip ? (
             <div className="flex justify-center items-center h-32">
               <div className="text-gray-500">팁을 불러오는 중...</div>
             </div>
-          ) : (
-            <div className="space-y-3">
-              {environmentalTips.length === 0 ? (
-                <div className="text-center py-4">
-                  <p className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} text-sm`}>
-                    환경 팁이 없습니다. 새로고침 버튼을 눌러주세요.
-                  </p>
-                </div>
-              ) : (
-                environmentalTips.map((tip) => (
-              <div key={tip.id} className={`border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-100'} pb-3 last:border-0`}>
+          ) : environmentalTip ? (
+            <div>
+              <div className={`border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-100'} pb-3`}>
                 <div 
                   className="cursor-pointer"
-                  onClick={() => setExpandedTip(expandedTip === tip.id ? null : tip.id)}
+                  onClick={() => setExpandedTip(expandedTip === environmentalTip.id ? null : environmentalTip.id)}
                 >
                   <div className="flex justify-between items-start">
                     <div className="flex-1 pr-2">
                       <span className={`inline-block text-[10px] px-2 py-0.5 rounded-full mb-1 ${
                         isDarkMode ? 'bg-green-900 text-green-300' : 'bg-green-100 text-green-700'
                       }`}>
-                        {tip.category}
+                        {environmentalTip.category}
                       </span>
                       <p className={`text-sm font-medium ${isDarkMode ? 'text-gray-200' : 'text-gray-800'} mb-1`}>
-                        {tip.title}
+                        {environmentalTip.title}
                       </p>
                       <p className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} line-clamp-2`}>
-                        {tip.preview}
+                        {environmentalTip.preview}
                       </p>
                     </div>
                     <button className="flex-shrink-0 mt-1">
-                      {expandedTip === tip.id ? (
+                      {expandedTip === environmentalTip.id ? (
                         <ChevronUp className={`w-4 h-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
                       ) : (
                         <ChevronDown className={`w-4 h-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
@@ -161,26 +133,45 @@ const More = ({ isDarkMode }) => {
                 
                 {/* 확장된 내용 */}
                 <div className={`overflow-hidden transition-all duration-300 ease-in-out ${
-                  expandedTip === tip.id ? 'max-h-96 opacity-100 mt-3' : 'max-h-0 opacity-0'
+                  expandedTip === environmentalTip.id ? 'max-h-96 opacity-100 mt-3' : 'max-h-0 opacity-0'
                 }`}>
                   <div className={`${isDarkMode ? 'bg-gray-800' : 'bg-gray-50'} rounded-lg p-3`}>
                     <p className={`text-sm leading-relaxed ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                      {tip.content}
+                      {environmentalTip.content}
                     </p>
                     <div className="flex items-center justify-between mt-3 pt-3 border-t ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}">
+                      <button 
+                        onClick={handleCheckTip}
+                        className={`${
+                          hasCheckedTip 
+                            ? 'bg-green-500 text-white cursor-not-allowed' 
+                            : 'bg-blue-500 hover:bg-blue-600 text-white'
+                        } px-3 py-1 rounded-lg text-xs flex items-center transition-colors`}
+                        disabled={hasCheckedTip}
+                      >
+                        {hasCheckedTip ? (
+                          <>
+                            <Check className="w-3 h-3 mr-1" />
+                            확인 완료
+                          </>
+                        ) : (
+                          <>확인하고 10 포인트 받기</>
+                        )}
+                      </button>
                       <button className="text-blue-500 text-xs flex items-center">
                         <Share2 className="w-3 h-3 mr-1" />
                         공유하기
                       </button>
-                      <span className={`text-xs ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>
-                        💚 도움이 되었나요?
-                      </span>
                     </div>
                   </div>
                 </div>
               </div>
-                ))
-              )}
+            </div>
+          ) : (
+            <div className="text-center py-4">
+              <p className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} text-sm`}>
+                환경 팁을 불러올 수 없습니다.
+              </p>
             </div>
           )}
           

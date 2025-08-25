@@ -1,7 +1,8 @@
-import React from 'react';
-import { Search } from 'lucide-react';
+import React, { useState } from 'react';
+import { Search, MessageCircle, Link, Check } from 'lucide-react';
 
-const Community = ({ isDarkMode }) => {
+const Community = ({ isDarkMode, onShowFriendsList }) => {
+  const [linkCopied, setLinkCopied] = useState(false);
   const bgColor = isDarkMode ? 'bg-gray-900' : 'bg-white';
   const textColor = isDarkMode ? 'text-white' : 'text-gray-900';
   const borderColor = isDarkMode ? 'border-gray-700' : 'border-gray-200';
@@ -16,11 +17,84 @@ const Community = ({ isDarkMode }) => {
           <h3 className={`${textColor} text-sm font-medium mb-2`}>커뮤니티</h3>
           <p className={`${isDarkMode ? 'text-gray-400' : 'text-gray-500'} text-xs mb-3`}>친구들과 함께 지구를 지켜요!</p>
           <div className="flex gap-2 mb-3">
-            <button className="flex-1 bg-yellow-400 text-black py-2 rounded-lg text-sm font-medium">
+            <button 
+              onClick={() => {
+                // KakaoTalk share
+                if (window.Kakao) {
+                  window.Kakao.Share.sendDefault({
+                    objectType: 'feed',
+                    content: {
+                      title: 'Ecostep - 함께 지구를 지켜요!',
+                      description: '플라스틱 사용량을 줄이고 물고기를 키워보세요! 함께 환경을 보호해요.',
+                      imageUrl: 'https://ecostep.app/share-image.png',
+                      link: {
+                        mobileWebUrl: 'https://ecostep.app/invite?code=ABC123',
+                        webUrl: 'https://ecostep.app/invite?code=ABC123',
+                      },
+                    },
+                    buttons: [
+                      {
+                        title: '앱 시작하기',
+                        link: {
+                          mobileWebUrl: 'https://ecostep.app/invite?code=ABC123',
+                          webUrl: 'https://ecostep.app/invite?code=ABC123',
+                        },
+                      },
+                    ],
+                  });
+                } else {
+                  // Fallback: open KakaoTalk app or web
+                  const message = encodeURIComponent('Ecostep 앱에서 함께 환경을 보호해요! https://ecostep.app/invite?code=ABC123');
+                  window.open(`kakaotalk://msg/text/${message}`, '_blank');
+                  
+                  // If KakaoTalk app doesn't open, try web version
+                  setTimeout(() => {
+                    window.open(`https://talk.kakao.com`, '_blank');
+                  }, 1000);
+                }
+              }}
+              className="flex-1 bg-yellow-400 hover:bg-yellow-500 text-black py-2 rounded-lg text-sm font-medium flex items-center justify-center transition-colors"
+            >
+              <MessageCircle className="w-4 h-4 mr-1" />
               카톡으로 초대
             </button>
-            <button className="flex-1 bg-blue-500 text-white py-2 rounded-lg text-sm font-medium">
-              링크 복사
+            <button 
+              onClick={() => {
+                // Generate unique invite code
+                const inviteCode = 'ECO' + Math.random().toString(36).substr(2, 6).toUpperCase();
+                const inviteLink = `https://ecostep.app/invite?code=${inviteCode}`;
+                
+                // Copy to clipboard
+                navigator.clipboard.writeText(inviteLink).then(() => {
+                  setLinkCopied(true);
+                  setTimeout(() => setLinkCopied(false), 2000);
+                }).catch(() => {
+                  // Fallback for older browsers
+                  const textArea = document.createElement('textarea');
+                  textArea.value = inviteLink;
+                  document.body.appendChild(textArea);
+                  textArea.select();
+                  document.execCommand('copy');
+                  document.body.removeChild(textArea);
+                  setLinkCopied(true);
+                  setTimeout(() => setLinkCopied(false), 2000);
+                });
+              }}
+              className={`flex-1 ${
+                linkCopied ? 'bg-green-500' : 'bg-blue-500 hover:bg-blue-600'
+              } text-white py-2 rounded-lg text-sm font-medium flex items-center justify-center transition-colors`}
+            >
+              {linkCopied ? (
+                <>
+                  <Check className="w-4 h-4 mr-1" />
+                  복사 완료!
+                </>
+              ) : (
+                <>
+                  <Link className="w-4 h-4 mr-1" />
+                  링크 복사
+                </>
+              )}
             </button>
           </div>
           {/* 친구 검색 */}
@@ -66,7 +140,7 @@ const Community = ({ isDarkMode }) => {
               <span className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>15.2kg</span>
             </div>
           </div>
-          <button className="text-blue-500 text-xs mt-3">더보기 →</button>
+          <button onClick={onShowFriendsList} className="text-blue-500 hover:text-blue-600 text-xs mt-3 transition-colors">더보기 →</button>
         </div>
 
         {/* 전체 랭킹 */}

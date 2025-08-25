@@ -43,6 +43,7 @@ const Challenge = ({
   const [currentWeekStart, setCurrentWeekStart] = useState('');
   const [currentDayIndex, setCurrentDayIndex] = useState(0);
   const [todayCompleted, setTodayCompleted] = useState(false);
+  const [historyRange, setHistoryRange] = useState(7); // 7일, 4주, 16주, 32주
 
   // 월요일 기준 주차 계산
   useEffect(() => {
@@ -398,9 +399,20 @@ const Challenge = ({
                 <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>현재: {currentPlastic}g</span>
                 <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>목표: {plasticGoal}g</span>
               </div>
-              <div className={`w-full ${isDarkMode ? 'bg-gray-700' : 'bg-gray-200'} rounded-full h-1.5`}>
-                <div className="bg-blue-500 h-1.5 rounded-full" style={{ width: `${(currentPlastic/plasticGoal)*100}%` }}></div>
-              </div>
+              {currentPlastic > plasticGoal ? (
+                <div>
+                  <div className={`w-full ${isDarkMode ? 'bg-gray-700' : 'bg-gray-200'} rounded-full h-1.5 mb-2`}>
+                    <div className="bg-green-500 h-1.5 rounded-full" style={{ width: '100%' }}></div>
+                  </div>
+                  <div className="flex items-center justify-center">
+                    <span className="text-green-500 text-sm font-medium">🎉 목표 달성! (+{currentPlastic - plasticGoal}g 초과)</span>
+                  </div>
+                </div>
+              ) : (
+                <div className={`w-full ${isDarkMode ? 'bg-gray-700' : 'bg-gray-200'} rounded-full h-1.5`}>
+                  <div className="bg-blue-500 h-1.5 rounded-full" style={{ width: `${Math.min((currentPlastic/plasticGoal)*100, 100)}%` }}></div>
+                </div>
+              )}
             </div>
 
             {/* 플라스틱 사용 기록하기 */}
@@ -717,7 +729,7 @@ const Challenge = ({
             {/* 이번주 기록 */}
             <div className={`${cardBg} border ${borderColor} rounded-xl p-4`}>
               <h3 className={`${textColor} text-sm font-medium mb-3`}>이번주 기록</h3>
-              <div className="space-y-2 max-h-80 overflow-y-auto">
+              <div className="space-y-2 max-h-80 overflow-y-auto scrollbar-hide">
                 {(() => {
                   // 이번 주 시작일 (월요일) 계산
                   const today = new Date();
@@ -809,6 +821,213 @@ const Challenge = ({
                     })()}
                   </span>
                 </div>
+              </div>
+            </div>
+
+            {/* 주간 사용량 기록 */}
+            <div className={`${cardBg} border ${borderColor} rounded-xl p-4`}>
+              <div className="flex justify-between items-center mb-3">
+                <h3 className={`${textColor} text-sm font-medium`}>갤럭시 게이머</h3>
+                <div className="flex gap-1">
+                  {[
+                    { value: 7, label: '지난 7일' },
+                    { value: 4, label: '지난 4주' },
+                    { value: 16, label: '지난 16주' },
+                    { value: 32, label: '지난 32주' }
+                  ].map((option) => (
+                    <button
+                      key={option.value}
+                      onClick={() => setHistoryRange(option.value)}
+                      className={`px-2 py-1 text-xs rounded ${
+                        historyRange === option.value 
+                          ? 'bg-blue-500 text-white' 
+                          : isDarkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-600'
+                      }`}
+                    >
+                      {option.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              
+              <div className="h-48 relative">
+                {(() => {
+                  const today = new Date();
+                  const graphData = [];
+                  let maxValue = 100;
+                  
+                  // Calculate data based on selection
+                  if (historyRange === 7) {
+                    // Daily data for last 7 days
+                    for (let i = 6; i >= 0; i--) {
+                      const date = new Date(today);
+                      date.setDate(date.getDate() - i);
+                      date.setHours(0, 0, 0, 0);
+                      
+                      const nextDate = new Date(date);
+                      nextDate.setDate(date.getDate() + 1);
+                      
+                      const dayRecords = plasticRecords.filter(record => {
+                        const recordDate = new Date(record.date);
+                        return recordDate >= date && recordDate < nextDate;
+                      });
+                      
+                      const totalWeight = dayRecords.reduce((sum, record) => sum + record.totalWeight, 0);
+                      
+                      graphData.push({
+                        label: date.getDate().toString(),
+                        value: totalWeight,
+                        fullDate: date.toLocaleDateString('ko-KR', { month: 'numeric', day: 'numeric' })
+                      });
+                      
+                      maxValue = Math.max(maxValue, totalWeight);
+                    }
+                  } else {
+                    // Weekly data
+                    const numWeeks = historyRange === 4 ? 4 : historyRange === 16 ? 16 : 32;
+                    for (let i = numWeeks - 1; i >= 0; i--) {
+                      const weekStart = new Date(today);
+                      const dayOfWeek = weekStart.getDay();
+                      const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+                      weekStart.setDate(weekStart.getDate() + mondayOffset - (i * 7));
+                      weekStart.setHours(0, 0, 0, 0);
+                      
+                      const weekEnd = new Date(weekStart);
+                      weekEnd.setDate(weekStart.getDate() + 7);
+                      
+                      const weekRecords = plasticRecords.filter(record => {
+                        const recordDate = new Date(record.date);
+                        return recordDate >= weekStart && recordDate < weekEnd;
+                      });
+                      
+                      const totalWeight = weekRecords.reduce((sum, record) => sum + record.totalWeight, 0);
+                      
+                      // Show fewer labels for longer ranges
+                      let label = '';
+                      if (numWeeks <= 4 || i % Math.ceil(numWeeks / 8) === 0 || i === numWeeks - 1) {
+                        label = (weekStart.getMonth() + 1) + '.' + weekStart.getDate();
+                      }
+                      
+                      graphData.push({
+                        label: label,
+                        value: totalWeight,
+                        fullDate: weekStart.toLocaleDateString('ko-KR', { month: 'numeric', day: 'numeric' })
+                      });
+                      
+                      maxValue = Math.max(maxValue, totalWeight);
+                    }
+                  }
+                  
+                  // Add padding to max value
+                  maxValue = Math.ceil(maxValue * 1.2 / 100) * 100;
+                  
+                  return (
+                    <>
+                      {/* Y-axis grid lines and labels */}
+                      <div className="absolute inset-0">
+                        {[0, 0.25, 0.5, 0.75, 1].map((ratio) => (
+                          <div
+                            key={ratio}
+                            className="absolute w-full flex items-center"
+                            style={{ bottom: `${ratio * 100}%` }}
+                          >
+                            <div className={`w-full border-t ${ratio === 0 ? 'border-gray-400' : isDarkMode ? 'border-gray-700' : 'border-gray-200'} ${ratio !== 0 && 'border-dashed'}`} />
+                            <span className={`absolute -left-8 text-xs ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                              {Math.round(maxValue * ratio)}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                      
+                      {/* Graph line and area */}
+                      <svg className="absolute inset-0 w-full h-full" style={{ marginTop: '-2px' }}>
+                        <defs>
+                          <linearGradient id="areaGradient" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stopColor="#3B82F6" stopOpacity="0.3" />
+                            <stop offset="100%" stopColor="#3B82F6" stopOpacity="0.05" />
+                          </linearGradient>
+                        </defs>
+                        
+                        {/* Area under the line */}
+                        <path
+                          d={`
+                            M ${graphData.map((point, i) => {
+                              const x = (i / (graphData.length - 1)) * 100;
+                              const y = 100 - (point.value / maxValue) * 100;
+                              return `${x},${y}`;
+                            }).join(' L ')}
+                            L 100,100 L 0,100 Z
+                          `}
+                          fill="url(#areaGradient)"
+                          className="w-full h-full"
+                          vectorEffect="non-scaling-stroke"
+                          style={{ transform: 'scaleX(100%) scaleY(100%)' }}
+                        />
+                        
+                        {/* Line */}
+                        <polyline
+                          points={graphData.map((point, i) => {
+                            const x = (i / (graphData.length - 1)) * 100;
+                            const y = 100 - (point.value / maxValue) * 100;
+                            return `${x},${y}`;
+                          }).join(' ')}
+                          fill="none"
+                          stroke="#3B82F6"
+                          strokeWidth="2"
+                          className="w-full h-full"
+                          vectorEffect="non-scaling-stroke"
+                          style={{ transform: 'scaleX(100%) scaleY(100%)' }}
+                        />
+                        
+                        {/* Points */}
+                        {graphData.map((point, i) => {
+                          const x = (i / (graphData.length - 1)) * 100;
+                          const y = 100 - (point.value / maxValue) * 100;
+                          return (
+                            <g key={i}>
+                              <circle
+                                cx={`${x}%`}
+                                cy={`${y}%`}
+                                r="4"
+                                fill="#3B82F6"
+                                stroke="white"
+                                strokeWidth="2"
+                              />
+                              {/* Value label on hover area */}
+                              <rect
+                                x={`${x - 2}%`}
+                                y="0"
+                                width="4%"
+                                height="100%"
+                                fill="transparent"
+                                className="cursor-pointer"
+                              >
+                                <title>{point.fullDate}: {point.value}g</title>
+                              </rect>
+                            </g>
+                          );
+                        })}
+                      </svg>
+                      
+                      {/* X-axis labels */}
+                      <div className="absolute bottom-0 left-0 right-0 flex justify-between" style={{ top: '100%', paddingTop: '4px' }}>
+                        {graphData.map((point, i) => (
+                          <span
+                            key={i}
+                            className={`text-xs ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}
+                            style={{
+                              position: 'absolute',
+                              left: `${(i / (graphData.length - 1)) * 100}%`,
+                              transform: 'translateX(-50%)'
+                            }}
+                          >
+                            {point.label}
+                          </span>
+                        ))}
+                      </div>
+                    </>
+                  );
+                })()}
               </div>
             </div>
           </div>

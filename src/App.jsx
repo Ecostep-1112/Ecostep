@@ -56,6 +56,14 @@ const EcostepApp = () => {
   const [waterQuality, setWaterQuality] = useState(85);
   const [lastChallengeDate, setLastChallengeDate] = useState(null);
   const [daysWithoutChallenge, setDaysWithoutChallenge] = useState(0);
+  const [consecutiveDays, setConsecutiveDays] = useState(() => {
+    const saved = localStorage.getItem('consecutiveDays');
+    return saved ? parseInt(saved) : 0;
+  });
+  const [challengeHistory, setChallengeHistory] = useState(() => {
+    const saved = localStorage.getItem('challengeHistory');
+    return saved ? JSON.parse(saved) : [];
+  });
   
   // 토스트 메시지 상태
   const [toast, setToast] = useState({
@@ -170,6 +178,53 @@ const EcostepApp = () => {
       localStorage.setItem('lastChallengeDate', lastChallengeDate);
     }
   }, [lastChallengeDate]);
+
+  useEffect(() => {
+    localStorage.setItem('consecutiveDays', consecutiveDays.toString());
+  }, [consecutiveDays]);
+
+  useEffect(() => {
+    localStorage.setItem('challengeHistory', JSON.stringify(challengeHistory));
+  }, [challengeHistory]);
+
+  // 연속 달성 일수 계산 로직
+  useEffect(() => {
+    const calculateConsecutiveDays = () => {
+      if (challengeHistory.length === 0) {
+        setConsecutiveDays(0);
+        return;
+      }
+      
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      
+      // 최근 챌린지 기록들을 역순으로 확인하여 연속 일수 계산
+      let consecutive = 0;
+      let checkDate = new Date(today);
+      
+      for (let i = challengeHistory.length - 1; i >= 0; i--) {
+        const historyDate = new Date(challengeHistory[i]);
+        historyDate.setHours(0, 0, 0, 0);
+        
+        // 날짜 차이 계산
+        const diffTime = checkDate.getTime() - historyDate.getTime();
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        
+        if (diffDays === 0 || diffDays === 1) {
+          // 오늘이거나 하루 전 (연속)
+          consecutive++;
+          checkDate = new Date(historyDate);
+        } else {
+          // 연속이 끊김
+          break;
+        }
+      }
+      
+      setConsecutiveDays(consecutive);
+    };
+    
+    calculateConsecutiveDays();
+  }, [challengeHistory]);
 
   // 수질 감소 로직
   useEffect(() => {
@@ -311,6 +366,7 @@ const EcostepApp = () => {
                 isRandomDecorations={isRandomDecorations}
                 selectedFish={selectedFish}
                 fishCount={fishCount}
+                consecutiveDays={consecutiveDays}
               />}
               {activeTab === 'challenge' && <ChallengePage 
                 isDarkMode={isDarkMode}
@@ -332,6 +388,8 @@ const EcostepApp = () => {
                 setPoints={setPoints}
                 setLastChallengeDate={setLastChallengeDate}
                 setWaterQuality={setWaterQuality}
+                challengeHistory={challengeHistory}
+                setChallengeHistory={setChallengeHistory}
               />}
               {activeTab === 'reward' && <RewardsPage 
                 isDarkMode={isDarkMode} 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FiSettings, FiTrendingUp } from 'react-icons/fi';
+import { FiSettings } from 'react-icons/fi';
 import FishIcons from '../components/FishIcons';
 import DecorationIcons from '../components/DecorationIcons';
 import WaterSurface from '../components/WaterSurface';
@@ -20,13 +20,24 @@ const Home = ({
   isRandomFish = false,
   isRandomDecorations = false,
   selectedFish = [],
-  fishCount = 0
+  fishCount = 0,
+  consecutiveDays = 0
 }) => {
   const bgColor = isDarkMode ? 'bg-gray-900' : 'bg-white';
   const textColor = isDarkMode ? 'text-white' : 'text-gray-900';
   const [fishPositions, setFishPositions] = useState([]);
   const [displayFish, setDisplayFish] = useState([]);
   const [displayDecorations, setDisplayDecorations] = useState([]);
+  const [testPlasticSaved, setTestPlasticSaved] = useState(0);
+  
+  // 테스트 슬라이더를 사용했으면 그 값을, 아니면 실제 계산
+  const plasticSaved = testPlasticSaved > 0 ? parseFloat(testPlasticSaved).toFixed(1) : (consecutiveDays * 0.5).toFixed(1);
+  
+  // 플라스틱 1kg = 약 6kg CO2 배출
+  // 나무 1그루는 연간 약 12kg CO2 흡수
+  // 따라서 플라스틱 2kg 절약 = 12kg CO2 감소 = 나무 1그루의 연간 효과
+  const co2Reduced = parseFloat(plasticSaved) * 6; // 플라스틱으로 인한 CO2 감소량
+  const treesEquivalent = Math.round(co2Reduced / 12); // 나무 그루 수
   
   // 랜덤 선택 로직
   useEffect(() => {
@@ -208,8 +219,199 @@ const Home = ({
           </div>
         </div>
 
+        {/* 연속 사용 알림 */}
+        <div className={`mx-4 mt-4 p-3 ${isDarkMode ? 'bg-gray-800 border-green-800' : 'bg-green-50 border-green-200'} border rounded-xl`}>
+          <div className="flex items-center justify-center gap-2">
+            {/* 왼쪽 불꽃 SVG 아이콘 */}
+            <svg 
+              width="16" 
+              height="20" 
+              viewBox="0 0 16 20" 
+              fill="none" 
+              xmlns="http://www.w3.org/2000/svg"
+              className="animate-pulse"
+              style={{ animationDuration: '3s' }}
+            >
+              <path 
+                d="M8 20c4.418 0 8-3.582 8-8 0-1.5-.5-3-1.5-4.5L13 6c-1-2-2-4-2-6-1.5 2-2.5 3.5-3 5-.5-1-1.5-2.5-2-4-1 3-3 5-3 9 0 4.418 3.582 8 8 8z" 
+                fill="url(#flame-gradient-left)"
+              />
+              <defs>
+                <linearGradient id="flame-gradient-left" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stopColor="#fbbf24" />
+                  <stop offset="50%" stopColor="#f97316" />
+                  <stop offset="100%" stopColor="#dc2626" />
+                </linearGradient>
+              </defs>
+            </svg>
+            
+            <span className="text-green-500 text-sm font-medium">
+              챌린지 {consecutiveDays.toString().padStart(2, '0')}일 연속 달성!
+            </span>
+            
+            {/* 오른쪽 불꽃 SVG 아이콘 */}
+            <svg 
+              width="16" 
+              height="20" 
+              viewBox="0 0 16 20" 
+              fill="none" 
+              xmlns="http://www.w3.org/2000/svg"
+              className="animate-pulse"
+              style={{ animationDuration: '3s', animationDelay: '1.5s' }}
+            >
+              <path 
+                d="M8 20c4.418 0 8-3.582 8-8 0-1.5-.5-3-1.5-4.5L13 6c-1-2-2-4-2-6-1.5 2-2.5 3.5-3 5-.5-1-1.5-2.5-2-4-1 3-3 5-3 9 0 4.418 3.582 8 8 8z" 
+                fill="url(#flame-gradient-right)"
+              />
+              <defs>
+                <linearGradient id="flame-gradient-right" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stopColor="#fbbf24" />
+                  <stop offset="50%" stopColor="#f97316" />
+                  <stop offset="100%" stopColor="#dc2626" />
+                </linearGradient>
+              </defs>
+            </svg>
+          </div>
+        </div>
+
+        {/* 통계 카드 */}
+        <div className="mx-4 mt-4 mb-4">
+          <div className={`${isDarkMode ? 'bg-gray-800' : 'bg-gray-50'} rounded-xl p-6`}>
+            <div className="flex flex-col items-center">
+              <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} text-xs mb-3`}>플라스틱 절약량</span>
+              
+              {/* 초록색 그라데이션 원 */}
+              <div className="relative w-28 h-28 mb-3">
+                <div className="absolute inset-0 bg-gradient-to-br from-green-400 via-emerald-500 to-green-600 rounded-full shadow-lg"></div>
+                <div className="absolute inset-[2px] bg-gradient-to-br from-green-400/20 via-emerald-500/20 to-green-600/20 rounded-full backdrop-blur-sm"></div>
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <p className="text-2xl font-bold text-white">{plasticSaved}kg</p>
+                </div>
+              </div>
+              
+              {treesEquivalent > 0 && (
+                <p className={`${isDarkMode ? 'text-gray-400' : 'text-gray-500'} text-xs text-center`}>
+                  나무 {treesEquivalent}그루가 1년간 흡수하는 CO₂ 양
+                </p>
+              )}
+              
+              {/* 그라데이션 구분선 */}
+              <div className={`w-full mt-3 h-[1px] bg-gradient-to-r from-transparent ${isDarkMode ? 'via-gray-600' : 'via-gray-300'} to-transparent`}></div>
+              
+              {/* SVG 나무들 */}
+              <div className="mt-4 w-full">
+                <div className="flex flex-col items-center gap-2">
+                  {/* 나무를 7개씩 줄로 분할 */}
+                  {Array.from({ length: Math.ceil(treesEquivalent / 7) }, (_, rowIndex) => {
+                    const startIdx = rowIndex * 7;
+                    const endIdx = Math.min(startIdx + 7, treesEquivalent);
+                    const treesInRow = endIdx - startIdx;
+                    
+                    return (
+                      <div key={rowIndex} className="flex justify-center gap-2">
+                        {Array.from({ length: treesInRow }, (_, i) => {
+                          const treeIndex = startIdx + i;
+                          return (
+                            <svg
+                              key={treeIndex}
+                              width="30"
+                              height="35"
+                              viewBox="0 0 30 35"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                              className="animate-pulse"
+                              style={{ 
+                                animationDuration: '3s',
+                                animationDelay: `${treeIndex * 0.2}s` 
+                              }}
+                            >
+                              {/* 나무 잎 부분 */}
+                              <circle cx="15" cy="10" r="8" fill="#22c55e" opacity="0.9"/>
+                              <circle cx="10" cy="13" r="6" fill="#16a34a" opacity="0.8"/>
+                              <circle cx="20" cy="13" r="6" fill="#16a34a" opacity="0.8"/>
+                              <circle cx="15" cy="15" r="7" fill="#10b981" opacity="0.9"/>
+                              
+                              {/* 나무 줄기 */}
+                              <rect x="13" y="15" width="4" height="15" fill="#92400e" rx="1"/>
+                              
+                              {/* 그림자 */}
+                              <ellipse cx="15" cy="32" rx="8" ry="2" fill="#000" opacity="0.1"/>
+                            </svg>
+                          );
+                        })}
+                      </div>
+                    );
+                  })}
+                </div>
+                
+                {/* 나무가 없을 때 메시지 */}
+                {treesEquivalent === 0 && (
+                  <p className={`text-center text-xs ${isDarkMode ? 'text-gray-500' : 'text-gray-400'} mt-2`}>
+                    챌린지를 완료하면 나무가 자랍니다 🌱
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        {/* 플라스틱 절약량 테스트 슬라이더 (개발용) */}
+        <div className={`mx-4 mt-4 mb-4 p-4 ${isDarkMode ? 'bg-gray-800' : 'bg-gray-50'} rounded-xl`}>
+          <div className="flex items-center justify-between mb-2">
+            <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} text-xs font-medium`}>
+              테스트용 플라스틱 절약량 조절
+            </span>
+            <span className={`text-xs font-bold ${
+              parseFloat(testPlasticSaved) >= 15 ? 'text-green-500' : 
+              parseFloat(testPlasticSaved) >= 7 ? 'text-blue-500' : 
+              parseFloat(testPlasticSaved) >= 3.5 ? 'text-yellow-500' : 
+              'text-gray-500'
+            }`}>
+              {testPlasticSaved}kg
+            </span>
+          </div>
+          <input
+            type="range"
+            min="0"
+            max="50"
+            step="0.5"
+            value={testPlasticSaved}
+            onChange={(e) => {
+              setTestPlasticSaved(e.target.value);
+            }}
+            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
+            style={{
+              background: `linear-gradient(to right, 
+                ${
+                  parseFloat(testPlasticSaved) >= 15 ? '#22c55e' : 
+                  parseFloat(testPlasticSaved) >= 7 ? '#3B82F6' : 
+                  parseFloat(testPlasticSaved) >= 3.5 ? '#EAB308' : 
+                  '#9CA3AF'
+                } 0%, 
+                ${
+                  parseFloat(testPlasticSaved) >= 15 ? '#22c55e' : 
+                  parseFloat(testPlasticSaved) >= 7 ? '#3B82F6' : 
+                  parseFloat(testPlasticSaved) >= 3.5 ? '#EAB308' : 
+                  '#9CA3AF'
+                } ${(parseFloat(testPlasticSaved) / 50) * 100}%, 
+                #E5E7EB ${(parseFloat(testPlasticSaved) / 50) * 100}%, 
+                #E5E7EB 100%)`
+            }}
+          />
+          <div className="flex justify-between mt-1">
+            <span className={`text-[10px] ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>0kg</span>
+            <span className={`text-[10px] ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>25kg</span>
+            <span className={`text-[10px] ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>50kg</span>
+          </div>
+          <div className="mt-2 text-center">
+            <span className={`text-[11px] ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+              CO₂ {co2Reduced.toFixed(1)}kg 감소 = 나무 {treesEquivalent}그루의 연간 효과
+            </span>
+          </div>
+        </div>
+        
         {/* 수질 테스트 슬라이더 (개발용) */}
-        <div className={`mx-4 mt-4 p-4 ${isDarkMode ? 'bg-gray-800' : 'bg-gray-50'} rounded-xl`}>
+        <div className={`mx-4 mt-4 mb-4 p-4 ${isDarkMode ? 'bg-gray-800' : 'bg-gray-50'} rounded-xl`}>
           <div className="flex items-center justify-between mb-2">
             <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} text-xs font-medium`}>
               테스트용 수질 조절
@@ -241,25 +443,6 @@ const Home = ({
             <span className={`text-[10px] ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>0% (탁함)</span>
             <span className={`text-[10px] ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>50%</span>
             <span className={`text-[10px] ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>100% (맑음)</span>
-          </div>
-        </div>
-
-        {/* 연속 사용 알림 */}
-        <div className={`mx-4 mt-4 p-3 ${isDarkMode ? 'bg-gray-800 border-green-800' : 'bg-green-50 border-green-200'} border rounded-xl`}>
-          <div className="flex items-center">
-            <span className="text-green-500 text-sm font-medium">🔥 23일 연속 달성!</span>
-          </div>
-        </div>
-
-        {/* 통계 카드 */}
-        <div className="mx-4 mt-4">
-          <div className={`${isDarkMode ? 'bg-gray-800' : 'bg-gray-50'} rounded-xl p-4`}>
-            <div className="flex justify-between items-center mb-2">
-              <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} text-xs`}>플라스틱 절약량</span>
-              <FiTrendingUp className="w-4 h-4 text-green-500" />
-            </div>
-            <p className={`text-2xl font-bold ${textColor}`}>18.7kg</p>
-            <p className={`${isDarkMode ? 'text-gray-400' : 'text-gray-500'} text-xs mt-1`}>자동차 3일 운행량, 나무 2그루 효과</p>
           </div>
         </div>
       </div>

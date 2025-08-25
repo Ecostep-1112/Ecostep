@@ -20,7 +20,9 @@ const Challenge = ({
   points,
   setPoints,
   setLastChallengeDate,
-  setWaterQuality
+  setWaterQuality,
+  challengeHistory,
+  setChallengeHistory
 }) => {
   const [customChallenge, setCustomChallenge] = useState('');
   const [showCustomChallenge, setShowCustomChallenge] = useState(false);
@@ -132,9 +134,16 @@ const Challenge = ({
       if (setWaterQuality) {
         setWaterQuality(100);
       }
+      
+      const today = new Date().toISOString();
       if (setLastChallengeDate) {
-        const today = new Date().toISOString();
         setLastChallengeDate(today);
+      }
+      
+      // 챌린지 기록에 추가 (연속 날짜 계산용)
+      if (setChallengeHistory) {
+        const newHistory = [...(challengeHistory || []), today];
+        setChallengeHistory(newHistory);
       }
     }
   };

@@ -121,7 +121,7 @@ const Rewards = ({
             >
               {/* 블러 효과를 받을 컨테이너 */}
               <div className={`w-full h-full flex flex-col items-center justify-between ${(userRanking !== 'silver' && userRanking !== 'gold' && userRanking !== 'platinum') ? 'filter blur-[1px]' : ''}`}>
-                <div className={`h-[35px] w-full flex items-center justify-center relative px-1`}>
+                <div className={`w-[50px] h-[50px] flex items-center justify-center relative mx-auto`}>
                   <SilverTank isPreview={true} />
                 </div>
                 
@@ -165,7 +165,7 @@ const Rewards = ({
             >
               {/* 블러 효과를 받을 컨테이너 */}
               <div className={`w-full h-full flex flex-col items-center justify-between ${(userRanking !== 'gold' && userRanking !== 'platinum') ? 'filter blur-[1px]' : ''}`}>
-                <div className={`h-[35px] w-full flex items-center justify-center relative px-1`}>
+                <div className={`w-[50px] h-[50px] flex items-center justify-center relative mx-auto`}>
                   <GoldTank isPreview={true} />
                 </div>
                 
@@ -209,7 +209,7 @@ const Rewards = ({
             >
               {/* 블러 효과를 받을 컨테이너 */}
               <div className={`w-full h-full flex flex-col items-center justify-between ${userRanking !== 'platinum' ? 'filter blur-[1px]' : ''}`}>
-                <div className={`h-[35px] w-full flex items-center justify-center relative px-1`}>
+                <div className={`w-[50px] h-[50px] flex items-center justify-center relative mx-auto`}>
                   <PlatinumTank isPreview={true} />
                 </div>
                 

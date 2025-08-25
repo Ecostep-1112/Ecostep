@@ -10,7 +10,7 @@ const Home = ({
   setShowAquariumSettings, 
   purchasedFish,
   currentTank = 'basic',
-  tankName = '나의 어항',
+  tankName = '수질',
   purchasedDecorations = [],
   decorationsData = {},
   selectedDecorations = []
@@ -33,10 +33,10 @@ const Home = ({
       <div className="min-h-full">
         {/* 어항 섹션 - 전체 너비, 파란 박스가 직접 어항 역할 */}
         <div className={`relative mt-0 ${
-          currentTank === 'basic' ? 'bg-gradient-to-b from-blue-500 to-blue-600' :
-          currentTank === 'silver' ? 'bg-gradient-to-b from-gray-400 to-gray-500' :
-          currentTank === 'gold' ? 'bg-gradient-to-b from-yellow-400 to-yellow-500' :
-          'bg-gradient-to-b from-purple-400 to-purple-500'
+          currentTank === 'basic' ? 'bg-gradient-to-br from-cyan-400 via-blue-500 to-blue-600' :
+          currentTank === 'silver' ? 'bg-gradient-to-br from-slate-300 via-cyan-400 to-teal-500' :
+          currentTank === 'gold' ? 'bg-gradient-to-br from-amber-300 via-yellow-400 to-orange-400' :
+          'bg-gradient-to-br from-purple-400 via-pink-400 to-indigo-500'
         }`} style={{ aspectRatio: '1/1' }}>
           {/* 상단 그라데이션 구분선 */}
           <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/60 to-transparent"></div>

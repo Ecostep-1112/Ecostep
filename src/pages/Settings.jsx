@@ -3,6 +3,10 @@ import { FiChevronRight, FiSun, FiMoon, FiCheck } from 'react-icons/fi';
 import FishIcons from '../components/FishIcons';
 import DecorationIcons from '../components/DecorationIcons';
 import fishData from '../data/fishData.json';
+import BasicTank from '../components/tanks/BasicTank';
+import SilverTank from '../components/tanks/SilverTank';
+import GoldTank from '../components/tanks/GoldTank';
+import PlatinumTank from '../components/tanks/PlatinumTank';
 
 export const ThemeSettings = ({ isDarkMode, setIsDarkMode, setShowThemeSettings }) => {
   const bgColor = isDarkMode ? 'bg-gray-900' : 'bg-white';
@@ -146,7 +150,7 @@ export const AquariumSettings = ({
   );
 
   return (
-    <div className={`flex-1 ${bgColor} overflow-hidden flex flex-col`}>
+    <div className={`flex-1 ${bgColor} overflow-hidden flex flex-col relative`}>
       <div className={`${bgColor} p-4 flex items-center border-b ${borderColor}`}>
         <button onClick={() => setShowAquariumSettings(false)} className="mr-3">
           <FiChevronRight className={`w-5 h-5 rotate-180 ${textColor}`} />
@@ -154,7 +158,7 @@ export const AquariumSettings = ({
         <h2 className={`text-base font-medium ${textColor}`}>어항 설정</h2>
       </div>
       
-      <div className="flex-1 overflow-y-auto custom-scrollbar scrollbar-hide px-3 pb-4">
+      <div className="flex-1 overflow-y-auto custom-scrollbar scrollbar-hide px-3 pb-24">
         <div className="mt-4">
           <h3 className={`text-sm font-medium mb-3 ${textColor}`}>어항 선택</h3>
           <div className="flex gap-3 mb-6">
@@ -166,16 +170,16 @@ export const AquariumSettings = ({
                 <button
                   key={type}
                   onClick={() => isUnlocked && setCurrentTank(type)}
-                  className={`flex-1 border ${isSelected ? 'border-blue-500 bg-blue-50' : borderColor} rounded-xl p-3 ${isUnlocked ? cardBg : 'bg-gray-100 opacity-50'} ${isUnlocked ? 'cursor-pointer' : 'cursor-not-allowed'}`}
+                  className={`flex-1 border ${isSelected ? 'border-blue-500 bg-blue-50' : borderColor} rounded-xl p-2 ${isUnlocked ? cardBg : 'bg-gray-100 opacity-50'} ${isUnlocked ? 'cursor-pointer' : 'cursor-not-allowed'}`}
                   disabled={!isUnlocked}
                 >
-                  <div className={`w-full aspect-square ${inputBg} rounded-lg mb-2 flex items-center justify-center`}>
-                    {type === 'basic' && <span className="text-2xl">🐟</span>}
-                    {type === 'silver' && <span className="text-2xl">🥈</span>}
-                    {type === 'gold' && <span className="text-2xl">🥇</span>}
-                    {type === 'platinum' && <span className="text-2xl">👑</span>}
+                  <div className={`w-full aspect-square rounded-lg mb-1 flex items-center justify-center relative overflow-hidden`}>
+                    {type === 'basic' && <BasicTank isPreview={true} />}
+                    {type === 'silver' && <SilverTank isPreview={true} />}
+                    {type === 'gold' && <GoldTank isPreview={true} />}
+                    {type === 'platinum' && <PlatinumTank isPreview={true} />}
                   </div>
-                  <p className={`text-xs text-center ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                  <p className={`text-[10px] text-center ${isSelected ? 'text-blue-600 font-medium' : isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                     {type === 'basic' ? '기본' : type === 'silver' ? '실버' : type === 'gold' ? '골드' : '플래티넘'}
                   </p>
                 </button>
@@ -249,7 +253,7 @@ export const AquariumSettings = ({
                             <div className="flex items-center justify-center mb-1">
                               {(() => {
                                 const FishIcon = FishIcons[fish.name.replace(' ', '')];
-                                return FishIcon ? <FishIcon size={24} /> : null;
+                                return FishIcon ? <FishIcon size={32} /> : null;
                               })()}
                             </div>
                             
@@ -270,10 +274,10 @@ export const AquariumSettings = ({
           {/* 구분선 */}
           <div className={`border-t ${borderColor} my-6`}></div>
 
-          <h3 className={`text-sm font-medium mb-3 ${textColor}`}>어항 장식품</h3>
+          <h3 className={`text-sm font-medium mb-3 ${textColor}`}>장식품</h3>
           <div className={`${inputBg} rounded-lg p-3 mb-3`}>
             <div className="flex items-center justify-between mb-3">
-              <span className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>장식품 개수: {selectedDecorations.length}개</span>
+              <span className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>장식품: {selectedDecorations.length}개</span>
               <div className="flex items-center gap-2">
                 <button 
                   onClick={() => {
@@ -286,7 +290,8 @@ export const AquariumSettings = ({
                 <span className={`text-sm font-medium px-3 ${textColor}`}>{selectedDecorations.length}</span>
                 <button 
                   onClick={() => {
-                    if (selectedDecorations.length < 3 && availableDecorations.length > selectedDecorations.length) {
+                    const maxDecorations = Math.min(availableDecorations.length, 3);
+                    if (selectedDecorations.length < maxDecorations) {
                       const nextDeco = availableDecorations.find(d => !selectedDecorations.includes(d.name));
                       if (nextDeco) setSelectedDecorations([...selectedDecorations, nextDeco.name]);
                     }
@@ -310,7 +315,7 @@ export const AquariumSettings = ({
           {!isRandomDecorations && (
             availableDecorations.length > 0 ? (
               <div className="mb-6">
-                <h4 className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} mb-2`}>장식품 선택 ({selectedDecorations.length}/3)</h4>
+                <h4 className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} mb-2`}>장식품 선택 ({selectedDecorations.length}/{Math.min(availableDecorations.length, 3)})</h4>
                 <div className="grid grid-cols-3 gap-2">
                   {availableDecorations.map((deco) => {
                     const isSelected = selectedDecorations.includes(deco.name);
@@ -320,20 +325,21 @@ export const AquariumSettings = ({
                       <button
                         key={deco.name}
                         onClick={() => {
+                          const maxDecorations = Math.min(availableDecorations.length, 3);
                           if (isSelected) {
                             setSelectedDecorations(selectedDecorations.filter(d => d !== deco.name));
-                          } else if (selectedDecorations.length < 3) {
+                          } else if (selectedDecorations.length < maxDecorations) {
                             setSelectedDecorations([...selectedDecorations, deco.name]);
                           }
                         }}
                         className={`rounded-lg border ${
                           isSelected ? 'border-blue-500 bg-blue-50' : borderColor
                         } ${cardBg} flex flex-col items-center justify-center h-[85px] p-2`}
-                        disabled={!isSelected && selectedDecorations.length >= 3}
+                        disabled={!isSelected && selectedDecorations.length >= Math.min(availableDecorations.length, 3)}
                       >
                         {/* 장식품 아이콘 */}
                         <div className="flex items-center justify-center mb-1">
-                          <div className="w-7 h-7">
+                          <div className="w-9 h-9">
                             {DecoIcon && React.createElement(DecoIcon)}
                           </div>
                         </div>
@@ -355,17 +361,20 @@ export const AquariumSettings = ({
               </div>
             )
           )}
-
-          <button 
-            onClick={() => {
-              // 설정 저장
-              setShowAquariumSettings(false);
-            }}
-            className="w-full bg-blue-500 text-white py-2.5 rounded-lg text-sm font-medium"
-          >
-            적용하기
-          </button>
         </div>
+      </div>
+      
+      {/* 하단 고정 적용하기 버튼 */}
+      <div className={`absolute bottom-0 left-0 right-0 ${bgColor} border-t ${borderColor} p-4`}>
+        <button 
+          onClick={() => {
+            // 설정 저장
+            setShowAquariumSettings(false);
+          }}
+          className="w-full bg-blue-500 text-white py-3 rounded-lg text-sm font-medium"
+        >
+          적용하기
+        </button>
       </div>
     </div>
   );

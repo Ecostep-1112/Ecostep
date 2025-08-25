@@ -39,7 +39,7 @@ const EcostepApp = () => {
   const [unlockedTanks, setUnlockedTanks] = useState(['basic', 'silver', 'gold', 'platinum']); // 모든 어항 잠금 해제
   const [userRanking, setUserRanking] = useState('gold'); // 골드 랭킹으로 설정
   const [claimedTanks, setClaimedTanks] = useState([]); // 수령 완료한 어항 목록
-  const [tankName, setTankName] = useState('나의 어항');
+  const [tankName, setTankName] = useState('수질');
   const [isEditingTankName, setIsEditingTankName] = useState(false);
   const [purchasedDecorations, setPurchasedDecorations] = useState(['해초', '산호']);
 
@@ -77,7 +77,12 @@ const EcostepApp = () => {
     if (savedTank) setCurrentTank(savedTank);
     if (savedUnlockedTanks) setUnlockedTanks(JSON.parse(savedUnlockedTanks));
     if (savedRanking) setUserRanking(savedRanking);
-    if (savedTankName) setTankName(savedTankName);
+    if (savedTankName && savedTankName !== '나의 어항') {
+      setTankName(savedTankName);
+    } else {
+      setTankName('수질');
+      localStorage.setItem('tankName', '수질');
+    }
   }, []);
 
   // 상태 변경시 localStorage에 저장

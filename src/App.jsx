@@ -42,6 +42,9 @@ const EcostepApp = () => {
   const [tankName, setTankName] = useState('수질');
   const [isEditingTankName, setIsEditingTankName] = useState(false);
   const [purchasedDecorations, setPurchasedDecorations] = useState(['해초', '산호']);
+  const [waterQuality, setWaterQuality] = useState(85);
+  const [lastChallengeDate, setLastChallengeDate] = useState(null);
+  const [daysWithoutChallenge, setDaysWithoutChallenge] = useState(0);
 
   // master의 decorationsData
   const decorationsData = {
@@ -73,6 +76,8 @@ const EcostepApp = () => {
     const savedUnlockedTanks = localStorage.getItem('unlockedTanks');
     const savedRanking = localStorage.getItem('userRanking');
     const savedTankName = localStorage.getItem('tankName');
+    const savedWaterQuality = localStorage.getItem('waterQuality');
+    const savedLastChallengeDate = localStorage.getItem('lastChallengeDate');
     
     if (savedTank) setCurrentTank(savedTank);
     if (savedUnlockedTanks) setUnlockedTanks(JSON.parse(savedUnlockedTanks));
@@ -82,6 +87,18 @@ const EcostepApp = () => {
     } else {
       setTankName('수질');
       localStorage.setItem('tankName', '수질');
+    }
+    if (savedWaterQuality) setWaterQuality(parseInt(savedWaterQuality));
+    if (savedLastChallengeDate) {
+      setLastChallengeDate(savedLastChallengeDate);
+      
+      // 마지막 챌린지 완료 후 경과 일수 계산
+      const lastDate = new Date(savedLastChallengeDate);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      lastDate.setHours(0, 0, 0, 0);
+      const daysDiff = Math.floor((today - lastDate) / (1000 * 60 * 60 * 24));
+      setDaysWithoutChallenge(daysDiff);
     }
   }, []);
 
@@ -101,6 +118,63 @@ const EcostepApp = () => {
   useEffect(() => {
     localStorage.setItem('tankName', tankName);
   }, [tankName]);
+
+  useEffect(() => {
+    localStorage.setItem('waterQuality', waterQuality.toString());
+  }, [waterQuality]);
+
+  useEffect(() => {
+    if (lastChallengeDate) {
+      localStorage.setItem('lastChallengeDate', lastChallengeDate);
+    }
+  }, [lastChallengeDate]);
+
+  // 수질 감소 로직
+  useEffect(() => {
+    const calculateWaterQuality = () => {
+      if (!lastChallengeDate) return;
+      
+      const lastDate = new Date(lastChallengeDate);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      lastDate.setHours(0, 0, 0, 0);
+      const daysDiff = Math.floor((today - lastDate) / (1000 * 60 * 60 * 24));
+      
+      if (daysDiff === 0) {
+        // 오늘 챌린지 완료함 - 100%
+        setWaterQuality(100);
+      } else {
+        // 챌린지 미완료 일수에 따른 수질 감소
+        let qualityDecrease = 0;
+        
+        if (daysDiff === 1 || daysDiff === 2) {
+          qualityDecrease = daysDiff * 5; // 1-2일: 5%씩
+        } else if (daysDiff === 3 || daysDiff === 4) {
+          qualityDecrease = 10 + (daysDiff - 2) * 10; // 3-4일: 10%씩 (총 10+10, 10+20)
+        } else if (daysDiff === 5 || daysDiff === 6) {
+          qualityDecrease = 30 + (daysDiff - 4) * 20; // 5-6일: 20%씩 (총 30+20, 30+40)
+        } else if (daysDiff === 7) {
+          qualityDecrease = 70 + 25; // 7일: 25% (총 95)
+        } else {
+          qualityDecrease = 95 + (daysDiff - 7); // 8일 이후: 1%씩
+        }
+        
+        const newQuality = Math.max(0, 100 - qualityDecrease);
+        setWaterQuality(newQuality);
+      }
+      
+      setDaysWithoutChallenge(daysDiff);
+    };
+    
+    calculateWaterQuality();
+    
+    // 매일 자정에 수질 재계산
+    const interval = setInterval(() => {
+      calculateWaterQuality();
+    }, 60000); // 1분마다 체크 (실제로는 자정 체크용)
+    
+    return () => clearInterval(interval);
+  }, [lastChallengeDate]);
 
   const bgColor = isDarkMode ? 'bg-black' : 'bg-white';
   const borderColor = isDarkMode ? 'border-gray-800' : 'border-gray-200';
@@ -186,6 +260,9 @@ const EcostepApp = () => {
                 purchasedDecorations={purchasedDecorations}
                 decorationsData={decorationsData}
                 selectedDecorations={selectedDecorations}
+                waterQuality={waterQuality}
+                daysWithoutChallenge={daysWithoutChallenge}
+                setWaterQuality={setWaterQuality}
               />}
               {activeTab === 'challenge' && <ChallengePage 
                 isDarkMode={isDarkMode}
@@ -205,6 +282,8 @@ const EcostepApp = () => {
                 setCustomPlasticItems={setCustomPlasticItems}
                 points={points}
                 setPoints={setPoints}
+                setLastChallengeDate={setLastChallengeDate}
+                setWaterQuality={setWaterQuality}
               />}
               {activeTab === 'reward' && <RewardsPage 
                 isDarkMode={isDarkMode} 

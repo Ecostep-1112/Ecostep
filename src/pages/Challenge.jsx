@@ -18,7 +18,9 @@ const Challenge = ({
   customPlasticItems,
   setCustomPlasticItems,
   points,
-  setPoints
+  setPoints,
+  setLastChallengeDate,
+  setWaterQuality
 }) => {
   const [customChallenge, setCustomChallenge] = useState('');
   const [showCustomChallenge, setShowCustomChallenge] = useState(false);
@@ -124,6 +126,15 @@ const Challenge = ({
       // 포인트 증가
       if (setPoints) {
         setPoints(prev => prev + 10);
+      }
+      
+      // 수질 100%로 회복 및 마지막 챌린지 날짜 업데이트
+      if (setWaterQuality) {
+        setWaterQuality(100);
+      }
+      if (setLastChallengeDate) {
+        const today = new Date().toISOString();
+        setLastChallengeDate(today);
       }
     }
   };

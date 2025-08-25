@@ -13,7 +13,10 @@ const Home = ({
   tankName = '수질',
   purchasedDecorations = [],
   decorationsData = {},
-  selectedDecorations = []
+  selectedDecorations = [],
+  waterQuality = 85,
+  daysWithoutChallenge = 0,
+  setWaterQuality
 }) => {
   const bgColor = isDarkMode ? 'bg-gray-900' : 'bg-white';
   const textColor = isDarkMode ? 'text-white' : 'text-gray-900';
@@ -31,8 +34,8 @@ const Home = ({
   return (
     <div className={`flex-1 overflow-y-auto custom-scrollbar scrollbar-hide-idle pb-20 ${bgColor}`}>
       <div className="min-h-full">
-        {/* 어항 섹션 - 전체 너비, 파란 박스가 직접 어항 역할 */}
-        <div className={`relative mt-0 ${
+        {/* 어항 섹션 - 정사각형, 파란 박스가 직접 어항 역할 */}
+        <div className={`relative ${
           currentTank === 'basic' ? 'bg-gradient-to-br from-cyan-400 via-blue-500 to-blue-600' :
           currentTank === 'silver' ? 'bg-gradient-to-br from-slate-300 via-cyan-400 to-teal-500' :
           currentTank === 'gold' ? 'bg-gradient-to-br from-amber-300 via-yellow-400 to-orange-400' :
@@ -40,6 +43,20 @@ const Home = ({
         }`} style={{ aspectRatio: '1/1' }}>
           {/* 상단 그라데이션 구분선 */}
           <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/60 to-transparent"></div>
+          
+          {/* 수질에 따른 흰색 블러 오버레이 - 수질바 제외 */}
+          <div className="absolute inset-0 pointer-events-none z-[5] overflow-hidden">
+            <div 
+              className="absolute inset-0 transition-all duration-1000"
+              style={{ 
+                backgroundColor: `rgba(255, 255, 255, ${(100 - waterQuality) * 0.002})`,
+                backdropFilter: waterQuality < 100 ? `blur(${(100 - waterQuality) * 0.02}px)` : 'none',
+                WebkitBackdropFilter: waterQuality < 100 ? `blur(${(100 - waterQuality) * 0.02}px)` : 'none',
+                maskImage: 'linear-gradient(to bottom, black 0%, black calc(100% - 60px), transparent 100%)',
+                WebkitMaskImage: 'linear-gradient(to bottom, black 0%, black calc(100% - 60px), transparent 100%)'
+              }}
+            />
+          </div>
           
           {/* 물 표면 효과 컴포넌트 */}
           <WaterSurface />
@@ -83,7 +100,7 @@ const Home = ({
               ) : null;
             })}
           {/* 수질바 - 하단에 위치, 개선된 디자인 */}
-          <div className="absolute bottom-0 left-0 right-0">
+          <div className="absolute bottom-0 left-0 right-0 z-[20]">
             {/* 구분선 */}
             <div className="h-[1px] bg-white/20"></div>
             
@@ -93,11 +110,26 @@ const Home = ({
                 {/* 수질 정보 영역 */}
                 <div className="flex-1 px-3 py-1.5 bg-white/5 rounded-lg">
                   <div className="flex justify-between items-center mb-1">
-                    <span className="text-white text-xs">{tankName}</span>
-                    <span className="text-white text-xs font-medium">85%</span>
+                    <span className="text-white text-xs">
+                      {tankName}
+                      {daysWithoutChallenge > 0 && (
+                        <span className="text-red-300 ml-1">
+                          ({daysWithoutChallenge}일째 미완료)
+                        </span>
+                      )}
+                    </span>
+                    <span className={`text-xs font-medium ${
+                      waterQuality >= 80 ? 'text-white' : 
+                      waterQuality >= 50 ? 'text-yellow-300' : 
+                      'text-red-300'
+                    }`}>{waterQuality}%</span>
                   </div>
                   <div className="w-full bg-white/20 rounded-full h-1.5">
-                    <div className="bg-white h-1.5 rounded-full transition-all duration-300" style={{ width: '85%' }}></div>
+                    <div className={`h-1.5 rounded-full transition-all duration-500 ${
+                      waterQuality >= 80 ? 'bg-white' : 
+                      waterQuality >= 50 ? 'bg-yellow-400' : 
+                      'bg-red-400'
+                    }`} style={{ width: `${waterQuality}%` }}></div>
                   </div>
                 </div>
                 
@@ -113,6 +145,42 @@ const Home = ({
                 </button>
               </div>
             </div>
+          </div>
+        </div>
+
+        {/* 수질 테스트 슬라이더 (개발용) */}
+        <div className={`mx-4 mt-4 p-4 ${isDarkMode ? 'bg-gray-800' : 'bg-gray-50'} rounded-xl`}>
+          <div className="flex items-center justify-between mb-2">
+            <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} text-xs font-medium`}>
+              테스트용 수질 조절
+            </span>
+            <span className={`text-xs font-bold ${
+              waterQuality >= 80 ? 'text-blue-500' : 
+              waterQuality >= 50 ? 'text-yellow-500' : 
+              'text-red-500'
+            }`}>
+              {waterQuality}%
+            </span>
+          </div>
+          <input
+            type="range"
+            min="0"
+            max="100"
+            value={waterQuality}
+            onChange={(e) => setWaterQuality && setWaterQuality(parseInt(e.target.value))}
+            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
+            style={{
+              background: `linear-gradient(to right, 
+                ${waterQuality >= 80 ? '#3B82F6' : waterQuality >= 50 ? '#EAB308' : '#EF4444'} 0%, 
+                ${waterQuality >= 80 ? '#3B82F6' : waterQuality >= 50 ? '#EAB308' : '#EF4444'} ${waterQuality}%, 
+                #E5E7EB ${waterQuality}%, 
+                #E5E7EB 100%)`
+            }}
+          />
+          <div className="flex justify-between mt-1">
+            <span className={`text-[10px] ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>0% (탁함)</span>
+            <span className={`text-[10px] ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>50%</span>
+            <span className={`text-[10px] ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>100% (맑음)</span>
           </div>
         </div>
 

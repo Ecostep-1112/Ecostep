@@ -34,6 +34,7 @@ const EcostepApp = () => {
   const [notifications, setNotifications] = useState(true);
   const [fishCount, setFishCount] = useState(5);
   const [isRandomFish, setIsRandomFish] = useState(true);
+  const [isRandomDecorations, setIsRandomDecorations] = useState(true);
   const [selectedFish, setSelectedFish] = useState([]);
   const [selectedDecorations, setSelectedDecorations] = useState([]);
   const [purchasedFish, setPurchasedFish] = useState(() => {
@@ -289,6 +290,8 @@ const EcostepApp = () => {
               purchasedDecorations={purchasedDecorations}
               fishData={fishData}
               decorationsData={decorationsData}
+              isRandomDecorations={isRandomDecorations}
+              setIsRandomDecorations={setIsRandomDecorations}
             />
           ) : (
             <>
@@ -304,6 +307,10 @@ const EcostepApp = () => {
                 waterQuality={waterQuality}
                 daysWithoutChallenge={daysWithoutChallenge}
                 setWaterQuality={setWaterQuality}
+                isRandomFish={isRandomFish}
+                isRandomDecorations={isRandomDecorations}
+                selectedFish={selectedFish}
+                fishCount={fishCount}
               />}
               {activeTab === 'challenge' && <ChallengePage 
                 isDarkMode={isDarkMode}

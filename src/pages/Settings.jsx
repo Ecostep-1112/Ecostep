@@ -135,14 +135,15 @@ export const AquariumSettings = ({
   setTankName,
   purchasedDecorations,
   fishData,
-  decorationsData
+  decorationsData,
+  isRandomDecorations,
+  setIsRandomDecorations
 }) => {
   const bgColor = isDarkMode ? 'bg-gray-900' : 'bg-white';
   const textColor = isDarkMode ? 'text-white' : 'text-gray-900';
   const borderColor = isDarkMode ? 'border-gray-700' : 'border-gray-200';
   const cardBg = isDarkMode ? 'bg-gray-800' : 'bg-white';
   const inputBg = isDarkMode ? 'bg-gray-700' : 'bg-gray-50';
-  const [isRandomDecorations, setIsRandomDecorations] = React.useState(true);
 
   // decorationsData에서 구매한 장식품만 필터링
   const availableDecorations = Object.values(decorationsData).flat().filter(deco => 
@@ -193,15 +194,29 @@ export const AquariumSettings = ({
           <h3 className={`text-sm font-medium mb-3 ${textColor}`}>물고기</h3>
           <div className={`${inputBg} rounded-lg p-3 mb-3`}>
             <div className="flex items-center justify-between mb-3">
-              <span className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>물고기 수: {fishCount}마리</span>
+              <span className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>물고기: {selectedFish.length}마리</span>
               <div className="flex items-center gap-2">
                 <button 
-                  onClick={() => setFishCount(Math.max(1, fishCount - 1))}
+                  onClick={() => {
+                    if (selectedFish.length > 0) {
+                      setSelectedFish(selectedFish.slice(0, -1));
+                      setFishCount(Math.max(1, selectedFish.length - 1));
+                    }
+                  }}
                   className={`w-8 h-8 ${cardBg} border ${borderColor} rounded flex items-center justify-center`}
                 >-</button>
-                <span className={`text-sm font-medium px-3 ${textColor}`}>{fishCount}</span>
+                <span className={`text-sm font-medium px-3 ${textColor}`}>{selectedFish.length}</span>
                 <button 
-                  onClick={() => setFishCount(Math.min(purchasedFish.length, fishCount + 1))}
+                  onClick={() => {
+                    if (selectedFish.length < purchasedFish.length) {
+                      // 구매한 물고기 중 선택되지 않은 첫 번째 물고기 자동 추가
+                      const nextFishIndex = purchasedFish.findIndex((fish, index) => !selectedFish.includes(index));
+                      if (nextFishIndex !== -1) {
+                        setSelectedFish([...selectedFish, nextFishIndex]);
+                        setFishCount(selectedFish.length + 1);
+                      }
+                    }
+                  }}
                   className={`w-8 h-8 ${cardBg} border ${borderColor} rounded flex items-center justify-center`}
                 >+</button>
               </div>
@@ -220,7 +235,7 @@ export const AquariumSettings = ({
 
           {!isRandomFish && (
             <div className="mb-6">
-              <h4 className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} mb-2`}>물고기 선택 ({selectedFish.length}/{fishCount})</h4>
+              <h4 className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} mb-2`}>물고기 선택 ({selectedFish.length}/{purchasedFish.length})</h4>
               {Object.entries(fishData).map(([rank, fishes]) => {
                 const purchasedInRank = fishes.filter(fish => purchasedFish.includes(fish.name));
                 if (purchasedInRank.length === 0) return null;
@@ -240,14 +255,16 @@ export const AquariumSettings = ({
                               const fishIndex = purchasedFish.indexOf(fish.name);
                               if (isSelected) {
                                 setSelectedFish(selectedFish.filter(f => f !== fishIndex));
-                              } else if (selectedFish.length < fishCount) {
+                                setFishCount(Math.max(1, selectedFish.length - 1));
+                              } else if (selectedFish.length < purchasedFish.length) {
                                 setSelectedFish([...selectedFish, fishIndex]);
+                                setFishCount(selectedFish.length + 1);
                               }
                             }}
                             className={`rounded-lg border ${
                               isSelected ? 'border-blue-500 bg-blue-50' : borderColor
                             } ${cardBg} flex flex-col items-center justify-center h-[85px] p-2`}
-                            disabled={!isSelected && selectedFish.length >= fishCount}
+                            disabled={!isSelected && selectedFish.length >= purchasedFish.length}
                           >
                             {/* 물고기 아이콘 */}
                             <div className="flex items-center justify-center mb-1">
@@ -290,8 +307,7 @@ export const AquariumSettings = ({
                 <span className={`text-sm font-medium px-3 ${textColor}`}>{selectedDecorations.length}</span>
                 <button 
                   onClick={() => {
-                    const maxDecorations = Math.min(availableDecorations.length, 3);
-                    if (selectedDecorations.length < maxDecorations) {
+                    if (selectedDecorations.length < availableDecorations.length) {
                       const nextDeco = availableDecorations.find(d => !selectedDecorations.includes(d.name));
                       if (nextDeco) setSelectedDecorations([...selectedDecorations, nextDeco.name]);
                     }
@@ -315,43 +331,54 @@ export const AquariumSettings = ({
           {!isRandomDecorations && (
             availableDecorations.length > 0 ? (
               <div className="mb-6">
-                <h4 className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} mb-2`}>장식품 선택 ({selectedDecorations.length}/{Math.min(availableDecorations.length, 3)})</h4>
-                <div className="grid grid-cols-3 gap-2">
-                  {availableDecorations.map((deco) => {
-                    const isSelected = selectedDecorations.includes(deco.name);
-                    const DecoIcon = DecorationIcons[deco.name];
-                    
-                    return (
-                      <button
-                        key={deco.name}
-                        onClick={() => {
-                          const maxDecorations = Math.min(availableDecorations.length, 3);
-                          if (isSelected) {
-                            setSelectedDecorations(selectedDecorations.filter(d => d !== deco.name));
-                          } else if (selectedDecorations.length < maxDecorations) {
-                            setSelectedDecorations([...selectedDecorations, deco.name]);
-                          }
-                        }}
-                        className={`rounded-lg border ${
-                          isSelected ? 'border-blue-500 bg-blue-50' : borderColor
-                        } ${cardBg} flex flex-col items-center justify-center h-[85px] p-2`}
-                        disabled={!isSelected && selectedDecorations.length >= Math.min(availableDecorations.length, 3)}
-                      >
-                        {/* 장식품 아이콘 */}
-                        <div className="flex items-center justify-center mb-1">
-                          <div className="w-9 h-9">
-                            {DecoIcon && React.createElement(DecoIcon)}
-                          </div>
-                        </div>
-                        
-                        {/* 장식품 이름 */}
-                        <p className={`text-[10px] ${isSelected ? 'text-blue-600 font-medium' : isDarkMode ? 'text-gray-300' : 'text-gray-700'} text-center`}>
-                          {deco.name}
-                        </p>
-                      </button>
-                    );
-                  })}
-                </div>
+                <h4 className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} mb-2`}>장식품 선택 ({selectedDecorations.length}/{availableDecorations.length})</h4>
+                {Object.entries(decorationsData).map(([rank, decorations]) => {
+                  const purchasedInRank = decorations.filter(deco => purchasedDecorations.includes(deco.name));
+                  if (purchasedInRank.length === 0) return null;
+                  
+                  return (
+                    <div key={rank} className="mb-3">
+                      <h5 className={`text-xs ${isDarkMode ? 'text-gray-500' : 'text-gray-400'} mb-1`}>
+                        {rank === 'bronze' ? '브론즈' : rank === 'silver' ? '실버' : rank === 'gold' ? '골드' : '플래티넘'}
+                      </h5>
+                      <div className="grid grid-cols-3 gap-2">
+                        {purchasedInRank.map((deco) => {
+                          const isSelected = selectedDecorations.includes(deco.name);
+                          const DecoIcon = DecorationIcons[deco.name];
+                          
+                          return (
+                            <button
+                              key={deco.name}
+                              onClick={() => {
+                                if (isSelected) {
+                                  setSelectedDecorations(selectedDecorations.filter(d => d !== deco.name));
+                                } else if (selectedDecorations.length < availableDecorations.length) {
+                                  setSelectedDecorations([...selectedDecorations, deco.name]);
+                                }
+                              }}
+                              className={`rounded-lg border ${
+                                isSelected ? 'border-blue-500 bg-blue-50' : borderColor
+                              } ${cardBg} flex flex-col items-center justify-center h-[85px] p-2`}
+                              disabled={!isSelected && selectedDecorations.length >= availableDecorations.length}
+                            >
+                              {/* 장식품 아이콘 */}
+                              <div className="flex items-center justify-center mb-1">
+                                <div className="w-9 h-9">
+                                  {DecoIcon && React.createElement(DecoIcon)}
+                                </div>
+                              </div>
+                              
+                              {/* 장식품 이름 */}
+                              <p className={`text-[10px] ${isSelected ? 'text-blue-600 font-medium' : isDarkMode ? 'text-gray-300' : 'text-gray-700'} text-center`}>
+                                {deco.name}
+                              </p>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             ) : (
               <div className={`${inputBg} rounded-lg p-4 mb-6 text-center`}>

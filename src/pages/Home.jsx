@@ -16,22 +16,61 @@ const Home = ({
   selectedDecorations = [],
   waterQuality = 85,
   daysWithoutChallenge = 0,
-  setWaterQuality
+  setWaterQuality,
+  isRandomFish = false,
+  isRandomDecorations = false,
+  selectedFish = [],
+  fishCount = 0
 }) => {
   const bgColor = isDarkMode ? 'bg-gray-900' : 'bg-white';
   const textColor = isDarkMode ? 'text-white' : 'text-gray-900';
   const [fishPositions, setFishPositions] = useState([]);
+  const [displayFish, setDisplayFish] = useState([]);
+  const [displayDecorations, setDisplayDecorations] = useState([]);
+  
+  // 랜덤 선택 로직
+  useEffect(() => {
+    if (isRandomFish && purchasedFish.length > 0) {
+      // 랜덤으로 물고기 선택
+      const shuffled = [...purchasedFish].sort(() => Math.random() - 0.5);
+      const count = Math.min(fishCount || 3, purchasedFish.length);
+      setDisplayFish(shuffled.slice(0, count));
+    } else if (selectedFish.length > 0) {
+      // 선택된 물고기 표시
+      setDisplayFish(selectedFish.map(index => purchasedFish[index]).filter(Boolean));
+    } else {
+      // 기본값: 처음 3마리
+      setDisplayFish(purchasedFish.slice(0, 3));
+    }
+  }, [isRandomFish, purchasedFish, selectedFish, fishCount]);
+  
+  // 랜덤 장식품 선택 로직
+  useEffect(() => {
+    const availableDecorations = Object.values(decorationsData).flat()
+      .filter(deco => purchasedDecorations.includes(deco.name))
+      .map(deco => deco.name);
+      
+    if (isRandomDecorations && availableDecorations.length > 0) {
+      // 랜덤으로 장식품 선택
+      const shuffled = [...availableDecorations].sort(() => Math.random() - 0.5);
+      const count = Math.min(selectedDecorations.length || 3, availableDecorations.length);
+      setDisplayDecorations(shuffled.slice(0, count));
+    } else {
+      // 선택된 장식품 표시
+      setDisplayDecorations(selectedDecorations);
+    }
+  }, [isRandomDecorations, selectedDecorations, purchasedDecorations, decorationsData]);
   
   // 물고기 위치 업데이트 (정적 위치)
   useEffect(() => {
-    const positions = purchasedFish.slice(0, 3).map((fishName, i) => ({
+    const positions = displayFish.map((fishName, i) => ({
       name: fishName,
       x: 25 + i * 25,  // 균등하게 배치
       y: fishName === '코리도라스' ? 65 : 45,  // 코리도라스는 바닥, 나머지는 중간
       direction: 1
     }));
     setFishPositions(positions);
-  }, [purchasedFish]);
+  }, [displayFish]);
 
   return (
     <div className={`flex-1 overflow-y-auto custom-scrollbar scrollbar-hide-idle pb-20 ${bgColor}`}>
@@ -87,12 +126,23 @@ const Home = ({
           </div>
           
           {/* 사용자가 선택한 장식품 표시 - 어항 안쪽 */}
-            {selectedDecorations.slice(0, 3).map((decoName, i) => {
+            {displayDecorations.map((decoName, i) => {
               const positions = [
                 { bottom: '18%', left: '20%' },
                 { bottom: '18%', right: '20%' },
-                { bottom: '18%', left: '50%', transform: 'translateX(-50%)' }
+                { bottom: '18%', left: '50%', transform: 'translateX(-50%)' },
+                { bottom: '18%', left: '35%' },
+                { bottom: '18%', right: '35%' },
+                { bottom: '25%', left: '25%' },
+                { bottom: '25%', right: '25%' },
+                { bottom: '25%', left: '50%', transform: 'translateX(-50%)' },
+                { bottom: '32%', left: '30%' },
+                { bottom: '32%', right: '30%' },
+                { bottom: '32%', left: '50%', transform: 'translateX(-50%)' },
+                { bottom: '39%', left: '35%' },
+                { bottom: '39%', right: '35%' }
               ];
+              const position = positions[i] || { bottom: `${18 + (i % 3) * 7}%`, left: `${20 + (i % 3) * 30}%` };
               const DecoIcon = DecorationIcons[decoName];
               
               return DecoIcon ? (
@@ -100,7 +150,7 @@ const Home = ({
                   key={i}
                   className="absolute z-[2] animate-sway"
                   style={{
-                    ...positions[i],
+                    ...position,
                     animationDuration: `${3 + i * 0.5}s`,
                     animationDelay: `${i * 0.3}s`
                   }}

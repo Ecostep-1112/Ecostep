@@ -22,11 +22,13 @@ const Home = ({
   const textColor = isDarkMode ? 'text-white' : 'text-gray-900';
   const [fishPositions, setFishPositions] = useState([]);
   
-  // 물고기 위치 업데이트 (간단한 시뮬레이션)
+  // 물고기 위치 업데이트 (정적 위치)
   useEffect(() => {
-    const positions = purchasedFish.slice(0, 3).map((_, i) => ({
-      x: 100 + i * 80,
-      y: 100 + Math.sin(i * Math.PI / 3) * 30
+    const positions = purchasedFish.slice(0, 3).map((fishName, i) => ({
+      name: fishName,
+      x: 25 + i * 25,  // 균등하게 배치
+      y: fishName === '코리도라스' ? 65 : 45,  // 코리도라스는 바닥, 나머지는 중간
+      direction: 1
     }));
     setFishPositions(positions);
   }, [purchasedFish]);
@@ -65,11 +67,19 @@ const Home = ({
           <BubbleSystem fishPositions={fishPositions} />
             
           {/* 물고기 표시 (정적) */}
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-[4]">
-            {purchasedFish.slice(0, 3).map((fishName, i) => {
-              const FishIcon = FishIcons[fishName.replace(' ', '')];
+          <div className="absolute inset-0 pointer-events-none z-[4]">
+            {fishPositions.map((fish, i) => {
+              const FishIcon = FishIcons[fish.name.replace(' ', '')];
               return FishIcon ? (
-                <div key={i} className="mx-2">
+                <div 
+                  key={i} 
+                  className="absolute"
+                  style={{
+                    left: `${fish.x}%`,
+                    top: `${fish.y}%`,
+                    transform: `translateX(-50%) translateY(-50%)`,
+                  }}
+                >
                   <FishIcon size={35} />
                 </div>
               ) : null;

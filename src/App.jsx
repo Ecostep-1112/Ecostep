@@ -8,6 +8,7 @@ import MorePage from './pages/More';
 import SettingsScreen from './pages/SettingsScreen';
 import ProfileScreen from './pages/ProfileScreen';
 import { ThemeSettings, LanguageSettings, NotificationSettings, AquariumSettings } from './pages/Settings';
+import Toast from './components/Toast';
 import fishData from './data/fishData.json';
 
 const EcostepApp = () => {
@@ -16,7 +17,10 @@ const EcostepApp = () => {
   const [challengeDay, setChallengeDay] = useState(4);
   const [plasticGoal, setPlasticGoal] = useState(500);
   const [currentPlastic, setCurrentPlastic] = useState(320);
-  const [points, setPoints] = useState(1240);
+  const [points, setPoints] = useState(() => {
+    const savedPoints = localStorage.getItem('userPoints');
+    return savedPoints ? parseInt(savedPoints) : 10000; // 충분한 포인트로 설정
+  });
   const [showSettings, setShowSettings] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
   const [showAquariumSettings, setShowAquariumSettings] = useState(false);
@@ -32,7 +36,10 @@ const EcostepApp = () => {
   const [isRandomFish, setIsRandomFish] = useState(true);
   const [selectedFish, setSelectedFish] = useState([]);
   const [selectedDecorations, setSelectedDecorations] = useState([]);
-  const [purchasedFish, setPurchasedFish] = useState(['네온테트라', '체리바브', '구피', '베타']);
+  const [purchasedFish, setPurchasedFish] = useState(() => {
+    const saved = localStorage.getItem('purchasedFish');
+    return saved ? JSON.parse(saved) : [];
+  });
   const [customChallenges, setCustomChallenges] = useState([]);
   const [customPlasticItems, setCustomPlasticItems] = useState([]);
   const [currentTank, setCurrentTank] = useState('basic');
@@ -41,10 +48,29 @@ const EcostepApp = () => {
   const [claimedTanks, setClaimedTanks] = useState([]); // 수령 완료한 어항 목록
   const [tankName, setTankName] = useState('수질');
   const [isEditingTankName, setIsEditingTankName] = useState(false);
-  const [purchasedDecorations, setPurchasedDecorations] = useState(['해초', '산호']);
+  const [purchasedDecorations, setPurchasedDecorations] = useState(() => {
+    const saved = localStorage.getItem('purchasedDecorations');
+    return saved ? JSON.parse(saved) : [];
+  });
   const [waterQuality, setWaterQuality] = useState(85);
   const [lastChallengeDate, setLastChallengeDate] = useState(null);
   const [daysWithoutChallenge, setDaysWithoutChallenge] = useState(0);
+  
+  // 토스트 메시지 상태
+  const [toast, setToast] = useState({
+    isVisible: false,
+    message: '',
+    type: 'success'
+  });
+
+  // 토스트 메시지 표시 함수
+  const showToast = (message, type = 'success') => {
+    setToast({
+      isVisible: true,
+      message,
+      type
+    });
+  };
 
   // master의 decorationsData
   const decorationsData = {
@@ -122,6 +148,21 @@ const EcostepApp = () => {
   useEffect(() => {
     localStorage.setItem('waterQuality', waterQuality.toString());
   }, [waterQuality]);
+
+  // 포인트 변경시 localStorage에 저장
+  useEffect(() => {
+    localStorage.setItem('userPoints', points.toString());
+  }, [points]);
+
+  // 구매한 장식품 저장
+  useEffect(() => {
+    localStorage.setItem('purchasedDecorations', JSON.stringify(purchasedDecorations));
+  }, [purchasedDecorations]);
+
+  // 구매한 물고기 저장
+  useEffect(() => {
+    localStorage.setItem('purchasedFish', JSON.stringify(purchasedFish));
+  }, [purchasedFish]);
 
   useEffect(() => {
     if (lastChallengeDate) {
@@ -288,11 +329,16 @@ const EcostepApp = () => {
               {activeTab === 'reward' && <RewardsPage 
                 isDarkMode={isDarkMode} 
                 purchasedFish={purchasedFish} 
+                setPurchasedFish={setPurchasedFish}
                 fishData={fishData}
                 userRanking={userRanking}
                 claimedTanks={claimedTanks}
                 setClaimedTanks={setClaimedTanks}
                 purchasedDecorations={purchasedDecorations}
+                setPurchasedDecorations={setPurchasedDecorations}
+                points={points}
+                setPoints={setPoints}
+                showToast={showToast}
               />}
               {activeTab === 'community' && <CommunityPage isDarkMode={isDarkMode} />}
               {activeTab === 'more' && <MorePage isDarkMode={isDarkMode} />}
@@ -330,6 +376,15 @@ const EcostepApp = () => {
         </div>
         </div>
       </div>
+      
+      {/* 토스트 메시지 */}
+      <Toast 
+        message={toast.message}
+        type={toast.type}
+        isVisible={toast.isVisible}
+        onClose={() => setToast(prev => ({ ...prev, isVisible: false }))}
+        isDarkMode={isDarkMode}
+      />
     </div>
   );
 };

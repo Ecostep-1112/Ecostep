@@ -9,10 +9,15 @@ import PlatinumTank from '../components/tanks/PlatinumTank';
 const Rewards = ({ 
   isDarkMode, 
   purchasedFish,
+  setPurchasedFish,
   userRanking = 'gold',
   claimedTanks = [],
   setClaimedTanks = () => {},
-  purchasedDecorations = ['해초', '산호']
+  purchasedDecorations = ['해초', '산호'],
+  setPurchasedDecorations,
+  points,
+  setPoints,
+  showToast
 }) => {
   const bgColor = isDarkMode ? 'bg-gray-900' : 'bg-white';
   const textColor = isDarkMode ? 'text-white' : 'text-gray-900';
@@ -112,11 +117,14 @@ const Rewards = ({
             <button
               onClick={() => {
                 const canClaim = userRanking === 'silver' || userRanking === 'gold' || userRanking === 'platinum';
-                if (canClaim && !claimedTanks.includes('silver')) {
+                if (!canClaim) {
+                  showToast('실버 랭크에서 잠금 해제', 'error');
+                } else if (!claimedTanks.includes('silver')) {
                   setClaimedTanks([...claimedTanks, 'silver']);
+                  showToast('실버 어항 수령 완료', 'success');
                 }
               }}
-              disabled={claimedTanks.includes('silver') || (userRanking !== 'silver' && userRanking !== 'gold' && userRanking !== 'platinum')}
+              disabled={claimedTanks.includes('silver')}
               className={`${claimedTanks.includes('silver') ? 'bg-green-50 border-green-300' : (userRanking === 'silver' || userRanking === 'gold' || userRanking === 'platinum') ? `${cardBg} hover:bg-blue-50` : 'bg-gray-100 cursor-not-allowed'} border ${claimedTanks.includes('silver') ? 'border-green-300' : borderColor} rounded-lg relative flex flex-col items-center justify-between h-[125px] p-2 transition-colors overflow-hidden`}
             >
               {/* 블러 효과를 받을 컨테이너 */}
@@ -156,11 +164,14 @@ const Rewards = ({
             <button
               onClick={() => {
                 const canClaim = userRanking === 'gold' || userRanking === 'platinum';
-                if (canClaim && !claimedTanks.includes('gold')) {
+                if (!canClaim) {
+                  showToast('골드 랭크에서 잠금 해제', 'error');
+                } else if (!claimedTanks.includes('gold')) {
                   setClaimedTanks([...claimedTanks, 'gold']);
+                  showToast('골드 어항 수령 완료', 'success');
                 }
               }}
-              disabled={claimedTanks.includes('gold') || (userRanking !== 'gold' && userRanking !== 'platinum')}
+              disabled={claimedTanks.includes('gold')}
               className={`${claimedTanks.includes('gold') ? 'bg-green-50 border-green-300' : (userRanking === 'gold' || userRanking === 'platinum') ? `${cardBg} hover:bg-blue-50` : 'bg-gray-100 cursor-not-allowed'} border ${claimedTanks.includes('gold') ? 'border-green-300' : borderColor} rounded-lg relative flex flex-col items-center justify-between h-[125px] p-2 transition-colors overflow-hidden`}
             >
               {/* 블러 효과를 받을 컨테이너 */}
@@ -200,11 +211,14 @@ const Rewards = ({
             <button
               onClick={() => {
                 const canClaim = userRanking === 'platinum';
-                if (canClaim && !claimedTanks.includes('platinum')) {
+                if (!canClaim) {
+                  showToast('플래티넘 랭크에서 잠금 해제', 'error');
+                } else if (!claimedTanks.includes('platinum')) {
                   setClaimedTanks([...claimedTanks, 'platinum']);
+                  showToast('플래티넘 어항 수령 완료', 'success');
                 }
               }}
-              disabled={claimedTanks.includes('platinum') || userRanking !== 'platinum'}
+              disabled={claimedTanks.includes('platinum')}
               className={`${claimedTanks.includes('platinum') ? 'bg-green-50 border-green-300' : userRanking === 'platinum' ? `${cardBg} hover:bg-blue-50` : 'bg-gray-100 cursor-not-allowed'} border ${claimedTanks.includes('platinum') ? 'border-green-300' : borderColor} rounded-lg relative flex flex-col items-center justify-between h-[125px] p-2 transition-colors overflow-hidden`}
             >
               {/* 블러 효과를 받을 컨테이너 */}
@@ -256,13 +270,39 @@ const Rewards = ({
               <div className="grid grid-cols-3 gap-1.5">
                 {fishes.map((fish, i) => {
                   const isPurchased = purchasedFish.includes(fish.name);
-                  const isLocked = false; // 플래티넘도 잠금 해제
+                  // 랭크별 잠금 확인
+                  const rankOrder = ['bronze', 'silver', 'gold', 'platinum'];
+                  const userRankIndex = rankOrder.indexOf(userRanking);
+                  const itemRankIndex = rankOrder.indexOf(rank);
+                  const isLocked = itemRankIndex > userRankIndex;
+                  
+                  const fishPrice = (rank === 'bronze' ? 100 : rank === 'silver' ? 300 : rank === 'gold' ? 500 : 700) + i * 100;
                   
                   return (
                     <button 
                       key={i} 
-                      className={`${isLocked ? 'bg-gray-100 opacity-50' : isPurchased ? 'bg-green-50 border-green-300' : cardBg} border ${isPurchased ? 'border-green-300' : borderColor} rounded-lg relative flex flex-col items-center justify-between h-[125px] p-2`}
-                      disabled={isLocked || isPurchased}
+                      className={`${isLocked ? 'bg-gray-100 cursor-not-allowed' : isPurchased ? 'bg-green-50 border-green-300' : cardBg} border ${isPurchased ? 'border-green-300' : borderColor} rounded-lg relative flex flex-col items-center justify-between h-[125px] p-2 transition-all ${!isLocked && !isPurchased ? 'hover:scale-105' : ''} overflow-hidden`}
+                      disabled={isPurchased && !isLocked}
+                      onClick={() => {
+                        if (isLocked) {
+                          // 잠금 상태 알림
+                          const rankName = rank === 'bronze' ? '브론즈' : rank === 'silver' ? '실버' : rank === 'gold' ? '골드' : '플래티넘';
+                          showToast(`${rankName} 랭크에서 잠금 해제`, 'error');
+                        } else if (!isPurchased) {
+                          // 포인트가 충분한지 확인
+                          if (points >= fishPrice) {
+                            // 포인트 차감
+                            setPoints(prev => prev - fishPrice);
+                            // 물고기 추가
+                            setPurchasedFish(prev => [...prev, fish.name]);
+                            // 성공 알림
+                            showToast(`${fish.name} 구매 완료`, 'success');
+                          } else {
+                            // 실패 알림
+                            showToast(`포인트 부족 (${fishPrice}P 필요)`, 'error');
+                          }
+                        }
+                      }}
                     >
                       {/* 물고기 SVG 아이콘 - 더 크게, 중앙 정렬 */}
                       <div className={`h-[42px] w-full flex items-center justify-center ${isLocked ? 'blur-sm' : ''}`}>
@@ -291,10 +331,20 @@ const Rewards = ({
                       <div className="h-[20px] flex items-center justify-center w-full">
                         {!isLocked && (
                           <p className={`text-xs ${isPurchased ? 'text-green-500 font-medium' : 'text-blue-500'} text-center`}>
-                            {isPurchased ? '구매완료' : `${(rank === 'bronze' ? 100 : rank === 'silver' ? 300 : 500) + i * 100}P`}
+                            {isPurchased ? '구매완료' : `${fishPrice}P`}
                           </p>
                         )}
                       </div>
+                      
+                      {/* 잠금 오버레이와 자물쇠 */}
+                      {isLocked && (
+                        <>
+                          <div className="absolute inset-0 bg-white bg-opacity-40 rounded-lg"></div>
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <FiLock className="w-5 h-5 text-gray-600 opacity-80" />
+                          </div>
+                        </>
+                      )}
                     </button>
                   );
                 })}
@@ -305,9 +355,9 @@ const Rewards = ({
 
         <div className="mx-3 mt-4 border-t border-gray-200"></div>
 
-        {/* 어항 장식품 */}
+        {/* 장식품 */}
         <div className="mx-3 mt-4">
-          <h3 className={`${textColor} text-sm font-medium mb-3`}>어항 장식품</h3>
+          <h3 className={`${textColor} text-sm font-medium mb-3`}>장식품</h3>
           
           {Object.entries(decorationsData).map(([rank, decorations]) => (
             <div key={rank} className="mb-4">
@@ -317,53 +367,123 @@ const Rewards = ({
               <div className="grid grid-cols-3 gap-1.5">
                 {decorations.map((deco, i) => {
                   const isPurchased = purchasedDecorations.includes(deco.name);
-                  const isLocked = rank === 'platinum';
+                  // 랭크별 잠금 확인
+                  const rankOrder = ['bronze', 'silver', 'gold', 'platinum'];
+                  const userRankIndex = rankOrder.indexOf(userRanking);
+                  const itemRankIndex = rankOrder.indexOf(rank);
+                  const isLocked = itemRankIndex > userRankIndex;
                   
                   return (
                     <button 
                       key={i} 
                       className={`${
                         isLocked 
-                          ? cardBg
+                          ? 'bg-gray-100 cursor-not-allowed'
                           : isPurchased 
                             ? 'bg-green-50 border-green-300' 
                             : cardBg
-                      } border ${isPurchased ? 'border-green-300' : borderColor} rounded-lg relative flex flex-col items-center justify-between h-[125px] p-2`}
-                      style={isLocked ? { filter: 'none !important', opacity: '1 !important' } : {}}
-                      disabled={isLocked || isPurchased}
+                      } border ${isPurchased ? 'border-green-300' : borderColor} rounded-lg relative flex flex-col items-center justify-between h-[125px] p-2 transition-all ${!isLocked && !isPurchased ? 'hover:scale-105' : ''} overflow-hidden`}
+                      disabled={isPurchased && !isLocked}
+                      onClick={() => {
+                        if (isLocked) {
+                          // 잠금 상태 알림
+                          const rankName = rank === 'bronze' ? '브론즈' : rank === 'silver' ? '실버' : rank === 'gold' ? '골드' : '플래티넘';
+                          showToast(`${rankName} 랭크에서 잠금 해제`, 'error');
+                        } else if (!isPurchased) {
+                          // 포인트가 충분한지 확인
+                          if (points >= deco.price) {
+                            // 포인트 차감
+                            setPoints(prev => prev - deco.price);
+                            // 장식품 추가
+                            setPurchasedDecorations(prev => [...prev, deco.name]);
+                            // 성공 알림
+                            showToast(`${deco.name} 구매 완료`, 'success');
+                          } else {
+                            // 실패 알림
+                            showToast(`포인트 부족 (${deco.price}P 필요)`, 'error');
+                          }
+                        }
+                      }}
                     >
-                      {/* 아이콘 - 고정 높이 영역 */}
-                      <div className="h-[42px] w-full flex items-center justify-center">
-                        <div className="w-9 h-9">
-                          {DecorationIcons[deco.name] && React.createElement(DecorationIcons[deco.name])}
+                      {/* 블러 효과를 받을 컨테이너 */}
+                      <div className={`w-full h-full flex flex-col items-center justify-between ${isLocked ? 'filter blur-[1px]' : ''}`}>
+                        {/* 아이콘 - 고정 높이 영역 */}
+                        <div className="h-[42px] w-full flex items-center justify-center">
+                          <div className="w-9 h-9">
+                            {DecorationIcons[deco.name] && React.createElement(DecorationIcons[deco.name])}
+                          </div>
+                        </div>
+                        
+                        {/* 텍스트 영역 - 중앙 정렬 */}
+                        <div className="flex-1 flex flex-col items-center justify-center w-full">
+                          <p className={`text-[11px] ${
+                            isLocked 
+                              ? 'text-gray-500'
+                              : isPurchased 
+                                ? 'text-green-600' 
+                                : isDarkMode ? 'text-gray-300' : 'text-gray-700'
+                          } text-center font-medium`}>
+                            {deco.name}
+                          </p>
+                        </div>
+                        
+                        {/* 가격 - 하단 고정 */}
+                        <div className="h-[20px] flex items-center justify-center w-full">
+                          {!isLocked && (
+                            <p className={`text-xs ${isPurchased ? 'text-green-500 font-medium' : 'text-blue-500'} text-center`}>
+                              {isPurchased ? '구매완료' : `${deco.price}P`}
+                            </p>
+                          )}
                         </div>
                       </div>
                       
-                      {/* 텍스트 영역 - 중앙 정렬 */}
-                      <div className="flex-1 flex flex-col items-center justify-center w-full">
-                        <p className={`text-[11px] ${
-                          isLocked 
-                            ? isDarkMode ? 'text-gray-400' : 'text-gray-500'
-                            : isPurchased 
-                              ? 'text-green-600' 
-                              : isDarkMode ? 'text-gray-300' : 'text-gray-700'
-                        } text-center font-medium`}>
-                          {deco.name}
-                        </p>
-                      </div>
-                      
-                      {/* 가격 - 하단 고정 */}
-                      <div className="h-[20px] flex items-center justify-center w-full">
-                        <p className={`text-xs ${isPurchased ? 'text-green-500 font-medium' : 'text-blue-500'} text-center`}>
-                          {isPurchased ? '구매완료' : `${deco.price}P`}
-                        </p>
-                      </div>
+                      {/* 잠금 오버레이와 자물쇠 */}
+                      {isLocked && (
+                        <>
+                          <div className="absolute inset-0 bg-white bg-opacity-40 rounded-lg"></div>
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <FiLock className="w-5 h-5 text-gray-600 opacity-80" />
+                          </div>
+                        </>
+                      )}
                     </button>
                   );
                 })}
               </div>
             </div>
           ))}
+        </div>
+        
+        {/* 테스트용 초기화 버튼 */}
+        <div className="mx-3 mt-8 mb-6">
+          <button
+            onClick={() => {
+              // 구매 이력 완전 초기화 (아무것도 구매하지 않은 상태)
+              setPurchasedFish([]);
+              setPurchasedDecorations([]);
+              setClaimedTanks([]); // 랭킹 보상 초기화
+              setPoints(10000);
+              
+              // localStorage 초기화
+              localStorage.setItem('purchasedFish', JSON.stringify([]));
+              localStorage.setItem('purchasedDecorations', JSON.stringify([]));
+              localStorage.setItem('claimedTanks', JSON.stringify([])); // 랭킹 보상 초기화
+              localStorage.setItem('userPoints', '10000');
+              
+              showToast('테스트 데이터 초기화 완료', 'success');
+            }}
+            className={`w-full py-3 px-4 rounded-xl ${
+              isDarkMode 
+                ? 'bg-gray-800 hover:bg-gray-700 text-gray-400 border border-gray-700' 
+                : 'bg-gray-100 hover:bg-gray-200 text-gray-600 border border-gray-300'
+            } transition-colors flex items-center justify-center gap-2 text-sm font-medium`}
+          >
+            <span>🔄</span>
+            <span>테스트용 초기화</span>
+          </button>
+          <p className={`text-xs ${isDarkMode ? 'text-gray-500' : 'text-gray-400'} text-center mt-2`}>
+            구매 이력과 포인트를 초기 상태로 되돌립니다
+          </p>
         </div>
       </div>
     </div>

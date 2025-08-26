@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { FiCheck, FiX, FiChevronDown } from 'react-icons/fi';
+import { BronzeIcon, SilverIcon, GoldIcon, PlatinumIcon } from '../components/RankIcons';
 
 const Challenge = ({ 
   isDarkMode,
@@ -22,13 +23,17 @@ const Challenge = ({
   setLastChallengeDate,
   setWaterQuality,
   challengeHistory,
-  setChallengeHistory
+  setChallengeHistory,
+  userRanking,
+  showToast
 }) => {
   const [customChallenge, setCustomChallenge] = useState('');
   const [showCustomChallenge, setShowCustomChallenge] = useState(false);
+  const [previousChallenge, setPreviousChallenge] = useState(''); // 이전 챌린지 저장
   const [customPlasticItem, setCustomPlasticItem] = useState('');
   const [customPlasticWeight, setCustomPlasticWeight] = useState(10);
   const [showCustomPlastic, setShowCustomPlastic] = useState(false);
+  const [previousPlasticItem, setPreviousPlasticItem] = useState(''); // 이전 플라스틱 항목 저장
   const [showAllPastChallenges, setShowAllPastChallenges] = useState(false);
   const [selectedPlasticItem, setSelectedPlasticItem] = useState('플라스틱병');
   const [showPlasticSelect, setShowPlasticSelect] = useState(false);
@@ -68,7 +73,7 @@ const Challenge = ({
     // 새로운 주차인지 확인
     if (!weeklyProgress[weekKey]) {
       const newWeek = {
-        challenge: selectedChallenge,
+        challenge: null, // 처음에는 null로 설정
         days: [null, null, null, null, null, null, null],
         startDate: weekKey
       };
@@ -79,7 +84,7 @@ const Challenge = ({
       // 오늘 이미 완료했는지 확인
       setTodayCompleted(weeklyProgress[weekKey].days[currentDay] === true);
     }
-  }, [selectedChallenge]);
+  }, []);  // 의존성 배열 비워두기
 
   // 자정이 지나면 자동으로 미완료 처리
   useEffect(() => {
@@ -114,10 +119,21 @@ const Challenge = ({
   }, [currentWeekStart, currentDayIndex, weeklyProgress]);
 
   const handleCompleteToday = () => {
-    if (!todayCompleted && currentWeekStart && weeklyProgress[currentWeekStart]) {
+    if (!todayCompleted && currentWeekStart) {
+      // 현재 주차 데이터 가져오기 (없으면 생성)
+      const currentWeekData = weeklyProgress[currentWeekStart] || {
+        challenge: null,
+        days: [null, null, null, null, null, null, null],
+        startDate: currentWeekStart
+      };
+      
+      // 챌린지가 설정되지 않았으면 현재 선택된 챌린지 사용
+      const finalChallenge = currentWeekData.challenge || selectedChallenge;
+      
       const updatedWeek = {
-        ...weeklyProgress[currentWeekStart],
-        days: weeklyProgress[currentWeekStart].days.map((day, idx) => 
+        ...currentWeekData,
+        challenge: finalChallenge,
+        days: currentWeekData.days.map((day, idx) => 
           idx === currentDayIndex ? true : day
         )
       };
@@ -126,9 +142,14 @@ const Challenge = ({
       localStorage.setItem('weeklyProgress', JSON.stringify(updatedProgress));
       setTodayCompleted(true);
       
-      // 포인트 증가
+      // 포인트 증가 및 토스트 메시지 표시
       if (setPoints) {
         setPoints(prev => prev + 10);
+      }
+      
+      // 토스트 메시지 표시
+      if (showToast) {
+        showToast('10P 획득', 'success');
       }
       
       // 수질 100%로 회복 및 마지막 챌린지 날짜 업데이트
@@ -156,11 +177,14 @@ const Challenge = ({
   const inputBg = isDarkMode ? 'bg-gray-700' : 'bg-gray-50';
 
   const challenges = [
-    '플라스틱 빨대 안쓰기',
     '텀블러 사용하기',
+    '일회용 컵 안쓰기',
+    '플라스틱 빨대 안 쓰기',
+    '에코백 사용하기',
     '장바구니 사용하기',
-    '일회용품 거절하기',
-    '플라스틱 포장 줄이기',
+    '비닐봉지 안쓰기',
+    '물티슈 줄이기',
+    '배달음식 줄이기',
     ...customChallenges,
     '기타 (직접 입력)'
   ];
@@ -218,105 +242,222 @@ const Challenge = ({
 
         {activeSubTab === 'habit' ? (
           <div className="mx-3 mt-4 space-y-4">
-            {/* 현재 챌린지 */}
-            <div className={`${cardBg} border ${borderColor} rounded-xl p-4`}>
-              <div className="flex justify-between items-center mb-3">
-                <h3 className={`${textColor} text-sm font-medium`}>현재 챌린지</h3>
-                <span className="bg-blue-100 text-blue-500 px-2 py-1 rounded text-xs">Weekly</span>
+            {/* 챌린지 */}
+            <div className={`${cardBg} border ${borderColor} rounded-xl p-5 relative`}>
+              <div className="flex justify-between items-center mb-4">
+                <h3 className={`${textColor} text-sm font-medium`}>챌린지</h3>
+                {/* 랭크 아이콘 - 보상 탭 스타일 */}
+                {userRanking === 'bronze' && <BronzeIcon size={20} />}
+                {userRanking === 'silver' && <SilverIcon size={20} />}
+                {userRanking === 'gold' && <GoldIcon size={20} />}
+                {userRanking === 'platinum' && <PlatinumIcon size={20} />}
               </div>
               
-              <div className="relative mb-3">
-              {!showCustomChallenge ? (
+              <div className="relative mb-4 h-9">
+              {/* 챌린지가 이미 시작되었는지 확인 */}
+              {currentWeekStart && weeklyProgress[currentWeekStart] && 
+               weeklyProgress[currentWeekStart].days.some(day => day !== null) ? (
+                // 챌린지가 시작됨 - 변경 불가, 가운데 정렬
+                <div 
+                  className={`w-full h-full ${inputBg} rounded-lg flex items-center justify-center border`}
+                  style={{
+                    borderColor: userRanking === 'bronze' ? '#06b6d4' :
+                                userRanking === 'silver' ? '#14b8a6' :
+                                userRanking === 'gold' ? '#fcd34d' :
+                                userRanking === 'platinum' ? '#c084fc' :
+                                '#06b6d4'
+                  }}>
+                  <span className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                    {weeklyProgress[currentWeekStart].challenge || '챌린지를 선택해주세요'}
+                  </span>
+                </div>
+              ) : !showCustomChallenge ? (
+                // 챌린지 시작 전 - 선택 가능
                 <button
                   onClick={() => setShowChallengeSelect(!showChallengeSelect)}
-                  className={`w-full ${inputBg} rounded-lg p-2 flex justify-between items-center`}
+                  className={`w-full h-full ${inputBg} rounded-lg px-2 flex justify-between items-center border`}
+                  style={{
+                    borderColor: userRanking === 'bronze' ? '#06b6d4' :
+                                userRanking === 'silver' ? '#14b8a6' :
+                                userRanking === 'gold' ? '#fcd34d' :
+                                userRanking === 'platinum' ? '#c084fc' :
+                                '#06b6d4'
+                  }}
                 >
-                  <span className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>{selectedChallenge}</span>
+                  <span className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} flex-1 text-center`}>{selectedChallenge}</span>
                   <FiChevronDown className={`w-4 h-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
                 </button>
               ) : (
-                <div>
-                  <input
-                    type="text"
-                    value={customChallenge}
-                    onChange={(e) => setCustomChallenge(e.target.value)}
-                    placeholder="챌린지 이름 입력"
-                    className={`w-full ${inputBg} rounded-lg p-2 text-sm ${textColor} mb-2`}
-                  />
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => {
-                        if (customChallenge) {
+                <>
+                  {/* 배경 블러 오버레이 - 카드 영역만 */}
+                  <div className="absolute inset-0 backdrop-blur-[1px] bg-black/[0.02] z-10 rounded-xl" onClick={() => {
+                    setShowCustomChallenge(false);
+                    setCustomChallenge('');
+                    if (previousChallenge) {
+                      setSelectedChallenge(previousChallenge); // 이전 챌린지로 복귀
+                    }
+                  }} />
+                  <div className="relative z-20 flex gap-2">
+                  <div className="relative flex-1">
+                    <input
+                      type="text"
+                      value={customChallenge}
+                      onChange={(e) => setCustomChallenge(e.target.value)}
+                      onKeyPress={(e) => {
+                        if (e.key === 'Enter' && customChallenge) {
                           setCustomChallenges([...customChallenges, customChallenge]);
                           setSelectedChallenge(customChallenge);
                           setCustomChallenge('');
                           setShowCustomChallenge(false);
                         }
                       }}
-                      className="flex-1 bg-blue-500 text-white py-1 rounded text-sm"
-                    >
-                      추가
-                    </button>
+                      placeholder="챌린지 이름 입력"
+                      className={`w-full ${inputBg} rounded-lg p-2 pr-8 text-sm ${textColor}`}
+                      autoFocus
+                    />
                     <button
                       onClick={() => {
                         setShowCustomChallenge(false);
+                        setShowChallengeSelect(true);
                         setCustomChallenge('');
+                        if (previousChallenge) {
+                          setSelectedChallenge(previousChallenge);
+                        }
                       }}
-                      className={`flex-1 ${inputBg} ${textColor} py-1 rounded text-sm`}
+                      className={`absolute right-2 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-${isDarkMode ? '700' : '200'} rounded transition-colors`}
                     >
-                      취소
+                      <FiChevronDown className={`w-4 h-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
                     </button>
                   </div>
+                  <button
+                    onClick={() => {
+                      if (customChallenge) {
+                        setCustomChallenges([...customChallenges, customChallenge]);
+                        setSelectedChallenge(customChallenge);
+                        setCustomChallenge('');
+                        setShowCustomChallenge(false);
+                      }
+                    }}
+                    className={`w-9 h-9 rounded-lg text-xs font-medium transition-colors flex items-center justify-center ${
+                      userRanking === 'gold' ? 'text-gray-800 hover:opacity-90' : 'text-white hover:opacity-90'
+                    }`}
+                    style={{
+                      background: userRanking === 'bronze' ? 'linear-gradient(to right, #06b6d4, #3b82f6)' :
+                                  userRanking === 'silver' ? 'linear-gradient(to right, #cbd5e1, #06b6d4, #14b8a6)' :
+                                  userRanking === 'gold' ? 'linear-gradient(to right, #fcd34d, #facc15)' :
+                                  userRanking === 'platinum' ? 'linear-gradient(to right, #c084fc, #ec4899)' :
+                                  'linear-gradient(to right, #06b6d4, #3b82f6)'
+                    }}
+                  >
+                    추가
+                  </button>
                 </div>
+                </>
               )}
               
               {showChallengeSelect && (
-                <div className={`absolute z-10 w-full mt-1 ${inputBg} rounded-lg p-2 max-h-60 overflow-y-auto shadow-lg border ${borderColor}`}>
+                <>
+                  {/* 배경 블러 오버레이 - 카드 영역만 */}
+                  <div className="absolute inset-0 backdrop-blur-[1px] bg-black/[0.02] z-10 rounded-xl" onClick={() => setShowChallengeSelect(false)} />
+                  <div className={`absolute z-20 w-full mt-1 ${inputBg} rounded-lg p-2 max-h-60 overflow-y-auto scrollbar-hide shadow-lg border ${borderColor}`}>
                   {challenges.map((challenge, index) => (
-                    <div
-                      key={challenge + index}
-                      className={`flex items-center justify-between p-2 hover:bg-gray-${isDarkMode ? '700' : '100'} rounded`}
-                    >
-                      <button
-                        onClick={() => {
-                          if (challenge === '기타 (직접 입력)') {
-                            setShowCustomChallenge(true);
-                            setShowChallengeSelect(false);
-                          } else {
-                            setSelectedChallenge(challenge);
-                            setShowChallengeSelect(false);
-                          }
-                        }}
-                        className={`flex-1 text-left text-sm ${textColor}`}
+                    <div key={challenge + index}>
+                      <div
+                        className={`flex items-center justify-between p-2 hover:bg-gray-${isDarkMode ? '700' : '100'} rounded`}
                       >
-                        {challenge}
-                      </button>
-                      {customChallenges.includes(challenge) && (
                         <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            const updatedChallenges = customChallenges.filter(c => c !== challenge);
-                            setCustomChallenges(updatedChallenges);
-                            if (selectedChallenge === challenge) {
-                              setSelectedChallenge('플라스틱 빨대 안쓰기');
+                          onClick={() => {
+                            if (challenge === '기타 (직접 입력)') {
+                              setPreviousChallenge(selectedChallenge); // 현재 챌린지 저장
+                              setShowCustomChallenge(true);
+                              setShowChallengeSelect(false);
+                            } else {
+                              setSelectedChallenge(challenge);
+                              setShowChallengeSelect(false);
                             }
                           }}
-                          className="ml-2 p-1 hover:bg-red-100 rounded"
+                          className={`flex-1 text-left text-sm ${textColor}`}
                         >
-                          <FiX className="w-4 h-4 text-red-500" />
+                          {challenge}
                         </button>
+                        {customChallenges.includes(challenge) && (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              const updatedChallenges = customChallenges.filter(c => c !== challenge);
+                              setCustomChallenges(updatedChallenges);
+                              if (selectedChallenge === challenge) {
+                                setSelectedChallenge('텀블러 사용하기');
+                              }
+                            }}
+                            className={`ml-2 p-1 rounded transition-colors ${
+                              userRanking === 'bronze' ? 'hover:bg-cyan-100' :
+                              userRanking === 'silver' ? 'hover:bg-gray-200' :
+                              userRanking === 'gold' ? 'hover:bg-yellow-100' :
+                              userRanking === 'platinum' ? 'hover:bg-purple-100' :
+                              'hover:bg-cyan-100'
+                            }`}
+                          >
+                            <FiX className="w-4 h-4" style={{
+                              color: userRanking === 'bronze' ? '#06b6d4' :
+                                     userRanking === 'silver' ? '#14b8a6' :
+                                     userRanking === 'gold' ? '#facc15' :
+                                     userRanking === 'platinum' ? '#c084fc' :
+                                     '#06b6d4'
+                            }} />
+                          </button>
+                        )}
+                      </div>
+                      {index < challenges.length - 1 && (
+                        <div 
+                          className={`mx-2 my-1 ${isDarkMode ? 'bg-gray-600' : 'bg-gray-300'}`}
+                          style={{ height: '0.5px' }}
+                        />
                       )}
                     </div>
                   ))}
                 </div>
+                </>
               )}
               </div>
 
-              <p className={`${isDarkMode ? 'text-gray-400' : 'text-gray-500'} text-xs mb-3`}>
-                {currentDayIndex + 1}일차 / 7일
-              </p>
+              {/* 구분선 - 양 끝으로 갈수록 흐리게 */}
+              <div className="relative my-4 px-2">
+                <div 
+                  className="h-[1px] w-full"
+                  style={{
+                    background: isDarkMode 
+                      ? `linear-gradient(to right, transparent, ${
+                          userRanking === 'bronze' ? '#06b6d4' :
+                          userRanking === 'silver' ? '#14b8a6' :
+                          userRanking === 'gold' ? '#facc15' :
+                          userRanking === 'platinum' ? '#c084fc' :
+                          '#06b6d4'
+                        }30 15%, ${
+                          userRanking === 'bronze' ? '#06b6d4' :
+                          userRanking === 'silver' ? '#14b8a6' :
+                          userRanking === 'gold' ? '#facc15' :
+                          userRanking === 'platinum' ? '#c084fc' :
+                          '#06b6d4'
+                        }30 85%, transparent)`
+                      : `linear-gradient(to right, transparent, ${
+                          userRanking === 'bronze' ? '#06b6d4' :
+                          userRanking === 'silver' ? '#14b8a6' :
+                          userRanking === 'gold' ? '#facc15' :
+                          userRanking === 'platinum' ? '#c084fc' :
+                          '#06b6d4'
+                        }20 15%, ${
+                          userRanking === 'bronze' ? '#06b6d4' :
+                          userRanking === 'silver' ? '#14b8a6' :
+                          userRanking === 'gold' ? '#facc15' :
+                          userRanking === 'platinum' ? '#c084fc' :
+                          '#06b6d4'
+                        }20 85%, transparent)`
+                  }}
+                />
+              </div>
               
-              <div className="flex justify-between mb-3">
+              <div className="flex justify-between mb-4">
                 {['월', '화', '수', '목', '금', '토', '일'].map((dayName, idx) => {
                   const dayStatus = currentWeekStart && weeklyProgress[currentWeekStart] 
                     ? weeklyProgress[currentWeekStart].days[idx] 
@@ -326,43 +467,107 @@ const Challenge = ({
                   
                   return (
                     <div key={idx} className="flex flex-col items-center">
-                      <span className={`text-xs ${isToday ? 'text-blue-500 font-bold' : isDarkMode ? 'text-gray-500' : 'text-gray-400'} mb-1`}>
+                      <span className={`text-xs mb-1 ${
+                        isToday ? `font-bold` : ''
+                      }`} style={{
+                        color: isToday ? (
+                          userRanking === 'bronze' ? '#06b6d4' :
+                          userRanking === 'silver' ? '#14b8a6' :
+                          userRanking === 'gold' ? '#facc15' :
+                          userRanking === 'platinum' ? '#c084fc' :
+                          '#06b6d4'
+                        ) : isDarkMode ? '#6b7280' : '#9ca3af'
+                      }}>
                         {dayName}
                       </span>
-                      <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                        dayStatus === true ? 'bg-green-500' : 
-                        dayStatus === false ? 'bg-red-500' : 
-                        isToday ? 'bg-blue-500' :
-                        isDarkMode ? 'bg-gray-700' : 'bg-gray-200'
-                      }`}>
-                        {dayStatus === true ? <FiCheck className="w-4 h-4 text-white" /> : 
-                         dayStatus === false ? <FiX className="w-4 h-4 text-white" /> : 
-                         isToday ? <span className="text-white text-xs font-bold">!</span> :
-                         <span className={`${isDarkMode ? 'text-gray-500' : 'text-gray-400'} text-xs`}>○</span>}
+                      <div 
+                        className={`w-7 h-7 rounded-full flex items-center justify-center ${
+                          dayStatus === false ? 'bg-red-500' : 
+                          dayStatus !== true && (isDarkMode ? 'bg-gray-700' : 'bg-gray-200')
+                        }`}
+                        style={dayStatus === true ? {
+                          background: userRanking === 'bronze' ? 'linear-gradient(135deg, #06b6d4, #3b82f6)' :
+                                      userRanking === 'silver' ? 'linear-gradient(135deg, #cbd5e1, #06b6d4, #14b8a6)' :
+                                      userRanking === 'gold' ? 'linear-gradient(135deg, #fcd34d, #facc15)' :
+                                      userRanking === 'platinum' ? 'linear-gradient(135deg, #c084fc, #ec4899)' :
+                                      'linear-gradient(135deg, #06b6d4, #3b82f6)'
+                        } : isToday && dayStatus !== true ? {
+                          background: 'transparent',
+                          border: `2px solid ${
+                            userRanking === 'bronze' ? '#06b6d4' :
+                            userRanking === 'silver' ? '#14b8a6' :
+                            userRanking === 'gold' ? '#fcd34d' :
+                            userRanking === 'platinum' ? '#c084fc' :
+                            '#06b6d4'
+                          }`
+                        } : {}}
+                      >
+                        {dayStatus === true ? (
+                          <FiCheck className="w-3.5 h-3.5 text-white" />
+                        ) : dayStatus === false ? (
+                          <FiX className="w-3.5 h-3.5 text-white" />
+                        ) : isToday ? (
+                          <span className="text-sm font-bold" style={{
+                            color: userRanking === 'bronze' ? '#06b6d4' :
+                                   userRanking === 'silver' ? '#14b8a6' :
+                                   userRanking === 'gold' ? '#facc15' :
+                                   userRanking === 'platinum' ? '#c084fc' :
+                                   '#06b6d4'
+                          }}>!</span>
+                        ) : (
+                          <div className={`w-1 h-1 rounded-full ${isDarkMode ? 'bg-gray-500' : 'bg-gray-400'}`} />
+                        )}
                       </div>
                     </div>
                   );
                 })}
               </div>
 
-              <div className={`w-full ${isDarkMode ? 'bg-gray-700' : 'bg-gray-200'} rounded-full h-1.5 mb-3`}>
-                <div className="bg-green-500 h-1.5 rounded-full" style={{ 
-                  width: `${currentWeekStart && weeklyProgress[currentWeekStart] 
-                    ? (weeklyProgress[currentWeekStart].days.filter(d => d === true).length / 7 * 100) 
-                    : 0}%` 
-                }}></div>
+              {/* 진행률 표시 */}
+              <div className="flex justify-between mb-2">
+                <span className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                  진행률
+                </span>
+                <span className={`text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                  {currentWeekStart && weeklyProgress[currentWeekStart] 
+                    ? Math.round((weeklyProgress[currentWeekStart].days.filter(d => d === true).length / 7) * 100)
+                    : 0}%
+                </span>
+              </div>
+              
+              <div className={`w-full ${isDarkMode ? 'bg-gray-700' : 'bg-gray-200'} rounded-full h-1.5 mb-4`}>
+                <div 
+                  className="h-1.5 rounded-full transition-all duration-300"
+                  style={{ 
+                    width: `${currentWeekStart && weeklyProgress[currentWeekStart] 
+                      ? (weeklyProgress[currentWeekStart].days.filter(d => d === true).length / 7 * 100) 
+                      : 0}%`,
+                    background: userRanking === 'bronze' ? 'linear-gradient(to right, #06b6d4, #3b82f6, #2563eb)' :
+                                userRanking === 'silver' ? 'linear-gradient(to right, #cbd5e1, #06b6d4, #14b8a6)' :
+                                userRanking === 'gold' ? 'linear-gradient(to right, #fcd34d, #facc15)' :
+                                userRanking === 'platinum' ? 'linear-gradient(to right, #c084fc, #ec4899)' :
+                                'linear-gradient(to right, #06b6d4, #3b82f6, #2563eb)'
+                  }}
+                />
               </div>
 
               <button 
                 onClick={handleCompleteToday}
                 disabled={todayCompleted}
-                className={`w-full py-2.5 rounded-lg text-sm font-medium ${
+                className={`w-full h-9 rounded-lg text-sm font-medium transition-all ${
                   todayCompleted 
                     ? 'bg-gray-400 text-gray-200 cursor-not-allowed' 
-                    : 'bg-blue-500 text-white hover:bg-blue-600'
+                    : userRanking === 'gold' ? 'text-gray-800 hover:opacity-90' : 'text-white hover:opacity-90'
                 }`}
+                style={!todayCompleted ? {
+                  background: userRanking === 'bronze' ? 'linear-gradient(to right, #06b6d4, #3b82f6)' :
+                              userRanking === 'silver' ? 'linear-gradient(to right, #cbd5e1, #06b6d4, #14b8a6)' :
+                              userRanking === 'gold' ? 'linear-gradient(to right, #fcd34d, #facc15)' :
+                              userRanking === 'platinum' ? 'linear-gradient(to right, #c084fc, #ec4899)' :
+                              'linear-gradient(to right, #06b6d4, #3b82f6)'
+                } : {}}
               >
-                {todayCompleted ? '오늘 완료됨' : '오늘 완료하기 (+10 포인트)'}
+                {todayCompleted ? '오늘 완료' : '오늘 완료하기 (+10P)'}
               </button>
             </div>
 
@@ -394,6 +599,39 @@ const Challenge = ({
                 </button>
               )}
             </div>
+            
+            {/* 테스트용 초기화 버튼 */}
+            <button
+              onClick={() => {
+                // 주간 진행 상황 초기화
+                setWeeklyProgress({});
+                localStorage.removeItem('weeklyProgress');
+                
+                // 현재 상태 초기화 및 다시 계산
+                setTodayCompleted(false);
+                setSelectedChallenge('텀블러 사용하기');
+                setShowChallengeSelect(false);
+                
+                // 새로운 주차 데이터 생성
+                const today = new Date();
+                const dayOfWeek = today.getDay();
+                const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+                const monday = new Date(today);
+                monday.setDate(today.getDate() + mondayOffset);
+                monday.setHours(0, 0, 0, 0);
+                const weekKey = monday.toISOString().split('T')[0];
+                const currentDay = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+                
+                setCurrentWeekStart(weekKey);
+                setCurrentDayIndex(currentDay);
+                
+                // 초기화 성공 메시지 (선택사항)
+                // alert('습관 챌린지 기록이 초기화되었습니다.');
+              }}
+              className="w-full py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg text-sm font-medium transition-colors mt-3"
+            >
+              🔄 테스트용 초기화 (습관 챌린지 기록 삭제)
+            </button>
           </div>
         ) : (
           <div className="mx-3 mt-4 space-y-4">
@@ -454,27 +692,66 @@ const Challenge = ({
                       <FiChevronDown className={`w-4 h-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
                     </button>
                   ) : (
-                    <div className="mt-1">
-                      <input
-                        type="text"
-                        value={customPlasticItem}
-                        onChange={(e) => setCustomPlasticItem(e.target.value)}
-                        placeholder="항목 이름 입력"
-                        className={`w-full ${inputBg} rounded-lg p-2 text-sm ${textColor} mb-2`}
-                      />
-                      <div className="relative mb-2">
-                        <input
-                          type="number"
-                          value={customPlasticWeight}
-                          onChange={(e) => setCustomPlasticWeight(e.target.value)}
-                          placeholder="개당 무게"
-                          className={`w-full ${inputBg} rounded-lg p-2 pr-8 text-sm ${textColor}`}
-                        />
-                        <span className={`absolute right-3 top-1/2 -translate-y-1/2 text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                          g
-                        </span>
+                    <>
+                      {/* 배경 블러 오버레이 - 카드 영역만 */}
+                      <div className="absolute inset-0 backdrop-blur-[1px] bg-black/[0.02] z-10 rounded-xl" onClick={() => {
+                        setShowCustomPlastic(false);
+                        setCustomPlasticItem('');
+                        setCustomPlasticWeight(10);
+                        if (previousPlasticItem) {
+                          setSelectedPlasticItem(previousPlasticItem); // 이전 항목으로 복귀
+                        }
+                      }} />
+                      <div className="mt-1 relative z-20 space-y-2">
+                      <div className="flex gap-2">
+                        <div className="relative flex-1">
+                          <input
+                            type="text"
+                            value={customPlasticItem}
+                            onChange={(e) => setCustomPlasticItem(e.target.value)}
+                            placeholder="항목 이름 입력"
+                            className={`w-full ${inputBg} rounded-lg p-2 pr-8 text-sm ${textColor}`}
+                            autoFocus
+                          />
+                          <button
+                            onClick={() => {
+                              setShowCustomPlastic(false);
+                              setShowPlasticSelect(true);
+                              setCustomPlasticItem('');
+                              setCustomPlasticWeight(10);
+                              if (previousPlasticItem) {
+                                setSelectedPlasticItem(previousPlasticItem);
+                              }
+                            }}
+                            className={`absolute right-2 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-${isDarkMode ? '700' : '200'} rounded transition-colors`}
+                          >
+                            <FiChevronDown className={`w-4 h-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
+                          </button>
+                        </div>
                       </div>
                       <div className="flex gap-2">
+                        <div className="relative flex-1">
+                          <input
+                            type="number"
+                            value={customPlasticWeight}
+                            onChange={(e) => setCustomPlasticWeight(e.target.value)}
+                            onKeyPress={(e) => {
+                              if (e.key === 'Enter' && customPlasticItem && customPlasticWeight) {
+                                const newItem = { name: customPlasticItem, weight: parseInt(customPlasticWeight) };
+                                setCustomPlasticItems([...customPlasticItems, newItem]);
+                                setSelectedPlasticItem(customPlasticItem);
+                                setCustomPlasticItem('');
+                                setCustomPlasticWeight(10);
+                                setShowCustomPlastic(false);
+                              }
+                            }}
+                            placeholder="개당 무게"
+                            className={`w-full ${inputBg} rounded-lg p-2 pr-8 text-sm ${textColor}`}
+                          />
+                          <span className={`absolute right-3 top-1/2 -translate-y-1/2 text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                            g
+                          </span>
+                        </div>
                         <button
                           onClick={() => {
                             if (customPlasticItem && customPlasticWeight) {
@@ -486,26 +763,29 @@ const Challenge = ({
                               setShowCustomPlastic(false);
                             }
                           }}
-                          className="flex-1 bg-blue-500 text-white py-1 rounded text-sm"
+                          className={`w-9 h-9 rounded-lg text-xs font-medium transition-colors flex items-center justify-center ${
+                            userRanking === 'gold' ? 'text-gray-800 hover:opacity-90' : 'text-white hover:opacity-90'
+                          }`}
+                          style={{
+                            background: userRanking === 'bronze' ? 'linear-gradient(to right, #06b6d4, #3b82f6)' :
+                                        userRanking === 'silver' ? 'linear-gradient(to right, #cbd5e1, #06b6d4, #14b8a6)' :
+                                        userRanking === 'gold' ? 'linear-gradient(to right, #fcd34d, #facc15)' :
+                                        userRanking === 'platinum' ? 'linear-gradient(to right, #c084fc, #ec4899)' :
+                                        'linear-gradient(to right, #06b6d4, #3b82f6)'
+                          }}
                         >
                           추가
                         </button>
-                        <button
-                          onClick={() => {
-                            setShowCustomPlastic(false);
-                            setCustomPlasticItem('');
-                            setCustomPlasticWeight(10);
-                          }}
-                          className={`flex-1 ${inputBg} ${textColor} py-1 rounded text-sm`}
-                        >
-                          취소
-                        </button>
                       </div>
                     </div>
+                    </>
                   )}
                   
                   {showPlasticSelect && (
-                    <div className={`absolute z-10 w-full mt-1 ${inputBg} rounded-lg p-2 max-h-60 overflow-y-auto shadow-lg border ${borderColor}`}>
+                    <>
+                      {/* 배경 블러 오버레이 - 카드 영역만 */}
+                      <div className="absolute inset-0 backdrop-blur-[1px] bg-black/[0.02] z-10 rounded-xl" onClick={() => setShowPlasticSelect(false)} />
+                      <div className={`absolute z-20 w-full mt-1 ${inputBg} rounded-lg p-2 max-h-60 overflow-y-auto scrollbar-hide shadow-lg border ${borderColor}`}>
                       {plasticItems.map((item, index) => (
                         <div
                           key={item.name + index}
@@ -514,6 +794,7 @@ const Challenge = ({
                           <button
                             onClick={() => {
                               if (item.name === '기타 (직접 입력)') {
+                                setPreviousPlasticItem(selectedPlasticItem); // 현재 항목 저장
                                 setShowCustomPlastic(true);
                                 setShowPlasticSelect(false);
                               } else {
@@ -535,14 +816,27 @@ const Challenge = ({
                                   setSelectedPlasticItem('플라스틱병');
                                 }
                               }}
-                              className="ml-2 p-1 hover:bg-red-100 rounded"
+                              className={`ml-2 p-1 rounded transition-colors ${
+                                userRanking === 'bronze' ? 'hover:bg-cyan-100' :
+                                userRanking === 'silver' ? 'hover:bg-gray-200' :
+                                userRanking === 'gold' ? 'hover:bg-yellow-100' :
+                                userRanking === 'platinum' ? 'hover:bg-purple-100' :
+                                'hover:bg-cyan-100'
+                              }`}
                             >
-                              <FiX className="w-4 h-4 text-red-500" />
+                              <FiX className="w-4 h-4" style={{
+                                color: userRanking === 'bronze' ? '#06b6d4' :
+                                       userRanking === 'silver' ? '#14b8a6' :
+                                       userRanking === 'gold' ? '#facc15' :
+                                       userRanking === 'platinum' ? '#c084fc' :
+                                       '#06b6d4'
+                              }} />
                             </button>
                           )}
                         </div>
                       ))}
                     </div>
+                    </>
                   )}
                 </div>
 

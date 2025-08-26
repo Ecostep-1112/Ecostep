@@ -42,8 +42,14 @@ const EcostepApp = () => {
     const saved = localStorage.getItem('purchasedFish');
     return saved ? JSON.parse(saved) : [];
   });
-  const [customChallenges, setCustomChallenges] = useState([]);
-  const [customPlasticItems, setCustomPlasticItems] = useState([]);
+  const [customChallenges, setCustomChallenges] = useState(() => {
+    const saved = localStorage.getItem('customChallenges');
+    return saved ? JSON.parse(saved) : [];
+  });
+  const [customPlasticItems, setCustomPlasticItems] = useState(() => {
+    const saved = localStorage.getItem('customPlasticItems');
+    return saved ? JSON.parse(saved) : [];
+  });
   const [currentTank, setCurrentTank] = useState('basic');
   const [unlockedTanks, setUnlockedTanks] = useState(['basic', 'silver', 'gold', 'platinum']); // 모든 어항 잠금 해제
   const [userRanking, setUserRanking] = useState('gold'); // 골드 랭킹으로 설정
@@ -195,6 +201,20 @@ const EcostepApp = () => {
   useEffect(() => {
     localStorage.setItem('claimedTanks', JSON.stringify(claimedTanks));
   }, [claimedTanks]);
+
+  // customChallenges 저장
+  useEffect(() => {
+    if (customChallenges.length > 0) {
+      localStorage.setItem('customChallenges', JSON.stringify(customChallenges));
+    }
+  }, [customChallenges]);
+
+  // customPlasticItems 저장
+  useEffect(() => {
+    if (customPlasticItems.length > 0) {
+      localStorage.setItem('customPlasticItems', JSON.stringify(customPlasticItems));
+    }
+  }, [customPlasticItems]);
 
   // 연속 달성 일수 계산 로직
   useEffect(() => {
@@ -400,6 +420,8 @@ const EcostepApp = () => {
                 setWaterQuality={setWaterQuality}
                 challengeHistory={challengeHistory}
                 setChallengeHistory={setChallengeHistory}
+                userRanking={userRanking}
+                showToast={showToast}
               />}
               {activeTab === 'reward' && <RewardsPage 
                 isDarkMode={isDarkMode} 

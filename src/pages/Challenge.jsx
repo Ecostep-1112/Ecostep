@@ -412,22 +412,48 @@ const Challenge = ({
     <div className={`flex-1 overflow-y-auto custom-scrollbar scrollbar-hide-idle pb-20 ${bgColor}`}>
       <div className="min-h-full">
         {/* 서브탭 */}
-        <div className={`flex mx-2 mt-4 ${isDarkMode ? 'bg-gray-800' : 'bg-gray-100'} rounded-lg p-1`}>
+        <div className="flex mx-3 mt-4 relative">
+          {/* 슬라이딩 배경 효과 */}
+          <div 
+            className={`absolute h-full transition-all duration-300 ease-out ${
+              isDarkMode ? 'bg-gray-100' : 'bg-gray-800'
+            } ${
+              activeSubTab === 'habit' ? 'rounded-l-lg' : 'rounded-r-lg'
+            }`}
+            style={{
+              width: '50%',
+              transform: activeSubTab === 'habit' ? 'translateX(0)' : 'translateX(100%)',
+              opacity: 1,
+              zIndex: 1
+            }}
+          />
           <button
             onClick={() => setActiveSubTab('habit')}
-            className={`flex-1 py-2 rounded text-sm font-medium transition-all ${
-              activeSubTab === 'habit' ? 'bg-blue-500 text-white' : isDarkMode ? 'text-gray-400' : 'text-gray-600'
-            }`}
+            className={`flex-1 py-2 text-sm font-bold transition-all duration-300 ease-out text-center border relative z-10 ${
+              activeSubTab === 'habit' 
+                ? isDarkMode 
+                  ? 'text-gray-900 border-gray-100' 
+                  : 'text-gray-100 border-gray-800'
+                : isDarkMode 
+                  ? 'text-gray-400 border-gray-600 hover:text-gray-300' 
+                  : 'text-gray-500 border-gray-300 hover:text-gray-600'
+            } rounded-l-lg border-r-0 bg-transparent`}
           >
-            습관 챌린지
+            일일 챌린지
           </button>
           <button
             onClick={() => setActiveSubTab('tracking')}
-            className={`flex-1 py-2 rounded text-sm font-medium transition-all ${
-              activeSubTab === 'tracking' ? 'bg-blue-500 text-white' : isDarkMode ? 'text-gray-400' : 'text-gray-600'
-            }`}
+            className={`flex-1 py-2 text-sm font-bold transition-all duration-300 ease-out text-center border relative z-10 ${
+              activeSubTab === 'tracking' 
+                ? isDarkMode 
+                  ? 'text-gray-900 border-gray-100' 
+                  : 'text-gray-100 border-gray-800'
+                : isDarkMode 
+                  ? 'text-gray-400 border-gray-600 hover:text-gray-300' 
+                  : 'text-gray-500 border-gray-300 hover:text-gray-600'
+            } rounded-r-lg bg-transparent`}
           >
-            플라스틱 추적
+            제로 챌린지
           </button>
         </div>
 

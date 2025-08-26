@@ -137,7 +137,8 @@ export const AquariumSettings = ({
   fishData,
   decorationsData,
   isRandomDecorations,
-  setIsRandomDecorations
+  setIsRandomDecorations,
+  claimedTanks
 }) => {
   const bgColor = isDarkMode ? 'bg-gray-900' : 'bg-white';
   const textColor = isDarkMode ? 'text-white' : 'text-gray-900';
@@ -164,7 +165,7 @@ export const AquariumSettings = ({
           <h3 className={`text-sm font-medium mb-3 ${textColor}`}>어항 선택</h3>
           <div className="flex gap-3 mb-6">
             {['basic', 'silver', 'gold', 'platinum'].map((type) => {
-              const isUnlocked = unlockedTanks.includes(type);
+              const isUnlocked = type === 'basic' || claimedTanks.includes(type);
               const isSelected = currentTank === type;
               
               return (
@@ -183,6 +184,11 @@ export const AquariumSettings = ({
                   <p className={`text-[10px] text-center ${isSelected ? 'text-blue-600 font-medium' : isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                     {type === 'basic' ? '기본' : type === 'silver' ? '실버' : type === 'gold' ? '골드' : '플래티넘'}
                   </p>
+                  {!isUnlocked && (
+                    <p className={`text-[8px] text-center ${isDarkMode ? 'text-red-400' : 'text-red-500'} mt-1`}>
+                      랭킹 보상 필요
+                    </p>
+                  )}
                 </button>
               );
             })}

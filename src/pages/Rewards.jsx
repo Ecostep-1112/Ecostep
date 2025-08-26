@@ -19,7 +19,8 @@ const Rewards = ({
   setPurchasedDecorations,
   points,
   setPoints,
-  showToast
+  showToast,
+  setCurrentTank
 }) => {
   const bgColor = isDarkMode ? 'bg-gray-900' : 'bg-white';
   const textColor = isDarkMode ? 'text-white' : 'text-gray-900';
@@ -256,6 +257,7 @@ const Rewards = ({
                   showToast('실버 랭크에서 잠금 해제', 'error');
                 } else if (!claimedTanks.includes('silver')) {
                   setClaimedTanks([...claimedTanks, 'silver']);
+                  setCurrentTank('silver');
                   showToast('실버 어항 수령 완료', 'success');
                 }
               }}
@@ -303,6 +305,7 @@ const Rewards = ({
                   showToast('골드 랭크에서 잠금 해제', 'error');
                 } else if (!claimedTanks.includes('gold')) {
                   setClaimedTanks([...claimedTanks, 'gold']);
+                  setCurrentTank('gold');
                   showToast('골드 어항 수령 완료', 'success');
                 }
               }}
@@ -350,6 +353,7 @@ const Rewards = ({
                   showToast('플래티넘 랭크에서 잠금 해제', 'error');
                 } else if (!claimedTanks.includes('platinum')) {
                   setClaimedTanks([...claimedTanks, 'platinum']);
+                  setCurrentTank('platinum');
                   showToast('플래티넘 어항 수령 완료', 'success');
                 }
               }}

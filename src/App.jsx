@@ -47,7 +47,10 @@ const EcostepApp = () => {
   const [currentTank, setCurrentTank] = useState('basic');
   const [unlockedTanks, setUnlockedTanks] = useState(['basic', 'silver', 'gold', 'platinum']); // 모든 어항 잠금 해제
   const [userRanking, setUserRanking] = useState('gold'); // 골드 랭킹으로 설정
-  const [claimedTanks, setClaimedTanks] = useState([]); // 수령 완료한 어항 목록
+  const [claimedTanks, setClaimedTanks] = useState(() => {
+    const saved = localStorage.getItem('claimedTanks');
+    return saved ? JSON.parse(saved) : [];
+  }); // 수령 완료한 어항 목록
   const [tankName, setTankName] = useState('수질');
   const [isEditingTankName, setIsEditingTankName] = useState(false);
   const [showFriendsList, setShowFriendsList] = useState(false);
@@ -188,6 +191,10 @@ const EcostepApp = () => {
   useEffect(() => {
     localStorage.setItem('challengeHistory', JSON.stringify(challengeHistory));
   }, [challengeHistory]);
+
+  useEffect(() => {
+    localStorage.setItem('claimedTanks', JSON.stringify(claimedTanks));
+  }, [claimedTanks]);
 
   // 연속 달성 일수 계산 로직
   useEffect(() => {
@@ -349,6 +356,7 @@ const EcostepApp = () => {
               decorationsData={decorationsData}
               isRandomDecorations={isRandomDecorations}
               setIsRandomDecorations={setIsRandomDecorations}
+              claimedTanks={claimedTanks}
             />
           ) : (
             <>
@@ -407,6 +415,7 @@ const EcostepApp = () => {
                 points={points}
                 setPoints={setPoints}
                 showToast={showToast}
+                setCurrentTank={setCurrentTank}
               />}
               {activeTab === 'community' && !showFriendsList && <CommunityPage isDarkMode={isDarkMode} onShowFriendsList={() => setShowFriendsList(true)} />}
               {activeTab === 'community' && showFriendsList && <FriendsList isDarkMode={isDarkMode} onBack={() => setShowFriendsList(false)} />}

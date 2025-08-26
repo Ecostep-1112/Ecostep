@@ -1,5 +1,6 @@
 import React from 'react';
 import { FiChevronRight, FiSun, FiMoon, FiCheck } from 'react-icons/fi';
+import { BronzeIcon, SilverIcon, GoldIcon, PlatinumIcon } from '../components/RankIcons';
 import FishIcons from '../components/FishIcons';
 import DecorationIcons from '../components/DecorationIcons';
 import fishData from '../data/fishData.json';
@@ -7,6 +8,89 @@ import BasicTank from '../components/tanks/BasicTank';
 import SilverTank from '../components/tanks/SilverTank';
 import GoldTank from '../components/tanks/GoldTank';
 import PlatinumTank from '../components/tanks/PlatinumTank';
+
+export const RankThemeSettings = ({ isDarkMode, userRanking, setUserRanking, setShowRankThemeSettings, currentUserRank, showToast }) => {
+  const bgColor = isDarkMode ? 'bg-gray-900' : 'bg-white';
+  const textColor = isDarkMode ? 'text-white' : 'text-gray-900';
+  const borderColor = isDarkMode ? 'border-gray-700' : 'border-gray-200';
+  const cardBg = isDarkMode ? 'bg-gray-800' : 'bg-white';
+
+  const ranks = [
+    { id: 'bronze', name: '브론즈', icon: BronzeIcon, color: '#06b6d4', level: 1 },
+    { id: 'silver', name: '실버', icon: SilverIcon, color: '#14b8a6', level: 2 },
+    { id: 'gold', name: '골드', icon: GoldIcon, color: '#facc15', level: 3 },
+    { id: 'platinum', name: '플래티넘', icon: PlatinumIcon, color: '#c084fc', level: 4 }
+  ];
+  
+  const currentRankLevel = ranks.find(r => r.id === currentUserRank)?.level || 1;
+
+  return (
+    <div className={`flex-1 ${bgColor}`}>
+      <div className={`${bgColor} p-4 flex items-center border-b ${borderColor}`}>
+        <button onClick={() => setShowRankThemeSettings(false)} className="mr-3">
+          <FiChevronRight className={`w-5 h-5 rotate-180 ${textColor}`} />
+        </button>
+        <h2 className={`text-base font-medium ${textColor}`}>랭크 테마</h2>
+      </div>
+      
+      <div className="mx-3 mt-4 space-y-2">
+        {ranks.map((rank) => {
+          const RankIcon = rank.icon;
+          const isSelected = userRanking === rank.id;
+          const isLocked = rank.level > currentRankLevel;
+          
+          return (
+            <button 
+              key={rank.id}
+              onClick={() => {
+                if (isLocked) {
+                  const requiredRank = ranks.find(r => r.level === rank.level - 1)?.name;
+                  if (showToast) {
+                    showToast(`${requiredRank || '이전'} 랭크에서 잠금해제`, 'warning');
+                  }
+                } else {
+                  setUserRanking(rank.id);
+                }
+              }}
+              className={`w-full rounded-xl p-3 flex items-center justify-between transition-all ${isLocked ? 'opacity-50' : ''} relative overflow-hidden`}
+              style={isSelected && !isLocked ? { 
+                borderWidth: '1px',
+                borderStyle: 'solid',
+                borderColor: rank.color,
+                backgroundColor: `${rank.color}15`
+              } : {
+                backgroundColor: isDarkMode ? '#1f2937' : '#ffffff',
+                border: `1px solid ${isDarkMode ? '#374151' : '#e5e7eb'}`
+              }}
+            >
+              {/* 블러 효과 오버레이 */}
+              {isLocked && (
+                <div className="absolute inset-0 backdrop-blur-sm bg-black/10 z-10" />
+              )}
+              
+              <div className="flex items-center relative z-0">
+                <RankIcon className={`mr-3 ${isLocked ? 'opacity-50' : ''}`} />
+                <span className={`text-sm ${textColor} ${isLocked ? 'opacity-50' : ''}`}>{rank.name}</span>
+              </div>
+              
+              <div className="relative z-0">
+                {isLocked ? (
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                  </svg>
+                ) : (
+                  isSelected && (
+                    <FiCheck className="w-5 h-5" style={{ color: rank.color, strokeWidth: 2 }} />
+                  )
+                )}
+              </div>
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
 
 export const ThemeSettings = ({ isDarkMode, setIsDarkMode, setShowThemeSettings }) => {
   const bgColor = isDarkMode ? 'bg-gray-900' : 'bg-white';

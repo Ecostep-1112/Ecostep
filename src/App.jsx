@@ -8,7 +8,7 @@ import MorePage from './pages/More';
 import SettingsScreen from './pages/SettingsScreen';
 import ProfileScreen from './pages/ProfileScreen';
 import FriendsList from './pages/FriendsList';
-import { ThemeSettings, LanguageSettings, NotificationSettings, AquariumSettings } from './pages/Settings';
+import { ThemeSettings, RankThemeSettings, LanguageSettings, NotificationSettings, AquariumSettings } from './pages/Settings';
 import Toast from './components/Toast';
 import fishData from './data/fishData.json';
 
@@ -29,6 +29,7 @@ const EcostepApp = () => {
   const [showChallengeSelect, setShowChallengeSelect] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [showThemeSettings, setShowThemeSettings] = useState(false);
+  const [showRankThemeSettings, setShowRankThemeSettings] = useState(false);
   const [showLanguageSettings, setShowLanguageSettings] = useState(false);
   const [showNotificationSettings, setShowNotificationSettings] = useState(false);
   const [language, setLanguage] = useState('ko');
@@ -52,7 +53,8 @@ const EcostepApp = () => {
   });
   const [currentTank, setCurrentTank] = useState('basic');
   const [unlockedTanks, setUnlockedTanks] = useState(['basic', 'silver', 'gold', 'platinum']); // 모든 어항 잠금 해제
-  const [userRanking, setUserRanking] = useState('gold'); // 골드 랭킹으로 설정
+  const [userRanking, setUserRanking] = useState('silver'); // 실제 사용자 랭킹 (변경되지 않음)
+  const [rankTheme, setRankTheme] = useState('silver'); // 랭크 테마 (색상만 변경)
   const [claimedTanks, setClaimedTanks] = useState(() => {
     const saved = localStorage.getItem('claimedTanks');
     return saved ? JSON.parse(saved) : [];
@@ -127,6 +129,7 @@ const EcostepApp = () => {
     const savedTank = localStorage.getItem('currentTank');
     const savedUnlockedTanks = localStorage.getItem('unlockedTanks');
     const savedRanking = localStorage.getItem('userRanking');
+    const savedRankTheme = localStorage.getItem('rankTheme');
     const savedTankName = localStorage.getItem('tankName');
     const savedWaterQuality = localStorage.getItem('waterQuality');
     const savedLastChallengeDate = localStorage.getItem('lastChallengeDate');
@@ -135,6 +138,8 @@ const EcostepApp = () => {
     if (savedTank) setCurrentTank(savedTank);
     if (savedUnlockedTanks) setUnlockedTanks(JSON.parse(savedUnlockedTanks));
     if (savedRanking) setUserRanking(savedRanking);
+    if (savedRankTheme) setRankTheme(savedRankTheme);
+    else if (savedRanking) setRankTheme(savedRanking); // 초기값은 실제 랭킹과 동일
     if (savedTankName && savedTankName !== '나의 어항') {
       setTankName(savedTankName);
     } else {
@@ -170,6 +175,10 @@ const EcostepApp = () => {
   useEffect(() => {
     localStorage.setItem('userRanking', userRanking);
   }, [userRanking]);
+
+  useEffect(() => {
+    localStorage.setItem('rankTheme', rankTheme);
+  }, [rankTheme]);
 
   useEffect(() => {
     localStorage.setItem('tankName', tankName);
@@ -351,6 +360,7 @@ const EcostepApp = () => {
           {showSettings ? (
             showProfile ? <ProfileScreen isDarkMode={isDarkMode} setShowProfile={setShowProfile} /> : 
             showThemeSettings ? <ThemeSettings isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} setShowThemeSettings={setShowThemeSettings} /> :
+            showRankThemeSettings ? <RankThemeSettings isDarkMode={isDarkMode} userRanking={rankTheme} setUserRanking={setRankTheme} setShowRankThemeSettings={setShowRankThemeSettings} currentUserRank={userRanking} showToast={showToast} /> :
             showLanguageSettings ? <LanguageSettings isDarkMode={isDarkMode} language={language} setLanguage={setLanguage} setShowLanguageSettings={setShowLanguageSettings} /> :
             showNotificationSettings ? <NotificationSettings isDarkMode={isDarkMode} notifications={notifications} setNotifications={setNotifications} setShowNotificationSettings={setShowNotificationSettings} /> :
             <SettingsScreen 
@@ -360,6 +370,8 @@ const EcostepApp = () => {
               setShowLanguageSettings={setShowLanguageSettings}
               setShowNotificationSettings={setShowNotificationSettings}
               setShowThemeSettings={setShowThemeSettings}
+              setShowRankThemeSettings={setShowRankThemeSettings}
+              userRanking={rankTheme}
               language={language}
               notifications={notifications}
             />
@@ -431,7 +443,7 @@ const EcostepApp = () => {
                 setWaterQuality={setWaterQuality}
                 challengeHistory={challengeHistory}
                 setChallengeHistory={setChallengeHistory}
-                userRanking={userRanking}
+                userRanking={rankTheme}
                 showToast={showToast}
                 setTotalPlasticSaved={setTotalPlasticSaved}
               />}
@@ -458,7 +470,7 @@ const EcostepApp = () => {
           )}
 
           {/* 하단 네비게이션 - 글래스모피즘 효과 */}
-          {!showSettings && !showProfile && !showAquariumSettings && !showThemeSettings && !showLanguageSettings && !showNotificationSettings && !showFriendsList && (
+          {!showSettings && !showProfile && !showAquariumSettings && !showThemeSettings && !showRankThemeSettings && !showLanguageSettings && !showNotificationSettings && !showFriendsList && (
             <div style={{
               backgroundColor: isDarkMode ? 'rgba(55, 65, 81, 0.3)' : 'rgba(255, 255, 255, 0.3)',
               backdropFilter: isDarkMode ? 'blur(20px) saturate(1.5)' : 'blur(20px) saturate(2.5)',

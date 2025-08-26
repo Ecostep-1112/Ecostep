@@ -7,7 +7,9 @@ const SettingsScreen = ({
   setShowProfile, 
   setShowLanguageSettings, 
   setShowNotificationSettings, 
-  setShowThemeSettings, 
+  setShowThemeSettings,
+  setShowRankThemeSettings,
+  userRanking, 
   language, 
   notifications 
 }) => {
@@ -75,6 +77,22 @@ const SettingsScreen = ({
           <div className="flex items-center">
             <span className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} mr-2`}>
               {isDarkMode ? '다크' : '라이트'}
+            </span>
+            <FiChevronRight className={`w-4 h-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-400'}`} />
+          </div>
+        </button>
+        
+        <button 
+          onClick={() => setShowRankThemeSettings(true)}
+          className={`w-full ${cardBg} border ${borderColor} rounded-xl p-4 flex justify-between items-center`}
+        >
+          <span className={`text-sm ${textColor}`}>랭크 테마</span>
+          <div className="flex items-center">
+            <span className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} mr-2`}>
+              {userRanking === 'bronze' ? '브론즈' : 
+               userRanking === 'silver' ? '실버' : 
+               userRanking === 'gold' ? '골드' : 
+               '플래티넘'}
             </span>
             <FiChevronRight className={`w-4 h-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-400'}`} />
           </div>

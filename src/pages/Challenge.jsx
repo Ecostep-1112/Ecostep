@@ -958,7 +958,16 @@ const Challenge = ({
                 />
                 <button 
                   onClick={() => setPlasticGoal(tempPlasticGoal)}
-                  className="bg-blue-500 text-white px-4 py-2 rounded-lg text-sm"
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    userRanking === 'gold' ? 'text-gray-800' : 'text-white'
+                  }`}
+                  style={{
+                    background: userRanking === 'bronze' ? 'linear-gradient(to right, #06b6d4, #3b82f6)' :
+                                userRanking === 'silver' ? 'linear-gradient(to right, #cbd5e1, #06b6d4, #14b8a6)' :
+                                userRanking === 'gold' ? 'linear-gradient(to right, #fcd34d, #facc15)' :
+                                userRanking === 'platinum' ? 'linear-gradient(to right, #c084fc, #ec4899)' :
+                                'linear-gradient(to right, #06b6d4, #3b82f6)'
+                  }}
                 >
                   설정
                 </button>
@@ -970,15 +979,38 @@ const Challenge = ({
               {currentPlastic > plasticGoal ? (
                 <div>
                   <div className={`w-full ${isDarkMode ? 'bg-gray-700' : 'bg-gray-200'} rounded-full h-1.5 mb-2`}>
-                    <div className="bg-green-500 h-1.5 rounded-full" style={{ width: '100%' }}></div>
+                    <div className="h-1.5 rounded-full" style={{ 
+                    width: '100%',
+                    background: userRanking === 'bronze' ? 'linear-gradient(to right, #06b6d4, #3b82f6)' :
+                                userRanking === 'silver' ? 'linear-gradient(to right, #cbd5e1, #06b6d4, #14b8a6)' :
+                                userRanking === 'gold' ? 'linear-gradient(to right, #fcd34d, #facc15)' :
+                                userRanking === 'platinum' ? 'linear-gradient(to right, #c084fc, #ec4899)' :
+                                'linear-gradient(to right, #06b6d4, #3b82f6)'
+                  }}></div>
                   </div>
                   <div className="flex items-center justify-center">
-                    <span className="text-green-500 text-sm font-medium">🎉 목표 달성! (+{currentPlastic - plasticGoal}g 초과)</span>
+                    <span className="text-sm font-medium" style={{
+                      background: userRanking === 'bronze' ? 'linear-gradient(135deg, #06b6d4, #3b82f6)' :
+                                  userRanking === 'silver' ? 'linear-gradient(135deg, #cbd5e1, #14b8a6)' :
+                                  userRanking === 'gold' ? 'linear-gradient(135deg, #fcd34d, #facc15)' :
+                                  userRanking === 'platinum' ? 'linear-gradient(135deg, #c084fc, #ec4899)' :
+                                  'linear-gradient(135deg, #06b6d4, #3b82f6)',
+                      WebkitBackgroundClip: 'text',
+                      WebkitTextFillColor: 'transparent',
+                      backgroundClip: 'text'
+                    }}>🎉 목표 달성! (+{currentPlastic - plasticGoal}g 초과)</span>
                   </div>
                 </div>
               ) : (
                 <div className={`w-full ${isDarkMode ? 'bg-gray-700' : 'bg-gray-200'} rounded-full h-1.5`}>
-                  <div className="bg-blue-500 h-1.5 rounded-full" style={{ width: `${Math.min((currentPlastic/plasticGoal)*100, 100)}%` }}></div>
+                  <div className="h-1.5 rounded-full" style={{ 
+                    width: `${Math.min((currentPlastic/plasticGoal)*100, 100)}%`,
+                    background: userRanking === 'bronze' ? 'linear-gradient(to right, #06b6d4, #3b82f6)' :
+                                userRanking === 'silver' ? 'linear-gradient(to right, #cbd5e1, #06b6d4, #14b8a6)' :
+                                userRanking === 'gold' ? 'linear-gradient(to right, #fcd34d, #facc15)' :
+                                userRanking === 'platinum' ? 'linear-gradient(to right, #c084fc, #ec4899)' :
+                                'linear-gradient(to right, #06b6d4, #3b82f6)'
+                  }}></div>
                 </div>
               )}
             </div>
@@ -1217,7 +1249,16 @@ const Challenge = ({
                       setPlasticQuantity(1);
                     }
                   }}
-                  className="w-full bg-blue-500 text-white py-2.5 rounded-lg text-sm font-medium"
+                  className={`w-full py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                    userRanking === 'gold' ? 'text-gray-800' : 'text-white'
+                  }`}
+                  style={{
+                    background: userRanking === 'bronze' ? 'linear-gradient(to right, #06b6d4, #3b82f6)' :
+                                userRanking === 'silver' ? 'linear-gradient(to right, #cbd5e1, #06b6d4, #14b8a6)' :
+                                userRanking === 'gold' ? 'linear-gradient(to right, #fcd34d, #facc15)' :
+                                userRanking === 'platinum' ? 'linear-gradient(to right, #c084fc, #ec4899)' :
+                                'linear-gradient(to right, #06b6d4, #3b82f6)'
+                  }}
                 >
                   기록하기
                 </button>
@@ -1265,7 +1306,11 @@ const Challenge = ({
                   const categoryData = Object.entries(categories).map(([name, data]) => ({
                     name,
                     value: totalWeight > 0 ? Math.round((data.weight / totalWeight) * 100) : 0,
-                    color: data.color,
+                    color: userRanking === 'bronze' ? 'bg-cyan-500' :
+                           userRanking === 'silver' ? 'bg-teal-500' :
+                           userRanking === 'gold' ? 'bg-yellow-500' :
+                           userRanking === 'platinum' ? 'bg-purple-500' :
+                           'bg-cyan-500',
                     weight: data.weight
                   }));
                   
@@ -1328,8 +1373,15 @@ const Challenge = ({
                     <div key={data.date} className="flex flex-col items-center flex-1">
                       <div className="relative h-24 flex flex-col justify-end">
                         <div 
-                          className="w-8 bg-blue-500 rounded-t"
-                          style={{ height: `${data.usage > 0 ? (data.usage / maxUsage) * 96 : 0}px` }}
+                          className="w-8 rounded-t"
+                          style={{ 
+                            height: `${data.usage > 0 ? (data.usage / maxUsage) * 96 : 0}px`,
+                            background: userRanking === 'bronze' ? 'linear-gradient(to top, #06b6d4, #3b82f6)' :
+                                        userRanking === 'silver' ? 'linear-gradient(to top, #cbd5e1, #14b8a6)' :
+                                        userRanking === 'gold' ? 'linear-gradient(to top, #fcd34d, #facc15)' :
+                                        userRanking === 'platinum' ? 'linear-gradient(to top, #c084fc, #ec4899)' :
+                                        'linear-gradient(to top, #06b6d4, #3b82f6)'
+                          }}
                         >
                           {data.usage > 0 && (
                             <span className="text-[10px] text-white text-center block pt-1">
@@ -1411,7 +1463,16 @@ const Challenge = ({
                             </p>
                           )}
                         </div>
-                        <span className={`text-sm font-medium ${dayData.totalWeight > 0 ? 'text-blue-500' : isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                        <span className={`text-sm font-medium ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} style={dayData.totalWeight > 0 ? {
+                          background: userRanking === 'bronze' ? 'linear-gradient(135deg, #06b6d4, #3b82f6)' :
+                                      userRanking === 'silver' ? 'linear-gradient(135deg, #cbd5e1, #14b8a6)' :
+                                      userRanking === 'gold' ? 'linear-gradient(135deg, #fcd34d, #facc15)' :
+                                      userRanking === 'platinum' ? 'linear-gradient(135deg, #c084fc, #ec4899)' :
+                                      'linear-gradient(135deg, #06b6d4, #3b82f6)',
+                          WebkitBackgroundClip: 'text',
+                          WebkitTextFillColor: 'transparent',
+                          backgroundClip: 'text'
+                        } : {}}>
                           {dayData.totalWeight > 0 ? `${dayData.totalWeight}g` : dayData.date > today ? '-' : '0g'}
                         </span>
                       </div>
@@ -1422,7 +1483,16 @@ const Challenge = ({
               <div className={`mt-3 pt-3 border-t ${borderColor}`}>
                 <div className="flex justify-between items-center">
                   <span className={`text-sm font-medium ${textColor}`}>주간 총계</span>
-                  <span className="text-sm font-bold text-blue-500">
+                  <span className="text-sm font-bold" style={{
+                    background: userRanking === 'bronze' ? 'linear-gradient(135deg, #06b6d4, #3b82f6)' :
+                                userRanking === 'silver' ? 'linear-gradient(135deg, #cbd5e1, #14b8a6)' :
+                                userRanking === 'gold' ? 'linear-gradient(135deg, #fcd34d, #facc15)' :
+                                userRanking === 'platinum' ? 'linear-gradient(135deg, #c084fc, #ec4899)' :
+                                'linear-gradient(135deg, #06b6d4, #3b82f6)',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    backgroundClip: 'text'
+                  }}>
                     {(() => {
                       const today = new Date();
                       const dayOfWeek = today.getDay();
@@ -1462,11 +1532,18 @@ const Challenge = ({
                     <button
                       key={option.value}
                       onClick={() => setHistoryRange(option.value)}
-                      className={`px-2 py-1 text-xs rounded ${
+                      className={`px-2 py-1 text-xs rounded transition-all ${
                         historyRange === option.value 
-                          ? 'bg-blue-500 text-white' 
+                          ? userRanking === 'gold' ? 'text-gray-800' : 'text-white'
                           : isDarkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-600'
                       }`}
+                      style={historyRange === option.value ? {
+                        background: userRanking === 'bronze' ? 'linear-gradient(to right, #06b6d4, #3b82f6)' :
+                                    userRanking === 'silver' ? 'linear-gradient(to right, #cbd5e1, #06b6d4, #14b8a6)' :
+                                    userRanking === 'gold' ? 'linear-gradient(to right, #fcd34d, #facc15)' :
+                                    userRanking === 'platinum' ? 'linear-gradient(to right, #c084fc, #ec4899)' :
+                                    'linear-gradient(to right, #06b6d4, #3b82f6)'
+                      } : {}}
                     >
                       {option.label}
                     </button>
@@ -1567,8 +1644,20 @@ const Challenge = ({
                       <svg className="absolute inset-0 w-full h-full" style={{ marginTop: '-2px' }}>
                         <defs>
                           <linearGradient id="areaGradient" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="0%" stopColor="#3B82F6" stopOpacity="0.3" />
-                            <stop offset="100%" stopColor="#3B82F6" stopOpacity="0.05" />
+                            <stop offset="0%" stopColor={
+                              userRanking === 'bronze' ? '#06b6d4' :
+                              userRanking === 'silver' ? '#14b8a6' :
+                              userRanking === 'gold' ? '#facc15' :
+                              userRanking === 'platinum' ? '#c084fc' :
+                              '#06b6d4'
+                            } stopOpacity="0.3" />
+                            <stop offset="100%" stopColor={
+                              userRanking === 'bronze' ? '#06b6d4' :
+                              userRanking === 'silver' ? '#14b8a6' :
+                              userRanking === 'gold' ? '#facc15' :
+                              userRanking === 'platinum' ? '#c084fc' :
+                              '#06b6d4'
+                            } stopOpacity="0.05" />
                           </linearGradient>
                         </defs>
                         
@@ -1596,7 +1685,13 @@ const Challenge = ({
                             return `${x},${y}`;
                           }).join(' ')}
                           fill="none"
-                          stroke="#3B82F6"
+                          stroke={
+                            userRanking === 'bronze' ? '#06b6d4' :
+                            userRanking === 'silver' ? '#14b8a6' :
+                            userRanking === 'gold' ? '#facc15' :
+                            userRanking === 'platinum' ? '#c084fc' :
+                            '#06b6d4'
+                          }
                           strokeWidth="2"
                           className="w-full h-full"
                           vectorEffect="non-scaling-stroke"
@@ -1613,7 +1708,13 @@ const Challenge = ({
                                 cx={`${x}%`}
                                 cy={`${y}%`}
                                 r="4"
-                                fill="#3B82F6"
+                                fill={
+                                  userRanking === 'bronze' ? '#06b6d4' :
+                                  userRanking === 'silver' ? '#14b8a6' :
+                                  userRanking === 'gold' ? '#facc15' :
+                                  userRanking === 'platinum' ? '#c084fc' :
+                                  '#06b6d4'
+                                }
                                 stroke="white"
                                 strokeWidth="2"
                               />

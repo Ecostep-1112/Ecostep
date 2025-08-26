@@ -111,6 +111,15 @@ const Challenge = ({
     return (now - new Date(goalSetDate)) > weekInMs;
   };
 
+  // 남은 일수 계산
+  const getDaysLeft = () => {
+    if (!goalSetDate) return 0;
+    const now = new Date();
+    const daysPassed = (now - new Date(goalSetDate)) / (24 * 60 * 60 * 1000);
+    const daysLeft = Math.ceil(7 - daysPassed);
+    return Math.max(0, daysLeft);
+  };
+
   // 목표 설정 (일주일 제한 포함)
   const handleSetGoal = (value) => {
     if (canChangeGoal()) {
@@ -119,7 +128,7 @@ const Challenge = ({
       localStorage.setItem('goalSetDate', new Date().toISOString());
       setShowGoalDropdown(false);
     } else {
-      const daysLeft = Math.ceil((7 - (new Date() - new Date(goalSetDate)) / (24 * 60 * 60 * 1000)));
+      const daysLeft = getDaysLeft();
       showToast(`목표 변경은 ${daysLeft}일 후에 가능합니다`);
     }
   };
@@ -1051,7 +1060,7 @@ const Challenge = ({
                 <h3 className={`${textColor} text-sm font-medium`}>플라스틱 사용 한도 설정</h3>
                 {goalSetDate && !canChangeGoal() && (
                   <span className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                    {Math.ceil((7 - (new Date() - new Date(goalSetDate)) / (24 * 60 * 60 * 1000)))}일 후 변경 가능
+                    {getDaysLeft()}일 후 변경 가능
                   </span>
                 )}
               </div>
@@ -1417,10 +1426,9 @@ const Challenge = ({
                       setPlasticQuantity(1);
                     }
                   }}
-                  className={`w-full py-2.5 rounded-lg text-sm font-medium transition-colors ${getButtonTextColor()}`}
-                  style={{
-                    background: getThemeGradient()
-                  }}
+                  className={`w-full py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                    isDarkMode ? 'bg-white text-gray-900 hover:bg-gray-100' : 'bg-gray-900 text-white hover:bg-gray-800'
+                  }`}
                 >
                   기록하기
                 </button>

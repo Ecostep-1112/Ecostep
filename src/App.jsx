@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { FiSettings, FiHome, FiTarget, FiGift, FiUsers, FiMoreHorizontal } from 'react-icons/fi';
+import { IoNotificationsOutline } from 'react-icons/io5';
 import HomePage from './pages/Home';
 import ChallengePage from './pages/Challenge';
 import RewardsPage from './pages/Rewards';
@@ -8,6 +9,7 @@ import MorePage from './pages/More';
 import SettingsScreen from './pages/SettingsScreen';
 import ProfileScreen from './pages/ProfileScreen';
 import FriendsList from './pages/FriendsList';
+import NotificationsScreen from './pages/NotificationsScreen';
 import { ThemeSettings, RankThemeSettings, LanguageSettings, NotificationSettings, AquariumSettings } from './pages/Settings';
 import Toast from './components/Toast';
 import fishData from './data/fishData.json';
@@ -25,6 +27,44 @@ const EcostepApp = () => {
   const [showSettings, setShowSettings] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
   const [showAquariumSettings, setShowAquariumSettings] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [notificationsList, setNotificationsList] = useState([
+    {
+      id: 1,
+      title: '챌린지 완료!',
+      message: '오늘의 플라스틱 줄이기 챌린지를 완료했습니다.',
+      timestamp: new Date(Date.now() - 1000 * 60 * 30),
+      read: false
+    },
+    {
+      id: 2,
+      title: '새로운 보상 획득',
+      message: '실버 등급 달성! 새로운 물고기를 구매할 수 있습니다.',
+      timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2),
+      read: false
+    },
+    {
+      id: 3,
+      title: '수질 경고',
+      message: '수질이 70% 이하로 떨어졌습니다.',
+      timestamp: new Date(Date.now() - 1000 * 60 * 60 * 5),
+      read: true
+    },
+    {
+      id: 4,
+      title: '새로운 물고기',
+      message: '구매하신 엔젤피쉬가 어항에 추가되었습니다!',
+      timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24 * 1),
+      read: true
+    },
+    {
+      id: 5,
+      title: '연속 달성!',
+      message: '7일 연속 챌린지 달성! 100포인트를 획득했습니다.',
+      timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3),
+      read: true
+    }
+  ]);
   const [selectedChallenge, setSelectedChallenge] = useState('플라스틱 빨대 안쓰기');
   const [showChallengeSelect, setShowChallengeSelect] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
@@ -33,7 +73,7 @@ const EcostepApp = () => {
   const [showLanguageSettings, setShowLanguageSettings] = useState(false);
   const [showNotificationSettings, setShowNotificationSettings] = useState(false);
   const [language, setLanguage] = useState('ko');
-  const [notifications, setNotifications] = useState(true);
+  const [notificationEnabled, setNotificationEnabled] = useState(true);
   const [fishCount, setFishCount] = useState(5);
   const [isRandomFish, setIsRandomFish] = useState(true);
   const [isRandomDecorations, setIsRandomDecorations] = useState(true);
@@ -346,8 +386,23 @@ const EcostepApp = () => {
               <div className={`flex items-center px-2 py-1 rounded ${isDarkMode ? 'bg-white/20' : 'bg-gray-100'}`}>
                 <span className={`${isDarkMode ? 'text-white' : 'text-gray-700'} text-xs font-medium`}>{points}P</span>
               </div>
-              <button onClick={() => setShowSettings(true)}>
-                <FiSettings className={`w-5 h-5 ${isDarkMode ? 'text-white' : 'text-gray-700'}`} />
+              <button className="relative" onClick={() => {
+                setShowNotifications(true);
+                setNotificationsList(prev => prev.map(n => ({ ...n, read: true })));
+              }}>
+                <IoNotificationsOutline className={`w-[18px] h-[18px] ${
+                  notificationsList.some(n => !n.read) 
+                    ? 'text-blue-500' 
+                    : isDarkMode ? 'text-white' : 'text-gray-700'
+                }`} />
+              </button>
+              <button onClick={() => {
+                if (showNotifications) {
+                  setShowNotifications(false);
+                }
+                setShowSettings(true);
+              }}>
+                <FiSettings className={`w-4 h-4 ${isDarkMode ? 'text-white' : 'text-gray-700'}`} />
               </button>
             </div>
             {/* 그라데이션 테두리 */}
@@ -357,12 +412,19 @@ const EcostepApp = () => {
           </div>
 
           {/* 메인 콘텐츠 */}
-          {showSettings ? (
+          {showNotifications ? (
+            <NotificationsScreen 
+              isDarkMode={isDarkMode} 
+              setShowNotifications={setShowNotifications}
+              notifications={notificationsList}
+              setNotifications={setNotificationsList}
+            />
+          ) : showSettings ? (
             showProfile ? <ProfileScreen isDarkMode={isDarkMode} setShowProfile={setShowProfile} /> : 
             showThemeSettings ? <ThemeSettings isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} setShowThemeSettings={setShowThemeSettings} /> :
             showRankThemeSettings ? <RankThemeSettings isDarkMode={isDarkMode} userRanking={rankTheme} setUserRanking={setRankTheme} setShowRankThemeSettings={setShowRankThemeSettings} currentUserRank={userRanking} showToast={showToast} /> :
             showLanguageSettings ? <LanguageSettings isDarkMode={isDarkMode} language={language} setLanguage={setLanguage} setShowLanguageSettings={setShowLanguageSettings} /> :
-            showNotificationSettings ? <NotificationSettings isDarkMode={isDarkMode} notifications={notifications} setNotifications={setNotifications} setShowNotificationSettings={setShowNotificationSettings} /> :
+            showNotificationSettings ? <NotificationSettings isDarkMode={isDarkMode} notifications={notificationEnabled} setNotifications={setNotificationEnabled} setShowNotificationSettings={setShowNotificationSettings} /> :
             <SettingsScreen 
               isDarkMode={isDarkMode}
               setShowSettings={setShowSettings}
@@ -373,7 +435,7 @@ const EcostepApp = () => {
               setShowRankThemeSettings={setShowRankThemeSettings}
               userRanking={rankTheme}
               language={language}
-              notifications={notifications}
+              notifications={notificationEnabled}
             />
           ) : showAquariumSettings ? (
             <AquariumSettings 
@@ -471,7 +533,7 @@ const EcostepApp = () => {
           )}
 
           {/* 하단 네비게이션 - 글래스모피즘 효과 */}
-          {!showSettings && !showProfile && !showAquariumSettings && !showThemeSettings && !showRankThemeSettings && !showLanguageSettings && !showNotificationSettings && !showFriendsList && (
+          {!showNotifications && !showSettings && !showProfile && !showAquariumSettings && !showThemeSettings && !showRankThemeSettings && !showLanguageSettings && !showNotificationSettings && !showFriendsList && (
             <div style={{
               backgroundColor: isDarkMode ? 'rgba(55, 65, 81, 0.3)' : 'rgba(255, 255, 255, 0.3)',
               backdropFilter: isDarkMode ? 'blur(20px) saturate(1.5)' : 'blur(20px) saturate(2.5)',

@@ -54,7 +54,7 @@ const EcostepApp = () => {
   const [currentTank, setCurrentTank] = useState('basic');
   const [unlockedTanks, setUnlockedTanks] = useState(['basic', 'silver', 'gold', 'platinum']); // 모든 어항 잠금 해제
   const [userRanking, setUserRanking] = useState('silver'); // 실제 사용자 랭킹 (변경되지 않음)
-  const [rankTheme, setRankTheme] = useState('silver'); // 랭크 테마 (색상만 변경)
+  const [rankTheme, setRankTheme] = useState('bronze'); // 색상 테마 (색상만 변경)
   const [claimedTanks, setClaimedTanks] = useState(() => {
     const saved = localStorage.getItem('claimedTanks');
     return saved ? JSON.parse(saved) : [];
@@ -444,6 +444,7 @@ const EcostepApp = () => {
                 challengeHistory={challengeHistory}
                 setChallengeHistory={setChallengeHistory}
                 userRanking={rankTheme}
+                actualRanking={userRanking}
                 showToast={showToast}
                 setTotalPlasticSaved={setTotalPlasticSaved}
               />}

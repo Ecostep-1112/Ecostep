@@ -26,7 +26,8 @@ const Challenge = ({
   setWaterQuality,
   challengeHistory,
   setChallengeHistory,
-  userRanking,
+  userRanking, // Now this is actually rankTheme from App.jsx
+  actualRanking, // This is the actual user ranking for badges
   showToast,
   setTotalPlasticSaved
 }) => {
@@ -483,6 +484,47 @@ const Challenge = ({
   ];
 
   // 랭크별 색상 정보
+  // Helper function to get colors based on rank theme
+  const getThemeColor = () => {
+    if (userRanking === 'basic') {
+      return isDarkMode ? '#e5e7eb' : '#374151';
+    }
+    if (userRanking === 'bronze') return '#06b6d4';
+    if (userRanking === 'silver') return '#14b8a6';
+    if (userRanking === 'gold') return '#facc15';
+    if (userRanking === 'platinum') return '#c084fc';
+    return '#06b6d4'; // default
+  };
+
+  const getThemeGradient = () => {
+    if (userRanking === 'basic') {
+      return isDarkMode ? '#e5e7eb' : '#374151';
+    }
+    if (userRanking === 'bronze') return 'linear-gradient(to right, #06b6d4, #3b82f6)';
+    if (userRanking === 'silver') return 'linear-gradient(to right, #cbd5e1, #06b6d4, #14b8a6)';
+    if (userRanking === 'gold') return 'linear-gradient(to right, #fcd34d, #facc15)';
+    if (userRanking === 'platinum') return 'linear-gradient(to right, #c084fc, #ec4899)';
+    return 'linear-gradient(to right, #06b6d4, #3b82f6)'; // default
+  };
+  
+  // Helper function to get text color for buttons based on theme
+  const getButtonTextColor = () => {
+    if (userRanking === 'basic') {
+      return isDarkMode ? 'text-black' : 'text-white';
+    }
+    if (userRanking === 'gold') return 'text-gray-800';
+    return 'text-white';
+  };
+  
+  // Helper function to get icon color for check marks
+  const getIconColor = () => {
+    if (userRanking === 'basic') {
+      return isDarkMode ? 'text-black' : 'text-white';
+    }
+    if (userRanking === 'gold') return 'text-gray-800';
+    return 'text-white';
+  };
+
   const getRankColors = (rank) => {
     switch(rank) {
       case 'bronze':
@@ -578,11 +620,11 @@ const Challenge = ({
             <div className={`${cardBg} border ${borderColor} rounded-xl p-5 relative`}>
               <div className="flex justify-between items-center mb-4">
                 <h3 className={`${textColor} text-sm font-medium`}>챌린지</h3>
-                {/* 랭크 아이콘 - 보상 탭 스타일 */}
-                {userRanking === 'bronze' && <BronzeIcon size={20} />}
-                {userRanking === 'silver' && <SilverIcon size={20} />}
-                {userRanking === 'gold' && <GoldIcon size={20} />}
-                {userRanking === 'platinum' && <PlatinumIcon size={20} />}
+                {/* 랭크 아이콘 - 실제 랭킹 기준 */}
+                {actualRanking === 'bronze' && <BronzeIcon size={20} />}
+                {actualRanking === 'silver' && <SilverIcon size={20} />}
+                {actualRanking === 'gold' && <GoldIcon size={20} />}
+                {actualRanking === 'platinum' && <PlatinumIcon size={20} />}
               </div>
               
               <div className="relative mb-4 h-9">
@@ -593,11 +635,7 @@ const Challenge = ({
                 <div 
                   className={`w-full h-full ${inputBg} rounded-lg flex items-center justify-center border`}
                   style={{
-                    borderColor: userRanking === 'bronze' ? '#06b6d4' :
-                                userRanking === 'silver' ? '#14b8a6' :
-                                userRanking === 'gold' ? '#fcd34d' :
-                                userRanking === 'platinum' ? '#c084fc' :
-                                '#06b6d4'
+                    borderColor: getThemeColor()
                   }}>
                   <span className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                     {weeklyProgress[currentWeekStart].challenge || '챌린지를 선택해주세요'}
@@ -609,11 +647,7 @@ const Challenge = ({
                   onClick={() => setShowChallengeSelect(!showChallengeSelect)}
                   className={`w-full h-full ${inputBg} rounded-lg px-2 flex justify-between items-center border`}
                   style={{
-                    borderColor: userRanking === 'bronze' ? '#06b6d4' :
-                                userRanking === 'silver' ? '#14b8a6' :
-                                userRanking === 'gold' ? '#fcd34d' :
-                                userRanking === 'platinum' ? '#c084fc' :
-                                '#06b6d4'
+                    borderColor: getThemeColor()
                   }}
                 >
                   <span className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} flex-1 text-center`}>{selectedChallenge}</span>
@@ -727,14 +761,10 @@ const Challenge = ({
                       }
                     }}
                     className={`w-9 h-9 rounded-lg text-xs font-medium transition-colors flex items-center justify-center ${
-                      userRanking === 'gold' ? 'text-gray-800 hover:opacity-90' : 'text-white hover:opacity-90'
+                      `${getButtonTextColor()} hover:opacity-90`
                     }`}
                     style={{
-                      background: userRanking === 'bronze' ? 'linear-gradient(to right, #06b6d4, #3b82f6)' :
-                                  userRanking === 'silver' ? 'linear-gradient(to right, #cbd5e1, #06b6d4, #14b8a6)' :
-                                  userRanking === 'gold' ? 'linear-gradient(to right, #fcd34d, #facc15)' :
-                                  userRanking === 'platinum' ? 'linear-gradient(to right, #c084fc, #ec4899)' :
-                                  'linear-gradient(to right, #06b6d4, #3b82f6)'
+                      background: getThemeGradient()
                     }}
                   >
                     추가
@@ -784,19 +814,16 @@ const Challenge = ({
                               }
                             }}
                             className={`ml-2 p-1 rounded transition-colors ${
+                              userRanking === 'basic' ? 'hover:bg-gray-100' :
                               userRanking === 'bronze' ? 'hover:bg-cyan-100' :
                               userRanking === 'silver' ? 'hover:bg-gray-200' :
                               userRanking === 'gold' ? 'hover:bg-yellow-100' :
                               userRanking === 'platinum' ? 'hover:bg-purple-100' :
-                              'hover:bg-cyan-100'
+                              'hover:bg-gray-100'
                             }`}
                           >
                             <FiX className="w-4 h-4" style={{
-                              color: userRanking === 'bronze' ? '#06b6d4' :
-                                     userRanking === 'silver' ? '#14b8a6' :
-                                     userRanking === 'gold' ? '#facc15' :
-                                     userRanking === 'platinum' ? '#c084fc' :
-                                     '#06b6d4'
+                              color: getThemeColor()
                             }} />
                           </button>
                         )}
@@ -821,30 +848,14 @@ const Challenge = ({
                   style={{
                     background: isDarkMode 
                       ? `linear-gradient(to right, transparent, ${
-                          userRanking === 'bronze' ? '#06b6d4' :
-                          userRanking === 'silver' ? '#14b8a6' :
-                          userRanking === 'gold' ? '#facc15' :
-                          userRanking === 'platinum' ? '#c084fc' :
-                          '#06b6d4'
+                          getThemeColor()
                         }30 15%, ${
-                          userRanking === 'bronze' ? '#06b6d4' :
-                          userRanking === 'silver' ? '#14b8a6' :
-                          userRanking === 'gold' ? '#facc15' :
-                          userRanking === 'platinum' ? '#c084fc' :
-                          '#06b6d4'
+                          getThemeColor()
                         }30 85%, transparent)`
                       : `linear-gradient(to right, transparent, ${
-                          userRanking === 'bronze' ? '#06b6d4' :
-                          userRanking === 'silver' ? '#14b8a6' :
-                          userRanking === 'gold' ? '#facc15' :
-                          userRanking === 'platinum' ? '#c084fc' :
-                          '#06b6d4'
+                          getThemeColor()
                         }20 15%, ${
-                          userRanking === 'bronze' ? '#06b6d4' :
-                          userRanking === 'silver' ? '#14b8a6' :
-                          userRanking === 'gold' ? '#facc15' :
-                          userRanking === 'platinum' ? '#c084fc' :
-                          '#06b6d4'
+                          getThemeColor()
                         }20 85%, transparent)`
                   }}
                 />
@@ -864,11 +875,7 @@ const Challenge = ({
                         isToday ? `font-bold` : ''
                       }`} style={{
                         color: isToday ? (
-                          userRanking === 'bronze' ? '#06b6d4' :
-                          userRanking === 'silver' ? '#14b8a6' :
-                          userRanking === 'gold' ? '#facc15' :
-                          userRanking === 'platinum' ? '#c084fc' :
-                          '#06b6d4'
+                          getThemeColor()
                         ) : isDarkMode ? '#6b7280' : '#9ca3af'
                       }}>
                         {dayName}
@@ -879,33 +886,19 @@ const Challenge = ({
                           dayStatus !== true && (isDarkMode ? 'bg-gray-700' : 'bg-gray-200')
                         }`}
                         style={dayStatus === true ? {
-                          background: userRanking === 'bronze' ? 'linear-gradient(135deg, #06b6d4, #3b82f6)' :
-                                      userRanking === 'silver' ? 'linear-gradient(135deg, #cbd5e1, #06b6d4, #14b8a6)' :
-                                      userRanking === 'gold' ? 'linear-gradient(135deg, #fcd34d, #facc15)' :
-                                      userRanking === 'platinum' ? 'linear-gradient(135deg, #c084fc, #ec4899)' :
-                                      'linear-gradient(135deg, #06b6d4, #3b82f6)'
+                          background: getThemeGradient().replace('to right', '135deg')
                         } : isToday && dayStatus !== true ? {
                           background: 'transparent',
-                          border: `2px solid ${
-                            userRanking === 'bronze' ? '#06b6d4' :
-                            userRanking === 'silver' ? '#14b8a6' :
-                            userRanking === 'gold' ? '#fcd34d' :
-                            userRanking === 'platinum' ? '#c084fc' :
-                            '#06b6d4'
-                          }`
+                          border: `2px solid ${getThemeColor()}`
                         } : {}}
                       >
                         {dayStatus === true ? (
-                          <FiCheck className="w-3.5 h-3.5 text-white" />
+                          <FiCheck className={`w-3.5 h-3.5 ${getIconColor()}`} />
                         ) : dayStatus === false ? (
                           <FiX className={`w-3.5 h-3.5 ${isDarkMode ? 'text-white' : 'text-gray-600'}`} />
                         ) : isToday ? (
                           <span className="text-sm font-bold" style={{
-                            color: userRanking === 'bronze' ? '#06b6d4' :
-                                   userRanking === 'silver' ? '#14b8a6' :
-                                   userRanking === 'gold' ? '#facc15' :
-                                   userRanking === 'platinum' ? '#c084fc' :
-                                   '#06b6d4'
+                            color: getThemeColor()
                           }}>!</span>
                         ) : (
                           <div className={`w-1 h-1 rounded-full ${isDarkMode ? 'bg-gray-500' : 'bg-gray-400'}`} />
@@ -935,11 +928,7 @@ const Challenge = ({
                     width: `${currentWeekStart && weeklyProgress[currentWeekStart] 
                       ? (weeklyProgress[currentWeekStart].days.filter(d => d === true).length / 7 * 100) 
                       : 0}%`,
-                    background: userRanking === 'bronze' ? 'linear-gradient(to right, #06b6d4, #3b82f6, #2563eb)' :
-                                userRanking === 'silver' ? 'linear-gradient(to right, #cbd5e1, #06b6d4, #14b8a6)' :
-                                userRanking === 'gold' ? 'linear-gradient(to right, #fcd34d, #facc15)' :
-                                userRanking === 'platinum' ? 'linear-gradient(to right, #c084fc, #ec4899)' :
-                                'linear-gradient(to right, #06b6d4, #3b82f6, #2563eb)'
+                    background: getThemeGradient()
                   }}
                 />
               </div>
@@ -950,14 +939,10 @@ const Challenge = ({
                 className={`w-full h-9 rounded-lg text-sm font-medium transition-all ${
                   todayCompleted 
                     ? 'bg-gray-400 text-gray-200 cursor-not-allowed' 
-                    : userRanking === 'gold' ? 'text-gray-800 hover:opacity-90' : 'text-white hover:opacity-90'
+                    : `${getButtonTextColor()} hover:opacity-90`
                 }`}
                 style={!todayCompleted ? {
-                  background: userRanking === 'bronze' ? 'linear-gradient(to right, #06b6d4, #3b82f6)' :
-                              userRanking === 'silver' ? 'linear-gradient(to right, #cbd5e1, #06b6d4, #14b8a6)' :
-                              userRanking === 'gold' ? 'linear-gradient(to right, #fcd34d, #facc15)' :
-                              userRanking === 'platinum' ? 'linear-gradient(to right, #c084fc, #ec4899)' :
-                              'linear-gradient(to right, #06b6d4, #3b82f6)'
+                  background: getThemeGradient()
                 } : {}}
               >
                 {todayCompleted ? '오늘 완료' : '오늘 완료하기 (+10P)'}
@@ -1077,11 +1062,7 @@ const Challenge = ({
                   isDarkMode ? 'bg-gray-800' : 'bg-gray-50'
                 }`}
                   style={{
-                    borderColor: userRanking === 'bronze' ? '#06b6d4' :
-                                 userRanking === 'silver' ? '#94a3b8' :
-                                 userRanking === 'gold' ? '#facc15' :
-                                 userRanking === 'platinum' ? '#c084fc' :
-                                 '#06b6d4'
+                    borderColor: getThemeColor()
                   }}
                 >
                   <div className={`${textColor} text-sm font-medium`}>
@@ -1103,10 +1084,6 @@ const Challenge = ({
                 
                 {/* 드롭다운 리스트 */}
                 {showGoalDropdown && (
-                  <>
-                    {/* 블러 배경 - 입력 영역만 */}
-                    <div className="absolute -inset-4 backdrop-blur-[1px] bg-black/[0.02] z-10 rounded-xl" onClick={() => setShowGoalDropdown(false)} />
-                    
                     <div 
                       className={`absolute w-full mt-1 border ${borderColor} ${
                         isDarkMode ? 'bg-gray-800' : 'bg-white'
@@ -1120,19 +1097,15 @@ const Challenge = ({
                           onChange={(e) => setCustomGoalInput(e.target.value)}
                           className={`flex-1 border ${borderColor} ${
                             isDarkMode ? 'bg-gray-700 text-white placeholder-gray-400' : 'bg-gray-50 text-gray-900 placeholder-gray-500'
-                          } rounded px-2 py-1 text-sm`}
+                          } rounded px-2 py-1 text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
                           placeholder="직접 설정"
                           onClick={(e) => e.stopPropagation()}
                         />
                         <button 
                           onClick={addCustomGoal}
-                          className={`px-3 py-1 rounded text-xs font-medium transition-colors text-white`}
+                          className={`px-3 py-1 rounded text-xs font-medium transition-colors ${getButtonTextColor()}`}
                           style={{
-                            background: userRanking === 'bronze' ? 'linear-gradient(to right, #06b6d4, #3b82f6)' :
-                                        userRanking === 'silver' ? 'linear-gradient(to right, #cbd5e1, #06b6d4, #14b8a6)' :
-                                        userRanking === 'gold' ? 'linear-gradient(to right, #fcd34d, #facc15)' :
-                                        userRanking === 'platinum' ? 'linear-gradient(to right, #c084fc, #ec4899)' :
-                                        'linear-gradient(to right, #06b6d4, #3b82f6)'
+                            background: getThemeGradient()
                           }}
                         >
                           설정
@@ -1148,10 +1121,7 @@ const Challenge = ({
                             const isCustom = userCustomGoals.includes(goal);
                             return (
                               <React.Fragment key={goal}>
-                                <div className={`flex items-center ${
-                                  tempPlasticGoal == goal ? 
-                                  (isDarkMode ? 'bg-gray-700' : 'bg-gray-100') : ''
-                                }`}>
+                                <div className={`flex items-center`}>
                                   <button
                                     onClick={() => {
                                       setTempPlasticGoal(goal);
@@ -1159,7 +1129,7 @@ const Challenge = ({
                                     }}
                                     className={`flex-1 text-left px-3 py-2 text-sm transition-colors ${
                                       tempPlasticGoal == goal ? 
-                                      (isDarkMode ? 'text-white' : 'text-gray-900') : 
+                                      (isDarkMode ? 'bg-gray-700 text-white' : 'bg-gray-100 text-gray-900') : 
                                       (isDarkMode ? 'text-gray-200 hover:bg-gray-700' : 'text-gray-900 hover:bg-gray-50')
                                     }`}
                                   >
@@ -1187,7 +1157,6 @@ const Challenge = ({
                           })}
                         </div>
                     </div>
-                  </>
                 )}
               </div>
               )}
@@ -1212,11 +1181,7 @@ const Challenge = ({
                     <div className={`w-full ${isDarkMode ? 'bg-gray-700' : 'bg-gray-200'} rounded-full h-1.5`}>
                       <div className="h-1.5 rounded-full transition-all duration-300" style={{ 
                         width: `${isNaN(remainingPercentage) ? 100 : remainingPercentage}%`,
-                        background: userRanking === 'bronze' ? 'linear-gradient(to right, #06b6d4, #3b82f6)' :
-                                    userRanking === 'silver' ? 'linear-gradient(to right, #cbd5e1, #06b6d4, #14b8a6)' :
-                                    userRanking === 'gold' ? 'linear-gradient(to right, #fcd34d, #facc15)' :
-                                    userRanking === 'platinum' ? 'linear-gradient(to right, #c084fc, #ec4899)' :
-                                    'linear-gradient(to right, #06b6d4, #3b82f6)'
+                        background: getThemeGradient()
                       }}></div>
                     </div>
                   </>
@@ -1315,14 +1280,10 @@ const Challenge = ({
                             }
                           }}
                           className={`w-9 h-9 rounded-lg text-xs font-medium transition-colors flex items-center justify-center ${
-                            userRanking === 'gold' ? 'text-gray-800 hover:opacity-90' : 'text-white hover:opacity-90'
+                            `${getButtonTextColor()} hover:opacity-90`
                           }`}
                           style={{
-                            background: userRanking === 'bronze' ? 'linear-gradient(to right, #06b6d4, #3b82f6)' :
-                                        userRanking === 'silver' ? 'linear-gradient(to right, #cbd5e1, #06b6d4, #14b8a6)' :
-                                        userRanking === 'gold' ? 'linear-gradient(to right, #fcd34d, #facc15)' :
-                                        userRanking === 'platinum' ? 'linear-gradient(to right, #c084fc, #ec4899)' :
-                                        'linear-gradient(to right, #06b6d4, #3b82f6)'
+                            background: getThemeGradient()
                           }}
                         >
                           추가
@@ -1368,11 +1329,12 @@ const Challenge = ({
                                 }
                               }}
                               className={`ml-2 p-1 rounded transition-colors ${
+                                userRanking === 'basic' ? 'hover:bg-gray-100' :
                                 userRanking === 'bronze' ? 'hover:bg-cyan-100' :
                                 userRanking === 'silver' ? 'hover:bg-gray-200' :
                                 userRanking === 'gold' ? 'hover:bg-yellow-100' :
                                 userRanking === 'platinum' ? 'hover:bg-purple-100' :
-                                'hover:bg-cyan-100'
+                                'hover:bg-gray-100'
                               }`}
                             >
                               <FiX className="w-4 h-4" style={{
@@ -1455,13 +1417,9 @@ const Challenge = ({
                       setPlasticQuantity(1);
                     }
                   }}
-                  className={`w-full py-2.5 rounded-lg text-sm font-medium transition-colors text-white`}
+                  className={`w-full py-2.5 rounded-lg text-sm font-medium transition-colors ${getButtonTextColor()}`}
                   style={{
-                    background: userRanking === 'bronze' ? 'linear-gradient(to right, #06b6d4, #3b82f6)' :
-                                userRanking === 'silver' ? 'linear-gradient(to right, #cbd5e1, #06b6d4, #14b8a6)' :
-                                userRanking === 'gold' ? 'linear-gradient(to right, #fcd34d, #facc15)' :
-                                userRanking === 'platinum' ? 'linear-gradient(to right, #c084fc, #ec4899)' :
-                                'linear-gradient(to right, #06b6d4, #3b82f6)'
+                    background: getThemeGradient()
                   }}
                 >
                   기록하기
@@ -1510,11 +1468,12 @@ const Challenge = ({
                   const categoryData = Object.entries(categories).map(([name, data]) => ({
                     name,
                     value: totalWeight > 0 ? Math.round((data.weight / totalWeight) * 100) : 0,
-                    color: userRanking === 'bronze' ? 'bg-cyan-500' :
+                    color: userRanking === 'basic' ? (isDarkMode ? 'bg-white' : 'bg-gray-800') :
+                           userRanking === 'bronze' ? 'bg-cyan-500' :
                            userRanking === 'silver' ? 'bg-teal-500' :
                            userRanking === 'gold' ? 'bg-yellow-500' :
                            userRanking === 'platinum' ? 'bg-purple-500' :
-                           'bg-cyan-500',
+                           'bg-gray-500',
                     weight: data.weight
                   }));
                   
@@ -1580,11 +1539,7 @@ const Challenge = ({
                           className="w-8 rounded-t"
                           style={{ 
                             height: `${data.usage > 0 ? (data.usage / maxUsage) * 96 : 0}px`,
-                            background: userRanking === 'bronze' ? 'linear-gradient(to top, #06b6d4, #3b82f6)' :
-                                        userRanking === 'silver' ? 'linear-gradient(to top, #cbd5e1, #14b8a6)' :
-                                        userRanking === 'gold' ? 'linear-gradient(to top, #fcd34d, #facc15)' :
-                                        userRanking === 'platinum' ? 'linear-gradient(to top, #c084fc, #ec4899)' :
-                                        'linear-gradient(to top, #06b6d4, #3b82f6)'
+                            background: getThemeGradient().replace('to right', 'to top')
                           }}
                         >
                           {data.usage > 0 && (
@@ -1849,18 +1804,10 @@ const Challenge = ({
                         <defs>
                           <linearGradient id="areaGradient" x1="0" y1="0" x2="0" y2="1">
                             <stop offset="0%" stopColor={
-                              userRanking === 'bronze' ? '#06b6d4' :
-                              userRanking === 'silver' ? '#14b8a6' :
-                              userRanking === 'gold' ? '#facc15' :
-                              userRanking === 'platinum' ? '#c084fc' :
-                              '#06b6d4'
+                              getThemeColor()
                             } stopOpacity="0.3" />
                             <stop offset="100%" stopColor={
-                              userRanking === 'bronze' ? '#06b6d4' :
-                              userRanking === 'silver' ? '#14b8a6' :
-                              userRanking === 'gold' ? '#facc15' :
-                              userRanking === 'platinum' ? '#c084fc' :
-                              '#06b6d4'
+                              getThemeColor()
                             } stopOpacity="0.05" />
                           </linearGradient>
                         </defs>
@@ -1890,11 +1837,7 @@ const Challenge = ({
                           }).join(' ')}
                           fill="none"
                           stroke={
-                            userRanking === 'bronze' ? '#06b6d4' :
-                            userRanking === 'silver' ? '#14b8a6' :
-                            userRanking === 'gold' ? '#facc15' :
-                            userRanking === 'platinum' ? '#c084fc' :
-                            '#06b6d4'
+                            getThemeColor()
                           }
                           strokeWidth="2"
                           className="w-full h-full"
@@ -1913,11 +1856,7 @@ const Challenge = ({
                                 cy={`${y}%`}
                                 r="4"
                                 fill={
-                                  userRanking === 'bronze' ? '#06b6d4' :
-                                  userRanking === 'silver' ? '#14b8a6' :
-                                  userRanking === 'gold' ? '#facc15' :
-                                  userRanking === 'platinum' ? '#c084fc' :
-                                  '#06b6d4'
+                                  getThemeColor()
                                 }
                                 stroke="white"
                                 strokeWidth="2"

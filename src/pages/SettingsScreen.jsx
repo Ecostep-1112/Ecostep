@@ -73,7 +73,7 @@ const SettingsScreen = ({
           onClick={() => setShowThemeSettings(true)}
           className={`w-full ${cardBg} border ${borderColor} rounded-xl p-4 flex justify-between items-center`}
         >
-          <span className={`text-sm ${textColor}`}>화면 테마</span>
+          <span className={`text-sm ${textColor}`}>화면</span>
           <div className="flex items-center">
             <span className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} mr-2`}>
               {isDarkMode ? '다크' : '라이트'}
@@ -86,10 +86,11 @@ const SettingsScreen = ({
           onClick={() => setShowRankThemeSettings(true)}
           className={`w-full ${cardBg} border ${borderColor} rounded-xl p-4 flex justify-between items-center`}
         >
-          <span className={`text-sm ${textColor}`}>랭크 테마</span>
+          <span className={`text-sm ${textColor}`}>색상</span>
           <div className="flex items-center">
             <span className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} mr-2`}>
-              {userRanking === 'bronze' ? '브론즈' : 
+              {userRanking === 'basic' ? '기본' :
+               userRanking === 'bronze' ? '브론즈' : 
                userRanking === 'silver' ? '실버' : 
                userRanking === 'gold' ? '골드' : 
                '플래티넘'}

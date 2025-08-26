@@ -16,6 +16,7 @@ export const RankThemeSettings = ({ isDarkMode, userRanking, setUserRanking, set
   const cardBg = isDarkMode ? 'bg-gray-800' : 'bg-white';
 
   const ranks = [
+    { id: 'basic', name: '기본', icon: null, color: isDarkMode ? '#e5e7eb' : '#374151', level: 0 },
     { id: 'bronze', name: '브론즈', icon: BronzeIcon, color: '#06b6d4', level: 1 },
     { id: 'silver', name: '실버', icon: SilverIcon, color: '#14b8a6', level: 2 },
     { id: 'gold', name: '골드', icon: GoldIcon, color: '#facc15', level: 3 },
@@ -30,7 +31,7 @@ export const RankThemeSettings = ({ isDarkMode, userRanking, setUserRanking, set
         <button onClick={() => setShowRankThemeSettings(false)} className="mr-3">
           <FiChevronRight className={`w-5 h-5 rotate-180 ${textColor}`} />
         </button>
-        <h2 className={`text-base font-medium ${textColor}`}>랭크 테마</h2>
+        <h2 className={`text-base font-medium ${textColor}`}>색상</h2>
       </div>
       
       <div className="mx-3 mt-4 space-y-2">
@@ -69,7 +70,16 @@ export const RankThemeSettings = ({ isDarkMode, userRanking, setUserRanking, set
               )}
               
               <div className="flex items-center relative z-0">
-                <RankIcon className={`mr-3 ${isLocked ? 'opacity-50' : ''}`} />
+                {RankIcon ? (
+                  <RankIcon className={`mr-3 ${isLocked ? 'opacity-50' : ''}`} />
+                ) : (
+                  <div className={`w-6 h-6 mr-3 rounded-full border-2 ${isLocked ? 'opacity-50' : ''}`} 
+                    style={{ 
+                      borderColor: rank.color,
+                      backgroundColor: rank.id === 'basic' ? (isDarkMode ? '#374151' : '#e5e7eb') : 'transparent'
+                    }} 
+                  />
+                )}
                 <span className={`text-sm ${textColor} ${isLocked ? 'opacity-50' : ''}`}>{rank.name}</span>
               </div>
               
@@ -104,7 +114,7 @@ export const ThemeSettings = ({ isDarkMode, setIsDarkMode, setShowThemeSettings 
         <button onClick={() => setShowThemeSettings(false)} className="mr-3">
           <FiChevronRight className={`w-5 h-5 rotate-180 ${textColor}`} />
         </button>
-        <h2 className={`text-base font-medium ${textColor}`}>화면 테마</h2>
+        <h2 className={`text-base font-medium ${textColor}`}>화면</h2>
       </div>
       
       <div className="mx-3 mt-4 space-y-2">

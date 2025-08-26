@@ -60,6 +60,120 @@ const Challenge = ({
     const saved = localStorage.getItem('customChallengeSavings');
     return saved ? JSON.parse(saved) : {};
   }); // 커스텀 챌린지별 절약량 저장
+  
+  // 완료된 챌린지 기록 상태
+  const [completedChallenges, setCompletedChallenges] = useState(() => {
+    const saved = localStorage.getItem('completedChallenges');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      // 1년 이상 된 데이터 필터링
+      const oneYearAgo = new Date();
+      oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+      const filtered = parsed.filter(challenge => new Date(challenge.endDate) > oneYearAgo);
+      if (filtered.length !== parsed.length) {
+        localStorage.setItem('completedChallenges', JSON.stringify(filtered));
+      }
+      return filtered;
+    }
+    
+    // 예시 데이터 10개
+    const today = new Date();
+    const exampleChallenges = [
+      {
+        challenge: '텀블러 사용하기',
+        startDate: new Date(today.getTime() - 70 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+        endDate: new Date(today.getTime() - 64 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+        progress: 100,
+        completed: true,
+        completedDays: 7,
+        rankColor: 'bronze'
+      },
+      {
+        challenge: '장바구니 사용하기',
+        startDate: new Date(today.getTime() - 63 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+        endDate: new Date(today.getTime() - 57 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+        progress: 43,
+        completed: false,
+        completedDays: 3,
+        rankColor: 'bronze'
+      },
+      {
+        challenge: '일회용 컵 안쓰기',
+        startDate: new Date(today.getTime() - 56 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+        endDate: new Date(today.getTime() - 50 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+        progress: 86,
+        completed: true,
+        completedDays: 6,
+        rankColor: 'bronze'
+      },
+      {
+        challenge: '비닐봉지 안쓰기',
+        startDate: new Date(today.getTime() - 49 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+        endDate: new Date(today.getTime() - 43 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+        progress: 100,
+        completed: true,
+        completedDays: 7,
+        rankColor: 'silver'
+      },
+      {
+        challenge: '에코백 사용하기',
+        startDate: new Date(today.getTime() - 42 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+        endDate: new Date(today.getTime() - 36 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+        progress: 57,
+        completed: false,
+        completedDays: 4,
+        rankColor: 'silver'
+      },
+      {
+        challenge: '물티슈 줄이기',
+        startDate: new Date(today.getTime() - 35 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+        endDate: new Date(today.getTime() - 29 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+        progress: 71,
+        completed: true,
+        completedDays: 5,
+        rankColor: 'silver'
+      },
+      {
+        challenge: '플라스틱 빨대 안 쓰기',
+        startDate: new Date(today.getTime() - 28 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+        endDate: new Date(today.getTime() - 22 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+        progress: 100,
+        completed: true,
+        completedDays: 7,
+        rankColor: 'silver'
+      },
+      {
+        challenge: '텀블러 사용하기',
+        startDate: new Date(today.getTime() - 21 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+        endDate: new Date(today.getTime() - 15 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+        progress: 100,
+        completed: true,
+        completedDays: 7,
+        rankColor: 'gold'
+      },
+      {
+        challenge: '일회용 컵 안쓰기',
+        startDate: new Date(today.getTime() - 14 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+        endDate: new Date(today.getTime() - 8 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+        progress: 29,
+        completed: false,
+        completedDays: 2,
+        rankColor: 'gold'
+      },
+      {
+        challenge: '배달음식 줄이기',
+        startDate: new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+        endDate: new Date(today.getTime() - 1 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+        progress: 71,
+        completed: true,
+        completedDays: 5,
+        rankColor: 'gold'
+      }
+    ];
+    
+    localStorage.setItem('completedChallenges', JSON.stringify(exampleChallenges));
+    return exampleChallenges;
+  });
 
   // 월요일 기준 주차 계산
   useEffect(() => {
@@ -77,8 +191,36 @@ const Challenge = ({
     const currentDay = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
     setCurrentDayIndex(currentDay);
     
-    // 새로운 주차인지 확인
+    // 새로운 주차인지 확인하고 이전 주차 저장
     if (!weeklyProgress[weekKey]) {
+      // 이전 주차 찾아서 완료된 챌린지로 저장
+      const previousMonday = new Date(monday);
+      previousMonday.setDate(monday.getDate() - 7);
+      const previousWeekKey = previousMonday.toISOString().split('T')[0];
+      
+      if (weeklyProgress[previousWeekKey]) {
+        const prevWeek = weeklyProgress[previousWeekKey];
+        const completedDays = prevWeek.days.filter(day => day === true).length;
+        const totalDays = 7;
+        const progressPercent = Math.round((completedDays / totalDays) * 100);
+        
+        if (prevWeek.challenge) {
+          const newCompleted = {
+            challenge: prevWeek.challenge,
+            startDate: previousWeekKey,
+            endDate: new Date(previousMonday.getTime() + 6 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+            progress: progressPercent,
+            completed: progressPercent >= 70, // 70% 이상 완료시 성공으로 간주
+            completedDays: completedDays,
+            rankColor: userRanking // 현재 랭크 색상 저장
+          };
+          
+          const updatedCompleted = [...completedChallenges, newCompleted];
+          setCompletedChallenges(updatedCompleted);
+          localStorage.setItem('completedChallenges', JSON.stringify(updatedCompleted));
+        }
+      }
+      
       const newWeek = {
         challenge: null, // 처음에는 null로 설정
         days: [null, null, null, null, null, null, null],
@@ -225,14 +367,36 @@ const Challenge = ({
     { name: '기타 (직접 입력)', weight: 0 }
   ];
 
-  const pastChallenges = [
-    { name: '비닐봉지 안쓰기', progress: 100, completed: true },
-    { name: '플라스틱 도시락 줄이기', progress: 85, completed: false },
-    { name: '일회용 컵 안쓰기', progress: 100, completed: true },
-    { name: '빨대 사용 줄이기', progress: 70, completed: false },
-    { name: '플라스틱 포장 거절', progress: 90, completed: false },
-    { name: '에코백 사용하기', progress: 100, completed: true }
-  ];
+  // 랭크별 색상 정보
+  const getRankColors = (rank) => {
+    switch(rank) {
+      case 'bronze':
+        return {
+          gradient: 'linear-gradient(135deg, #06b6d4, #3b82f6)',
+          color: '#06b6d4'
+        };
+      case 'silver':
+        return {
+          gradient: 'linear-gradient(135deg, #cbd5e1, #06b6d4, #14b8a6)',
+          color: '#14b8a6'
+        };
+      case 'gold':
+        return {
+          gradient: 'linear-gradient(135deg, #fcd34d, #facc15)',
+          color: '#facc15'
+        };
+      case 'platinum':
+        return {
+          gradient: 'linear-gradient(135deg, #c084fc, #ec4899)',
+          color: '#c084fc'
+        };
+      default:
+        return {
+          gradient: 'linear-gradient(135deg, #06b6d4, #3b82f6)',
+          color: '#06b6d4'
+        };
+    }
+  };
 
   const weeklyData = [
     { day: '월', usage: 45 },
@@ -662,29 +826,57 @@ const Challenge = ({
             {/* 지난 챌린지 */}
             <div className={`${cardBg} border ${borderColor} rounded-xl p-4`}>
               <h3 className={`${textColor} text-sm font-medium mb-3`}>지난 챌린지</h3>
-              <div className="space-y-3 max-h-60 overflow-y-auto custom-scrollbar scrollbar-hide-idle">
-                {(showAllPastChallenges ? pastChallenges : pastChallenges.slice(0, 3)).map((challenge, index) => (
-                  <div key={index}>
-                    <div className="flex justify-between items-center mb-1">
-                      <span className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>{challenge.name}</span>
-                      <span className={`text-xs ${challenge.completed ? 'text-green-500' : 'text-yellow-500'}`}>
-                        {challenge.completed ? 'Completed ✅' : '⚠️'}
-                      </span>
-                    </div>
-                    <div className={`w-full ${isDarkMode ? 'bg-gray-700' : 'bg-gray-200'} rounded-full h-1.5`}>
-                      <div className={`${challenge.completed ? 'bg-green-500' : 'bg-blue-500'} h-1.5 rounded-full`} style={{ width: `${challenge.progress}%` }}></div>
-                    </div>
-                    <span className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>{challenge.progress}% 완료</span>
-                  </div>
-                ))}
-              </div>
-              {!showAllPastChallenges && pastChallenges.length > 3 && (
-                <button
-                  onClick={() => setShowAllPastChallenges(true)}
-                  className="text-blue-500 text-xs mt-3"
-                >
-                  더보기 ({pastChallenges.length - 3}개 더)
-                </button>
+              {completedChallenges.length === 0 ? (
+                <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} text-center py-4`}>
+                  아직 완료된 챌린지가 없습니다
+                </p>
+              ) : (
+                <div className="space-y-0 max-h-[180px] overflow-y-auto custom-scrollbar scrollbar-hide-idle">
+                  {completedChallenges.slice().reverse().map((challenge, index, array) => {
+                    return (
+                      <div key={index}>
+                        <div className="py-3">
+                          <div className="flex justify-between items-center mb-2">
+                            <span className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                              {challenge.challenge}
+                            </span>
+                            <span 
+                              className={`text-xs font-medium`}
+                              style={challenge.progress === 100 ? {
+                                background: 'linear-gradient(135deg, #10b981, #22c55e)',
+                                WebkitBackgroundClip: 'text',
+                                WebkitTextFillColor: 'transparent',
+                                backgroundClip: 'text'
+                              } : {
+                                color: isDarkMode ? '#9ca3af' : '#6b7280'
+                              }}
+                            >
+                              {challenge.progress}%
+                            </span>
+                          </div>
+                          <div className={`w-full ${isDarkMode ? 'bg-gray-700' : 'bg-gray-200'} rounded-full h-1.5`}>
+                            <div 
+                              className={`h-1.5 rounded-full transition-all duration-300 ${
+                                isDarkMode 
+                                  ? 'bg-gradient-to-r from-slate-500 to-slate-400'
+                                  : 'bg-gradient-to-r from-slate-400 to-slate-500'
+                              }`}
+                              style={{ 
+                                width: `${challenge.progress}%`
+                              }}
+                            />
+                          </div>
+                        </div>
+                        {/* 구분선 - 마지막 항목 제외 */}
+                        {index < array.length - 1 && (
+                          <div 
+                            className={`h-[1px] w-full ${isDarkMode ? 'bg-gray-600' : 'bg-gray-300'}`}
+                          />
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
               )}
             </div>
             
@@ -694,6 +886,10 @@ const Challenge = ({
                 // 주간 진행 상황 초기화
                 setWeeklyProgress({});
                 localStorage.removeItem('weeklyProgress');
+                
+                // 완료된 챌린지 기록 초기화
+                setCompletedChallenges([]);
+                localStorage.removeItem('completedChallenges');
                 
                 // 현재 상태 초기화 및 다시 계산
                 setTodayCompleted(false);

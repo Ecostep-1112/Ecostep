@@ -21,7 +21,8 @@ const Home = ({
   isRandomDecorations = false,
   selectedFish = [],
   fishCount = 0,
-  consecutiveDays = 0
+  consecutiveDays = 0,
+  totalPlasticSaved = 0
 }) => {
   const bgColor = isDarkMode ? 'bg-gray-900' : 'bg-white';
   const textColor = isDarkMode ? 'text-white' : 'text-gray-900';
@@ -30,13 +31,20 @@ const Home = ({
   const [displayDecorations, setDisplayDecorations] = useState([]);
   const [testPlasticSaved, setTestPlasticSaved] = useState(0);
   
-  // 테스트 슬라이더를 사용했으면 그 값을, 아니면 실제 계산
-  const plasticSaved = testPlasticSaved > 0 ? parseFloat(testPlasticSaved).toFixed(1) : (consecutiveDays * 0.5).toFixed(1);
+  // totalPlasticSaved는 g 단위로 저장되어 있음
+  // kg으로 변환: 1000g = 1kg
+  const plasticSavedInGrams = testPlasticSaved > 0 ? testPlasticSaved : totalPlasticSaved;
+  const plasticSavedInKg = (plasticSavedInGrams / 1000).toFixed(2); // g을 kg으로 변환
+  
+  // 표시용 값: 1kg 미만이면 g으로, 1kg 이상이면 kg으로 표시
+  const plasticSavedDisplay = plasticSavedInGrams < 1000 
+    ? `${Math.round(plasticSavedInGrams)}g`
+    : `${plasticSavedInKg}kg`;
   
   // 플라스틱 1kg = 약 6kg CO2 배출
   // 나무 1그루는 연간 약 12kg CO2 흡수
   // 따라서 플라스틱 2kg 절약 = 12kg CO2 감소 = 나무 1그루의 연간 효과
-  const co2Reduced = parseFloat(plasticSaved) * 6; // 플라스틱으로 인한 CO2 감소량
+  const co2Reduced = parseFloat(plasticSavedInKg) * 6; // 플라스틱으로 인한 CO2 감소량 (kg 기준)
   const treesEquivalent = Math.round(co2Reduced / 12); // 나무 그루 수
   
   // 랜덤 선택 로직
@@ -285,7 +293,7 @@ const Home = ({
                 <div className="absolute inset-0 bg-gradient-to-br from-green-400 via-emerald-500 to-green-600 rounded-full shadow-lg"></div>
                 <div className="absolute inset-[2px] bg-gradient-to-br from-green-400/20 via-emerald-500/20 to-green-600/20 rounded-full backdrop-blur-sm"></div>
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <p className="text-2xl font-bold text-white">{plasticSaved}kg</p>
+                  <p className="text-2xl font-bold text-white">{plasticSavedDisplay}</p>
                 </div>
               </div>
               
@@ -362,19 +370,19 @@ const Home = ({
               테스트용 플라스틱 절약량 조절
             </span>
             <span className={`text-xs font-bold ${
-              parseFloat(testPlasticSaved) >= 15 ? 'text-green-500' : 
-              parseFloat(testPlasticSaved) >= 7 ? 'text-blue-500' : 
-              parseFloat(testPlasticSaved) >= 3.5 ? 'text-yellow-500' : 
+              parseFloat(testPlasticSaved) >= 15000 ? 'text-green-500' : 
+              parseFloat(testPlasticSaved) >= 7000 ? 'text-blue-500' : 
+              parseFloat(testPlasticSaved) >= 3500 ? 'text-yellow-500' : 
               'text-gray-500'
             }`}>
-              {testPlasticSaved}kg
+              {testPlasticSaved < 1000 ? `${testPlasticSaved}g` : `${(testPlasticSaved/1000).toFixed(1)}kg`}
             </span>
           </div>
           <input
             type="range"
             min="0"
-            max="50"
-            step="0.5"
+            max="50000"
+            step="500"
             value={testPlasticSaved}
             onChange={(e) => {
               setTestPlasticSaved(e.target.value);
@@ -383,23 +391,23 @@ const Home = ({
             style={{
               background: `linear-gradient(to right, 
                 ${
-                  parseFloat(testPlasticSaved) >= 15 ? '#22c55e' : 
-                  parseFloat(testPlasticSaved) >= 7 ? '#3B82F6' : 
-                  parseFloat(testPlasticSaved) >= 3.5 ? '#EAB308' : 
+                  parseFloat(testPlasticSaved) >= 15000 ? '#22c55e' : 
+                  parseFloat(testPlasticSaved) >= 7000 ? '#3B82F6' : 
+                  parseFloat(testPlasticSaved) >= 3500 ? '#EAB308' : 
                   '#9CA3AF'
                 } 0%, 
                 ${
-                  parseFloat(testPlasticSaved) >= 15 ? '#22c55e' : 
-                  parseFloat(testPlasticSaved) >= 7 ? '#3B82F6' : 
-                  parseFloat(testPlasticSaved) >= 3.5 ? '#EAB308' : 
+                  parseFloat(testPlasticSaved) >= 15000 ? '#22c55e' : 
+                  parseFloat(testPlasticSaved) >= 7000 ? '#3B82F6' : 
+                  parseFloat(testPlasticSaved) >= 3500 ? '#EAB308' : 
                   '#9CA3AF'
-                } ${(parseFloat(testPlasticSaved) / 50) * 100}%, 
-                #E5E7EB ${(parseFloat(testPlasticSaved) / 50) * 100}%, 
+                } ${(parseFloat(testPlasticSaved) / 50000) * 100}%, 
+                #E5E7EB ${(parseFloat(testPlasticSaved) / 50000) * 100}%, 
                 #E5E7EB 100%)`
             }}
           />
           <div className="flex justify-between mt-1">
-            <span className={`text-[10px] ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>0kg</span>
+            <span className={`text-[10px] ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>0g</span>
             <span className={`text-[10px] ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>25kg</span>
             <span className={`text-[10px] ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>50kg</span>
           </div>

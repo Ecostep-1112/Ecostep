@@ -76,6 +76,12 @@ const EcostepApp = () => {
     return saved ? JSON.parse(saved) : [];
   });
   
+  // 총 플라스틱 절약량 상태
+  const [totalPlasticSaved, setTotalPlasticSaved] = useState(() => {
+    const saved = localStorage.getItem('totalPlasticSaved');
+    return saved ? parseFloat(saved) : 0;
+  });
+  
   // 토스트 메시지 상태
   const [toast, setToast] = useState({
     isVisible: false,
@@ -124,6 +130,7 @@ const EcostepApp = () => {
     const savedTankName = localStorage.getItem('tankName');
     const savedWaterQuality = localStorage.getItem('waterQuality');
     const savedLastChallengeDate = localStorage.getItem('lastChallengeDate');
+    const savedTotalPlasticSaved = localStorage.getItem('totalPlasticSaved');
     
     if (savedTank) setCurrentTank(savedTank);
     if (savedUnlockedTanks) setUnlockedTanks(JSON.parse(savedUnlockedTanks));
@@ -145,6 +152,9 @@ const EcostepApp = () => {
       lastDate.setHours(0, 0, 0, 0);
       const daysDiff = Math.floor((today - lastDate) / (1000 * 60 * 60 * 24));
       setDaysWithoutChallenge(daysDiff);
+    }
+    if (savedTotalPlasticSaved) {
+      setTotalPlasticSaved(parseFloat(savedTotalPlasticSaved));
     }
   }, []);
 
@@ -397,6 +407,7 @@ const EcostepApp = () => {
                 selectedFish={selectedFish}
                 fishCount={fishCount}
                 consecutiveDays={consecutiveDays}
+                totalPlasticSaved={totalPlasticSaved}
               />}
               {activeTab === 'challenge' && <ChallengePage 
                 isDarkMode={isDarkMode}
@@ -422,6 +433,7 @@ const EcostepApp = () => {
                 setChallengeHistory={setChallengeHistory}
                 userRanking={userRanking}
                 showToast={showToast}
+                setTotalPlasticSaved={setTotalPlasticSaved}
               />}
               {activeTab === 'reward' && <RewardsPage 
                 isDarkMode={isDarkMode} 

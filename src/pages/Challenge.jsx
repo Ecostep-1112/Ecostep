@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { FiCheck, FiX, FiChevronDown } from 'react-icons/fi';
 import { BronzeIcon, SilverIcon, GoldIcon, PlatinumIcon } from '../components/RankIcons';
+import { challengeSavings, isPlasticRelated, estimateSavings } from '../data/challengeData';
+import { validatePlasticChallenge, fallbackValidation } from '../api/validatePlastic';
 
 const Challenge = ({ 
   isDarkMode,
@@ -25,7 +27,8 @@ const Challenge = ({
   challengeHistory,
   setChallengeHistory,
   userRanking,
-  showToast
+  showToast,
+  setTotalPlasticSaved
 }) => {
   const [customChallenge, setCustomChallenge] = useState('');
   const [showCustomChallenge, setShowCustomChallenge] = useState(false);
@@ -53,6 +56,10 @@ const Challenge = ({
   const [currentDayIndex, setCurrentDayIndex] = useState(0);
   const [todayCompleted, setTodayCompleted] = useState(false);
   const [historyRange, setHistoryRange] = useState(7); // 7일, 4주, 16주, 32주
+  const [customChallengeSavings, setCustomChallengeSavings] = useState(() => {
+    const saved = localStorage.getItem('customChallengeSavings');
+    return saved ? JSON.parse(saved) : {};
+  }); // 커스텀 챌린지별 절약량 저장
 
   // 월요일 기준 주차 계산
   useEffect(() => {
@@ -142,6 +149,22 @@ const Challenge = ({
       localStorage.setItem('weeklyProgress', JSON.stringify(updatedProgress));
       setTodayCompleted(true);
       
+      // 플라스틱 절약량 계산 및 반영
+      let plasticSaved = 0;
+      if (challengeSavings[finalChallenge]) {
+        plasticSaved = challengeSavings[finalChallenge];
+      } else if (customChallengeSavings[finalChallenge]) {
+        plasticSaved = customChallengeSavings[finalChallenge];
+      }
+      
+      // 홈 화면에 플라스틱 절약량 반영
+      if (plasticSaved > 0 && setTotalPlasticSaved) {
+        const currentTotal = parseFloat(localStorage.getItem('totalPlasticSaved') || '0');
+        const newTotal = currentTotal + plasticSaved;
+        localStorage.setItem('totalPlasticSaved', newTotal.toString());
+        setTotalPlasticSaved(newTotal);
+      }
+      
       // 포인트 증가 및 토스트 메시지 표시
       if (setPoints) {
         setPoints(prev => prev + 10);
@@ -149,7 +172,11 @@ const Challenge = ({
       
       // 토스트 메시지 표시
       if (showToast) {
-        showToast('10P 획득', 'success');
+        if (plasticSaved > 0) {
+          showToast(`10P 획득 (+${plasticSaved}g)`, 'success');
+        } else {
+          showToast('10P 획득', 'success');
+        }
       }
       
       // 수질 100%로 회복 및 마지막 챌린지 날짜 업데이트
@@ -303,10 +330,38 @@ const Challenge = ({
                       type="text"
                       value={customChallenge}
                       onChange={(e) => setCustomChallenge(e.target.value)}
-                      onKeyPress={(e) => {
+                      onKeyPress={async (e) => {
                         if (e.key === 'Enter' && customChallenge) {
+                          // 중복 체크
+                          const allChallenges = [...challenges];
+                          if (allChallenges.includes(customChallenge)) {
+                            if (showToast) {
+                              showToast(`이미 존재하는 챌린지입니다`, 'error');
+                            }
+                            return;
+                          }
+                          
+                          // API 또는 폴백 로직으로 검증
+                          const validation = fallbackValidation(customChallenge);
+                          
+                          // 챌린지 추가
                           setCustomChallenges([...customChallenges, customChallenge]);
+                          const newSavings = {...customChallengeSavings, [customChallenge]: validation.savings};
+                          setCustomChallengeSavings(newSavings);
+                          localStorage.setItem('customChallengeSavings', JSON.stringify(newSavings));
                           setSelectedChallenge(customChallenge);
+                          
+                          // 메시지 표시
+                          if (showToast) {
+                            if (validation.savings > 0) {
+                              showToast(`챌린지 추가 (${validation.savings}g/일)`, 'success');
+                            } else if (validation.warning) {
+                              showToast(`플라스틱과 무관한 챌린지`, 'warning');
+                            } else if (validation.suggestion) {
+                              showToast(`구체적인 방법을 명시해주세요`, 'info');
+                            }
+                          }
+                          
                           setCustomChallenge('');
                           setShowCustomChallenge(false);
                         }
@@ -330,10 +385,38 @@ const Challenge = ({
                     </button>
                   </div>
                   <button
-                    onClick={() => {
+                    onClick={async () => {
                       if (customChallenge) {
+                        // 중복 체크
+                        const allChallenges = [...challenges];
+                        if (allChallenges.includes(customChallenge)) {
+                          if (showToast) {
+                            showToast(`이미 존재하는 챌린지입니다`, 'error');
+                          }
+                          return;
+                        }
+                        
+                        // API 또는 폴백 로직으로 검증
+                        const validation = fallbackValidation(customChallenge);
+                        
+                        // 챌린지 추가
                         setCustomChallenges([...customChallenges, customChallenge]);
+                        const newSavings = {...customChallengeSavings, [customChallenge]: validation.savings};
+                        setCustomChallengeSavings(newSavings);
+                        localStorage.setItem('customChallengeSavings', JSON.stringify(newSavings));
                         setSelectedChallenge(customChallenge);
+                        
+                        // 메시지 표시
+                        if (showToast) {
+                          if (validation.savings > 0) {
+                            showToast(`챌린지 추가 (${validation.savings}g/일)`, 'success');
+                          } else if (validation.warning) {
+                            showToast(`플라스틱과 무관한 챌린지`, 'warning');
+                          } else if (validation.suggestion) {
+                            showToast(`구체적인 방법을 명시해주세요`, 'info');
+                          }
+                        }
+                        
                         setCustomChallenge('');
                         setShowCustomChallenge(false);
                       }
@@ -386,6 +469,11 @@ const Challenge = ({
                               e.stopPropagation();
                               const updatedChallenges = customChallenges.filter(c => c !== challenge);
                               setCustomChallenges(updatedChallenges);
+                              // customChallengeSavings에서도 제거
+                              const updatedSavings = {...customChallengeSavings};
+                              delete updatedSavings[challenge];
+                              setCustomChallengeSavings(updatedSavings);
+                              localStorage.setItem('customChallengeSavings', JSON.stringify(updatedSavings));
                               if (selectedChallenge === challenge) {
                                 setSelectedChallenge('텀블러 사용하기');
                               }

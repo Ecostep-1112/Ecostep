@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Check, X, ChevronDown } from 'lucide-react';
+import { FiCheck, FiX, FiChevronDown } from 'react-icons/fi';
 
 const Challenge = ({ 
   isDarkMode,
@@ -18,7 +18,11 @@ const Challenge = ({
   customPlasticItems,
   setCustomPlasticItems,
   points,
-  setPoints
+  setPoints,
+  setLastChallengeDate,
+  setWaterQuality,
+  challengeHistory,
+  setChallengeHistory
 }) => {
   const [customChallenge, setCustomChallenge] = useState('');
   const [showCustomChallenge, setShowCustomChallenge] = useState(false);
@@ -126,6 +130,22 @@ const Challenge = ({
       if (setPoints) {
         setPoints(prev => prev + 10);
       }
+      
+      // 수질 100%로 회복 및 마지막 챌린지 날짜 업데이트
+      if (setWaterQuality) {
+        setWaterQuality(100);
+      }
+      
+      const today = new Date().toISOString();
+      if (setLastChallengeDate) {
+        setLastChallengeDate(today);
+      }
+      
+      // 챌린지 기록에 추가 (연속 날짜 계산용)
+      if (setChallengeHistory) {
+        const newHistory = [...(challengeHistory || []), today];
+        setChallengeHistory(newHistory);
+      }
     }
   };
 
@@ -212,7 +232,7 @@ const Challenge = ({
                   className={`w-full ${inputBg} rounded-lg p-2 flex justify-between items-center`}
                 >
                   <span className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>{selectedChallenge}</span>
-                  <ChevronDown className={`w-4 h-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
+                  <FiChevronDown className={`w-4 h-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
                 </button>
               ) : (
                 <div>
@@ -283,7 +303,7 @@ const Challenge = ({
                           }}
                           className="ml-2 p-1 hover:bg-red-100 rounded"
                         >
-                          <X className="w-4 h-4 text-red-500" />
+                          <FiX className="w-4 h-4 text-red-500" />
                         </button>
                       )}
                     </div>
@@ -315,8 +335,8 @@ const Challenge = ({
                         isToday ? 'bg-blue-500' :
                         isDarkMode ? 'bg-gray-700' : 'bg-gray-200'
                       }`}>
-                        {dayStatus === true ? <Check className="w-4 h-4 text-white" /> : 
-                         dayStatus === false ? <X className="w-4 h-4 text-white" /> : 
+                        {dayStatus === true ? <FiCheck className="w-4 h-4 text-white" /> : 
+                         dayStatus === false ? <FiX className="w-4 h-4 text-white" /> : 
                          isToday ? <span className="text-white text-xs font-bold">!</span> :
                          <span className={`${isDarkMode ? 'text-gray-500' : 'text-gray-400'} text-xs`}>○</span>}
                       </div>
@@ -431,7 +451,7 @@ const Challenge = ({
                         {selectedPlasticItem} {plasticItems.find(item => item.name === selectedPlasticItem)?.weight > 0 && 
                           `(${plasticItems.find(item => item.name === selectedPlasticItem)?.weight}g)`}
                       </span>
-                      <ChevronDown className={`w-4 h-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
+                      <FiChevronDown className={`w-4 h-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
                     </button>
                   ) : (
                     <div className="mt-1">
@@ -517,7 +537,7 @@ const Challenge = ({
                               }}
                               className="ml-2 p-1 hover:bg-red-100 rounded"
                             >
-                              <X className="w-4 h-4 text-red-500" />
+                              <FiX className="w-4 h-4 text-red-500" />
                             </button>
                           )}
                         </div>

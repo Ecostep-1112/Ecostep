@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Settings, Home, Target, Gift, Users, MoreHorizontal } from 'lucide-react';
+import { FiSettings, FiHome, FiTarget, FiGift, FiUsers, FiMoreHorizontal } from 'react-icons/fi';
 import HomePage from './pages/Home';
 import ChallengePage from './pages/Challenge';
 import RewardsPage from './pages/Rewards';
@@ -9,6 +9,7 @@ import SettingsScreen from './pages/SettingsScreen';
 import ProfileScreen from './pages/ProfileScreen';
 import FriendsList from './pages/FriendsList';
 import { ThemeSettings, LanguageSettings, NotificationSettings, AquariumSettings } from './pages/Settings';
+import Toast from './components/Toast';
 import fishData from './data/fishData.json';
 
 const EcostepApp = () => {
@@ -17,7 +18,10 @@ const EcostepApp = () => {
   const [challengeDay, setChallengeDay] = useState(4);
   const [plasticGoal, setPlasticGoal] = useState(500);
   const [currentPlastic, setCurrentPlastic] = useState(320);
-  const [points, setPoints] = useState(1240);
+  const [points, setPoints] = useState(() => {
+    const savedPoints = localStorage.getItem('userPoints');
+    return savedPoints ? parseInt(savedPoints) : 10000; // 충분한 포인트로 설정
+  });
   const [showSettings, setShowSettings] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
   const [showAquariumSettings, setShowAquariumSettings] = useState(false);
@@ -31,19 +35,53 @@ const EcostepApp = () => {
   const [notifications, setNotifications] = useState(true);
   const [fishCount, setFishCount] = useState(5);
   const [isRandomFish, setIsRandomFish] = useState(true);
+  const [isRandomDecorations, setIsRandomDecorations] = useState(true);
   const [selectedFish, setSelectedFish] = useState([]);
   const [selectedDecorations, setSelectedDecorations] = useState([]);
-  const [purchasedFish, setPurchasedFish] = useState(['네온테트라', '체리바브', '구피', '베타']);
+  const [purchasedFish, setPurchasedFish] = useState(() => {
+    const saved = localStorage.getItem('purchasedFish');
+    return saved ? JSON.parse(saved) : [];
+  });
   const [customChallenges, setCustomChallenges] = useState([]);
   const [customPlasticItems, setCustomPlasticItems] = useState([]);
   const [currentTank, setCurrentTank] = useState('basic');
   const [unlockedTanks, setUnlockedTanks] = useState(['basic', 'silver', 'gold', 'platinum']); // 모든 어항 잠금 해제
   const [userRanking, setUserRanking] = useState('gold'); // 골드 랭킹으로 설정
   const [claimedTanks, setClaimedTanks] = useState([]); // 수령 완료한 어항 목록
-  const [tankName, setTankName] = useState('나의 어항');
+  const [tankName, setTankName] = useState('수질');
   const [isEditingTankName, setIsEditingTankName] = useState(false);
-  const [purchasedDecorations, setPurchasedDecorations] = useState(['해초', '산호']);
   const [showFriendsList, setShowFriendsList] = useState(false);
+  const [purchasedDecorations, setPurchasedDecorations] = useState(() => {
+    const saved = localStorage.getItem('purchasedDecorations');
+    return saved ? JSON.parse(saved) : [];
+  });
+  const [waterQuality, setWaterQuality] = useState(85);
+  const [lastChallengeDate, setLastChallengeDate] = useState(null);
+  const [daysWithoutChallenge, setDaysWithoutChallenge] = useState(0);
+  const [consecutiveDays, setConsecutiveDays] = useState(() => {
+    const saved = localStorage.getItem('consecutiveDays');
+    return saved ? parseInt(saved) : 0;
+  });
+  const [challengeHistory, setChallengeHistory] = useState(() => {
+    const saved = localStorage.getItem('challengeHistory');
+    return saved ? JSON.parse(saved) : [];
+  });
+  
+  // 토스트 메시지 상태
+  const [toast, setToast] = useState({
+    isVisible: false,
+    message: '',
+    type: 'success'
+  });
+
+  // 토스트 메시지 표시 함수
+  const showToast = (message, type = 'success') => {
+    setToast({
+      isVisible: true,
+      message,
+      type
+    });
+  };
 
   // master의 decorationsData
   const decorationsData = {
@@ -75,11 +113,30 @@ const EcostepApp = () => {
     const savedUnlockedTanks = localStorage.getItem('unlockedTanks');
     const savedRanking = localStorage.getItem('userRanking');
     const savedTankName = localStorage.getItem('tankName');
+    const savedWaterQuality = localStorage.getItem('waterQuality');
+    const savedLastChallengeDate = localStorage.getItem('lastChallengeDate');
     
     if (savedTank) setCurrentTank(savedTank);
     if (savedUnlockedTanks) setUnlockedTanks(JSON.parse(savedUnlockedTanks));
     if (savedRanking) setUserRanking(savedRanking);
-    if (savedTankName) setTankName(savedTankName);
+    if (savedTankName && savedTankName !== '나의 어항') {
+      setTankName(savedTankName);
+    } else {
+      setTankName('수질');
+      localStorage.setItem('tankName', '수질');
+    }
+    if (savedWaterQuality) setWaterQuality(parseInt(savedWaterQuality));
+    if (savedLastChallengeDate) {
+      setLastChallengeDate(savedLastChallengeDate);
+      
+      // 마지막 챌린지 완료 후 경과 일수 계산
+      const lastDate = new Date(savedLastChallengeDate);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      lastDate.setHours(0, 0, 0, 0);
+      const daysDiff = Math.floor((today - lastDate) / (1000 * 60 * 60 * 24));
+      setDaysWithoutChallenge(daysDiff);
+    }
   }, []);
 
   // 상태 변경시 localStorage에 저장
@@ -99,8 +156,127 @@ const EcostepApp = () => {
     localStorage.setItem('tankName', tankName);
   }, [tankName]);
 
-  const bgColor = isDarkMode ? 'bg-gray-900' : 'bg-white';
-  const borderColor = isDarkMode ? 'border-gray-700' : 'border-gray-200';
+  useEffect(() => {
+    localStorage.setItem('waterQuality', waterQuality.toString());
+  }, [waterQuality]);
+
+  // 포인트 변경시 localStorage에 저장
+  useEffect(() => {
+    localStorage.setItem('userPoints', points.toString());
+  }, [points]);
+
+  // 구매한 장식품 저장
+  useEffect(() => {
+    localStorage.setItem('purchasedDecorations', JSON.stringify(purchasedDecorations));
+  }, [purchasedDecorations]);
+
+  // 구매한 물고기 저장
+  useEffect(() => {
+    localStorage.setItem('purchasedFish', JSON.stringify(purchasedFish));
+  }, [purchasedFish]);
+
+  useEffect(() => {
+    if (lastChallengeDate) {
+      localStorage.setItem('lastChallengeDate', lastChallengeDate);
+    }
+  }, [lastChallengeDate]);
+
+  useEffect(() => {
+    localStorage.setItem('consecutiveDays', consecutiveDays.toString());
+  }, [consecutiveDays]);
+
+  useEffect(() => {
+    localStorage.setItem('challengeHistory', JSON.stringify(challengeHistory));
+  }, [challengeHistory]);
+
+  // 연속 달성 일수 계산 로직
+  useEffect(() => {
+    const calculateConsecutiveDays = () => {
+      if (challengeHistory.length === 0) {
+        setConsecutiveDays(0);
+        return;
+      }
+      
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      
+      // 최근 챌린지 기록들을 역순으로 확인하여 연속 일수 계산
+      let consecutive = 0;
+      let checkDate = new Date(today);
+      
+      for (let i = challengeHistory.length - 1; i >= 0; i--) {
+        const historyDate = new Date(challengeHistory[i]);
+        historyDate.setHours(0, 0, 0, 0);
+        
+        // 날짜 차이 계산
+        const diffTime = checkDate.getTime() - historyDate.getTime();
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        
+        if (diffDays === 0 || diffDays === 1) {
+          // 오늘이거나 하루 전 (연속)
+          consecutive++;
+          checkDate = new Date(historyDate);
+        } else {
+          // 연속이 끊김
+          break;
+        }
+      }
+      
+      setConsecutiveDays(consecutive);
+    };
+    
+    calculateConsecutiveDays();
+  }, [challengeHistory]);
+
+  // 수질 감소 로직
+  useEffect(() => {
+    const calculateWaterQuality = () => {
+      if (!lastChallengeDate) return;
+      
+      const lastDate = new Date(lastChallengeDate);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      lastDate.setHours(0, 0, 0, 0);
+      const daysDiff = Math.floor((today - lastDate) / (1000 * 60 * 60 * 24));
+      
+      if (daysDiff === 0) {
+        // 오늘 챌린지 완료함 - 100%
+        setWaterQuality(100);
+      } else {
+        // 챌린지 미완료 일수에 따른 수질 감소
+        let qualityDecrease = 0;
+        
+        if (daysDiff === 1 || daysDiff === 2) {
+          qualityDecrease = daysDiff * 5; // 1-2일: 5%씩
+        } else if (daysDiff === 3 || daysDiff === 4) {
+          qualityDecrease = 10 + (daysDiff - 2) * 10; // 3-4일: 10%씩 (총 10+10, 10+20)
+        } else if (daysDiff === 5 || daysDiff === 6) {
+          qualityDecrease = 30 + (daysDiff - 4) * 20; // 5-6일: 20%씩 (총 30+20, 30+40)
+        } else if (daysDiff === 7) {
+          qualityDecrease = 70 + 25; // 7일: 25% (총 95)
+        } else {
+          qualityDecrease = 95 + (daysDiff - 7); // 8일 이후: 1%씩
+        }
+        
+        const newQuality = Math.max(0, 100 - qualityDecrease);
+        setWaterQuality(newQuality);
+      }
+      
+      setDaysWithoutChallenge(daysDiff);
+    };
+    
+    calculateWaterQuality();
+    
+    // 매일 자정에 수질 재계산
+    const interval = setInterval(() => {
+      calculateWaterQuality();
+    }, 60000); // 1분마다 체크 (실제로는 자정 체크용)
+    
+    return () => clearInterval(interval);
+  }, [lastChallengeDate]);
+
+  const bgColor = isDarkMode ? 'bg-black' : 'bg-white';
+  const borderColor = isDarkMode ? 'border-gray-800' : 'border-gray-200';
 
   return (
     <div className={`flex items-center justify-center min-h-screen ${isDarkMode ? 'bg-black' : 'bg-gray-100'} p-4`}>
@@ -112,15 +288,25 @@ const EcostepApp = () => {
         {/* 화면 영역 */}
         <div className={`w-full h-full ${bgColor} rounded-[2rem] overflow-hidden flex flex-col`}>
           {/* 상태바 */}
-          <div className="bg-blue-500 px-3 py-3 flex justify-between items-center">
-            <h1 className="text-white text-sm">송일님 환영합니다</h1>
+          <div className={`${isDarkMode ? 'bg-gray-900' : 'bg-white'} px-3 py-3 flex justify-between items-center relative`}>
+            <h1 className={`${isDarkMode ? 'text-white' : 'text-gray-800'} text-sm font-medium`}>
+              {activeTab === 'home' && '홈'}
+              {activeTab === 'challenge' && '챌린지'}
+              {activeTab === 'reward' && '보상'}
+              {activeTab === 'community' && '커뮤니티'}
+              {activeTab === 'more' && '기타'}
+            </h1>
             <div className="flex items-center gap-3">
-              <div className="flex items-center bg-white/20 px-2 py-1 rounded">
-                <span className="text-white text-xs font-medium">{points}P</span>
+              <div className={`flex items-center px-2 py-1 rounded ${isDarkMode ? 'bg-white/20' : 'bg-gray-100'}`}>
+                <span className={`${isDarkMode ? 'text-white' : 'text-gray-700'} text-xs font-medium`}>{points}P</span>
               </div>
               <button onClick={() => setShowSettings(true)}>
-                <Settings className="w-5 h-5 text-white" />
+                <FiSettings className={`w-5 h-5 ${isDarkMode ? 'text-white' : 'text-gray-700'}`} />
               </button>
+            </div>
+            {/* 그라데이션 테두리 */}
+            <div className="absolute bottom-0 left-0 right-0 h-[1px] overflow-hidden">
+              <div className={`h-full w-full ${isDarkMode ? 'bg-gradient-to-r from-transparent via-gray-700 to-transparent' : 'bg-gradient-to-r from-transparent via-gray-300 to-transparent'}`}></div>
             </div>
           </div>
 
@@ -161,6 +347,8 @@ const EcostepApp = () => {
               purchasedDecorations={purchasedDecorations}
               fishData={fishData}
               decorationsData={decorationsData}
+              isRandomDecorations={isRandomDecorations}
+              setIsRandomDecorations={setIsRandomDecorations}
             />
           ) : (
             <>
@@ -172,6 +360,15 @@ const EcostepApp = () => {
                 tankName={tankName}
                 purchasedDecorations={purchasedDecorations}
                 decorationsData={decorationsData}
+                selectedDecorations={selectedDecorations}
+                waterQuality={waterQuality}
+                daysWithoutChallenge={daysWithoutChallenge}
+                setWaterQuality={setWaterQuality}
+                isRandomFish={isRandomFish}
+                isRandomDecorations={isRandomDecorations}
+                selectedFish={selectedFish}
+                fishCount={fishCount}
+                consecutiveDays={consecutiveDays}
               />}
               {activeTab === 'challenge' && <ChallengePage 
                 isDarkMode={isDarkMode}
@@ -191,15 +388,25 @@ const EcostepApp = () => {
                 setCustomPlasticItems={setCustomPlasticItems}
                 points={points}
                 setPoints={setPoints}
+                setLastChallengeDate={setLastChallengeDate}
+                setWaterQuality={setWaterQuality}
+                challengeHistory={challengeHistory}
+                setChallengeHistory={setChallengeHistory}
               />}
               {activeTab === 'reward' && <RewardsPage 
                 isDarkMode={isDarkMode} 
                 purchasedFish={purchasedFish} 
+                setPurchasedFish={setPurchasedFish}
                 fishData={fishData}
                 userRanking={userRanking}
+                setUserRanking={setUserRanking}
                 claimedTanks={claimedTanks}
                 setClaimedTanks={setClaimedTanks}
                 purchasedDecorations={purchasedDecorations}
+                setPurchasedDecorations={setPurchasedDecorations}
+                points={points}
+                setPoints={setPoints}
+                showToast={showToast}
               />}
               {activeTab === 'community' && !showFriendsList && <CommunityPage isDarkMode={isDarkMode} onShowFriendsList={() => setShowFriendsList(true)} />}
               {activeTab === 'community' && showFriendsList && <FriendsList isDarkMode={isDarkMode} onBack={() => setShowFriendsList(false)} />}
@@ -212,11 +419,11 @@ const EcostepApp = () => {
             <div className={`${bgColor} border-t ${borderColor}`}>
               <div className="flex justify-around py-2">
                 {[
-                  { id: 'home', icon: Home, label: '홈' },
-                  { id: 'challenge', icon: Target, label: '챌린지' },
-                  { id: 'reward', icon: Gift, label: '보상' },
-                  { id: 'community', icon: Users, label: '커뮤니티' },
-                  { id: 'more', icon: MoreHorizontal, label: '기타' }
+                  { id: 'home', icon: FiHome, label: '홈' },
+                  { id: 'challenge', icon: FiTarget, label: '챌린지' },
+                  { id: 'reward', icon: FiGift, label: '보상' },
+                  { id: 'community', icon: FiUsers, label: '커뮤니티' },
+                  { id: 'more', icon: FiMoreHorizontal, label: '기타' }
                 ].map((tab) => {
                   const Icon = tab.icon;
                   return (
@@ -238,6 +445,15 @@ const EcostepApp = () => {
         </div>
         </div>
       </div>
+      
+      {/* 토스트 메시지 */}
+      <Toast 
+        message={toast.message}
+        type={toast.type}
+        isVisible={toast.isVisible}
+        onClose={() => setToast(prev => ({ ...prev, isVisible: false }))}
+        isDarkMode={isDarkMode}
+      />
     </div>
   );
 };

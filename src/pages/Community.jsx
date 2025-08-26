@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Search, MessageCircle, Link, Check } from 'lucide-react';
+import { FiSearch } from 'react-icons/fi';
+import { MessageCircle, Link, Check } from 'lucide-react';
 
 const Community = ({ isDarkMode, onShowFriendsList }) => {
   const [linkCopied, setLinkCopied] = useState(false);
@@ -105,7 +106,7 @@ const Community = ({ isDarkMode, onShowFriendsList }) => {
                 placeholder="아이디로 친구 검색" 
                 className={`w-full border ${borderColor} ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-white'} rounded-lg pl-10 pr-3 py-2 text-sm`}
               />
-              <Search className={`w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
+              <FiSearch className={`w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
             </div>
             <button className="bg-blue-500 text-white px-4 py-2 rounded-lg text-sm">검색</button>
           </div>

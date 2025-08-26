@@ -1,18 +1,25 @@
 import React from 'react';
-import { Lock } from 'lucide-react';
+import { FiLock } from 'react-icons/fi';
 import FishIcons from '../components/FishIcons';
 import DecorationIcons from '../components/DecorationIcons';
 import SilverTank from '../components/tanks/SilverTank';
 import GoldTank from '../components/tanks/GoldTank';
 import PlatinumTank from '../components/tanks/PlatinumTank';
+import { BronzeIcon, SilverIcon, GoldIcon, PlatinumIcon } from '../components/RankIcons';
 
 const Rewards = ({ 
   isDarkMode, 
   purchasedFish,
+  setPurchasedFish,
   userRanking = 'gold',
+  setUserRanking,
   claimedTanks = [],
   setClaimedTanks = () => {},
-  purchasedDecorations = ['해초', '산호']
+  purchasedDecorations = ['해초', '산호'],
+  setPurchasedDecorations,
+  points,
+  setPoints,
+  showToast
 }) => {
   const bgColor = isDarkMode ? 'bg-gray-900' : 'bg-white';
   const textColor = isDarkMode ? 'text-white' : 'text-gray-900';
@@ -66,40 +73,173 @@ const Rewards = ({
     ]
   };
 
+  // 랭크별 색상 정의 - 조건부 렌더링을 위한 함수
+  const getRankGradient = (rank) => {
+    switch(rank) {
+      case 'bronze':
+        return 'bg-gradient-to-br from-amber-600 to-amber-800';
+      case 'silver':
+        return 'bg-gradient-to-br from-cyan-400 to-teal-500';
+      case 'gold':
+        return 'bg-gradient-to-br from-yellow-300 to-orange-400';
+      case 'platinum':
+        return 'bg-gradient-to-br from-purple-400 to-indigo-500';
+      default:
+        return 'bg-gradient-to-br from-yellow-300 to-orange-400';
+    }
+  };
+
+  // 진행바 색상 - 차분하고 부드러운 색상
+  const getProgressGradient = (isDark) => {
+    // 부드러운 블루-그레이 계열
+    return isDark 
+      ? 'bg-gradient-to-r from-slate-500 to-slate-400'
+      : 'bg-gradient-to-r from-slate-400 to-slate-500';
+  };
+
+  const rankIcons = {
+    bronze: BronzeIcon,
+    silver: SilverIcon,
+    gold: GoldIcon,
+    platinum: PlatinumIcon
+  };
+
+  const rankNames = {
+    bronze: 'BRONZE',
+    silver: 'SILVER',
+    gold: 'GOLD',
+    platinum: 'PLATINUM'
+  };
+
   return (
     <div className={`flex-1 overflow-y-auto custom-scrollbar scrollbar-hide-idle pb-20 ${bgColor}`}>
       <div className="min-h-full">
         {/* 현재 랭크 */}
         <div className={`mx-3 mt-4 ${cardBg} border ${borderColor} rounded-xl p-6`}>
           <h3 className={`${textColor} text-center text-sm font-medium mb-4`}>현재 랭크</h3>
-          <div className="flex justify-center mb-4">
-            <div className="relative">
-              <div className="w-24 h-24 bg-gradient-to-br from-yellow-300 to-yellow-500 rounded-full flex items-center justify-center shadow-lg">
-                <span className="text-white font-bold text-lg">Gold</span>
+          
+          {/* 랭크 표시 직사각형 */}
+          <div className="relative mb-4">
+            <div className={`w-full h-20 ${getRankGradient(userRanking)} rounded-2xl flex items-center justify-center shadow-lg relative overflow-hidden`}>
+              {/* 별 효과 - 반짝이는 애니메이션 */}
+              <div className="absolute inset-0">
+                <div className="absolute top-3 left-5 w-0.5 h-0.5 bg-white rounded-full animate-pulse"></div>
+                <div className="absolute top-8 left-12 w-0.5 h-0.5 bg-white rounded-full animate-ping" style={{animationDuration: '2s'}}></div>
+                <div className="absolute top-5 right-8 w-1 h-1 bg-white rounded-full animate-pulse" style={{animationDelay: '0.5s'}}></div>
+                <div className="absolute bottom-4 left-8 w-0.5 h-0.5 bg-white rounded-full animate-ping" style={{animationDuration: '2.5s'}}></div>
+                <div className="absolute top-12 left-1/4 w-0.5 h-0.5 bg-white rounded-full animate-pulse" style={{animationDelay: '1s'}}></div>
+                <div className="absolute bottom-6 right-12 w-0.5 h-0.5 bg-white rounded-full animate-ping" style={{animationDuration: '1.8s'}}></div>
+                <div className="absolute top-6 left-1/3 w-0.5 h-0.5 bg-white rounded-full animate-pulse" style={{animationDelay: '0.3s'}}></div>
+                <div className="absolute bottom-8 left-1/2 w-0.5 h-0.5 bg-white rounded-full animate-ping" style={{animationDuration: '2.2s'}}></div>
+                <div className="absolute top-10 right-1/4 w-0.5 h-0.5 bg-white rounded-full animate-pulse" style={{animationDelay: '0.7s'}}></div>
+                <div className="absolute bottom-3 right-6 w-1 h-1 bg-white rounded-full animate-pulse" style={{animationDelay: '0.2s'}}></div>
+                <div className="absolute top-14 right-1/3 w-0.5 h-0.5 bg-white rounded-full animate-ping" style={{animationDuration: '1.5s'}}></div>
+                <div className="absolute top-4 left-2/3 w-0.5 h-0.5 bg-white rounded-full animate-pulse" style={{animationDelay: '0.8s'}}></div>
+                <div className="absolute bottom-10 right-1/2 w-0.5 h-0.5 bg-white rounded-full animate-ping" style={{animationDuration: '2.8s'}}></div>
+                <div className="absolute top-7 right-16 w-0.5 h-0.5 bg-white rounded-full animate-pulse" style={{animationDelay: '0.4s'}}></div>
+                <div className="absolute bottom-5 left-16 w-0.5 h-0.5 bg-white rounded-full animate-ping" style={{animationDuration: '2.3s'}}></div>
+                {/* 추가 별들 */}
+                <div className="absolute top-2 left-1/2 w-0.5 h-0.5 bg-white rounded-full animate-pulse" style={{animationDelay: '0.6s'}}></div>
+                <div className="absolute bottom-7 left-1/3 w-0.5 h-0.5 bg-white rounded-full animate-ping" style={{animationDuration: '1.7s'}}></div>
+                <div className="absolute top-9 right-10 w-0.5 h-0.5 bg-white rounded-full animate-pulse" style={{animationDelay: '0.9s'}}></div>
+                <div className="absolute top-15 left-20 w-0.5 h-0.5 bg-white rounded-full animate-ping" style={{animationDuration: '2.1s'}}></div>
+                <div className="absolute bottom-2 left-2/3 w-0.5 h-0.5 bg-white rounded-full animate-pulse" style={{animationDelay: '0.1s'}}></div>
               </div>
-              <span className="absolute -top-2 -right-2 text-2xl">🥇</span>
+              <span className="text-white font-bold text-xl relative z-10">{rankNames[userRanking]}</span>
+              
+              {/* 훈장 스타일 랭크 아이콘 - 박스 내부 */}
+              <div className="absolute top-1 right-2 z-10">
+                <div className="flex flex-col items-center">
+                  {/* 리본 */}
+                  <div className="relative">
+                    <div className={`w-2 h-5 rounded-t-sm ${
+                      userRanking === 'bronze' ? 'bg-gradient-to-b from-amber-500 via-amber-600 to-amber-700' :
+                      userRanking === 'silver' ? 'bg-gradient-to-b from-slate-400 via-slate-500 to-slate-600' :
+                      userRanking === 'gold' ? 'bg-gradient-to-b from-yellow-400 via-yellow-500 to-amber-600' :
+                      'bg-gradient-to-b from-purple-500 via-purple-600 to-indigo-700'
+                    }`}></div>
+                    {/* 리본 끝 V자 모양 */}
+                    <div className={`absolute bottom-0 left-0 w-0 h-0 border-l-[4px] border-l-transparent border-t-[3px] ${
+                      userRanking === 'bronze' ? 'border-t-amber-700' :
+                      userRanking === 'silver' ? 'border-t-slate-600' :
+                      userRanking === 'gold' ? 'border-t-amber-600' :
+                      'border-t-indigo-700'
+                    }`}></div>
+                    <div className={`absolute bottom-0 right-0 w-0 h-0 border-r-[4px] border-r-transparent border-t-[3px] ${
+                      userRanking === 'bronze' ? 'border-t-amber-700' :
+                      userRanking === 'silver' ? 'border-t-slate-600' :
+                      userRanking === 'gold' ? 'border-t-amber-600' :
+                      'border-t-indigo-700'
+                    }`}></div>
+                  </div>
+                  {/* 메달 */}
+                  <div className="relative -mt-1 bg-white/90 rounded-full p-0.5 shadow-md">
+                    {React.createElement(rankIcons[userRanking], { size: 20 })}
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-          <p className={`text-center ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} text-xs mb-3`}>플래티넘까지 70% 달성</p>
-          <div className={`w-full ${isDarkMode ? 'bg-gray-700' : 'bg-gray-200'} rounded-full h-2 mb-4`}>
-            <div className="bg-gradient-to-r from-yellow-400 to-gray-300 h-2 rounded-full transition-all duration-500" style={{ width: '70%' }}></div>
+          
+          {/* 진행바 섹션 */}
+          <div className="space-y-2">
+            {/* 진행바 */}
+            <div className={`w-full h-1.5 ${isDarkMode ? 'bg-gray-700/50' : 'bg-gray-200'} rounded-full overflow-hidden shadow-inner`}>
+              <div 
+                className={`h-full ${getProgressGradient(isDarkMode)} rounded-full transition-all duration-500`} 
+                style={{ width: '70%' }}
+              />
+            </div>
+            
+            <p className={`text-center ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} text-xs mt-1`}>
+              플래티넘까지 30% 남음
+            </p>
           </div>
+          
+          {/* 구분선 - 양 끝이 흐려지는 효과 */}
+          <div className="relative h-[1px] my-3">
+            <div className={`absolute inset-0 ${isDarkMode ? 'bg-gray-600' : 'bg-gray-300'}`}
+                 style={{
+                   background: isDarkMode 
+                     ? 'linear-gradient(to right, transparent 0%, #4b5563 20%, #4b5563 80%, transparent 100%)'
+                     : 'linear-gradient(to right, transparent 0%, #d1d5db 20%, #d1d5db 80%, transparent 100%)'
+                 }}
+            />
+          </div>
+          
+          {/* 랭크 아이콘 표시 */}
           <div className="flex justify-between text-xs px-2">
-            <div className="flex flex-col items-center">
-              <span className="text-2xl mb-1">🥉</span>
-              <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>브론즈</span>
+            <div className="flex flex-col items-center gap-1">
+              <div className={`${userRanking === 'bronze' || userRanking === 'silver' || userRanking === 'gold' || userRanking === 'platinum' ? '' : 'opacity-20 grayscale'}`}>
+                <BronzeIcon size={28} />
+              </div>
+              <span className={`font-medium ${userRanking === 'bronze' || userRanking === 'silver' || userRanking === 'gold' || userRanking === 'platinum' ? (isDarkMode ? 'text-amber-400' : 'text-amber-600') : (isDarkMode ? 'text-gray-600' : 'text-gray-400')}`}>
+                브론즈
+              </span>
             </div>
-            <div className="flex flex-col items-center">
-              <span className="text-2xl mb-1">🥈</span>
-              <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>실버</span>
+            <div className="flex flex-col items-center gap-1">
+              <div className={`${userRanking === 'silver' || userRanking === 'gold' || userRanking === 'platinum' ? '' : 'opacity-20 grayscale'}`}>
+                <SilverIcon size={28} />
+              </div>
+              <span className={`font-medium ${userRanking === 'silver' || userRanking === 'gold' || userRanking === 'platinum' ? (isDarkMode ? 'text-cyan-400' : 'text-cyan-600') : (isDarkMode ? 'text-gray-600' : 'text-gray-400')}`}>
+                실버
+              </span>
             </div>
-            <div className="flex flex-col items-center">
-              <span className="text-2xl mb-1">🥇</span>
-              <span className="text-yellow-500">골드</span>
+            <div className="flex flex-col items-center gap-1">
+              <div className={`${userRanking === 'gold' || userRanking === 'platinum' ? '' : 'opacity-20 grayscale'}`}>
+                <GoldIcon size={28} />
+              </div>
+              <span className={`font-medium ${userRanking === 'gold' || userRanking === 'platinum' ? (isDarkMode ? 'text-yellow-400' : 'text-yellow-600') : (isDarkMode ? 'text-gray-600' : 'text-gray-400')}`}>
+                골드
+              </span>
             </div>
-            <div className="flex flex-col items-center">
-              <span className="text-2xl mb-1">👑</span>
-              <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>플래티넘</span>
+            <div className="flex flex-col items-center gap-1">
+              <div className={`${userRanking === 'platinum' ? '' : 'opacity-20 grayscale'}`}>
+                <PlatinumIcon size={28} />
+              </div>
+              <span className={`font-medium ${userRanking === 'platinum' ? (isDarkMode ? 'text-purple-400' : 'text-purple-600') : (isDarkMode ? 'text-gray-600' : 'text-gray-400')}`}>
+                플래티넘
+              </span>
             </div>
           </div>
         </div>
@@ -112,16 +252,19 @@ const Rewards = ({
             <button
               onClick={() => {
                 const canClaim = userRanking === 'silver' || userRanking === 'gold' || userRanking === 'platinum';
-                if (canClaim && !claimedTanks.includes('silver')) {
+                if (!canClaim) {
+                  showToast('실버 랭크에서 잠금 해제', 'error');
+                } else if (!claimedTanks.includes('silver')) {
                   setClaimedTanks([...claimedTanks, 'silver']);
+                  showToast('실버 어항 수령 완료', 'success');
                 }
               }}
-              disabled={claimedTanks.includes('silver') || (userRanking !== 'silver' && userRanking !== 'gold' && userRanking !== 'platinum')}
+              disabled={claimedTanks.includes('silver')}
               className={`${claimedTanks.includes('silver') ? 'bg-green-50 border-green-300' : (userRanking === 'silver' || userRanking === 'gold' || userRanking === 'platinum') ? `${cardBg} hover:bg-blue-50` : 'bg-gray-100 cursor-not-allowed'} border ${claimedTanks.includes('silver') ? 'border-green-300' : borderColor} rounded-lg relative flex flex-col items-center justify-between h-[125px] p-2 transition-colors overflow-hidden`}
             >
               {/* 블러 효과를 받을 컨테이너 */}
               <div className={`w-full h-full flex flex-col items-center justify-between ${(userRanking !== 'silver' && userRanking !== 'gold' && userRanking !== 'platinum') ? 'filter blur-[1px]' : ''}`}>
-                <div className={`h-[35px] w-full flex items-center justify-center relative px-1`}>
+                <div className={`w-[70px] h-[45px] flex items-center justify-center relative mx-auto`}>
                   <SilverTank isPreview={true} />
                 </div>
                 
@@ -146,7 +289,7 @@ const Rewards = ({
                 <>
                   <div className="absolute inset-0 bg-white bg-opacity-40 rounded-lg"></div>
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <Lock className="w-5 h-5 text-gray-600 opacity-80" />
+                    <FiLock className="w-5 h-5 text-gray-600 opacity-80" />
                   </div>
                 </>
               )}
@@ -156,16 +299,19 @@ const Rewards = ({
             <button
               onClick={() => {
                 const canClaim = userRanking === 'gold' || userRanking === 'platinum';
-                if (canClaim && !claimedTanks.includes('gold')) {
+                if (!canClaim) {
+                  showToast('골드 랭크에서 잠금 해제', 'error');
+                } else if (!claimedTanks.includes('gold')) {
                   setClaimedTanks([...claimedTanks, 'gold']);
+                  showToast('골드 어항 수령 완료', 'success');
                 }
               }}
-              disabled={claimedTanks.includes('gold') || (userRanking !== 'gold' && userRanking !== 'platinum')}
+              disabled={claimedTanks.includes('gold')}
               className={`${claimedTanks.includes('gold') ? 'bg-green-50 border-green-300' : (userRanking === 'gold' || userRanking === 'platinum') ? `${cardBg} hover:bg-blue-50` : 'bg-gray-100 cursor-not-allowed'} border ${claimedTanks.includes('gold') ? 'border-green-300' : borderColor} rounded-lg relative flex flex-col items-center justify-between h-[125px] p-2 transition-colors overflow-hidden`}
             >
               {/* 블러 효과를 받을 컨테이너 */}
               <div className={`w-full h-full flex flex-col items-center justify-between ${(userRanking !== 'gold' && userRanking !== 'platinum') ? 'filter blur-[1px]' : ''}`}>
-                <div className={`h-[35px] w-full flex items-center justify-center relative px-1`}>
+                <div className={`w-[70px] h-[45px] flex items-center justify-center relative mx-auto`}>
                   <GoldTank isPreview={true} />
                 </div>
                 
@@ -190,7 +336,7 @@ const Rewards = ({
                 <>
                   <div className="absolute inset-0 bg-white bg-opacity-40 rounded-lg"></div>
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <Lock className="w-5 h-5 text-gray-600 opacity-80" />
+                    <FiLock className="w-5 h-5 text-gray-600 opacity-80" />
                   </div>
                 </>
               )}
@@ -200,16 +346,19 @@ const Rewards = ({
             <button
               onClick={() => {
                 const canClaim = userRanking === 'platinum';
-                if (canClaim && !claimedTanks.includes('platinum')) {
+                if (!canClaim) {
+                  showToast('플래티넘 랭크에서 잠금 해제', 'error');
+                } else if (!claimedTanks.includes('platinum')) {
                   setClaimedTanks([...claimedTanks, 'platinum']);
+                  showToast('플래티넘 어항 수령 완료', 'success');
                 }
               }}
-              disabled={claimedTanks.includes('platinum') || userRanking !== 'platinum'}
+              disabled={claimedTanks.includes('platinum')}
               className={`${claimedTanks.includes('platinum') ? 'bg-green-50 border-green-300' : userRanking === 'platinum' ? `${cardBg} hover:bg-blue-50` : 'bg-gray-100 cursor-not-allowed'} border ${claimedTanks.includes('platinum') ? 'border-green-300' : borderColor} rounded-lg relative flex flex-col items-center justify-between h-[125px] p-2 transition-colors overflow-hidden`}
             >
               {/* 블러 효과를 받을 컨테이너 */}
               <div className={`w-full h-full flex flex-col items-center justify-between ${userRanking !== 'platinum' ? 'filter blur-[1px]' : ''}`}>
-                <div className={`h-[35px] w-full flex items-center justify-center relative px-1`}>
+                <div className={`w-[70px] h-[45px] flex items-center justify-center relative mx-auto`}>
                   <PlatinumTank isPreview={true} />
                 </div>
                 
@@ -234,7 +383,7 @@ const Rewards = ({
                 <>
                   <div className="absolute inset-0 bg-white bg-opacity-40 rounded-lg"></div>
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <Lock className="w-5 h-5 text-gray-600 opacity-80" />
+                    <FiLock className="w-5 h-5 text-gray-600 opacity-80" />
                   </div>
                 </>
               )}
@@ -256,13 +405,39 @@ const Rewards = ({
               <div className="grid grid-cols-3 gap-1.5">
                 {fishes.map((fish, i) => {
                   const isPurchased = purchasedFish.includes(fish.name);
-                  const isLocked = false; // 플래티넘도 잠금 해제
+                  // 랭크별 잠금 확인
+                  const rankOrder = ['bronze', 'silver', 'gold', 'platinum'];
+                  const userRankIndex = rankOrder.indexOf(userRanking);
+                  const itemRankIndex = rankOrder.indexOf(rank);
+                  const isLocked = itemRankIndex > userRankIndex;
+                  
+                  const fishPrice = (rank === 'bronze' ? 100 : rank === 'silver' ? 300 : rank === 'gold' ? 500 : 700) + i * 100;
                   
                   return (
                     <button 
                       key={i} 
-                      className={`${isLocked ? 'bg-gray-100 opacity-50' : isPurchased ? 'bg-green-50 border-green-300' : cardBg} border ${isPurchased ? 'border-green-300' : borderColor} rounded-lg relative flex flex-col items-center justify-between h-[125px] p-2`}
-                      disabled={isLocked || isPurchased}
+                      className={`${isLocked ? 'bg-gray-100 cursor-not-allowed' : isPurchased ? 'bg-green-50 border-green-300' : cardBg} border ${isPurchased ? 'border-green-300' : borderColor} rounded-lg relative flex flex-col items-center justify-between h-[125px] p-2 transition-all ${!isLocked && !isPurchased ? 'hover:scale-105' : ''} overflow-hidden`}
+                      disabled={isPurchased && !isLocked}
+                      onClick={() => {
+                        if (isLocked) {
+                          // 잠금 상태 알림
+                          const rankName = rank === 'bronze' ? '브론즈' : rank === 'silver' ? '실버' : rank === 'gold' ? '골드' : '플래티넘';
+                          showToast(`${rankName} 랭크에서 잠금 해제`, 'error');
+                        } else if (!isPurchased) {
+                          // 포인트가 충분한지 확인
+                          if (points >= fishPrice) {
+                            // 포인트 차감
+                            setPoints(prev => prev - fishPrice);
+                            // 물고기 추가
+                            setPurchasedFish(prev => [...prev, fish.name]);
+                            // 성공 알림
+                            showToast(`${fish.name} 구매 완료`, 'success');
+                          } else {
+                            // 실패 알림
+                            showToast(`포인트 부족 (${fishPrice}P 필요)`, 'error');
+                          }
+                        }
+                      }}
                     >
                       {/* 물고기 SVG 아이콘 - 더 크게, 중앙 정렬 */}
                       <div className={`h-[42px] w-full flex items-center justify-center ${isLocked ? 'blur-sm' : ''}`}>
@@ -291,10 +466,20 @@ const Rewards = ({
                       <div className="h-[20px] flex items-center justify-center w-full">
                         {!isLocked && (
                           <p className={`text-xs ${isPurchased ? 'text-green-500 font-medium' : 'text-blue-500'} text-center`}>
-                            {isPurchased ? '구매완료' : `${(rank === 'bronze' ? 100 : rank === 'silver' ? 300 : 500) + i * 100}P`}
+                            {isPurchased ? '구매완료' : `${fishPrice}P`}
                           </p>
                         )}
                       </div>
+                      
+                      {/* 잠금 오버레이와 자물쇠 */}
+                      {isLocked && (
+                        <>
+                          <div className="absolute inset-0 bg-white bg-opacity-40 rounded-lg"></div>
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <FiLock className="w-5 h-5 text-gray-600 opacity-80" />
+                          </div>
+                        </>
+                      )}
                     </button>
                   );
                 })}
@@ -305,9 +490,9 @@ const Rewards = ({
 
         <div className="mx-3 mt-4 border-t border-gray-200"></div>
 
-        {/* 어항 장식품 */}
+        {/* 장식품 */}
         <div className="mx-3 mt-4">
-          <h3 className={`${textColor} text-sm font-medium mb-3`}>어항 장식품</h3>
+          <h3 className={`${textColor} text-sm font-medium mb-3`}>장식품</h3>
           
           {Object.entries(decorationsData).map(([rank, decorations]) => (
             <div key={rank} className="mb-4">
@@ -317,53 +502,192 @@ const Rewards = ({
               <div className="grid grid-cols-3 gap-1.5">
                 {decorations.map((deco, i) => {
                   const isPurchased = purchasedDecorations.includes(deco.name);
-                  const isLocked = rank === 'platinum';
+                  // 랭크별 잠금 확인
+                  const rankOrder = ['bronze', 'silver', 'gold', 'platinum'];
+                  const userRankIndex = rankOrder.indexOf(userRanking);
+                  const itemRankIndex = rankOrder.indexOf(rank);
+                  const isLocked = itemRankIndex > userRankIndex;
                   
                   return (
                     <button 
                       key={i} 
                       className={`${
                         isLocked 
-                          ? cardBg
+                          ? 'bg-gray-100 cursor-not-allowed'
                           : isPurchased 
                             ? 'bg-green-50 border-green-300' 
                             : cardBg
-                      } border ${isPurchased ? 'border-green-300' : borderColor} rounded-lg relative flex flex-col items-center justify-between h-[125px] p-2`}
-                      style={isLocked ? { filter: 'none !important', opacity: '1 !important' } : {}}
-                      disabled={isLocked || isPurchased}
+                      } border ${isPurchased ? 'border-green-300' : borderColor} rounded-lg relative flex flex-col items-center justify-between h-[125px] p-2 transition-all ${!isLocked && !isPurchased ? 'hover:scale-105' : ''} overflow-hidden`}
+                      disabled={isPurchased && !isLocked}
+                      onClick={() => {
+                        if (isLocked) {
+                          // 잠금 상태 알림
+                          const rankName = rank === 'bronze' ? '브론즈' : rank === 'silver' ? '실버' : rank === 'gold' ? '골드' : '플래티넘';
+                          showToast(`${rankName} 랭크에서 잠금 해제`, 'error');
+                        } else if (!isPurchased) {
+                          // 포인트가 충분한지 확인
+                          if (points >= deco.price) {
+                            // 포인트 차감
+                            setPoints(prev => prev - deco.price);
+                            // 장식품 추가
+                            setPurchasedDecorations(prev => [...prev, deco.name]);
+                            // 성공 알림
+                            showToast(`${deco.name} 구매 완료`, 'success');
+                          } else {
+                            // 실패 알림
+                            showToast(`포인트 부족 (${deco.price}P 필요)`, 'error');
+                          }
+                        }
+                      }}
                     >
-                      {/* 아이콘 - 고정 높이 영역 */}
-                      <div className="h-[42px] w-full flex items-center justify-center">
-                        <div className="w-9 h-9">
-                          {DecorationIcons[deco.name] && React.createElement(DecorationIcons[deco.name])}
+                      {/* 블러 효과를 받을 컨테이너 */}
+                      <div className={`w-full h-full flex flex-col items-center justify-between ${isLocked ? 'filter blur-[1px]' : ''}`}>
+                        {/* 아이콘 - 고정 높이 영역 */}
+                        <div className="h-[42px] w-full flex items-center justify-center">
+                          <div className="w-9 h-9">
+                            {DecorationIcons[deco.name] && React.createElement(DecorationIcons[deco.name])}
+                          </div>
+                        </div>
+                        
+                        {/* 텍스트 영역 - 중앙 정렬 */}
+                        <div className="flex-1 flex flex-col items-center justify-center w-full">
+                          <p className={`text-[11px] ${
+                            isLocked 
+                              ? 'text-gray-500'
+                              : isPurchased 
+                                ? 'text-green-600' 
+                                : isDarkMode ? 'text-gray-300' : 'text-gray-700'
+                          } text-center font-medium`}>
+                            {deco.name}
+                          </p>
+                        </div>
+                        
+                        {/* 가격 - 하단 고정 */}
+                        <div className="h-[20px] flex items-center justify-center w-full">
+                          {!isLocked && (
+                            <p className={`text-xs ${isPurchased ? 'text-green-500 font-medium' : 'text-blue-500'} text-center`}>
+                              {isPurchased ? '구매완료' : `${deco.price}P`}
+                            </p>
+                          )}
                         </div>
                       </div>
                       
-                      {/* 텍스트 영역 - 중앙 정렬 */}
-                      <div className="flex-1 flex flex-col items-center justify-center w-full">
-                        <p className={`text-[11px] ${
-                          isLocked 
-                            ? isDarkMode ? 'text-gray-400' : 'text-gray-500'
-                            : isPurchased 
-                              ? 'text-green-600' 
-                              : isDarkMode ? 'text-gray-300' : 'text-gray-700'
-                        } text-center font-medium`}>
-                          {deco.name}
-                        </p>
-                      </div>
-                      
-                      {/* 가격 - 하단 고정 */}
-                      <div className="h-[20px] flex items-center justify-center w-full">
-                        <p className={`text-xs ${isPurchased ? 'text-green-500 font-medium' : 'text-blue-500'} text-center`}>
-                          {isPurchased ? '구매완료' : `${deco.price}P`}
-                        </p>
-                      </div>
+                      {/* 잠금 오버레이와 자물쇠 */}
+                      {isLocked && (
+                        <>
+                          <div className="absolute inset-0 bg-white bg-opacity-40 rounded-lg"></div>
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <FiLock className="w-5 h-5 text-gray-600 opacity-80" />
+                          </div>
+                        </>
+                      )}
                     </button>
                   );
                 })}
               </div>
             </div>
           ))}
+        </div>
+        
+        {/* 테스트용 랭크 변경 */}
+        <div className="mx-3 mt-8 mb-4">
+          <div className={`${cardBg} border ${borderColor} rounded-xl p-4`}>
+            <h4 className={`text-sm font-medium ${textColor} mb-3 text-center`}>테스트용 랭크 변경</h4>
+            <div className="grid grid-cols-4 gap-2">
+              <button
+                onClick={() => {
+                  setUserRanking('bronze');
+                  showToast('브론즈 랭크로 변경', 'success');
+                }}
+                className={`py-2 px-3 rounded-lg ${
+                  userRanking === 'bronze' 
+                    ? 'bg-amber-500 text-white' 
+                    : isDarkMode 
+                      ? 'bg-gray-700 hover:bg-gray-600 text-gray-300' 
+                      : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+                } transition-colors text-xs font-medium`}
+              >
+                브론즈
+              </button>
+              <button
+                onClick={() => {
+                  setUserRanking('silver');
+                  showToast('실버 랭크로 변경', 'success');
+                }}
+                className={`py-2 px-3 rounded-lg ${
+                  userRanking === 'silver' 
+                    ? 'bg-slate-500 text-white' 
+                    : isDarkMode 
+                      ? 'bg-gray-700 hover:bg-gray-600 text-gray-300' 
+                      : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+                } transition-colors text-xs font-medium`}
+              >
+                실버
+              </button>
+              <button
+                onClick={() => {
+                  setUserRanking('gold');
+                  showToast('골드 랭크로 변경', 'success');
+                }}
+                className={`py-2 px-3 rounded-lg ${
+                  userRanking === 'gold' 
+                    ? 'bg-yellow-500 text-white' 
+                    : isDarkMode 
+                      ? 'bg-gray-700 hover:bg-gray-600 text-gray-300' 
+                      : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+                } transition-colors text-xs font-medium`}
+              >
+                골드
+              </button>
+              <button
+                onClick={() => {
+                  setUserRanking('platinum');
+                  showToast('플래티넘 랭크로 변경', 'success');
+                }}
+                className={`py-2 px-3 rounded-lg ${
+                  userRanking === 'platinum' 
+                    ? 'bg-purple-500 text-white' 
+                    : isDarkMode 
+                      ? 'bg-gray-700 hover:bg-gray-600 text-gray-300' 
+                      : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+                } transition-colors text-xs font-medium`}
+              >
+                플래티넘
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* 테스트용 초기화 버튼 */}
+        <div className="mx-3 mt-4 mb-6">
+          <button
+            onClick={() => {
+              // 구매 이력 완전 초기화 (아무것도 구매하지 않은 상태)
+              setPurchasedFish([]);
+              setPurchasedDecorations([]);
+              setClaimedTanks([]); // 랭킹 보상 초기화
+              setPoints(10000);
+              
+              // localStorage 초기화
+              localStorage.setItem('purchasedFish', JSON.stringify([]));
+              localStorage.setItem('purchasedDecorations', JSON.stringify([]));
+              localStorage.setItem('claimedTanks', JSON.stringify([])); // 랭킹 보상 초기화
+              localStorage.setItem('userPoints', '10000');
+              
+              showToast('테스트 데이터 초기화 완료', 'success');
+            }}
+            className={`w-full py-3 px-4 rounded-xl ${
+              isDarkMode 
+                ? 'bg-gray-800 hover:bg-gray-700 text-gray-400 border border-gray-700' 
+                : 'bg-gray-100 hover:bg-gray-200 text-gray-600 border border-gray-300'
+            } transition-colors flex items-center justify-center gap-2 text-sm font-medium`}
+          >
+            <span>🔄</span>
+            <span>테스트용 초기화</span>
+          </button>
+          <p className={`text-xs ${isDarkMode ? 'text-gray-500' : 'text-gray-400'} text-center mt-2`}>
+            구매 이력과 포인트를 초기 상태로 되돌립니다
+          </p>
         </div>
       </div>
     </div>

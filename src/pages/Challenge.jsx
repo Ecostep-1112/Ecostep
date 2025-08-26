@@ -734,7 +734,7 @@ const Challenge = ({
                       </span>
                       <div 
                         className={`w-7 h-7 rounded-full flex items-center justify-center ${
-                          dayStatus === false ? 'bg-red-500' : 
+                          dayStatus === false ? (isDarkMode ? 'bg-gray-700' : 'bg-gray-200') : 
                           dayStatus !== true && (isDarkMode ? 'bg-gray-700' : 'bg-gray-200')
                         }`}
                         style={dayStatus === true ? {
@@ -757,7 +757,7 @@ const Challenge = ({
                         {dayStatus === true ? (
                           <FiCheck className="w-3.5 h-3.5 text-white" />
                         ) : dayStatus === false ? (
-                          <FiX className="w-3.5 h-3.5 text-white" />
+                          <FiX className={`w-3.5 h-3.5 ${isDarkMode ? 'text-white' : 'text-gray-600'}`} />
                         ) : isToday ? (
                           <span className="text-sm font-bold" style={{
                             color: userRanking === 'bronze' ? '#06b6d4' :

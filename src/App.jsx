@@ -316,7 +316,7 @@ const EcostepApp = () => {
   const borderColor = isDarkMode ? 'border-gray-800' : 'border-gray-200';
 
   return (
-    <div className={`flex items-center justify-center min-h-screen ${isDarkMode ? 'bg-black' : 'bg-gray-100'} p-4`}>
+    <div className={`flex items-center justify-center min-h-screen ${isDarkMode ? 'bg-gray-950' : 'bg-gray-100'} p-4`}>
       {/* 핸드폰 프레임 - 더 현실적인 디자인 */}
       <div className="relative w-full max-w-[375px] h-[812px] bg-gray-900 rounded-[2.5rem] p-[3px] shadow-2xl">
         {/* 핸드폰 베젤 */}
@@ -457,9 +457,15 @@ const EcostepApp = () => {
             </>
           )}
 
-          {/* 하단 네비게이션 */}
+          {/* 하단 네비게이션 - 글래스모피즘 효과 */}
           {!showSettings && !showProfile && !showAquariumSettings && !showThemeSettings && !showLanguageSettings && !showNotificationSettings && !showFriendsList && (
-            <div className={`${bgColor} border-t ${borderColor}`}>
+            <div style={{
+              backgroundColor: isDarkMode ? 'rgba(55, 65, 81, 0.3)' : 'rgba(255, 255, 255, 0.3)',
+              backdropFilter: isDarkMode ? 'blur(20px) saturate(1.5)' : 'blur(20px) saturate(2.5)',
+              WebkitBackdropFilter: isDarkMode ? 'blur(20px) saturate(1.5)' : 'blur(20px) saturate(2.5)',
+              borderTop: isDarkMode ? '1px solid rgba(107, 114, 128, 0.3)' : '1px solid rgba(209, 213, 219, 0.8)',
+              boxShadow: '0 -4px 30px rgba(0, 0, 0, 0.05)'
+            }}>
               <div className="flex justify-around py-2">
                 {[
                   { id: 'home', icon: FiHome, label: '홈' },
@@ -474,8 +480,8 @@ const EcostepApp = () => {
                       key={tab.id}
                       onClick={() => setActiveTab(tab.id)}
                       className={`flex flex-col items-center py-1 px-3 ${
-                        activeTab === tab.id ? 'text-blue-500' : isDarkMode ? 'text-gray-400' : 'text-gray-400'
-                      }`}
+                        isDarkMode ? 'text-white' : 'text-gray-700'
+                      } ${activeTab === tab.id ? 'opacity-100' : 'opacity-50'}`}
                     >
                       <Icon className="w-5 h-5 mb-0.5" fill={activeTab === tab.id ? 'currentColor' : 'none'} />
                       <span className="text-xs">{tab.label}</span>

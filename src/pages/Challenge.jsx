@@ -42,6 +42,16 @@ const Challenge = ({
   const [showPlasticSelect, setShowPlasticSelect] = useState(false);
   const [plasticQuantity, setPlasticQuantity] = useState(1);
   const [tempPlasticGoal, setTempPlasticGoal] = useState(500);
+  const [showGoalDropdown, setShowGoalDropdown] = useState(false);
+  const [customGoalInput, setCustomGoalInput] = useState('');
+  const [userCustomGoals, setUserCustomGoals] = useState(() => {
+    const saved = localStorage.getItem('userCustomGoals');
+    return saved ? JSON.parse(saved) : [];
+  });
+  const [goalSetDate, setGoalSetDate] = useState(() => {
+    const saved = localStorage.getItem('goalSetDate');
+    return saved ? new Date(saved) : null;
+  });
   const [plasticRecords, setPlasticRecords] = useState(() => {
     const saved = localStorage.getItem('plasticRecords');
     return saved ? JSON.parse(saved) : [];
@@ -61,6 +71,111 @@ const Challenge = ({
     return saved ? JSON.parse(saved) : {};
   }); // 커스텀 챌린지별 절약량 저장
   
+  // 플라스틱 목표 옵션 리스트
+  const predefinedGoals = [100, 200, 300, 400, 500, 700, 900, 1100, 1300, 1500];
+  
+  // 단위 변환 함수 (1000g 이상은 kg로)
+  const formatWeight = (weight) => {
+    if (weight >= 1000) {
+      const kg = weight / 1000;
+      return kg % 1 === 0 ? `${kg}kg` : `${kg.toFixed(1)}kg`;
+    }
+    return `${weight}g`;
+  };
+
+  // 그램 단위로 변환하는 함수
+  const parseWeight = (value) => {
+    if (typeof value === 'string') {
+      const numValue = parseFloat(value);
+      if (value.includes('kg')) {
+        return numValue * 1000;
+      }
+      return numValue;
+    }
+    return value;
+  };
+
+  // 사용자 입력값과 미리 정의된 목표를 합쳐서 정렬
+  const getGoalOptions = () => {
+    const allGoals = [...predefinedGoals, ...userCustomGoals];
+    // 중복 제거 및 오름차순 정렬
+    return [...new Set(allGoals)].sort((a, b) => a - b);
+  };
+
+  // 일주일이 지났는지 확인
+  const canChangeGoal = () => {
+    if (!goalSetDate) return true;
+    const now = new Date();
+    const weekInMs = 7 * 24 * 60 * 60 * 1000;
+    return (now - new Date(goalSetDate)) > weekInMs;
+  };
+
+  // 목표 설정 (일주일 제한 포함)
+  const handleSetGoal = (value) => {
+    if (canChangeGoal()) {
+      setPlasticGoal(value);
+      setGoalSetDate(new Date());
+      localStorage.setItem('goalSetDate', new Date().toISOString());
+      setShowGoalDropdown(false);
+    } else {
+      const daysLeft = Math.ceil((7 - (new Date() - new Date(goalSetDate)) / (24 * 60 * 60 * 1000)));
+      showToast(`목표 변경은 ${daysLeft}일 후에 가능합니다`);
+    }
+  };
+
+  // 사용자 설정값 추가
+  const addCustomGoal = () => {
+    const goalValue = parseWeight(customGoalInput);
+    if (goalValue && goalValue > 0 && !userCustomGoals.includes(goalValue) && !predefinedGoals.includes(goalValue)) {
+      const newGoals = [...userCustomGoals, goalValue];
+      setUserCustomGoals(newGoals);
+      localStorage.setItem('userCustomGoals', JSON.stringify(newGoals));
+      setTempPlasticGoal(goalValue);
+      handleSetGoal(goalValue);
+      setCustomGoalInput('');
+    }
+  };
+
+  // 사용자 설정값 삭제
+  const deleteCustomGoal = (goal) => {
+    const newGoals = userCustomGoals.filter(g => g !== goal);
+    setUserCustomGoals(newGoals);
+    localStorage.setItem('userCustomGoals', JSON.stringify(newGoals));
+  };
+
+  // 이번 주 플라스틱 사용량 계산
+  const getWeeklyPlasticUsage = () => {
+    if (!plasticRecords || plasticRecords.length === 0) return 0;
+    
+    const now = new Date();
+    const weekStart = new Date(now);
+    weekStart.setDate(weekStart.getDate() - weekStart.getDay()); // 이번 주 일요일
+    weekStart.setHours(0, 0, 0, 0);
+    
+    const weeklyRecords = plasticRecords.filter(record => {
+      const recordDate = new Date(record.date);
+      return recordDate >= weekStart && recordDate <= now;
+    });
+    
+    // totalWeight 필드 사용 (weight가 아님)
+    return weeklyRecords.reduce((total, record) => {
+      return total + (record.totalWeight || record.weight || 0);
+    }, 0);
+  };
+
+  // 테스트용 기록 리셋
+  const resetTestData = () => {
+    localStorage.removeItem('goalSetDate');
+    localStorage.removeItem('plasticGoal');
+    localStorage.removeItem('userCustomGoals');
+    localStorage.removeItem('plasticRecords');
+    setGoalSetDate(null);
+    setPlasticGoal(500);
+    setUserCustomGoals([]);
+    setPlasticRecords([]);
+    showToast('테스트 데이터가 리셋되었습니다');
+  };
+
   // 완료된 챌린지 기록 상태
   const [completedChallenges, setCompletedChallenges] = useState(() => {
     const saved = localStorage.getItem('completedChallenges');
@@ -945,74 +1060,168 @@ const Challenge = ({
           </div>
         ) : (
           <div className="mx-3 mt-4 space-y-4">
-            {/* 목표 설정 */}
-            <div className={`${cardBg} border ${borderColor} rounded-xl p-4`}>
-              <h3 className={`${textColor} text-sm font-medium mb-3`}>이번 주 목표 설정</h3>
-              <div className="flex gap-2 mb-3">
-                <input
-                  type="number"
-                  value={tempPlasticGoal}
-                  onChange={(e) => setTempPlasticGoal(e.target.value)}
-                  className={`flex-1 border ${borderColor} ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-white'} rounded-lg px-3 py-2 text-sm`}
-                  placeholder="500g"
-                />
-                <button 
-                  onClick={() => setPlasticGoal(tempPlasticGoal)}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                    userRanking === 'gold' ? 'text-gray-800' : 'text-white'
-                  }`}
+            {/* 목표 설정 및 현황 통합 */}
+            <div className={`${cardBg} border ${borderColor} rounded-xl p-5`}>
+              <div className="flex justify-between items-center mb-4">
+                <h3 className={`${textColor} text-sm font-medium`}>플라스틱 사용 한도 설정</h3>
+                {goalSetDate && !canChangeGoal() && (
+                  <span className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                    {Math.ceil((7 - (new Date() - new Date(goalSetDate)) / (24 * 60 * 60 * 1000)))}일 후 변경 가능
+                  </span>
+                )}
+              </div>
+              
+              {/* 이미 목표가 설정되어 있고 일주일이 안 지난 경우 */}
+              {goalSetDate && !canChangeGoal() ? (
+                <div className={`mb-4 border rounded-lg py-2 px-4 text-center ${
+                  isDarkMode ? 'bg-gray-800' : 'bg-gray-50'
+                }`}
                   style={{
-                    background: userRanking === 'bronze' ? 'linear-gradient(to right, #06b6d4, #3b82f6)' :
-                                userRanking === 'silver' ? 'linear-gradient(to right, #cbd5e1, #06b6d4, #14b8a6)' :
-                                userRanking === 'gold' ? 'linear-gradient(to right, #fcd34d, #facc15)' :
-                                userRanking === 'platinum' ? 'linear-gradient(to right, #c084fc, #ec4899)' :
-                                'linear-gradient(to right, #06b6d4, #3b82f6)'
+                    borderColor: userRanking === 'bronze' ? '#06b6d4' :
+                                 userRanking === 'silver' ? '#94a3b8' :
+                                 userRanking === 'gold' ? '#facc15' :
+                                 userRanking === 'platinum' ? '#c084fc' :
+                                 '#06b6d4'
                   }}
                 >
-                  설정
-                </button>
-              </div>
-              <div className="flex justify-between text-xs mb-2">
-                <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>현재: {currentPlastic}g</span>
-                <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>목표: {plasticGoal}g</span>
-              </div>
-              {currentPlastic > plasticGoal ? (
-                <div>
-                  <div className={`w-full ${isDarkMode ? 'bg-gray-700' : 'bg-gray-200'} rounded-full h-1.5 mb-2`}>
-                    <div className="h-1.5 rounded-full" style={{ 
-                    width: '100%',
-                    background: userRanking === 'bronze' ? 'linear-gradient(to right, #06b6d4, #3b82f6)' :
-                                userRanking === 'silver' ? 'linear-gradient(to right, #cbd5e1, #06b6d4, #14b8a6)' :
-                                userRanking === 'gold' ? 'linear-gradient(to right, #fcd34d, #facc15)' :
-                                userRanking === 'platinum' ? 'linear-gradient(to right, #c084fc, #ec4899)' :
-                                'linear-gradient(to right, #06b6d4, #3b82f6)'
-                  }}></div>
-                  </div>
-                  <div className="flex items-center justify-center">
-                    <span className="text-sm font-medium" style={{
-                      background: userRanking === 'bronze' ? 'linear-gradient(135deg, #06b6d4, #3b82f6)' :
-                                  userRanking === 'silver' ? 'linear-gradient(135deg, #cbd5e1, #14b8a6)' :
-                                  userRanking === 'gold' ? 'linear-gradient(135deg, #fcd34d, #facc15)' :
-                                  userRanking === 'platinum' ? 'linear-gradient(135deg, #c084fc, #ec4899)' :
-                                  'linear-gradient(135deg, #06b6d4, #3b82f6)',
-                      WebkitBackgroundClip: 'text',
-                      WebkitTextFillColor: 'transparent',
-                      backgroundClip: 'text'
-                    }}>🎉 목표 달성! (+{currentPlastic - plasticGoal}g 초과)</span>
+                  <div className={`${textColor} text-sm font-medium`}>
+                    이번 주 목표: {formatWeight(plasticGoal)}
                   </div>
                 </div>
               ) : (
-                <div className={`w-full ${isDarkMode ? 'bg-gray-700' : 'bg-gray-200'} rounded-full h-1.5`}>
-                  <div className="h-1.5 rounded-full" style={{ 
-                    width: `${Math.min((currentPlastic/plasticGoal)*100, 100)}%`,
-                    background: userRanking === 'bronze' ? 'linear-gradient(to right, #06b6d4, #3b82f6)' :
-                                userRanking === 'silver' ? 'linear-gradient(to right, #cbd5e1, #06b6d4, #14b8a6)' :
-                                userRanking === 'gold' ? 'linear-gradient(to right, #fcd34d, #facc15)' :
-                                userRanking === 'platinum' ? 'linear-gradient(to right, #c084fc, #ec4899)' :
-                                'linear-gradient(to right, #06b6d4, #3b82f6)'
-                  }}></div>
-                </div>
+                <div className="relative mb-4">
+                  {/* 드롭다운 버튼 */}
+                  <button
+                    onClick={() => setShowGoalDropdown(!showGoalDropdown)}
+                    className={`w-full flex justify-between items-center border ${borderColor} ${
+                      isDarkMode ? 'bg-gray-700 text-white' : 'bg-white'
+                    } rounded-lg px-3 py-2 text-sm`}
+                  >
+                    <span>{formatWeight(tempPlasticGoal)}</span>
+                    <FiChevronDown className={`transition-transform ${showGoalDropdown ? 'rotate-180' : ''}`} />
+                  </button>
+                
+                {/* 드롭다운 리스트 */}
+                {showGoalDropdown && (
+                  <>
+                    {/* 블러 배경 - 입력 영역만 */}
+                    <div className="absolute -inset-4 backdrop-blur-[1px] bg-black/[0.02] z-10 rounded-xl" onClick={() => setShowGoalDropdown(false)} />
+                    
+                    <div 
+                      className={`absolute w-full mt-1 border ${borderColor} ${
+                        isDarkMode ? 'bg-gray-800' : 'bg-white'
+                      } rounded-lg shadow-lg z-20 overflow-hidden`}
+                    >
+                      {/* 직접 입력 필드와 설정 버튼 */}
+                      <div className={`p-2 border-b ${borderColor} flex gap-2`}>
+                        <input
+                          type="number"
+                          value={customGoalInput}
+                          onChange={(e) => setCustomGoalInput(e.target.value)}
+                          className={`flex-1 border ${borderColor} ${
+                            isDarkMode ? 'bg-gray-700 text-white placeholder-gray-400' : 'bg-gray-50 text-gray-900 placeholder-gray-500'
+                          } rounded px-2 py-1 text-sm`}
+                          placeholder="직접 설정"
+                          onClick={(e) => e.stopPropagation()}
+                        />
+                        <button 
+                          onClick={addCustomGoal}
+                          className={`px-3 py-1 rounded text-xs font-medium transition-colors text-white`}
+                          style={{
+                            background: userRanking === 'bronze' ? 'linear-gradient(to right, #06b6d4, #3b82f6)' :
+                                        userRanking === 'silver' ? 'linear-gradient(to right, #cbd5e1, #06b6d4, #14b8a6)' :
+                                        userRanking === 'gold' ? 'linear-gradient(to right, #fcd34d, #facc15)' :
+                                        userRanking === 'platinum' ? 'linear-gradient(to right, #c084fc, #ec4899)' :
+                                        'linear-gradient(to right, #06b6d4, #3b82f6)'
+                          }}
+                        >
+                          설정
+                        </button>
+                      </div>
+                        
+                        {/* 옵션 리스트 (스크롤 가능, 최대 5개 표시) */}
+                        <div 
+                          className="overflow-y-auto scrollbar-hide"
+                          style={{ maxHeight: '180px' }}
+                        >
+                          {getGoalOptions().map((goal, index) => {
+                            const isCustom = userCustomGoals.includes(goal);
+                            return (
+                              <React.Fragment key={goal}>
+                                <div className={`flex items-center ${
+                                  tempPlasticGoal == goal ? 
+                                  (isDarkMode ? 'bg-gray-700' : 'bg-gray-100') : ''
+                                }`}>
+                                  <button
+                                    onClick={() => {
+                                      setTempPlasticGoal(goal);
+                                      handleSetGoal(goal);
+                                    }}
+                                    className={`flex-1 text-left px-3 py-2 text-sm transition-colors ${
+                                      tempPlasticGoal == goal ? 
+                                      (isDarkMode ? 'text-white' : 'text-gray-900') : 
+                                      (isDarkMode ? 'text-gray-200 hover:bg-gray-700' : 'text-gray-900 hover:bg-gray-50')
+                                    }`}
+                                  >
+                                    {formatWeight(goal)}
+                                  </button>
+                                  {isCustom && (
+                                    <button
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        deleteCustomGoal(goal);
+                                      }}
+                                      className={`p-2 transition-colors ${
+                                        isDarkMode ? 'text-gray-400 hover:text-red-400' : 'text-gray-500 hover:text-red-500'
+                                      }`}
+                                    >
+                                      <FiX className="w-3 h-3" />
+                                    </button>
+                                  )}
+                                </div>
+                                {index < getGoalOptions().length - 1 && (
+                                  <div className={`border-b ${borderColor}`} />
+                                )}
+                              </React.Fragment>
+                            );
+                          })}
+                        </div>
+                    </div>
+                  </>
+                )}
+              </div>
               )}
+              
+              {/* 플라스틱 사용 현황 - 같은 카드에 통합 */}
+              {(() => {
+                const weeklyUsage = getWeeklyPlasticUsage() || 0;
+                const currentGoal = plasticGoal || 500;
+                const usagePercentage = (weeklyUsage / currentGoal) * 100;
+                const remainingPercentage = Math.max(0, Math.min(100, Math.round(100 - usagePercentage)));
+                
+                return (
+                  <>
+                    <div className="flex justify-between text-xs mb-2">
+                      <span className={`${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                        달성률
+                      </span>
+                      <span className={`font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                        {isNaN(remainingPercentage) ? 100 : remainingPercentage}%
+                      </span>
+                    </div>
+                    <div className={`w-full ${isDarkMode ? 'bg-gray-700' : 'bg-gray-200'} rounded-full h-1.5`}>
+                      <div className="h-1.5 rounded-full transition-all duration-300" style={{ 
+                        width: `${isNaN(remainingPercentage) ? 100 : remainingPercentage}%`,
+                        background: userRanking === 'bronze' ? 'linear-gradient(to right, #06b6d4, #3b82f6)' :
+                                    userRanking === 'silver' ? 'linear-gradient(to right, #cbd5e1, #06b6d4, #14b8a6)' :
+                                    userRanking === 'gold' ? 'linear-gradient(to right, #fcd34d, #facc15)' :
+                                    userRanking === 'platinum' ? 'linear-gradient(to right, #c084fc, #ec4899)' :
+                                    'linear-gradient(to right, #06b6d4, #3b82f6)'
+                      }}></div>
+                    </div>
+                  </>
+                );
+              })()}
             </div>
 
             {/* 플라스틱 사용 기록하기 */}
@@ -1241,17 +1450,12 @@ const Challenge = ({
                       setPlasticRecords(updatedRecords);
                       localStorage.setItem('plasticRecords', JSON.stringify(updatedRecords));
                       
-                      // 현재 플라스틱 사용량 업데이트
-                      setCurrentPlastic(prev => prev + totalWeight);
-                      
                       // 입력 초기화
                       setSelectedPlasticItem('플라스틱병');
                       setPlasticQuantity(1);
                     }
                   }}
-                  className={`w-full py-2.5 rounded-lg text-sm font-medium transition-colors ${
-                    userRanking === 'gold' ? 'text-gray-800' : 'text-white'
-                  }`}
+                  className={`w-full py-2.5 rounded-lg text-sm font-medium transition-colors text-white`}
                   style={{
                     background: userRanking === 'bronze' ? 'linear-gradient(to right, #06b6d4, #3b82f6)' :
                                 userRanking === 'silver' ? 'linear-gradient(to right, #cbd5e1, #06b6d4, #14b8a6)' :
@@ -1534,7 +1738,7 @@ const Challenge = ({
                       onClick={() => setHistoryRange(option.value)}
                       className={`px-2 py-1 text-xs rounded transition-all ${
                         historyRange === option.value 
-                          ? userRanking === 'gold' ? 'text-gray-800' : 'text-white'
+                          ? 'text-white'
                           : isDarkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-600'
                       }`}
                       style={historyRange === option.value ? {
@@ -1754,6 +1958,18 @@ const Challenge = ({
                   );
                 })()}
               </div>
+            </div>
+            
+            {/* 테스트용 기록 리셋 버튼 */}
+            <div className="mt-6 mx-3">
+              <button
+                onClick={resetTestData}
+                className={`w-full py-3 ${
+                  isDarkMode ? 'bg-red-600 hover:bg-red-700' : 'bg-red-500 hover:bg-red-600'
+                } text-white rounded-lg text-sm font-medium transition-colors`}
+              >
+                🔄 테스트용 기록 리셋
+              </button>
             </div>
           </div>
         )}

@@ -1,23 +1,26 @@
 import React, { useState } from 'react';
-import { FiSearch } from 'react-icons/fi';
-import { MessageCircle, Link, Check } from 'lucide-react';
+import { MessageCircle, Link, UserSearch } from 'lucide-react';
+import SearchFriends from './SearchFriends';
 
-const Community = ({ isDarkMode, onShowFriendsList }) => {
-  const [linkCopied, setLinkCopied] = useState(false);
+const Community = ({ isDarkMode, onShowFriendsList, showToast }) => {
+  const [showSearchPage, setShowSearchPage] = useState(false);
   const bgColor = isDarkMode ? 'bg-gray-900' : 'bg-white';
   const textColor = isDarkMode ? 'text-white' : 'text-gray-900';
   const borderColor = isDarkMode ? 'border-gray-700' : 'border-gray-200';
   const cardBg = isDarkMode ? 'bg-gray-800' : 'bg-white';
   const inputBg = isDarkMode ? 'bg-gray-700' : 'bg-gray-50';
 
+  if (showSearchPage) {
+    return <SearchFriends isDarkMode={isDarkMode} onBack={() => setShowSearchPage(false)} />;
+  }
+
   return (
     <div className={`flex-1 overflow-y-auto custom-scrollbar scrollbar-hide-idle pb-20 ${bgColor}`}>
       <div className="min-h-full">
         {/* 친구 초대 */}
         <div className={`mx-3 mt-4 ${cardBg} border ${borderColor} rounded-xl p-4`}>
-          <h3 className={`${textColor} text-sm font-medium mb-2`}>커뮤니티</h3>
-          <p className={`${isDarkMode ? 'text-gray-400' : 'text-gray-500'} text-xs mb-3`}>친구들과 함께 지구를 지켜요!</p>
-          <div className="flex gap-2 mb-3">
+          <h3 className={`${textColor} text-sm font-medium mb-3 text-center`}>초대</h3>
+          <div className="flex gap-2">
             <button 
               onClick={() => {
                 // KakaoTalk share
@@ -54,10 +57,34 @@ const Community = ({ isDarkMode, onShowFriendsList }) => {
                   }, 1000);
                 }
               }}
-              className="flex-1 bg-yellow-400 hover:bg-yellow-500 text-black py-2 rounded-lg text-sm font-medium flex items-center justify-center transition-colors"
+              className={`flex-1 relative bg-transparent ${textColor} hover:bg-gray-50 hover:bg-opacity-10 py-2.5 rounded-lg text-sm font-medium flex items-center justify-center transition-colors overflow-hidden`}
             >
-              <MessageCircle className="w-4 h-4 mr-1" />
-              카톡으로 초대
+              <div 
+                className="absolute top-0 left-0 right-0 h-px"
+                style={{
+                  background: `linear-gradient(to right, transparent 10%, ${isDarkMode ? '#374151' : '#e5e7eb'} 30%, ${isDarkMode ? '#374151' : '#e5e7eb'} 70%, transparent 90%)`
+                }}
+              />
+              <div 
+                className="absolute bottom-0 left-0 right-0 h-px"
+                style={{
+                  background: `linear-gradient(to right, transparent 10%, ${isDarkMode ? '#374151' : '#e5e7eb'} 30%, ${isDarkMode ? '#374151' : '#e5e7eb'} 70%, transparent 90%)`
+                }}
+              />
+              <div 
+                className="absolute left-0 top-0 bottom-0 w-px"
+                style={{
+                  background: `linear-gradient(to bottom, transparent 10%, ${isDarkMode ? '#374151' : '#e5e7eb'} 30%, ${isDarkMode ? '#374151' : '#e5e7eb'} 70%, transparent 90%)`
+                }}
+              />
+              <div 
+                className="absolute right-0 top-0 bottom-0 w-px"
+                style={{
+                  background: `linear-gradient(to bottom, transparent 10%, ${isDarkMode ? '#374151' : '#e5e7eb'} 30%, ${isDarkMode ? '#374151' : '#e5e7eb'} 70%, transparent 90%)`
+                }}
+              />
+              <MessageCircle className="w-4 h-4 mr-1.5" />
+              카톡
             </button>
             <button 
               onClick={() => {
@@ -67,8 +94,9 @@ const Community = ({ isDarkMode, onShowFriendsList }) => {
                 
                 // Copy to clipboard
                 navigator.clipboard.writeText(inviteLink).then(() => {
-                  setLinkCopied(true);
-                  setTimeout(() => setLinkCopied(false), 2000);
+                  if (showToast) {
+                    showToast('링크가 복사되었습니다', 'success');
+                  }
                 }).catch(() => {
                   // Fallback for older browsers
                   const textArea = document.createElement('textarea');
@@ -77,38 +105,71 @@ const Community = ({ isDarkMode, onShowFriendsList }) => {
                   textArea.select();
                   document.execCommand('copy');
                   document.body.removeChild(textArea);
-                  setLinkCopied(true);
-                  setTimeout(() => setLinkCopied(false), 2000);
+                  if (showToast) {
+                    showToast('링크가 복사되었습니다', 'success');
+                  }
                 });
               }}
-              className={`flex-1 ${
-                linkCopied ? 'bg-green-500' : 'bg-blue-500 hover:bg-blue-600'
-              } text-white py-2 rounded-lg text-sm font-medium flex items-center justify-center transition-colors`}
+              className={`flex-1 relative bg-transparent ${textColor} hover:bg-gray-50 hover:bg-opacity-10 py-2.5 rounded-lg text-sm font-medium flex items-center justify-center transition-colors overflow-hidden`}
             >
-              {linkCopied ? (
-                <>
-                  <Check className="w-4 h-4 mr-1" />
-                  복사 완료!
-                </>
-              ) : (
-                <>
-                  <Link className="w-4 h-4 mr-1" />
-                  링크 복사
-                </>
-              )}
-            </button>
-          </div>
-          {/* 친구 검색 */}
-          <div className="flex gap-2">
-            <div className="flex-1 relative">
-              <input 
-                type="text" 
-                placeholder="아이디로 친구 검색" 
-                className={`w-full border ${borderColor} ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-white'} rounded-lg pl-10 pr-3 py-2 text-sm`}
+              <div 
+                className="absolute top-0 left-0 right-0 h-px"
+                style={{
+                  background: `linear-gradient(to right, transparent 10%, ${isDarkMode ? '#374151' : '#e5e7eb'} 30%, ${isDarkMode ? '#374151' : '#e5e7eb'} 70%, transparent 90%)`
+                }}
               />
-              <FiSearch className={`w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
-            </div>
-            <button className="bg-blue-500 text-white px-4 py-2 rounded-lg text-sm">검색</button>
+              <div 
+                className="absolute bottom-0 left-0 right-0 h-px"
+                style={{
+                  background: `linear-gradient(to right, transparent 10%, ${isDarkMode ? '#374151' : '#e5e7eb'} 30%, ${isDarkMode ? '#374151' : '#e5e7eb'} 70%, transparent 90%)`
+                }}
+              />
+              <div 
+                className="absolute left-0 top-0 bottom-0 w-px"
+                style={{
+                  background: `linear-gradient(to bottom, transparent 10%, ${isDarkMode ? '#374151' : '#e5e7eb'} 30%, ${isDarkMode ? '#374151' : '#e5e7eb'} 70%, transparent 90%)`
+                }}
+              />
+              <div 
+                className="absolute right-0 top-0 bottom-0 w-px"
+                style={{
+                  background: `linear-gradient(to bottom, transparent 10%, ${isDarkMode ? '#374151' : '#e5e7eb'} 30%, ${isDarkMode ? '#374151' : '#e5e7eb'} 70%, transparent 90%)`
+                }}
+              />
+              <Link className="w-4 h-4 mr-1.5" />
+              링크
+            </button>
+            <button 
+              onClick={() => setShowSearchPage(true)}
+              className={`flex-1 relative bg-transparent ${textColor} hover:bg-gray-50 hover:bg-opacity-10 py-2.5 rounded-lg text-sm font-medium flex items-center justify-center transition-colors overflow-hidden`}
+            >
+              <div 
+                className="absolute top-0 left-0 right-0 h-px"
+                style={{
+                  background: `linear-gradient(to right, transparent 10%, ${isDarkMode ? '#374151' : '#e5e7eb'} 30%, ${isDarkMode ? '#374151' : '#e5e7eb'} 70%, transparent 90%)`
+                }}
+              />
+              <div 
+                className="absolute bottom-0 left-0 right-0 h-px"
+                style={{
+                  background: `linear-gradient(to right, transparent 10%, ${isDarkMode ? '#374151' : '#e5e7eb'} 30%, ${isDarkMode ? '#374151' : '#e5e7eb'} 70%, transparent 90%)`
+                }}
+              />
+              <div 
+                className="absolute left-0 top-0 bottom-0 w-px"
+                style={{
+                  background: `linear-gradient(to bottom, transparent 10%, ${isDarkMode ? '#374151' : '#e5e7eb'} 30%, ${isDarkMode ? '#374151' : '#e5e7eb'} 70%, transparent 90%)`
+                }}
+              />
+              <div 
+                className="absolute right-0 top-0 bottom-0 w-px"
+                style={{
+                  background: `linear-gradient(to bottom, transparent 10%, ${isDarkMode ? '#374151' : '#e5e7eb'} 30%, ${isDarkMode ? '#374151' : '#e5e7eb'} 70%, transparent 90%)`
+                }}
+              />
+              <UserSearch className="w-4 h-4 mr-1.5" />
+              아이디
+            </button>
           </div>
         </div>
 

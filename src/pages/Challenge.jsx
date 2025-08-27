@@ -315,7 +315,7 @@ const Challenge = ({
                   read: false,
                   isReward: true,
                   claimed: false,
-                  pointsAmount: 70
+                  pointsAmount: 700
                 };
                 console.log('[제로챌린지] 알림 생성:', newNotification);
                 setNotificationsList(prev => {
@@ -507,15 +507,15 @@ const Challenge = ({
       
       // 포인트 증가 및 토스트 메시지 표시
       if (setPoints) {
-        setPoints(prev => prev + 10);
+        setPoints(prev => prev + 100);
       }
       
       // 토스트 메시지 표시
       if (showToast) {
         if (plasticSaved > 0) {
-          showToast(`10P 획득 (+${plasticSaved}g)`, 'success');
+          showToast(`100P 획득 (+${plasticSaved}g)`, 'success');
         } else {
-          showToast('10P 획득', 'success');
+          showToast('100P 획득', 'success');
         }
       }
       
@@ -1182,7 +1182,7 @@ const Challenge = ({
               >
                 {todayCompleted ? '오늘 완료' : 
                  (!weeklyProgress[currentWeekStart]?.challenge && !selectedChallenge) ? '챌린지를 선택해주세요' : 
-                 '오늘 완료하기 (+10P)'}
+                 '오늘 완료하기 (+100P)'}
               </button>
             </div>
 

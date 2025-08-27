@@ -53,24 +53,24 @@ const Rewards = ({
 
   const decorationsData = {
     bronze: [
-      { name: '해초', description: '자연스러운 수초', price: 100 },
-      { name: '용암석', description: '신비로운 화산석', price: 150 },
-      { name: '작은 동굴', description: '아늑한 은신처', price: 200 }
+      { name: '해초', description: '자연스러운 수초', price: 200 },
+      { name: '용암석', description: '신비로운 화산석', price: 300 },
+      { name: '작은 동굴', description: '아늑한 은신처', price: 400 }
     ],
     silver: [
-      { name: '산호', description: '화려한 바다 정원', price: 250 },
-      { name: '드리프트 우드', description: '오래된 바다 목재', price: 300 },
-      { name: '조개 껍질', description: '바다의 보석함', price: 350 }
+      { name: '산호', description: '화려한 바다 정원', price: 500 },
+      { name: '드리프트 우드', description: '오래된 바다 목재', price: 600 },
+      { name: '조개 껍질', description: '바다의 보석함', price: 700 }
     ],
     gold: [
-      { name: '그리스 신전', description: '고대 문명의 흔적', price: 400 },
-      { name: '보물 상자', description: '해적의 황금 보물', price: 450 },
-      { name: '해적선', description: '전설의 침몰선', price: 500 }
+      { name: '그리스 신전', description: '고대 문명의 흔적', price: 900 },
+      { name: '보물 상자', description: '해적의 황금 보물', price: 1000 },
+      { name: '해적선', description: '전설의 침몰선', price: 1100 }
     ],
     platinum: [
-      { name: '크리스탈 동굴', description: '신비한 크리스탈', price: 600 },
-      { name: 'LED 해파리', description: '빛나는 수중 요정', price: 700 },
-      { name: '아틀란티스 유적', description: '잃어버린 문명', price: 800 }
+      { name: '크리스탈 동굴', description: '신비한 크리스탈', price: 1400 },
+      { name: 'LED 해파리', description: '빛나는 수중 요정', price: 1500 },
+      { name: '아틀란티스 유적', description: '잃어버린 문명', price: 1600 }
     ]
   };
 
@@ -423,7 +423,14 @@ const Rewards = ({
                   const itemRankIndex = rankOrder.indexOf(rank);
                   const isLocked = itemRankIndex > userRankIndex;
                   
-                  const fishPrice = (rank === 'bronze' ? 100 : rank === 'silver' ? 300 : rank === 'gold' ? 500 : 700) + i * 100;
+                  // 새로운 물고기 가격 체계
+                  const fishPrices = {
+                    bronze: [200, 300, 400],
+                    silver: [500, 600, 700],
+                    gold: [1000, 1100, 1200],
+                    platinum: [1500, 1600, 1700]
+                  };
+                  const fishPrice = fishPrices[rank][i];
                   
                   return (
                     <button 

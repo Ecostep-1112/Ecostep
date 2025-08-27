@@ -33,7 +33,7 @@ const More = ({ isDarkMode, userPoints, setUserPoints }) => {
     if (!hasCheckedTip && environmentalTip) {
       setHasCheckedTip(true);
       if (setUserPoints) {
-        setUserPoints(prev => prev + 10);
+        setUserPoints(prev => prev + 100);
       }
     }
   };
@@ -89,7 +89,7 @@ const More = ({ isDarkMode, userPoints, setUserPoints }) => {
               <h3 className={`${textColor} text-sm font-medium`}>오늘의 환경 상식</h3>
             </div>
             {hasCheckedTip && (
-              <span className="text-green-500 text-xs font-medium">+10 포인트 획득!</span>
+              <span className="text-green-500 text-xs font-medium">+100 포인트 획득!</span>
             )}
           </div>
           
@@ -156,7 +156,7 @@ const More = ({ isDarkMode, userPoints, setUserPoints }) => {
                             확인 완료
                           </>
                         ) : (
-                          <>확인하고 10 포인트 받기</>
+                          <>확인하고 100 포인트 받기</>
                         )}
                       </button>
                       <button className="text-blue-500 text-xs flex items-center">

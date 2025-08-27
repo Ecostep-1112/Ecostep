@@ -65,7 +65,7 @@ const EcostepApp = () => {
       read: true
     }
   ]);
-  const [selectedChallenge, setSelectedChallenge] = useState('플라스틱 빨대 안쓰기');
+  const [selectedChallenge, setSelectedChallenge] = useState(null);
   const [showChallengeSelect, setShowChallengeSelect] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [showThemeSettings, setShowThemeSettings] = useState(false);

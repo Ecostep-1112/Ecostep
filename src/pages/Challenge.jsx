@@ -39,10 +39,10 @@ const Challenge = ({
   const [showCustomPlastic, setShowCustomPlastic] = useState(false);
   const [previousPlasticItem, setPreviousPlasticItem] = useState(''); // 이전 플라스틱 항목 저장
   const [showAllPastChallenges, setShowAllPastChallenges] = useState(false);
-  const [selectedPlasticItem, setSelectedPlasticItem] = useState('플라스틱병');
+  const [selectedPlasticItem, setSelectedPlasticItem] = useState(null);
   const [showPlasticSelect, setShowPlasticSelect] = useState(false);
   const [plasticQuantity, setPlasticQuantity] = useState(1);
-  const [tempPlasticGoal, setTempPlasticGoal] = useState(500);
+  const [tempPlasticGoal, setTempPlasticGoal] = useState(null);
   const [showGoalDropdown, setShowGoalDropdown] = useState(false);
   const [customGoalInput, setCustomGoalInput] = useState('');
   const [userCustomGoals, setUserCustomGoals] = useState(() => {
@@ -337,6 +337,14 @@ const Challenge = ({
           localStorage.removeItem('goalSetDate');
           setGoalSetDate(null);
           
+          // 플라스틱 목표도 초기화
+          setPlasticGoal(null);
+          setTempPlasticGoal(null);
+          localStorage.removeItem('plasticGoal');
+          
+          // 챌린지도 초기화 (새로운 주 시작)
+          setSelectedChallenge(null);
+          
           // 리셋 날짜 저장
           localStorage.setItem('lastMondayReset', todayString);
           
@@ -540,12 +548,22 @@ const Challenge = ({
   ];
 
   const plasticItems = [
-    { name: '플라스틱병', weight: 20 },
-    { name: '음식용기', weight: 30 },
-    { name: '컵', weight: 15 },
-    { name: '비닐봉지', weight: 5 },
+    // 음료 관련
+    { name: '플라스틱병', weight: 25, category: 'drink', desc: '500ml' },
+    { name: '일회용컵', weight: 10, category: 'drink', desc: '카페' },
+    { name: '페트병(대)', weight: 45, category: 'drink', desc: '1.5L' },
+    { name: '빨대', weight: 1, category: 'drink', desc: '개당' },
+    // 봉투류
+    { name: '비닐봉지(소)', weight: 3, category: 'bag', desc: '편의점' },
+    { name: '비닐봉지(대)', weight: 7, category: 'bag', desc: '마트' },
+    // 배달/음식 관련
+    { name: '음식용기', weight: 35, category: 'food', desc: '배달용기' },
+    { name: '일회용 수저/포크', weight: 3, category: 'food', desc: '세트' },
+    { name: '일회용 접시', weight: 8, category: 'food', desc: '개당' },
+    // 기타 생활용품
+    { name: '화장품 용기', weight: 15, category: 'etc', desc: '소형' },
     ...customPlasticItems,
-    { name: '기타 (직접 입력)', weight: 0 }
+    { name: '기타 (직접 입력)', weight: 0, category: 'custom' }
   ];
 
   // 랭크별 색상 정보
@@ -703,7 +721,7 @@ const Challenge = ({
                     borderColor: getThemeColor()
                   }}>
                   <span className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                    {weeklyProgress[currentWeekStart].challenge || '챌린지를 선택해주세요'}
+                    {weeklyProgress[currentWeekStart].challenge || '챌린지를 선택해 주세요'}
                   </span>
                 </div>
               ) : !showCustomChallenge ? (
@@ -715,7 +733,9 @@ const Challenge = ({
                     borderColor: getThemeColor()
                   }}
                 >
-                  <span className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} flex-1 text-center`}>{selectedChallenge}</span>
+                  <span className={`text-sm ${selectedChallenge ? (isDarkMode ? 'text-gray-300' : 'text-gray-700') : (isDarkMode ? 'text-gray-500' : 'text-gray-400')} flex-1 text-center`}>
+                    {selectedChallenge || '챌린지를 선택해 주세요'}
+                  </span>
                   <FiChevronDown className={`w-4 h-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
                 </button>
               ) : (
@@ -1140,10 +1160,12 @@ const Challenge = ({
                   <button
                     onClick={() => setShowGoalDropdown(!showGoalDropdown)}
                     className={`w-full flex justify-between items-center border ${borderColor} ${
-                      isDarkMode ? 'bg-gray-700 text-white' : 'bg-white'
+                      isDarkMode ? 'bg-gray-700' : 'bg-white'
                     } rounded-lg px-3 py-2 text-sm`}
                   >
-                    <span>{formatWeight(tempPlasticGoal)}</span>
+                    <span className={tempPlasticGoal ? (isDarkMode ? 'text-white' : 'text-gray-900') : (isDarkMode ? 'text-gray-500' : 'text-gray-400')}>
+                      {tempPlasticGoal ? formatWeight(tempPlasticGoal) : '플라스틱 사용 한도를 설정해 주세요'}
+                    </span>
                     <FiChevronDown className={`transition-transform ${showGoalDropdown ? 'rotate-180' : ''}`} />
                   </button>
                 
@@ -1280,16 +1302,13 @@ const Challenge = ({
               <h3 className={`${textColor} text-sm font-medium mb-3`}>플라스틱 사용 기록하기</h3>
               <div className="space-y-3">
                 <div className="relative">
-                  <label className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} text-xs`}>아이템</label>
-                  
                   {!showCustomPlastic ? (
                     <button
                       onClick={() => setShowPlasticSelect(!showPlasticSelect)}
-                      className={`w-full ${inputBg} rounded-lg p-2 mt-1 flex justify-between items-center`}
+                      className={`w-full ${inputBg} rounded-lg p-2 flex justify-between items-center`}
                     >
-                      <span className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                        {selectedPlasticItem} {plasticItems.find(item => item.name === selectedPlasticItem)?.weight > 0 && 
-                          `(${plasticItems.find(item => item.name === selectedPlasticItem)?.weight}g)`}
+                      <span className={`text-sm ${selectedPlasticItem ? (isDarkMode ? 'text-gray-300' : 'text-gray-700') : (isDarkMode ? 'text-gray-500' : 'text-gray-400')}`}>
+                        {selectedPlasticItem || '아이템을 선택해 주세요'}
                       </span>
                       <FiChevronDown className={`w-4 h-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
                     </button>
@@ -1384,56 +1403,95 @@ const Challenge = ({
                       {/* 배경 블러 오버레이 - 카드 영역만 */}
                       <div className="absolute inset-0 backdrop-blur-[1px] bg-black/[0.02] z-10 rounded-xl" onClick={() => setShowPlasticSelect(false)} />
                       <div className={`absolute z-20 w-full mt-1 ${inputBg} rounded-lg p-2 max-h-60 overflow-y-auto scrollbar-hide shadow-lg border ${borderColor}`}>
-                      {plasticItems.map((item, index) => (
-                        <div
-                          key={item.name + index}
-                          className={`flex items-center justify-between p-2 hover:bg-gray-${isDarkMode ? '700' : '100'} rounded`}
-                        >
-                          <button
-                            onClick={() => {
-                              if (item.name === '기타 (직접 입력)') {
-                                setPreviousPlasticItem(selectedPlasticItem); // 현재 항목 저장
-                                setShowCustomPlastic(true);
-                                setShowPlasticSelect(false);
-                              } else {
-                                setSelectedPlasticItem(item.name);
-                                setShowPlasticSelect(false);
-                              }
-                            }}
-                            className={`flex-1 text-left text-sm ${textColor}`}
-                          >
-                            {item.name} {item.weight > 0 && `(${item.weight}g)`}
-                          </button>
-                          {customPlasticItems.find(custom => custom.name === item.name) && (
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                const updatedItems = customPlasticItems.filter(c => c.name !== item.name);
-                                setCustomPlasticItems(updatedItems);
-                                if (selectedPlasticItem === item.name) {
-                                  setSelectedPlasticItem('플라스틱병');
-                                }
-                              }}
-                              className={`ml-2 p-1 rounded transition-colors ${
-                                userRanking === 'basic' ? 'hover:bg-gray-100' :
-                                userRanking === 'bronze' ? 'hover:bg-cyan-100' :
-                                userRanking === 'silver' ? 'hover:bg-gray-200' :
-                                userRanking === 'gold' ? 'hover:bg-yellow-100' :
-                                userRanking === 'platinum' ? 'hover:bg-purple-100' :
-                                'hover:bg-gray-100'
-                              }`}
-                            >
-                              <FiX className="w-4 h-4" style={{
-                                color: userRanking === 'bronze' ? '#06b6d4' :
-                                       userRanking === 'silver' ? '#14b8a6' :
-                                       userRanking === 'gold' ? '#facc15' :
-                                       userRanking === 'platinum' ? '#c084fc' :
-                                       '#06b6d4'
-                              }} />
-                            </button>
-                          )}
-                        </div>
-                      ))}
+                      {(() => {
+                        const categories = {
+                          drink: { label: '음료 관련', items: [] },
+                          bag: { label: '봉투류', items: [] },
+                          food: { label: '배달/음식 관련', items: [] },
+                          etc: { label: '기타 생활용품', items: [] },
+                          custom: { label: '사용자 정의', items: [] }
+                        };
+                        
+                        plasticItems.forEach(item => {
+                          if (categories[item.category]) {
+                            categories[item.category].items.push(item);
+                          }
+                        });
+                        
+                        return Object.entries(categories).map(([key, category], categoryIndex) => {
+                          if (category.items.length === 0) return null;
+                          
+                          return (
+                            <div key={key}>
+                              {key !== 'custom' && (
+                                <div className={`px-2 py-1 text-xs font-medium ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                                  {category.label}
+                                </div>
+                              )}
+                              {category.items.map((item, index) => (
+                                <div
+                                  key={item.name + index}
+                                  className={`flex items-center justify-between p-2 hover:bg-gray-${isDarkMode ? '700' : '100'} rounded`}
+                                >
+                                  <button
+                                    onClick={() => {
+                                      if (item.name === '기타 (직접 입력)') {
+                                        setPreviousPlasticItem(selectedPlasticItem);
+                                        setShowCustomPlastic(true);
+                                        setShowPlasticSelect(false);
+                                      } else {
+                                        setSelectedPlasticItem(item.name);
+                                        setShowPlasticSelect(false);
+                                      }
+                                    }}
+                                    className={`flex-1 text-left text-sm ${textColor}`}
+                                  >
+                                    <span>{item.name}</span>
+                                    {item.desc && (
+                                      <span className={`ml-1 ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                                        - {item.desc}
+                                      </span>
+                                    )}
+                                  </button>
+                                  {customPlasticItems.find(custom => custom.name === item.name) && (
+                                    <button
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        const updatedItems = customPlasticItems.filter(c => c.name !== item.name);
+                                        setCustomPlasticItems(updatedItems);
+                                        if (selectedPlasticItem === item.name) {
+                                          setSelectedPlasticItem(null);
+                                        }
+                                      }}
+                                      className={`ml-2 p-1 rounded transition-colors ${
+                                        userRanking === 'basic' ? 'hover:bg-gray-100' :
+                                        userRanking === 'bronze' ? 'hover:bg-cyan-100' :
+                                        userRanking === 'silver' ? 'hover:bg-gray-200' :
+                                        userRanking === 'gold' ? 'hover:bg-yellow-100' :
+                                        userRanking === 'platinum' ? 'hover:bg-purple-100' :
+                                        'hover:bg-gray-100'
+                                      }`}
+                                    >
+                                      <FiX className="w-4 h-4" style={{
+                                        color: userRanking === 'bronze' ? '#06b6d4' :
+                                               userRanking === 'silver' ? '#14b8a6' :
+                                               userRanking === 'gold' ? '#facc15' :
+                                               userRanking === 'platinum' ? '#c084fc' :
+                                               '#06b6d4'
+                                      }} />
+                                    </button>
+                                  )}
+                                </div>
+                              ))}
+                              {/* 카테고리 구분선 - 마지막 카테고리가 아니고 custom이 아닌 경우에만 표시 */}
+                              {categoryIndex < Object.entries(categories).filter(([k, c]) => c.items.length > 0).length - 1 && 
+                               key !== 'custom' && (
+                                <div className={`mt-2 mb-2 border-t ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}></div>
+                              )}
+                            </div>
+                          );
+                        });
+                      })()}
                     </div>
                     </>
                   )}
@@ -1499,8 +1557,9 @@ const Challenge = ({
                       localStorage.setItem('plasticRecords', JSON.stringify(updatedRecords));
                       
                       // 입력 초기화
-                      setSelectedPlasticItem('플라스틱병');
+                      setSelectedPlasticItem(null);
                       setPlasticQuantity(1);
+                      showToast('기록이 저장되었습니다', 'success');
                     }
                   }}
                   className={`w-full py-2.5 rounded-lg text-sm font-medium transition-colors ${

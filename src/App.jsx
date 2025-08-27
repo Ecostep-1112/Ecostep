@@ -32,43 +32,7 @@ const EcostepApp = () => {
   const [showProfile, setShowProfile] = useState(false);
   const [showAquariumSettings, setShowAquariumSettings] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
-  const [notificationsList, setNotificationsList] = useState([
-    {
-      id: 1,
-      title: '챌린지 완료!',
-      message: '오늘의 플라스틱 줄이기 챌린지를 완료했습니다.',
-      timestamp: new Date(Date.now() - 1000 * 60 * 30),
-      read: false
-    },
-    {
-      id: 2,
-      title: '새로운 보상 획득',
-      message: '실버 등급 달성! 새로운 물고기를 구매할 수 있습니다.',
-      timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2),
-      read: false
-    },
-    {
-      id: 3,
-      title: '수질 경고',
-      message: '수질이 70% 이하로 떨어졌습니다.',
-      timestamp: new Date(Date.now() - 1000 * 60 * 60 * 5),
-      read: true
-    },
-    {
-      id: 4,
-      title: '새로운 물고기',
-      message: '구매하신 엔젤피쉬가 어항에 추가되었습니다!',
-      timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24 * 1),
-      read: true
-    },
-    {
-      id: 5,
-      title: '연속 달성!',
-      message: '7일 연속 챌린지 달성! 100포인트를 획득했습니다.',
-      timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3),
-      read: true
-    }
-  ]);
+  const [notificationsList, setNotificationsList] = useState([]);
   const [selectedChallenge, setSelectedChallenge] = useState(null);
   const [showChallengeSelect, setShowChallengeSelect] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
@@ -423,6 +387,9 @@ const EcostepApp = () => {
               setShowNotifications={setShowNotifications}
               notifications={notificationsList}
               setNotifications={setNotificationsList}
+              points={points}
+              setPoints={setPoints}
+              rankTheme={rankTheme}
             />
           ) : showSettings ? (
             showProfile ? <ProfileScreen isDarkMode={isDarkMode} setShowProfile={setShowProfile} /> : 
@@ -516,6 +483,7 @@ const EcostepApp = () => {
                 setTotalPlasticSaved={setTotalPlasticSaved}
                 testDate={testDate}
                 setTestDate={setTestDate}
+                setNotificationsList={setNotificationsList}
               />}
               {activeTab === 'reward' && <RewardsPage 
                 isDarkMode={isDarkMode} 

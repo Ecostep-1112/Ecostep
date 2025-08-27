@@ -33,7 +33,8 @@ const Challenge = ({
   showToast,
   setTotalPlasticSaved,
   testDate,
-  setTestDate
+  setTestDate,
+  setNotificationsList
 }) => {
   const [customChallenge, setCustomChallenge] = useState('');
   const [showCustomChallenge, setShowCustomChallenge] = useState(false);
@@ -183,17 +184,27 @@ const Challenge = ({
   };
 
   // 이번 주 플라스틱 사용량 계산
-  const getWeeklyPlasticUsage = () => {
+  const getWeeklyPlasticUsage = (checkLastWeek = false) => {
     if (!plasticRecords || plasticRecords.length === 0) return 0;
     
     const now = new Date(testDate || new Date());
-    const weekStart = new Date(now);
-    weekStart.setDate(weekStart.getDate() - weekStart.getDay()); // 이번 주 일요일
+    let weekStart = new Date(now);
+    let weekEnd = new Date(now);
+    
+    if (checkLastWeek) {
+      // 지난 주 데이터 가져오기 (월요일에 사용)
+      weekStart.setDate(weekStart.getDate() - weekStart.getDay() - 7); // 지난 주 일요일
+      weekEnd.setDate(weekEnd.getDate() - weekEnd.getDay() - 1); // 지난 주 토요일
+    } else {
+      // 이번 주 데이터 가져오기
+      weekStart.setDate(weekStart.getDate() - weekStart.getDay()); // 이번 주 일요일
+    }
     weekStart.setHours(0, 0, 0, 0);
+    weekEnd.setHours(23, 59, 59, 999);
     
     const weeklyRecords = plasticRecords.filter(record => {
       const recordDate = new Date(record.date);
-      return recordDate >= weekStart && recordDate <= now;
+      return recordDate >= weekStart && recordDate <= weekEnd;
     });
     
     // totalWeight 필드 사용 (weight가 아님)
@@ -254,51 +265,96 @@ const Challenge = ({
     }
   }, [showGoalDropdown, showPlasticSelect, showUsagePeriodDropdown]);
 
-  // 매주 월요일에 플라스틱 사용 기록 리셋
+  // 매주 월요일에 포인트 지급 및 리셋
   useEffect(() => {
-    const checkAndResetOnMonday = () => {
+    const checkMonday = () => {
       const now = new Date(testDate || new Date());
       const dayOfWeek = now.getDay();
       
-      // 월요일인 경우 (1) 확인
+      console.log('[제로챌린지] 체크 시작:', {
+        요일: dayOfWeek,
+        날짜: now.toISOString(),
+        plasticGoal,
+        setNotificationsList: !!setNotificationsList
+      });
+      
+      // 월요일인 경우
       if (dayOfWeek === 1) {
-        const lastReset = localStorage.getItem('lastMondayReset');
+        const lastMonday = localStorage.getItem('lastMondayCheck');
         const todayString = now.toISOString().split('T')[0];
         
-        // 오늘 리셋하지 않았다면
-        if (lastReset !== todayString) {
-          // 플라스틱 기록은 리셋하지 않음 (계속 유지)
-          // setPlasticRecords([]);
-          // localStorage.removeItem('plasticRecords');
+        console.log('[제로챌린지] 월요일 감지:', {
+          lastMonday,
+          todayString,
+          이미체크: lastMonday === todayString
+        });
+        
+        // 오늘 체크하지 않았다면
+        if (lastMonday !== todayString) {
           
-          // 목표 설정 날짜 리셋 (월요일에 변경 가능하도록)
+          // 플라스틱 목표가 있었다면 달성률 체크
+          if (plasticGoal && plasticGoal > 0) {
+            // 지난 주 데이터로 달성률 계산
+            const weeklyUsage = getWeeklyPlasticUsage(true); // true = 지난 주 데이터
+            const achievementPercent = Math.max(0, 100 - (weeklyUsage / plasticGoal * 100));
+            
+            console.log('[제로챌린지] 달성률 계산:', {
+              목표: plasticGoal,
+              지난주_사용량: weeklyUsage,
+              달성률: achievementPercent
+            });
+            
+            // 달성률 1% 이상이면 알림
+            if (achievementPercent >= 1) {
+              if (setNotificationsList) {
+                const newNotification = {
+                  id: Date.now(),
+                  title: '제로 챌린지 달성!',
+                  message: `지난 주 플라스틱 사용 목표를 달성했습니다.`,
+                  timestamp: new Date(),
+                  read: false,
+                  isReward: true,
+                  claimed: false,
+                  pointsAmount: 70
+                };
+                console.log('[제로챌린지] 알림 생성:', newNotification);
+                setNotificationsList(prev => {
+                  console.log('[제로챌린지] 알림 추가 전:', prev);
+                  return [newNotification, ...prev];
+                });
+              } else {
+                console.log('[제로챌린지] setNotificationsList가 없음!');
+              }
+            } else {
+              console.log('[제로챌린지] 달성 실패 (달성률 1% 미만)');
+            }
+          } else {
+            console.log('[제로챌린지] 목표 없음 또는 0');
+          }
+          
+          // 새로운 주 시작 - 목표 리셋
           localStorage.removeItem('goalSetDate');
           setGoalSetDate(null);
-          
-          // 플라스틱 목표도 초기화
           setPlasticGoal(null);
           setTempPlasticGoal(null);
           localStorage.removeItem('plasticGoal');
-          
-          // 챌린지도 초기화 (새로운 주 시작)
           setSelectedChallenge(null);
           
-          // 리셋 날짜 저장
-          localStorage.setItem('lastMondayReset', todayString);
+          // 체크 완료 표시
+          localStorage.setItem('lastMondayCheck', todayString);
+          console.log('[제로챌린지] 월요일 처리 완료');
         }
       }
     };
     
-    // 처음 로드시 확인
-    checkAndResetOnMonday();
+    // 컴포넌트 로드시 즉시 체크
+    checkMonday();
     
-    // 매일 자정에 체크 (월요일이 되는 순간 리셋)
-    const checkInterval = setInterval(() => {
-      checkAndResetOnMonday();
-    }, 60 * 60 * 1000); // 1시간마다 체크
+    // 1분마다 체크
+    const interval = setInterval(checkMonday, 60000);
     
-    return () => clearInterval(checkInterval);
-  }, [testDate]); // testDate 변경 시 재확인
+    return () => clearInterval(interval);
+  }, [testDate, plasticGoal, setNotificationsList]);
 
   // 월요일에 목표 재설정 알림
   useEffect(() => {

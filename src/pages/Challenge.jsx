@@ -77,6 +77,8 @@ const Challenge = ({
   const [todayCompleted, setTodayCompleted] = useState(false);
   const [historyRange, setHistoryRange] = useState(7); // 7일, 4주, 16주, 32주
   const [expandedDays, setExpandedDays] = useState([]); // 확장된 요일 추적
+  const [usagePeriod, setUsagePeriod] = useState(''); // 사용량 기간 선택 state
+  const [showUsagePeriodDropdown, setShowUsagePeriodDropdown] = useState(false); // 사용량 기간 드롭다운 표시 여부
   const [customChallengeSavings, setCustomChallengeSavings] = useState(() => {
     const saved = localStorage.getItem('customChallengeSavings');
     return saved ? JSON.parse(saved) : {};
@@ -231,6 +233,26 @@ const Challenge = ({
     // 실제 완료된 챌린지만 반환 (예시 데이터 제거)
     return [];
   });
+
+  // 드롭다운 외부 클릭 감지
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      // 클릭한 요소가 드롭다운 내부인지 확인
+      if (!event.target.closest('.dropdown-container')) {
+        setShowGoalDropdown(false);
+        setShowPlasticSelect(false);
+        setShowUsagePeriodDropdown(false);
+      }
+    };
+
+    if (showGoalDropdown || showPlasticSelect || showUsagePeriodDropdown) {
+      // setTimeout을 사용하여 현재 클릭 이벤트가 처리된 후 리스너 추가
+      setTimeout(() => {
+        document.addEventListener('click', handleClickOutside);
+      }, 0);
+      return () => document.removeEventListener('click', handleClickOutside);
+    }
+  }, [showGoalDropdown, showPlasticSelect, showUsagePeriodDropdown]);
 
   // 매주 월요일에 플라스틱 사용 기록 리셋
   useEffect(() => {
@@ -575,6 +597,135 @@ const Challenge = ({
     }
   };
 
+  // 사용량 데이터 계산 함수
+  const getUsageData = () => {
+    if (!usagePeriod) return [];
+    
+    const today = new Date(testDate || new Date());
+    today.setHours(23, 59, 59, 999);
+    
+    if (usagePeriod === '일주일') {
+      // 최근 7일간 데이터
+      const data = [];
+      for (let i = 6; i >= 0; i--) {
+        const date = new Date(today);
+        date.setDate(today.getDate() - i);
+        date.setHours(0, 0, 0, 0);
+        const nextDate = new Date(date);
+        nextDate.setDate(date.getDate() + 1);
+        
+        const dayUsage = plasticRecords
+          .filter(record => {
+            const recordDate = new Date(record.date);
+            return recordDate >= date && recordDate < nextDate;
+          })
+          .reduce((sum, record) => sum + record.totalWeight, 0);
+        
+        data.push({
+          label: `${date.getDate()}일`,
+          value: dayUsage
+        });
+      }
+      return data;
+    } else if (usagePeriod === '한 달') {
+      // 최근 4주간 데이터 (주 단위)
+      const data = [];
+      for (let i = 3; i >= 0; i--) {
+        const weekEnd = new Date(today);
+        weekEnd.setDate(today.getDate() - (i * 7));
+        const weekStart = new Date(weekEnd);
+        weekStart.setDate(weekEnd.getDate() - 6);
+        weekStart.setHours(0, 0, 0, 0);
+        weekEnd.setHours(23, 59, 59, 999);
+        
+        const weekUsage = plasticRecords
+          .filter(record => {
+            const recordDate = new Date(record.date);
+            return recordDate >= weekStart && recordDate <= weekEnd;
+          })
+          .reduce((sum, record) => sum + record.totalWeight, 0);
+        
+        data.push({
+          label: `${weekStart.getMonth()+1}/${weekStart.getDate()}-${weekEnd.getDate()}`,
+          value: weekUsage
+        });
+      }
+      return data;
+    } else if (usagePeriod === '6개월') {
+      // 최근 6개월 데이터
+      const data = [];
+      for (let i = 5; i >= 0; i--) {
+        const monthEnd = new Date(today);
+        monthEnd.setMonth(today.getMonth() - i);
+        const monthStart = new Date(monthEnd.getFullYear(), monthEnd.getMonth(), 1);
+        const nextMonth = new Date(monthEnd.getFullYear(), monthEnd.getMonth() + 1, 1);
+        
+        const monthUsage = plasticRecords
+          .filter(record => {
+            const recordDate = new Date(record.date);
+            return recordDate >= monthStart && recordDate < nextMonth;
+          })
+          .reduce((sum, record) => sum + record.totalWeight, 0);
+        
+        const monthNames = ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'];
+        data.push({
+          label: monthNames[monthEnd.getMonth()],
+          value: monthUsage
+        });
+      }
+      return data;
+    } else if (usagePeriod === '1년') {
+      // 최근 12개월 데이터
+      const data = [];
+      for (let i = 11; i >= 0; i--) {
+        const monthEnd = new Date(today);
+        monthEnd.setMonth(today.getMonth() - i);
+        const monthStart = new Date(monthEnd.getFullYear(), monthEnd.getMonth(), 1);
+        const nextMonth = new Date(monthEnd.getFullYear(), monthEnd.getMonth() + 1, 1);
+        
+        const monthUsage = plasticRecords
+          .filter(record => {
+            const recordDate = new Date(record.date);
+            return recordDate >= monthStart && recordDate < nextMonth;
+          })
+          .reduce((sum, record) => sum + record.totalWeight, 0);
+        
+        data.push({
+          label: `${monthEnd.getMonth() + 1}월`,
+          value: monthUsage
+        });
+      }
+      return data;
+    } else if (usagePeriod === '전체') {
+      // 전체 기간 데이터 (연도별로 집계, 최대 6년)
+      if (plasticRecords.length === 0) return [];
+      
+      const yearlyData = {};
+      plasticRecords.forEach(record => {
+        const date = new Date(record.date);
+        const year = date.getFullYear();
+        if (!yearlyData[year]) {
+          yearlyData[year] = 0;
+        }
+        yearlyData[year] += record.totalWeight;
+      });
+      
+      const years = Object.keys(yearlyData).map(Number).sort((a, b) => a - b);
+      
+      // 최대 6년만 표시
+      const displayYears = years.slice(-6);
+      
+      const data = displayYears.map(year => ({
+        label: `${year}년`,
+        value: yearlyData[year]
+      }));
+      
+      return data;
+    }
+    
+    return [];
+  };
+
   const weeklyData = [
     { day: '월', usage: 45 },
     { day: '화', usage: 30 },
@@ -605,7 +756,10 @@ const Challenge = ({
             }}
           />
           <button
-            onClick={() => setActiveSubTab('habit')}
+            onClick={(e) => {
+              e.stopPropagation();
+              setActiveSubTab('habit');
+            }}
             className={`flex-1 py-2 text-sm font-bold transition-all duration-300 ease-out text-center border relative z-10 ${
               activeSubTab === 'habit' 
                 ? isDarkMode 
@@ -619,7 +773,10 @@ const Challenge = ({
             일일 챌린지
           </button>
           <button
-            onClick={() => setActiveSubTab('tracking')}
+            onClick={(e) => {
+              e.stopPropagation();
+              setActiveSubTab('tracking');
+            }}
             className={`flex-1 py-2 text-sm font-bold transition-all duration-300 ease-out text-center border relative z-10 ${
               activeSubTab === 'tracking' 
                 ? isDarkMode 
@@ -1094,7 +1251,7 @@ const Challenge = ({
                   </div>
                 </div>
               ) : (
-                <div className="relative mb-4">
+                <div className="relative mb-4 dropdown-container">
                   {/* 드롭다운 버튼 */}
                   <button
                     onClick={() => {
@@ -1268,7 +1425,7 @@ const Challenge = ({
             <div className={`${cardBg} border ${borderColor} rounded-xl p-4`}>
               <h3 className={`${textColor} text-sm font-medium mb-3`}>플라스틱 사용 기록하기</h3>
               <div className="space-y-3">
-                <div className="relative">
+                <div className="relative dropdown-container">
                   {!showCustomPlastic ? (
                     <button
                       onClick={() => {
@@ -1982,6 +2139,249 @@ const Challenge = ({
               </div>
             </div>
 
+            {/* 사용량 섹션 */}
+            <div className={`${cardBg} border ${borderColor} rounded-xl p-3 h-[280px] flex flex-col`}>
+              <div className="flex justify-between items-center mb-1.5">
+                <h3 className={`${textColor} text-sm font-medium`}>사용량</h3>
+                <div className="relative dropdown-container">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setShowUsagePeriodDropdown(!showUsagePeriodDropdown);
+                      // 다른 드롭다운 닫기
+                      setShowGoalDropdown(false);
+                      setShowPlasticSelect(false);
+                    }}
+                    className={`flex items-center gap-1 px-2 py-1 text-xs ${
+                      isDarkMode ? 'bg-gray-700 text-gray-300 hover:bg-gray-600' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                    } rounded transition-colors`}
+                  >
+                    <span>{usagePeriod || '기간'}</span>
+                    <FiChevronDown className={`w-3 h-3 transition-transform ${showUsagePeriodDropdown ? 'rotate-180' : ''}`} />
+                  </button>
+                  
+                  {showUsagePeriodDropdown && (
+                    <div className={`absolute right-0 mt-1 ${
+                      isDarkMode ? 'bg-gray-800' : 'bg-white'
+                    } border ${borderColor} rounded-lg shadow-lg z-20 overflow-hidden`} style={{ width: 'auto' }}>
+                      {['일주일', '한 달', '6개월', '1년', '전체'].map((period, idx) => (
+                        <React.Fragment key={period}>
+                          <button
+                            onClick={() => {
+                              setUsagePeriod(period);
+                              setShowUsagePeriodDropdown(false);
+                            }}
+                            className={`w-full text-left px-2 py-1.5 text-xs transition-colors whitespace-nowrap ${
+                              usagePeriod === period 
+                                ? (isDarkMode ? 'bg-gray-700 text-white' : 'bg-gray-100 text-gray-900')
+                                : (isDarkMode ? 'text-gray-200 hover:bg-gray-700' : 'text-gray-900 hover:bg-gray-50')
+                            }`}
+                          >
+                            {period}
+                          </button>
+                          {idx < 4 && <div className={`border-b ${borderColor}`} />}
+                        </React.Fragment>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+              
+              {/* 그래프 영역 - 주간 사용량 스타일 */}
+              {usagePeriod && (
+                <div className="relative flex justify-between items-end flex-1 pb-4">
+                  {(() => {
+                    const data = getUsageData();
+                    if (data.length === 0) {
+                      return (
+                        <div className="flex items-center justify-center w-full h-full">
+                          <span className={`text-xs ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                            데이터가 없습니다
+                          </span>
+                        </div>
+                      );
+                    }
+                    
+                    const maxValue = Math.max(...data.map(d => d.value), 100);
+                    const nonZeroData = data.filter(d => d.value > 0);
+                    const avgValue = nonZeroData.length > 0 
+                      ? nonZeroData.reduce((sum, d) => sum + d.value, 0) / nonZeroData.length 
+                      : 0;
+                    
+                    // 그래프 높이 설정
+                    const graphHeight = 200; // flex-1 대신 고정 높이 사용
+                    
+                    // 평균선 높이 계산 - 점들과 동일한 스케일 사용
+                    const avgHeight = (avgValue / maxValue) * (graphHeight * 0.70) + 20;
+                    
+                    return (
+                      <>
+                        {/* 점과 점 사이 개별 연결선 - 0이 아닌 값만 연결 */}
+                        <svg className="absolute inset-0 pointer-events-none" style={{ height: `${graphHeight}px`, width: '100%' }}>
+                          {data.length >= 1 && (() => {
+                            const lines = [];
+                            const dots = [];
+                            let lastNonZeroIndex = -1;
+                            let firstNonZeroIndex = -1;
+                            let finalNonZeroIndex = -1;
+                            
+                            // 첫 번째와 마지막 0이 아닌 값의 인덱스 찾기
+                            data.forEach((item, index) => {
+                              if (item.value > 0) {
+                                if (firstNonZeroIndex === -1) {
+                                  firstNonZeroIndex = index;
+                                }
+                                finalNonZeroIndex = index;
+                              }
+                            });
+                            
+                            data.forEach((item, index) => {
+                              if (item.value > 0) {
+                                if (lastNonZeroIndex !== -1) {
+                                  // 이전 0이 아닌 점과 현재 점을 연결
+                                  const prevItem = data[lastNonZeroIndex];
+                                  const itemWidth = 100 / data.length;
+                                  const x1 = (lastNonZeroIndex + 0.5) * itemWidth;
+                                  const y1 = graphHeight - ((prevItem.value / maxValue) * (graphHeight * 0.70)) - 20;
+                                  const x2 = (index + 0.5) * itemWidth;
+                                  const y2 = graphHeight - ((item.value / maxValue) * (graphHeight * 0.70)) - 20;
+                                  
+                                  lines.push(
+                                    <line
+                                      key={`${lastNonZeroIndex}-${index}`}
+                                      x1={`${x1}%`}
+                                      y1={y1}
+                                      x2={`${x2}%`}
+                                      y2={y2}
+                                      stroke={getThemeColor()}
+                                      strokeWidth="0.5"
+                                      strokeLinecap="round"
+                                    />
+                                  );
+                                }
+                                
+                                // 모든 데이터 포인트(선이 꺾이는 지점)에 점 추가
+                                const itemWidth = 100 / data.length;
+                                const x = (index + 0.5) * itemWidth;
+                                const y = graphHeight - ((item.value / maxValue) * (graphHeight * 0.70)) - 20;
+                                
+                                dots.push(
+                                  <circle
+                                    key={`dot-${index}`}
+                                    cx={`${x}%`}
+                                    cy={y}
+                                    r="2.5"
+                                    fill={getThemeColor()}
+                                  />
+                                );
+                                
+                                lastNonZeroIndex = index;
+                              }
+                            });
+                            
+                            return [...lines, ...dots];
+                          })()}
+                          
+                          {/* 평균선 - SVG 내부에서 그리기 */}
+                          {nonZeroData.length >= 2 && (() => {
+                            const avgY = graphHeight - ((avgValue / maxValue) * (graphHeight * 0.70)) - 20;
+                            return (
+                              <>
+                                {/* 평균 텍스트 - 거의 왼쪽 벽 */}
+                                <text 
+                                  x="0.1%" 
+                                  y={avgY}
+                                  dominantBaseline="middle"
+                                  textAnchor="start"
+                                  className={`text-[10px] ${isDarkMode ? 'fill-white' : 'fill-black'}`}
+                                >
+                                  평균
+                                </text>
+                                {/* 평균과 값 사이의 선 - 양쪽 텍스트와 동일한 간격 */}
+                                <line 
+                                  x1="9%" 
+                                  y1={avgY}
+                                  x2="91%" 
+                                  y2={avgY}
+                                  stroke={isDarkMode ? 'white' : 'black'}
+                                  strokeWidth="0.5"
+                                />
+                                {/* 값 텍스트 - 거의 오른쪽 벽 */}
+                                <text 
+                                  x="99.9%" 
+                                  y={avgY}
+                                  dominantBaseline="middle"
+                                  textAnchor="end"
+                                  className={`text-[10px] ${isDarkMode ? 'fill-white' : 'fill-black'}`}
+                                >
+                                  {formatWeight(Math.round(avgValue))}
+                                </text>
+                              </>
+                            );
+                          })()}
+                        </svg>
+                        
+                        {/* 데이터 포인트들 */}
+                        {data.map((item, index) => {
+                          const height = (item.value / maxValue) * (graphHeight * 0.70) + 20;
+                          // 0이 아닌 값 중에서 최대값과 최소값 찾기
+                          const nonZeroValues = data.filter(d => d.value > 0).map(d => d.value);
+                          const maxVal = nonZeroValues.length > 0 ? Math.max(...nonZeroValues) : 0;
+                          const minVal = nonZeroValues.length > 0 ? Math.min(...nonZeroValues) : 0;
+                          const isMax = item.value > 0 && item.value === maxVal;
+                          const isMin = item.value > 0 && item.value === minVal && minVal !== maxVal; // 최소값과 최대값이 같으면 최소값 표시 안함
+                          
+                          return (
+                            <div key={index} className="flex flex-col items-center flex-1 relative">
+                              <div className="relative flex flex-col justify-end" style={{ height: `${graphHeight}px` }}>
+                                {/* 데이터 포인트 제거 - 선만 표시 */}
+                                {/* 최대값과 최소값만 표시 */}
+                                {isMax && item.value > 0 && (
+                                  <span 
+                                    className={`text-[11px] font-medium absolute left-1/2 -translate-x-1/2 whitespace-nowrap ${
+                                      isDarkMode ? 'text-gray-300' : 'text-gray-700'
+                                    }`}
+                                    style={{
+                                      bottom: `${height + 5}px` // 최대값은 항상 점 위에
+                                    }}
+                                  >
+                                    {formatWeight(item.value)}
+                                  </span>
+                                )}
+                                {isMin && item.value > 0 && (
+                                  <span 
+                                    className={`text-[11px] font-medium absolute left-1/2 -translate-x-1/2 whitespace-nowrap ${
+                                      isDarkMode ? 'text-gray-300' : 'text-gray-700'
+                                    }`}
+                                    style={{
+                                      bottom: `${Math.max(height - 20, 5)}px` // 최소값은 항상 점 아래에 (더 많은 간격)
+                                    }}
+                                  >
+                                    {formatWeight(item.value)}
+                                  </span>
+                                )}
+                              </div>
+                              <span className={`text-[11px] ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} mt-1`}>
+                                {usagePeriod === '1년' ? item.label.replace('월', '') : item.label}
+                              </span>
+                            </div>
+                          );
+                        })}
+                      </>
+                    );
+                  })()}
+                </div>
+              )}
+              
+              {/* 기간 선택 안 된 경우 */}
+              {!usagePeriod && (
+                <div className="flex-1 flex items-center justify-center">
+                  <span className={`text-xs ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                    기간을 선택해주세요
+                  </span>
+                </div>
+              )}
+            </div>
             
             {/* 테스트용 기록 리셋 버튼 */}
             <div className="mt-6 mx-3">

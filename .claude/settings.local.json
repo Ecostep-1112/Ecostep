@@ -38,7 +38,12 @@
       "Bash(git pull:*)",
       "Bash(git stash:*)",
       "Read(/c:\\Users\\user\\Desktop\\Ecostep\\복사한 이미지/**)",
-      "Bash(rg:*)"
+      "Bash(rg:*)",
+      "Read(/c:\\Users\\user\\Desktop\\Ecostep\\복사한 이미지/**)",
+      "Read(/c:\\Users\\user\\Desktop\\Ecostep\\복사한 이미지/**)",
+      "Read(/c:\\Users\\user\\Desktop\\Ecostep\\복사한 이미지/**)",
+      "Read(/c:\\Users\\user\\Desktop\\Ecostep\\복사한 이미지/**)",
+      "Read(/c:\\Users\\user\\Desktop\\Ecostep\\복사한 이미지/**)"
     ],
     "deny": [],
     "ask": [],

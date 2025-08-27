@@ -1158,7 +1158,11 @@ const Challenge = ({
                 <div className="relative mb-4">
                   {/* 드롭다운 버튼 */}
                   <button
-                    onClick={() => setShowGoalDropdown(!showGoalDropdown)}
+                    onClick={() => {
+                    setShowGoalDropdown(!showGoalDropdown);
+                    // 다른 드롭다운 닫기
+                    setShowPlasticSelect(false);
+                  }}
                     className={`w-full flex justify-between items-center border ${borderColor} ${
                       isDarkMode ? 'bg-gray-700' : 'bg-white'
                     } rounded-lg px-3 py-2 text-sm`}
@@ -1304,7 +1308,11 @@ const Challenge = ({
                 <div className="relative">
                   {!showCustomPlastic ? (
                     <button
-                      onClick={() => setShowPlasticSelect(!showPlasticSelect)}
+                      onClick={() => {
+                        setShowPlasticSelect(!showPlasticSelect);
+                        // 다른 드롭다운 닫기
+                        setShowGoalDropdown(false);
+                      }}
                       className={`w-full ${inputBg} rounded-lg p-2 flex justify-between items-center`}
                     >
                       <span className={`text-sm ${selectedPlasticItem ? (isDarkMode ? 'text-gray-300' : 'text-gray-700') : (isDarkMode ? 'text-gray-500' : 'text-gray-400')}`}>

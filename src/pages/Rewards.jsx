@@ -78,7 +78,7 @@ const Rewards = ({
   const getRankGradient = (rank) => {
     switch(rank) {
       case 'bronze':
-        return 'bg-gradient-to-br from-amber-600 to-amber-800';
+        return 'bg-gradient-to-br from-cyan-500 to-blue-600';
       case 'silver':
         return 'bg-gradient-to-br from-cyan-400 to-teal-500';
       case 'gold':
@@ -90,12 +90,20 @@ const Rewards = ({
     }
   };
 
-  // 진행바 색상 - 차분하고 부드러운 색상
-  const getProgressGradient = (isDark) => {
-    // 부드러운 블루-그레이 계열
-    return isDark 
-      ? 'bg-gradient-to-r from-slate-500 to-slate-400'
-      : 'bg-gradient-to-r from-slate-400 to-slate-500';
+  // 진행바 색상 - 현재 랭크와 동일한 색상
+  const getProgressGradient = (rank) => {
+    switch(rank) {
+      case 'bronze':
+        return 'bg-gradient-to-r from-cyan-500 to-blue-600';
+      case 'silver':
+        return 'bg-gradient-to-r from-cyan-400 to-teal-500';
+      case 'gold':
+        return 'bg-gradient-to-r from-yellow-300 to-orange-400';
+      case 'platinum':
+        return 'bg-gradient-to-r from-purple-400 to-indigo-500';
+      default:
+        return 'bg-gradient-to-r from-cyan-500 to-blue-600';
+    }
   };
 
   const rankIcons = {
@@ -187,7 +195,7 @@ const Rewards = ({
             {/* 진행바 */}
             <div className={`w-full h-1.5 ${isDarkMode ? 'bg-gray-700/50' : 'bg-gray-200'} rounded-full overflow-hidden shadow-inner`}>
               <div 
-                className={`h-full ${getProgressGradient(isDarkMode)} rounded-full transition-all duration-500`} 
+                className={`h-full ${getProgressGradient(userRanking)} rounded-full transition-all duration-500`} 
                 style={{ width: '70%' }}
               />
             </div>

@@ -3,6 +3,7 @@ import { FiCheck, FiX, FiChevronDown } from 'react-icons/fi';
 import { BronzeIcon, SilverIcon, GoldIcon, PlatinumIcon } from '../components/RankIcons';
 import { challengeSavings, isPlasticRelated, estimateSavings } from '../data/challengeData';
 import { validatePlasticChallenge, fallbackValidation } from '../api/validatePlastic';
+import { validatePlasticItem, fallbackEstimation } from '../api/validatePlasticItem';
 
 const Challenge = ({ 
   isDarkMode,
@@ -38,6 +39,11 @@ const Challenge = ({
   const [customPlasticWeight, setCustomPlasticWeight] = useState(10);
   const [showCustomPlastic, setShowCustomPlastic] = useState(false);
   const [previousPlasticItem, setPreviousPlasticItem] = useState(''); // 이전 플라스틱 항목 저장
+  const [isLoadingWeight, setIsLoadingWeight] = useState(false);
+  const [customPlasticItems2, setCustomPlasticItems2] = useState(() => {
+    const saved = localStorage.getItem('customPlasticItems2');
+    return saved ? JSON.parse(saved) : [];
+  });
   const [showAllPastChallenges, setShowAllPastChallenges] = useState(false);
   const [selectedPlasticItem, setSelectedPlasticItem] = useState(null);
   const [showPlasticSelect, setShowPlasticSelect] = useState(false);
@@ -565,6 +571,12 @@ const Challenge = ({
     ...customPlasticItems,
     { name: '기타 (직접 입력)', weight: 0, category: 'custom' }
   ];
+
+  // 기타(추가) 카테고리에 들어갈 아이템 목록
+  const customAddedItems = customPlasticItems2.map(item => ({
+    ...item,
+    category: 'custom-added'
+  }));
 
   // 랭크별 색상 정보
   // Helper function to get colors based on rank theme
@@ -1327,6 +1339,7 @@ const Challenge = ({
                         setShowCustomPlastic(false);
                         setCustomPlasticItem('');
                         setCustomPlasticWeight(10);
+                        setIsLoadingWeight(false);
                         if (previousPlasticItem) {
                           setSelectedPlasticItem(previousPlasticItem); // 이전 항목으로 복귀
                         }
@@ -1337,7 +1350,33 @@ const Challenge = ({
                           <input
                             type="text"
                             value={customPlasticItem}
-                            onChange={(e) => setCustomPlasticItem(e.target.value)}
+                            onChange={async (e) => {
+                              const value = e.target.value;
+                              setCustomPlasticItem(value);
+                              
+                              // 입력이 비어있지 않은 경우 무게 추천
+                              if (value.trim()) {
+                                setIsLoadingWeight(true);
+                                try {
+                                  // API 호출 또는 폴백 로직 사용
+                                  const estimation = await fallbackEstimation(value);
+                                  setCustomPlasticWeight(estimation.weight);
+                                  
+                                  // 추천 결과 표시 (선택적)
+                                  if (estimation.confidence === 'high') {
+                                    // 높은 신뢰도일 때만 자동 설정
+                                  } else if (estimation.confidence === 'low') {
+                                    // 낮은 신뢰도일 때 기본값 유지
+                                    setCustomPlasticWeight(15); // 기본값
+                                  }
+                                } catch (error) {
+                                  console.error('무게 추천 오류:', error);
+                                  setCustomPlasticWeight(15); // 오류 시 기본값
+                                } finally {
+                                  setIsLoadingWeight(false);
+                                }
+                              }
+                            }}
                             placeholder="항목 이름 입력"
                             className={`w-full ${inputBg} rounded-lg p-2 pr-8 text-sm ${textColor}`}
                             autoFocus
@@ -1348,6 +1387,7 @@ const Challenge = ({
                               setShowPlasticSelect(true);
                               setCustomPlasticItem('');
                               setCustomPlasticWeight(10);
+                              setIsLoadingWeight(false);
                               if (previousPlasticItem) {
                                 setSelectedPlasticItem(previousPlasticItem);
                               }
@@ -1362,40 +1402,73 @@ const Challenge = ({
                         <div className="relative flex-1">
                           <input
                             type="number"
-                            value={customPlasticWeight}
+                            value={isLoadingWeight ? '' : customPlasticWeight}
                             onChange={(e) => setCustomPlasticWeight(e.target.value)}
-                            onKeyPress={(e) => {
+                            onKeyPress={async (e) => {
                               if (e.key === 'Enter' && customPlasticItem && customPlasticWeight) {
-                                const newItem = { name: customPlasticItem, weight: parseInt(customPlasticWeight) };
-                                setCustomPlasticItems([...customPlasticItems, newItem]);
+                                // 중복 체크
+                                const allItems = [...plasticItems, ...customAddedItems];
+                                if (allItems.some(item => item.name === customPlasticItem)) {
+                                  if (showToast) {
+                                    showToast(`이미 존재하는 아이템입니다`, 'error');
+                                  }
+                                  return;
+                                }
+                                
+                                const newItem = { name: customPlasticItem, weight: parseInt(customPlasticWeight), desc: `추천 ${customPlasticWeight}g` };
+                                setCustomPlasticItems2([...customPlasticItems2, newItem]);
+                                localStorage.setItem('customPlasticItems2', JSON.stringify([...customPlasticItems2, newItem]));
                                 setSelectedPlasticItem(customPlasticItem);
                                 setCustomPlasticItem('');
                                 setCustomPlasticWeight(10);
                                 setShowCustomPlastic(false);
+                                setIsLoadingWeight(false);
+                                if (showToast) {
+                                  showToast(`${customPlasticItem} 항목이 추가되었습니다`, 'success');
+                                }
                               }
                             }}
-                            placeholder="개당 무게"
-                            className={`w-full ${inputBg} rounded-lg p-2 pr-8 text-sm ${textColor}`}
+                            placeholder={isLoadingWeight ? "추천 중..." : "개당 무게"}
+                            className={`w-full ${inputBg} rounded-lg p-2 pr-8 text-sm ${textColor} [
+                              appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
+                            disabled={isLoadingWeight}
                           />
                           <span className={`absolute right-3 top-1/2 -translate-y-1/2 text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
                             g
                           </span>
                         </div>
                         <button
-                          onClick={() => {
+                          onClick={async () => {
                             if (customPlasticItem && customPlasticWeight) {
-                              const newItem = { name: customPlasticItem, weight: parseInt(customPlasticWeight) };
-                              setCustomPlasticItems([...customPlasticItems, newItem]);
+                              // 중복 체크
+                              const allItems = [...plasticItems, ...customAddedItems];
+                              if (allItems.some(item => item.name === customPlasticItem)) {
+                                if (showToast) {
+                                  showToast(`이미 존재하는 아이템입니다`, 'error');
+                                }
+                                return;
+                              }
+                              
+                              const newItem = { name: customPlasticItem, weight: parseInt(customPlasticWeight), desc: `추천 ${customPlasticWeight}g` };
+                              setCustomPlasticItems2([...customPlasticItems2, newItem]);
+                              localStorage.setItem('customPlasticItems2', JSON.stringify([...customPlasticItems2, newItem]));
                               setSelectedPlasticItem(customPlasticItem);
                               setCustomPlasticItem('');
                               setCustomPlasticWeight(10);
                               setShowCustomPlastic(false);
+                              setIsLoadingWeight(false);
+                              if (showToast) {
+                                showToast(`${customPlasticItem} 항목이 추가되었습니다`, 'success');
+                              }
                             }
                           }}
-                          className={`w-9 h-9 rounded-lg text-xs font-medium transition-colors flex items-center justify-center ${
-                            `${getButtonTextColor()} hover:opacity-90`
+                          disabled={!customPlasticItem || !customPlasticWeight || isLoadingWeight}
+                          className={`flex-1 h-9 rounded-lg text-xs font-medium transition-colors flex items-center justify-center ${
+                            (!customPlasticItem || !customPlasticWeight || isLoadingWeight)
+                              ? 'bg-gray-400 text-gray-200 cursor-not-allowed'
+                              : `${getButtonTextColor()} hover:opacity-90`
                           }`}
-                          style={{
+                          style={(!customPlasticItem || !customPlasticWeight || isLoadingWeight) ? {} : {
                             background: getThemeGradient()
                           }}
                         >
@@ -1417,13 +1490,20 @@ const Challenge = ({
                           bag: { label: '봉투류', items: [] },
                           food: { label: '배달/음식 관련', items: [] },
                           etc: { label: '기타 생활용품', items: [] },
+                          'custom-added': { label: '기타 (추가)', items: [] },
                           custom: { label: '사용자 정의', items: [] }
                         };
                         
+                        // 기본 항목 추가
                         plasticItems.forEach(item => {
                           if (categories[item.category]) {
                             categories[item.category].items.push(item);
                           }
+                        });
+                        
+                        // 기타(추가) 항목 추가
+                        customAddedItems.forEach(item => {
+                          categories['custom-added'].items.push(item);
                         });
                         
                         return Object.entries(categories).map(([key, category], categoryIndex) => {
@@ -1431,7 +1511,7 @@ const Challenge = ({
                           
                           return (
                             <div key={key}>
-                              {key !== 'custom' && (
+                              {(key !== 'custom' || category.items.length > 0) && (
                                 <div className={`px-2 py-1 text-xs font-medium ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
                                   {category.label}
                                 </div>
@@ -1461,12 +1541,21 @@ const Challenge = ({
                                       </span>
                                     )}
                                   </button>
-                                  {customPlasticItems.find(custom => custom.name === item.name) && (
+                                  {(customPlasticItems.find(custom => custom.name === item.name) || 
+                                    customPlasticItems2.find(custom => custom.name === item.name)) && (
                                     <button
                                       onClick={(e) => {
                                         e.stopPropagation();
-                                        const updatedItems = customPlasticItems.filter(c => c.name !== item.name);
-                                        setCustomPlasticItems(updatedItems);
+                                        // customPlasticItems2에서 삭제
+                                        if (customPlasticItems2.find(c => c.name === item.name)) {
+                                          const updatedItems2 = customPlasticItems2.filter(c => c.name !== item.name);
+                                          setCustomPlasticItems2(updatedItems2);
+                                          localStorage.setItem('customPlasticItems2', JSON.stringify(updatedItems2));
+                                        } else {
+                                          // 기존 customPlasticItems에서 삭제
+                                          const updatedItems = customPlasticItems.filter(c => c.name !== item.name);
+                                          setCustomPlasticItems(updatedItems);
+                                        }
                                         if (selectedPlasticItem === item.name) {
                                           setSelectedPlasticItem(null);
                                         }
@@ -1481,11 +1570,7 @@ const Challenge = ({
                                       }`}
                                     >
                                       <FiX className="w-4 h-4" style={{
-                                        color: userRanking === 'bronze' ? '#06b6d4' :
-                                               userRanking === 'silver' ? '#14b8a6' :
-                                               userRanking === 'gold' ? '#facc15' :
-                                               userRanking === 'platinum' ? '#c084fc' :
-                                               '#06b6d4'
+                                        color: getThemeColor()
                                       }} />
                                     </button>
                                   )}
@@ -1527,7 +1612,8 @@ const Challenge = ({
                           return `${plasticQuantity * customPlasticWeight}g`;
                         } else if (selectedPlasticItem && selectedPlasticItem !== '기타 (직접 입력)') {
                           const item = plasticItems.find(i => i.name === selectedPlasticItem) || 
-                                     customPlasticItems.find(i => i.name === selectedPlasticItem);
+                                     customPlasticItems.find(i => i.name === selectedPlasticItem) ||
+                                     customAddedItems.find(i => i.name === selectedPlasticItem);
                           if (item && item.weight) {
                             return `${plasticQuantity * item.weight}g`;
                           }
@@ -1545,7 +1631,8 @@ const Challenge = ({
                     
                     if (selectedPlasticItem && selectedPlasticItem !== '') {
                       recordItem = plasticItems.find(i => i.name === selectedPlasticItem) || 
-                                  customPlasticItems.find(i => i.name === selectedPlasticItem);
+                                  customPlasticItems.find(i => i.name === selectedPlasticItem) ||
+                                  customAddedItems.find(i => i.name === selectedPlasticItem);
                       if (recordItem) {
                         totalWeight = plasticQuantity * recordItem.weight;
                       }

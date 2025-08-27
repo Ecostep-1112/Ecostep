@@ -1327,7 +1327,7 @@ const Challenge = ({
                       }}
                       className={`w-full ${inputBg} rounded-lg p-2 flex justify-between items-center`}
                     >
-                      <span className={`text-sm ${selectedPlasticItem ? (isDarkMode ? 'text-gray-300' : 'text-gray-700') : (isDarkMode ? 'text-gray-500' : 'text-gray-400')}`}>
+                      <span className={`text-sm flex-1 text-center ${selectedPlasticItem ? (isDarkMode ? 'text-gray-300' : 'text-gray-700') : (isDarkMode ? 'text-gray-500' : 'text-gray-400')}`}>
                         {selectedPlasticItem || '아이템을 선택해 주세요'}
                       </span>
                       <FiChevronDown className={`w-4 h-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
@@ -1484,6 +1484,11 @@ const Challenge = ({
                       {/* 배경 블러 오버레이 - 카드 영역만 */}
                       <div className="absolute inset-0 backdrop-blur-[1px] bg-black/[0.02] z-10 rounded-xl" onClick={() => setShowPlasticSelect(false)} />
                       <div className={`absolute z-20 w-full mt-1 ${inputBg} rounded-lg p-2 max-h-60 overflow-y-auto scrollbar-hide shadow-lg border ${borderColor}`}>
+                      <div className={`text-xs px-2 py-1 ${isDarkMode ? 'text-gray-500' : 'text-gray-400'} text-center italic`}>
+                        아이템이 없거나 무게가 맞지 않는 경우<br />
+                        아래 '기타'를 클릭해서 직접 추가하세요
+                      </div>
+                      <div className={`my-2 border-t ${isDarkMode ? 'border-gray-600' : 'border-gray-200'}`}></div>
                       {(() => {
                         const categories = {
                           drink: { label: '음료 관련', items: [] },
@@ -1579,7 +1584,7 @@ const Challenge = ({
                               {/* 카테고리 구분선 - 마지막 카테고리가 아니고 custom이 아닌 경우에만 표시 */}
                               {categoryIndex < Object.entries(categories).filter(([k, c]) => c.items.length > 0).length - 1 && 
                                key !== 'custom' && (
-                                <div className={`mt-2 mb-2 border-t ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}></div>
+                                <div className={`mt-2 mb-2 border-t ${isDarkMode ? 'border-gray-600' : 'border-gray-200'}`}></div>
                               )}
                             </div>
                           );
@@ -1590,38 +1595,56 @@ const Challenge = ({
                   )}
                 </div>
 
+                {/* 가로 구분선 - 양 끝이 흐려지는 효과 */}
+                <div className="relative my-3">
+                  <div className={`h-px w-full bg-gradient-to-r from-transparent via-${isDarkMode ? 'gray-600' : 'gray-300'} to-transparent`}></div>
+                </div>
+
                 <div className="flex gap-2">
                   <div className="flex-1">
-                    <label className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} text-xs`}>수량</label>
-                    <input 
-                      type="number" 
-                      value={plasticQuantity}
-                      onChange={(e) => setPlasticQuantity(Math.max(0, parseInt(e.target.value) || 0))}
-                      className={`w-full border ${borderColor} ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-white'} rounded-lg px-3 py-2 mt-1 text-sm`} 
-                      placeholder="1" 
-                      min="0"
-                    />
+                    <label className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} text-xs text-center block`}>수량</label>
+                    <div className={`flex items-center justify-center gap-1 mt-1 h-9 ${isDarkMode ? 'bg-gray-700' : 'bg-white'} border ${borderColor} rounded-lg px-1`}>
+                      <button
+                        onClick={() => setPlasticQuantity(Math.max(1, plasticQuantity - 1))}
+                        className={`flex-1 h-7 rounded-md ${isDarkMode ? 'bg-gray-600 hover:bg-gray-500 text-white' : 'bg-gray-50 hover:bg-gray-100'} flex items-center justify-center text-lg font-medium transition-colors`}
+                      >
+                        -
+                      </button>
+                      <div className={`flex-1 h-7 flex items-center justify-center text-sm font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                        {plasticQuantity}
+                      </div>
+                      <button
+                        onClick={() => setPlasticQuantity(plasticQuantity + 1)}
+                        className={`flex-1 h-7 rounded-md ${isDarkMode ? 'bg-gray-600 hover:bg-gray-500 text-white' : 'bg-gray-50 hover:bg-gray-100'} flex items-center justify-center text-lg font-medium transition-colors`}
+                      >
+                        +
+                      </button>
+                    </div>
                   </div>
                   <div className="flex-1">
-                    <label className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} text-xs`}>총 무게 (g)</label>
-                    <input 
-                      type="text" 
-                      className={`w-full ${isDarkMode ? 'bg-gray-600' : 'bg-gray-100'} border ${borderColor} rounded-lg px-3 py-2 mt-1 text-sm`} 
-                      value={(() => {
+                    <label className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} text-xs text-center block`}>총 무게</label>
+                    <div className={`h-9 mt-1 ${isDarkMode ? 'bg-gray-700' : 'bg-white'} border ${borderColor} rounded-lg flex items-center justify-center text-sm font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                      {(() => {
+                        let totalWeight = 0;
                         if (showCustomPlastic && customPlasticWeight) {
-                          return `${plasticQuantity * customPlasticWeight}g`;
+                          totalWeight = plasticQuantity * customPlasticWeight;
                         } else if (selectedPlasticItem && selectedPlasticItem !== '기타 (직접 입력)') {
                           const item = plasticItems.find(i => i.name === selectedPlasticItem) || 
                                      customPlasticItems.find(i => i.name === selectedPlasticItem) ||
                                      customAddedItems.find(i => i.name === selectedPlasticItem);
                           if (item && item.weight) {
-                            return `${plasticQuantity * item.weight}g`;
+                            totalWeight = plasticQuantity * item.weight;
                           }
                         }
-                        return '0g';
+                        
+                        // 1000g 이상은 kg로 표시
+                        if (totalWeight >= 1000) {
+                          const kg = totalWeight / 1000;
+                          return kg % 1 === 0 ? `${kg}kg` : `${kg.toFixed(1)}kg`;
+                        }
+                        return `${totalWeight}g`;
                       })()}
-                      disabled 
-                    />
+                    </div>
                   </div>
                 </div>
                 <button 
@@ -1657,7 +1680,7 @@ const Challenge = ({
                       showToast('기록이 저장되었습니다', 'success');
                     }
                   }}
-                  className={`w-full py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                  className={`w-full py-2 rounded-lg text-sm font-medium transition-colors ${
                     isDarkMode ? 'bg-white text-gray-900 hover:bg-gray-100' : 'bg-gray-900 text-white hover:bg-gray-800'
                   }`}
                 >

@@ -532,7 +532,7 @@ const EcostepApp = () => {
                 showToast={showToast}
                 setCurrentTank={setCurrentTank}
               />}
-              {activeTab === 'community' && !showFriendsList && <CommunityPage isDarkMode={isDarkMode} onShowFriendsList={() => setShowFriendsList(true)} showToast={showToast} />}
+              {activeTab === 'community' && !showFriendsList && <CommunityPage isDarkMode={isDarkMode} onShowFriendsList={() => setShowFriendsList(true)} showToast={showToast} userRanking={rankTheme} />}
               {activeTab === 'community' && showFriendsList && <FriendsList isDarkMode={isDarkMode} onBack={() => setShowFriendsList(false)} />}
               {activeTab === 'more' && <MorePage isDarkMode={isDarkMode} userPoints={points} setUserPoints={setPoints} />}
             </>

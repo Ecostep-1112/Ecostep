@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import { FiSearch, FiArrowLeft } from 'react-icons/fi';
-import { UserPlus } from 'lucide-react';
+import { FiSearch, FiChevronRight, FiX } from 'react-icons/fi';
 
-const SearchFriends = ({ isDarkMode, onBack }) => {
+const SearchFriends = ({ isDarkMode, onBack, userRanking = 'bronze', showToast }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [hasSearched, setHasSearched] = useState(false);
@@ -14,23 +13,26 @@ const SearchFriends = ({ isDarkMode, onBack }) => {
   const inputBg = isDarkMode ? 'bg-gray-700' : 'bg-gray-50';
   const placeholderColor = isDarkMode ? 'placeholder-gray-400' : 'placeholder-gray-400';
 
-  // 나의 아이디 (예시)
-  const myId = '12345';
+  // 나의 아이디
+  const myId = 'songil_eco';
 
   // 검색 함수
   const handleSearch = () => {
+    setHasSearched(true);
     if (searchTerm.trim()) {
-      setHasSearched(true);
       // 여기서는 예시 데이터를 사용합니다. 실제로는 API 호출이 필요합니다.
       const mockResults = [
-        { id: '23456', name: '김민수', profileImage: null },
-        { id: '34567', name: '이지은', profileImage: null },
-        { id: '45678', name: '박서준', profileImage: null },
+        { id: 'songil_eco', name: '송일', profileImage: null },
+        { id: 'minsu_123', name: '김민수', profileImage: null },
+        { id: 'jieun_green', name: '이지은', profileImage: null },
+        { id: 'seojun_earth', name: '박서준', profileImage: null },
       ].filter(user => 
-        user.id.includes(searchTerm) || 
-        user.name.toLowerCase().includes(searchTerm.toLowerCase())
+        user.id.toLowerCase() === searchTerm.toLowerCase() || 
+        user.name === searchTerm
       );
       setSearchResults(mockResults);
+    } else {
+      setSearchResults([]);
     }
   };
 
@@ -43,86 +45,176 @@ const SearchFriends = ({ isDarkMode, onBack }) => {
   const handleAddFriend = (userId) => {
     // 친구 추가 로직
     console.log('친구 추가:', userId);
-    alert('친구 요청을 보냈습니다!');
+    if (showToast) {
+      showToast('친구 요청을 보냈습니다!', 'success');
+    }
   };
 
   return (
-    <div className={`fixed inset-0 z-50 ${bgColor}`}>
+    <div className={`w-full h-full ${bgColor} overflow-y-auto`}>
       {/* 헤더 */}
-      <div className={`flex items-center justify-between p-4 border-b ${borderColor}`}>
-        <button onClick={onBack} className={`p-2 ${textColor}`}>
-          <FiArrowLeft className="w-5 h-5" />
+      <div className={`flex items-center p-4 border-b ${borderColor}`}>
+        <button onClick={onBack} className="mr-3">
+          <FiChevronRight className={`w-5 h-5 rotate-180 ${textColor}`} />
         </button>
-        <h2 className={`text-lg font-semibold ${textColor}`}>아이디 검색</h2>
-        <div className="w-9"></div>
+        <h2 className={`text-base font-medium ${textColor}`}>아이디</h2>
       </div>
 
-      <div className="p-4">
+      <div className="p-4 pb-20">
         {/* 검색창 */}
-        <div className="relative mb-6">
-          <input 
-            type="text" 
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            onKeyPress={handleKeyPress}
-            placeholder="아이디 검색" 
-            className={`w-full border ${borderColor} ${inputBg} ${textColor} ${placeholderColor} rounded-lg pl-10 pr-20 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500`}
-          />
-          <FiSearch className={`w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
+        <div className="flex gap-2 mb-6 items-center">
+          <div className="flex-1 relative h-10">
+            <input 
+              type="text" 
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              onKeyPress={handleKeyPress}
+              placeholder="아이디 검색" 
+              className={`w-full h-full bg-transparent ${textColor} ${placeholderColor} rounded-lg pl-10 ${searchTerm ? 'pr-10' : 'pr-4'} text-sm focus:outline-none`}
+            />
+            <FiSearch className={`w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`} />
+            {searchTerm && (
+              <button
+                onClick={() => {
+                  setSearchTerm('');
+                  setSearchResults([]);
+                  setHasSearched(false);
+                }}
+                className={`absolute right-3 top-1/2 transform -translate-y-1/2 ${isDarkMode ? 'text-gray-400 hover:text-gray-300' : 'text-gray-500 hover:text-gray-700'} transition-colors`}
+              >
+                <FiX className="w-4 h-4" />
+              </button>
+            )}
+            {/* 그라데이션 테두리 */}
+            <div 
+              className="absolute top-0 left-0 right-0 h-px"
+              style={{
+                background: `linear-gradient(to right, transparent 10%, ${isDarkMode ? '#374151' : '#e5e7eb'} 30%, ${isDarkMode ? '#374151' : '#e5e7eb'} 70%, transparent 90%)`
+              }}
+            />
+            <div 
+              className="absolute bottom-0 left-0 right-0 h-px"
+              style={{
+                background: `linear-gradient(to right, transparent 10%, ${isDarkMode ? '#374151' : '#e5e7eb'} 30%, ${isDarkMode ? '#374151' : '#e5e7eb'} 70%, transparent 90%)`
+              }}
+            />
+            <div 
+              className="absolute left-0 top-0 bottom-0 w-px"
+              style={{
+                background: `linear-gradient(to bottom, transparent 10%, ${isDarkMode ? '#374151' : '#e5e7eb'} 30%, ${isDarkMode ? '#374151' : '#e5e7eb'} 70%, transparent 90%)`
+              }}
+            />
+            <div 
+              className="absolute right-0 top-0 bottom-0 w-px"
+              style={{
+                background: `linear-gradient(to bottom, transparent 10%, ${isDarkMode ? '#374151' : '#e5e7eb'} 30%, ${isDarkMode ? '#374151' : '#e5e7eb'} 70%, transparent 90%)`
+              }}
+            />
+          </div>
           <button 
             onClick={handleSearch}
-            className={`absolute right-2 top-1/2 transform -translate-y-1/2 px-4 py-1.5 rounded-md text-sm ${isDarkMode ? 'bg-white text-black' : 'bg-black text-white'} hover:opacity-80 transition-opacity`}
+            className={`relative bg-transparent ${textColor} w-10 h-10 rounded-lg text-sm font-medium hover:opacity-80 transition-opacity overflow-hidden flex items-center justify-center`}
           >
-            검색
+            <FiSearch className={`w-5 h-5 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`} />
+            {/* 그라데이션 테두리 */}
+            <div 
+              className="absolute top-0 left-0 right-0 h-px"
+              style={{
+                background: `linear-gradient(to right, transparent 10%, ${isDarkMode ? '#374151' : '#e5e7eb'} 30%, ${isDarkMode ? '#374151' : '#e5e7eb'} 70%, transparent 90%)`
+              }}
+            />
+            <div 
+              className="absolute bottom-0 left-0 right-0 h-px"
+              style={{
+                background: `linear-gradient(to right, transparent 10%, ${isDarkMode ? '#374151' : '#e5e7eb'} 30%, ${isDarkMode ? '#374151' : '#e5e7eb'} 70%, transparent 90%)`
+              }}
+            />
+            <div 
+              className="absolute left-0 top-0 bottom-0 w-px"
+              style={{
+                background: `linear-gradient(to bottom, transparent 10%, ${isDarkMode ? '#374151' : '#e5e7eb'} 30%, ${isDarkMode ? '#374151' : '#e5e7eb'} 70%, transparent 90%)`
+              }}
+            />
+            <div 
+              className="absolute right-0 top-0 bottom-0 w-px"
+              style={{
+                background: `linear-gradient(to bottom, transparent 10%, ${isDarkMode ? '#374151' : '#e5e7eb'} 30%, ${isDarkMode ? '#374151' : '#e5e7eb'} 70%, transparent 90%)`
+              }}
+            />
           </button>
         </div>
 
-        {/* 나의 아이디 */}
-        <div className={`${cardBg} border ${borderColor} rounded-lg p-4 mb-6`}>
-          <div className="flex justify-between items-center">
-            <span className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>나의 아이디</span>
-            <span className={`text-lg font-semibold ${textColor}`}>{myId}</span>
-          </div>
-        </div>
 
         {/* 검색 결과 */}
         {hasSearched && (
           <div className="space-y-3">
             {searchResults.length > 0 ? (
               searchResults.map((user) => (
-                <div key={user.id} className={`${cardBg} border ${borderColor} rounded-lg p-4`}>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
+                <div key={user.id} className="relative">
+                  <div className={`bg-transparent rounded-lg p-3 flex items-center justify-between`}>
+                    <div className="flex items-center gap-3">
                       {/* 프로필 이미지 */}
-                      <div className={`w-12 h-12 rounded-full ${inputBg} flex items-center justify-center`}>
+                      <div className={`w-10 h-10 rounded-full ${inputBg} flex items-center justify-center`}>
                         {user.profileImage ? (
                           <img src={user.profileImage} alt={user.name} className="w-full h-full rounded-full object-cover" />
                         ) : (
-                          <span className={`text-lg font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                          <span className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                             {user.name[0]}
                           </span>
                         )}
                       </div>
-                      {/* 이름과 아이디 */}
+                      {/* 아이디와 이름 */}
                       <div>
-                        <p className={`font-medium ${textColor}`}>{user.name}</p>
-                        <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>ID: {user.id}</p>
+                        <p className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>{user.id}</p>
+                        <p className={`text-sm ${textColor}`}>{user.name}</p>
                       </div>
                     </div>
                     {/* 추가하기 버튼 */}
                     <button 
                       onClick={() => handleAddFriend(user.id)}
-                      className={`px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-1 border ${borderColor} ${isDarkMode ? 'bg-white text-black hover:bg-gray-100' : 'bg-black text-white hover:bg-gray-800'} transition-colors`}
+                      className={`px-4 py-1.5 rounded-full text-sm transition-colors border bg-transparent ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}
+                      style={{
+                        borderColor: userRanking === 'bronze' ? '#06b6d4' : 
+                                    userRanking === 'silver' ? '#14b8a6' : 
+                                    userRanking === 'gold' ? '#facc15' : 
+                                    userRanking === 'platinum' ? '#c084fc' : 
+                                    userRanking === 'basic' ? (isDarkMode ? '#e5e7eb' : '#374151') :
+                                    isDarkMode ? '#e5e7eb' : '#374151'
+                      }}
                     >
-                      <UserPlus className="w-4 h-4" />
                       추가하기
                     </button>
                   </div>
+                  {/* 그라데이션 테두리 */}
+                  <div 
+                    className="absolute top-0 left-0 right-0 h-px"
+                    style={{
+                      background: `linear-gradient(to right, transparent 10%, ${isDarkMode ? '#374151' : '#e5e7eb'} 30%, ${isDarkMode ? '#374151' : '#e5e7eb'} 70%, transparent 90%)`
+                    }}
+                  />
+                  <div 
+                    className="absolute bottom-0 left-0 right-0 h-px"
+                    style={{
+                      background: `linear-gradient(to right, transparent 10%, ${isDarkMode ? '#374151' : '#e5e7eb'} 30%, ${isDarkMode ? '#374151' : '#e5e7eb'} 70%, transparent 90%)`
+                    }}
+                  />
+                  <div 
+                    className="absolute left-0 top-0 bottom-0 w-px"
+                    style={{
+                      background: `linear-gradient(to bottom, transparent 10%, ${isDarkMode ? '#374151' : '#e5e7eb'} 30%, ${isDarkMode ? '#374151' : '#e5e7eb'} 70%, transparent 90%)`
+                    }}
+                  />
+                  <div 
+                    className="absolute right-0 top-0 bottom-0 w-px"
+                    style={{
+                      background: `linear-gradient(to bottom, transparent 10%, ${isDarkMode ? '#374151' : '#e5e7eb'} 30%, ${isDarkMode ? '#374151' : '#e5e7eb'} 70%, transparent 90%)`
+                    }}
+                  />
                 </div>
               ))
             ) : (
               <div className={`text-center py-8 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                <p className="text-sm">검색 결과가 없습니다.</p>
+                <p className="text-sm">찾은 결과 없음</p>
               </div>
             )}
           </div>

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { MessageCircle, Link, UserSearch } from 'lucide-react';
 import SearchFriends from './SearchFriends';
 
-const Community = ({ isDarkMode, onShowFriendsList, showToast }) => {
+const Community = ({ isDarkMode, onShowFriendsList, showToast, userRanking }) => {
   const [showSearchPage, setShowSearchPage] = useState(false);
   const bgColor = isDarkMode ? 'bg-gray-900' : 'bg-white';
   const textColor = isDarkMode ? 'text-white' : 'text-gray-900';
@@ -11,7 +11,7 @@ const Community = ({ isDarkMode, onShowFriendsList, showToast }) => {
   const inputBg = isDarkMode ? 'bg-gray-700' : 'bg-gray-50';
 
   if (showSearchPage) {
-    return <SearchFriends isDarkMode={isDarkMode} onBack={() => setShowSearchPage(false)} />;
+    return <SearchFriends isDarkMode={isDarkMode} onBack={() => setShowSearchPage(false)} userRanking={userRanking} showToast={showToast} />;
   }
 
   return (

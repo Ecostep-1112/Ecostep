@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { MessageCircle, Link, UserSearch } from 'lucide-react';
+import { MessageCircle, Link, UserSearch, ChevronDown } from 'lucide-react';
 import SearchFriends from './SearchFriends';
 
 const Community = ({ isDarkMode, onShowFriendsList, showToast, userRanking }) => {
@@ -9,6 +9,21 @@ const Community = ({ isDarkMode, onShowFriendsList, showToast, userRanking }) =>
   const borderColor = isDarkMode ? 'border-gray-700' : 'border-gray-200';
   const cardBg = isDarkMode ? 'bg-gray-800' : 'bg-white';
   const inputBg = isDarkMode ? 'bg-gray-700' : 'bg-gray-50';
+  
+  // 나의 랭킹 (1~3위가 아닐 경우를 위한 더미 데이터)
+  const myRank = 5;
+  const isInTop3 = myRank <= 3;
+  
+  // 친구 목록 데이터
+  const friendsList = [
+    { rank: 1, name: '일이', score: '27.3kg' },
+    { rank: 2, name: '이이', score: '18.7kg' },
+    { rank: 3, name: '삼이', score: '15.2kg' },
+    { rank: 4, name: '사이', score: '12.1kg' },
+    { rank: 5, name: '나', score: '8.5kg' },
+    { rank: 6, name: '오이', score: '7.8kg' },
+    { rank: 7, name: '육이', score: '6.2kg' },
+  ];
 
   if (showSearchPage) {
     return <SearchFriends isDarkMode={isDarkMode} onBack={() => setShowSearchPage(false)} userRanking={userRanking} showToast={showToast} />;
@@ -175,34 +190,63 @@ const Community = ({ isDarkMode, onShowFriendsList, showToast, userRanking }) =>
 
         {/* 친구 랭킹 */}
         <div className={`mx-3 mt-4 ${cardBg} border ${borderColor} rounded-xl p-4`}>
-          <h3 className={`${textColor} text-sm font-medium mb-3`}>내 친구 랭킹 TOP 3</h3>
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <span className="text-lg mr-3">🥇</span>
-                <div className={`w-8 h-8 ${inputBg} rounded-full flex items-center justify-center text-xs font-medium mr-3`}>O</div>
-                <span className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>OceanGuardian</span>
-              </div>
-              <span className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>27.3kg</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <span className="text-lg mr-3">🥈</span>
-                <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-xs font-medium mr-3 ring-2 ring-blue-300">나</div>
-                <span className={`text-sm font-medium ${textColor}`}>나 (EcoWarrior)</span>
-              </div>
-              <span className={`text-sm font-medium ${textColor}`}>18.7kg</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <span className="text-lg mr-3">🥉</span>
-                <div className={`w-8 h-8 ${inputBg} rounded-full flex items-center justify-center text-xs font-medium mr-3`}>G</div>
-                <span className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>GreenHero</span>
-              </div>
-              <span className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>15.2kg</span>
-            </div>
+          <div className="flex items-center justify-between mb-3">
+            <h3 className={`${textColor} text-sm font-medium`}>친구</h3>
+            <button 
+              onClick={onShowFriendsList} 
+              className={`text-xs ${textColor} hover:opacity-70 transition-opacity flex items-center gap-0.5`}
+            >
+              더보기
+              <ChevronDown className="w-3 h-3" />
+            </button>
           </div>
-          <button onClick={onShowFriendsList} className="text-blue-500 hover:text-blue-600 text-xs mt-3 transition-colors">더보기 →</button>
+          <div>
+            {friendsList.slice(0, 3).map((friend, index) => {
+              // 1등: 플래티넘, 2등: 골드, 3등: 실버
+              const rankColor = friend.rank === 1 ? '#c084fc' : friend.rank === 2 ? '#facc15' : '#14b8a6';
+              const isMe = friend.name === '나';
+              
+              return (
+                <div key={friend.rank}>
+                  <div className="flex items-center justify-between py-1.5">
+                    <div className="flex items-center">
+                      <div 
+                        className={`w-4 h-4 rounded-full border flex items-center justify-center mr-3 text-[10px] font-medium ${
+                          isMe ? (isDarkMode ? 'text-white' : 'text-gray-900') : (isDarkMode ? 'text-gray-300' : 'text-gray-700')
+                        }`}
+                        style={{ 
+                          borderColor: isMe ? (isDarkMode ? '#9ca3af' : '#6b7280') : rankColor,
+                          color: !isMe && rankColor
+                        }}
+                      >
+                        {friend.rank}
+                      </div>
+                      <span className={`text-sm ${isMe ? `font-medium ${textColor}` : isDarkMode ? 'text-gray-300' : 'text-gray-700'} relative`} style={{ top: '-1px' }}>{friend.name}</span>
+                    </div>
+                    <span className={`text-xs ${isMe ? `font-medium ${textColor}` : isDarkMode ? 'text-gray-300' : 'text-gray-700'} relative`} style={{ top: '-1px' }}>{friend.score}</span>
+                  </div>
+                  {index < 2 && <div className={`border-b ${borderColor}`}></div>}
+                </div>
+              );
+            })}
+            {!isInTop3 && (
+              <>
+                <div className={`border-t ${borderColor}`}></div>
+                <div className="flex items-center justify-between py-1.5">
+                  <div className="flex items-center">
+                    <div 
+                      className={`w-4 h-4 rounded-full border flex items-center justify-center mr-3 text-[10px] font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
+                      style={{ borderColor: isDarkMode ? '#9ca3af' : '#6b7280' }}
+                    >
+                      {myRank}
+                    </div>
+                    <span className={`text-sm font-medium ${textColor} relative`} style={{ top: '-1px' }}>나</span>
+                  </div>
+                  <span className={`text-xs font-medium ${textColor} relative`} style={{ top: '-1px' }}>{friendsList.find(f => f.name === '나')?.score || '8.5kg'}</span>
+                </div>
+              </>
+            )}
+          </div>
         </div>
 
         {/* 전체 랭킹 */}

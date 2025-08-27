@@ -1,31 +1,31 @@
 import React, { useState } from 'react';
-import { ArrowLeft, Search, Medal, TrendingUp, TrendingDown, Minus } from 'lucide-react';
+import { FiChevronRight, FiSearch } from 'react-icons/fi';
 
 const FriendsList = ({ isDarkMode, onBack }) => {
   const [searchQuery, setSearchQuery] = useState('');
   
-  // Extended friends data
+  // Extended friends data with scores in kg
   const allFriends = [
-    { rank: 1, name: '김민수', plastic: 320, weeklyChange: 15, trend: 'up', level: 'Gold' },
-    { rank: 2, name: '이서연', plastic: 280, weeklyChange: -20, trend: 'down', level: 'Gold' },
-    { rank: 3, name: '박지훈', plastic: 250, weeklyChange: 0, trend: 'same', level: 'Silver' },
-    { rank: 4, name: '최유진', plastic: 230, weeklyChange: 10, trend: 'up', level: 'Silver' },
-    { rank: 5, name: '정하늘', plastic: 220, weeklyChange: -5, trend: 'down', level: 'Silver' },
-    { rank: 6, name: '강민지', plastic: 215, weeklyChange: 8, trend: 'up', level: 'Silver' },
-    { rank: 7, name: '윤서준', plastic: 200, weeklyChange: -12, trend: 'down', level: 'Bronze' },
-    { rank: 8, name: '임채원', plastic: 195, weeklyChange: 0, trend: 'same', level: 'Bronze' },
-    { rank: 9, name: '송민호', plastic: 180, weeklyChange: 5, trend: 'up', level: 'Bronze' },
-    { rank: 10, name: '한지우', plastic: 175, weeklyChange: -8, trend: 'down', level: 'Bronze' },
-    { rank: 11, name: '오현우', plastic: 170, weeklyChange: 3, trend: 'up', level: 'Bronze' },
-    { rank: 12, name: '남도현', plastic: 165, weeklyChange: -10, trend: 'down', level: 'Bronze' },
-    { rank: 13, name: '문서영', plastic: 160, weeklyChange: 0, trend: 'same', level: 'Bronze' },
-    { rank: 14, name: '배준서', plastic: 155, weeklyChange: 7, trend: 'up', level: 'Bronze' },
-    { rank: 15, name: '류하은', plastic: 150, weeklyChange: -3, trend: 'down', level: 'Bronze' },
-    { rank: 16, name: '신재원', plastic: 145, weeklyChange: 2, trend: 'up', level: 'Bronze' },
-    { rank: 17, name: '우성민', plastic: 140, weeklyChange: -15, trend: 'down', level: 'Bronze' },
-    { rank: 18, name: '조예린', plastic: 135, weeklyChange: 0, trend: 'same', level: 'Bronze' },
-    { rank: 19, name: '허진아', plastic: 130, weeklyChange: 4, trend: 'up', level: 'Bronze' },
-    { rank: 20, name: '구본승', plastic: 125, weeklyChange: -6, trend: 'down', level: 'Bronze' }
+    { rank: 1, name: '일이', score: '27.3kg' },
+    { rank: 2, name: '이이', score: '18.7kg' },
+    { rank: 3, name: '삼이', score: '15.2kg' },
+    { rank: 4, name: '사이', score: '12.1kg' },
+    { rank: 5, name: '나', score: '8.5kg' },
+    { rank: 6, name: '오이', score: '7.8kg' },
+    { rank: 7, name: '육이', score: '6.2kg' },
+    { rank: 8, name: '칠이', score: '5.9kg' },
+    { rank: 9, name: '팔이', score: '5.3kg' },
+    { rank: 10, name: '구이', score: '4.7kg' },
+    { rank: 11, name: '십이', score: '4.2kg' },
+    { rank: 12, name: '십일이', score: '3.8kg' },
+    { rank: 13, name: '십이이', score: '3.4kg' },
+    { rank: 14, name: '십삼이', score: '3.1kg' },
+    { rank: 15, name: '십사이', score: '2.8kg' },
+    { rank: 16, name: '십오이', score: '2.5kg' },
+    { rank: 17, name: '십육이', score: '2.2kg' },
+    { rank: 18, name: '십칠이', score: '1.9kg' },
+    { rank: 19, name: '십팔이', score: '1.6kg' },
+    { rank: 20, name: '십구이', score: '1.3kg' }
   ];
   
   const filteredFriends = allFriends.filter(friend =>
@@ -38,80 +38,39 @@ const FriendsList = ({ isDarkMode, onBack }) => {
   const cardBg = isDarkMode ? 'bg-gray-800' : 'bg-white';
   const inputBg = isDarkMode ? 'bg-gray-700' : 'bg-gray-50';
   
-  const getRankBadge = (rank) => {
-    if (rank === 1) return '🥇';
-    if (rank === 2) return '🥈';
-    if (rank === 3) return '🥉';
-    return rank;
-  };
-  
-  const getLevelColor = (level) => {
-    switch(level) {
-      case 'Gold': return 'text-yellow-500';
-      case 'Silver': return 'text-gray-400';
-      case 'Bronze': return 'text-orange-600';
-      default: return 'text-gray-500';
-    }
-  };
-  
-  const getTrendIcon = (trend, change) => {
-    if (trend === 'up') {
-      return <TrendingUp className="w-3 h-3 text-green-500" />;
-    } else if (trend === 'down') {
-      return <TrendingDown className="w-3 h-3 text-red-500" />;
-    }
-    return <Minus className="w-3 h-3 text-gray-400" />;
-  };
   
   return (
     <div className={`h-full flex flex-col ${bgColor}`}>
       {/* Header */}
-      <div className={`${cardBg} border-b ${borderColor} px-4 py-3 flex items-center`}>
-        <button
-          onClick={onBack}
-          className={`p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg mr-3`}
-        >
-          <ArrowLeft className={`w-5 h-5 ${textColor}`} />
+      <div className={`flex items-center p-4 border-b ${borderColor}`}>
+        <button onClick={onBack} className="mr-3">
+          <FiChevronRight className={`w-5 h-5 rotate-180 ${textColor}`} />
         </button>
-        <h2 className={`text-lg font-semibold ${textColor}`}>친구 랭킹</h2>
+        <h2 className={`text-base font-medium ${textColor}`}>친구</h2>
       </div>
       
       {/* Search Bar */}
-      <div className={`${cardBg} border-b ${borderColor} px-4 py-3`}>
+      <div className={`px-4 py-3 relative`}>
         <div className={`relative`}>
-          <Search className={`absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
+          <FiSearch className={`absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`} />
           <input
             type="text"
-            placeholder="친구 검색..."
+            placeholder="친구 검색"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className={`w-full pl-10 pr-4 py-2 ${inputBg} rounded-lg text-sm ${textColor} placeholder-gray-400`}
+            className={`w-full pl-10 pr-4 py-2 ${inputBg} rounded-lg text-sm ${textColor} placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400`}
           />
         </div>
-      </div>
-      
-      {/* Stats Summary */}
-      <div className={`${cardBg} border-b ${borderColor} px-4 py-3`}>
-        <div className="flex justify-around">
-          <div className="text-center">
-            <p className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>전체 친구</p>
-            <p className={`text-lg font-bold ${textColor}`}>{allFriends.length}명</p>
-          </div>
-          <div className="text-center">
-            <p className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>평균 절감량</p>
-            <p className={`text-lg font-bold text-green-500`}>
-              {Math.round(allFriends.reduce((sum, f) => sum + f.plastic, 0) / allFriends.length)}g
-            </p>
-          </div>
-          <div className="text-center">
-            <p className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>내 순위</p>
-            <p className={`text-lg font-bold text-blue-500`}>4위</p>
-          </div>
-        </div>
+        <div 
+          className="absolute bottom-0 left-0 right-0 h-px"
+          style={{
+            background: `linear-gradient(to right, transparent 0%, ${isDarkMode ? '#374151' : '#e5e7eb'} 15%, ${isDarkMode ? '#374151' : '#e5e7eb'} 85%, transparent 100%)`
+          }}
+        />
       </div>
       
       {/* Friends List */}
-      <div className={`flex-1 overflow-y-auto custom-scrollbar scrollbar-hide`}>
+      <div className={`flex-1 overflow-y-auto custom-scrollbar scrollbar-hide px-3 py-4`}>
         {filteredFriends.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-8">
             <p className={`${isDarkMode ? 'text-gray-400' : 'text-gray-500'} text-sm`}>
@@ -119,59 +78,35 @@ const FriendsList = ({ isDarkMode, onBack }) => {
             </p>
           </div>
         ) : (
-          <div className="divide-y divide-gray-200 dark:divide-gray-700">
-            {filteredFriends.map((friend) => (
-              <div
-                key={friend.rank}
-                className={`${cardBg} px-4 py-3 flex items-center justify-between hover:bg-opacity-50 transition-colors`}
-              >
-                <div className="flex items-center space-x-3">
-                  {/* Rank */}
-                  <div className="w-8 text-center">
-                    <span className={`font-bold ${friend.rank <= 3 ? 'text-lg' : 'text-sm'} ${textColor}`}>
-                      {getRankBadge(friend.rank)}
-                    </span>
+          <div className={`${cardBg} border ${borderColor} rounded-xl p-4`}>
+            {filteredFriends.map((friend, index) => {
+              // 1등: 플래티넘, 2등: 골드, 3등: 실버
+              const rankColor = friend.rank === 1 ? '#c084fc' : friend.rank === 2 ? '#facc15' : friend.rank === 3 ? '#14b8a6' : '';
+              const isMe = friend.name === '나';
+              
+              return (
+                <div key={friend.rank}>
+                  <div className="flex items-center justify-between py-1.5">
+                    <div className="flex items-center">
+                      <div 
+                        className={`w-4 h-4 rounded-full border flex items-center justify-center mr-3 text-[10px] font-medium ${
+                          isMe ? (isDarkMode ? 'text-white' : 'text-gray-900') : (isDarkMode ? 'text-gray-300' : 'text-gray-700')
+                        }`}
+                        style={{ 
+                          borderColor: isMe ? (isDarkMode ? '#9ca3af' : '#6b7280') : (rankColor || (isDarkMode ? '#4b5563' : '#d1d5db')),
+                          color: !isMe && rankColor ? rankColor : undefined
+                        }}
+                      >
+                        {friend.rank}
+                      </div>
+                      <span className={`text-sm ${isMe ? `font-medium ${textColor}` : isDarkMode ? 'text-gray-300' : 'text-gray-700'} relative`} style={{ top: '-1px' }}>{friend.name}</span>
+                    </div>
+                    <span className={`text-xs ${isMe ? `font-medium ${textColor}` : isDarkMode ? 'text-gray-300' : 'text-gray-700'} relative`} style={{ top: '-1px' }}>{friend.score}</span>
                   </div>
-                  
-                  {/* Profile */}
-                  <div className="w-10 h-10 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center">
-                    <span className="text-white text-sm font-medium">
-                      {friend.name[0]}
-                    </span>
-                  </div>
-                  
-                  {/* Name and Level */}
-                  <div>
-                    <p className={`text-sm font-medium ${textColor}`}>{friend.name}</p>
-                    <p className={`text-xs ${getLevelColor(friend.level)}`}>
-                      <Medal className="w-3 h-3 inline mr-1" />
-                      {friend.level}
-                    </p>
-                  </div>
+                  {index < filteredFriends.length - 1 && <div className={`border-b ${borderColor}`}></div>}
                 </div>
-                
-                {/* Stats */}
-                <div className="flex items-center space-x-4">
-                  {/* Weekly Change */}
-                  <div className="flex items-center space-x-1">
-                    {getTrendIcon(friend.trend, friend.weeklyChange)}
-                    <span className={`text-xs ${
-                      friend.trend === 'up' ? 'text-green-500' : 
-                      friend.trend === 'down' ? 'text-red-500' : 
-                      'text-gray-400'
-                    }`}>
-                      {friend.weeklyChange > 0 ? '+' : ''}{friend.weeklyChange}g
-                    </span>
-                  </div>
-                  
-                  {/* Total Plastic */}
-                  <div className="text-right">
-                    <p className={`text-sm font-bold ${textColor}`}>{friend.plastic}g</p>
-                    <p className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>절감량</p>
-                  </div>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>

@@ -76,6 +76,7 @@ const Challenge = ({
   const [currentDayIndex, setCurrentDayIndex] = useState(0);
   const [todayCompleted, setTodayCompleted] = useState(false);
   const [historyRange, setHistoryRange] = useState(7); // 7일, 4주, 16주, 32주
+  const [expandedDays, setExpandedDays] = useState([]); // 확장된 요일 추적
   const [customChallengeSavings, setCustomChallengeSavings] = useState(() => {
     const saved = localStorage.getItem('customChallengeSavings');
     return saved ? JSON.parse(saved) : {};
@@ -1802,28 +1803,28 @@ const Challenge = ({
                   
                   return weekData.map((data) => (
                     <div key={data.date} className="flex flex-col items-center flex-1">
-                      <div className="relative flex flex-col justify-end" style={{ height: '110px' }}>
+                      <div className="relative flex flex-col justify-end" style={{ height: '90px' }}>
                         <div 
                           className="w-8 rounded-t relative"
                           style={{ 
-                            height: `${data.usage > 0 ? (data.usage / maxUsage) * 110 : 0}px`,
+                            height: `${data.usage > 0 ? (data.usage / maxUsage) * 90 : 0}px`,
                             background: getBarColor(data.usage)
                           }}
                         >
-                          {/* 사용량 텍스트를 그래프 높이에 맞춰 표시 */}
-                          {data.usage > 0 && (
-                            <span 
-                              className={`text-[10px] font-medium absolute left-1/2 -translate-x-1/2 whitespace-nowrap ${
-                                isDarkMode ? 'text-gray-300' : 'text-gray-700'
-                              }`}
-                              style={{
-                                bottom: `${(data.usage / maxUsage) * 110 + 4}px`
-                              }}
-                            >
-                              {formatWeight(data.usage)}
-                            </span>
-                          )}
                         </div>
+                        {/* 사용량 텍스트를 그래프 위에 표시 */}
+                        {data.usage > 0 && (
+                          <span 
+                            className={`text-[10px] font-medium absolute left-1/2 -translate-x-1/2 whitespace-nowrap ${
+                              isDarkMode ? 'text-gray-300' : 'text-gray-700'
+                            }`}
+                            style={{
+                              bottom: `${Math.min((data.usage / maxUsage) * 90 + 2, 92)}px`
+                            }}
+                          >
+                            {formatWeight(data.usage)}
+                          </span>
+                        )}
                       </div>
                       <span className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} mt-1`}>
                         {data.day}
@@ -1838,9 +1839,9 @@ const Challenge = ({
             </div>
 
             {/* 이번주 기록 */}
-            <div className={`${cardBg} border ${borderColor} rounded-xl p-4`}>
-              <h3 className={`${textColor} text-sm font-medium mb-3`}>이번주 기록</h3>
-              <div className="space-y-2 max-h-80 overflow-y-auto scrollbar-hide">
+            <div className={`${cardBg} border ${borderColor} rounded-xl p-3 h-[280px] flex flex-col`}>
+              <h3 className={`${textColor} text-sm font-medium mb-1.5`}>이번주 기록</h3>
+              <div className="flex-1 overflow-y-auto scrollbar-hide">
                 {(() => {
                   // 이번 주 시작일 (월요일) 계산
                   const currentDate = new Date(testDate || new Date());
@@ -1875,60 +1876,87 @@ const Challenge = ({
                     });
                   }
                   
-                  return weekRecords.map((dayData, index) => (
-                    <div key={index} className={`py-2 border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-100'}`}>
-                      <div className="flex justify-between items-start mb-1">
-                        <div>
-                          <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                            {dayData.day}요일 
-                            <span className={`text-xs ${isDarkMode ? 'text-gray-500' : 'text-gray-400'} ml-1`}>
-                              ({dayData.date.toLocaleDateString('ko-KR', { month: 'numeric', day: 'numeric' })})
-                            </span>
-                          </p>
-                          {dayData.records.length > 0 ? (
-                            <div className={`text-xs ${isDarkMode ? 'text-gray-500' : 'text-gray-400'} mt-1`}>
-                              {dayData.records.map((record, idx) => (
-                                <div key={idx}>
-                                  {record.item} {record.quantity}개 ({formatWeight(record.totalWeight)})
-                                </div>
-                              ))}
+                  // Toggle function for expanding/collapsing days
+                  const toggleDay = (index) => {
+                    setExpandedDays(prev => 
+                      prev.includes(index) 
+                        ? prev.filter(i => i !== index)
+                        : [...prev, index]
+                    );
+                  };
+
+                  // Group items by type and count
+                  const groupItems = (records) => {
+                    const itemMap = {};
+                    records.forEach(record => {
+                      const key = record.item;
+                      if (itemMap[key]) {
+                        itemMap[key].quantity += record.quantity;
+                        itemMap[key].totalWeight += record.totalWeight;
+                      } else {
+                        itemMap[key] = {
+                          item: record.item,
+                          quantity: record.quantity,
+                          totalWeight: record.totalWeight
+                        };
+                      }
+                    });
+                    return Object.values(itemMap);
+                  };
+
+                  return weekRecords.map((dayData, index) => {
+                    const isExpanded = expandedDays.includes(index);
+                    const groupedItems = groupItems(dayData.records);
+                    
+                    return (
+                      <div key={index} className={`border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-100'} last:border-b-0`}>
+                        <div 
+                          className="py-[0.3rem] cursor-pointer hover:bg-opacity-5 hover:bg-gray-500 transition-colors"
+                          onClick={() => toggleDay(index)}
+                        >
+                          <div className="flex justify-between items-center">
+                            <div className="flex items-center gap-1.5">
+                              <span className={`text-[10px] transition-transform inline-block w-2 ${
+                                dayData.records.length > 0 
+                                  ? `${textColor} ${isExpanded ? 'rotate-90' : ''}`
+                                  : isDarkMode ? 'text-gray-600' : 'text-gray-300'
+                              }`}>
+                                {dayData.records.length > 0 ? '▶' : '▷'}
+                              </span>
+                              <span className={`text-xs ${textColor}`}>
+                                {dayData.day}요일
+                                <span className={`text-[10px] ${isDarkMode ? 'text-gray-500' : 'text-gray-400'} ml-1`}>
+                                  ({dayData.date.toLocaleDateString('ko-KR', { month: 'numeric', day: 'numeric' })})
+                                </span>
+                              </span>
                             </div>
-                          ) : (
-                            <p className={`text-xs ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>
-                              {dayData.date > today ? '-' : '기록 없음'}
-                            </p>
-                          )}
+                            {dayData.totalWeight > 0 && (
+                              <span className={`text-[10px] ${textColor}`}>
+                                {formatWeight(dayData.totalWeight)}
+                              </span>
+                            )}
+                          </div>
                         </div>
-                        <span className={`text-sm font-medium ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} style={dayData.totalWeight > 0 ? {
-                          background: userRanking === 'bronze' ? 'linear-gradient(135deg, #06b6d4, #3b82f6)' :
-                                      userRanking === 'silver' ? 'linear-gradient(135deg, #cbd5e1, #14b8a6)' :
-                                      userRanking === 'gold' ? 'linear-gradient(135deg, #fcd34d, #facc15)' :
-                                      userRanking === 'platinum' ? 'linear-gradient(135deg, #c084fc, #ec4899)' :
-                                      'linear-gradient(135deg, #06b6d4, #3b82f6)',
-                          WebkitBackgroundClip: 'text',
-                          WebkitTextFillColor: 'transparent',
-                          backgroundClip: 'text'
-                        } : {}}>
-                          {dayData.totalWeight > 0 ? formatWeight(dayData.totalWeight) : dayData.date > today ? '-' : '0g'}
-                        </span>
+                        
+                        {/* Expanded content */}
+                        {isExpanded && dayData.records.length > 0 && (
+                          <div className={`px-4 pb-0.5 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                            {groupedItems.map((item, idx) => (
+                              <div key={idx} className="text-[10px] py-0 pl-3">
+                                - {item.item} ({item.quantity}개, {formatWeight(item.totalWeight)})
+                              </div>
+                            ))}
+                          </div>
+                        )}
                       </div>
-                    </div>
-                  ));
+                    );
+                  });
                 })()}
               </div>
-              <div className={`mt-3 pt-3 border-t ${borderColor}`}>
+              <div className={`mt-1.5 pt-1.5 border-t ${borderColor}`}>
                 <div className="flex justify-between items-center">
                   <span className={`text-sm font-medium ${textColor}`}>주간 총계</span>
-                  <span className="text-sm font-bold" style={{
-                    background: userRanking === 'bronze' ? 'linear-gradient(135deg, #06b6d4, #3b82f6)' :
-                                userRanking === 'silver' ? 'linear-gradient(135deg, #cbd5e1, #14b8a6)' :
-                                userRanking === 'gold' ? 'linear-gradient(135deg, #fcd34d, #facc15)' :
-                                userRanking === 'platinum' ? 'linear-gradient(135deg, #c084fc, #ec4899)' :
-                                'linear-gradient(135deg, #06b6d4, #3b82f6)',
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
-                    backgroundClip: 'text'
-                  }}>
+                  <span className={`text-xs ${textColor}`}>
                     {(() => {
                       const today = new Date(testDate || new Date());
                       const dayOfWeek = today.getDay();
@@ -1947,7 +1975,7 @@ const Challenge = ({
                         })
                         .reduce((sum, record) => sum + record.totalWeight, 0);
                       
-                      return `${weekTotal}g`;
+                      return formatWeight(weekTotal);
                     })()}
                   </span>
                 </div>

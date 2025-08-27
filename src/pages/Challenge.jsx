@@ -103,21 +103,38 @@ const Challenge = ({
     return [...new Set(allGoals)].sort((a, b) => a - b);
   };
 
-  // 일주일이 지났는지 확인
+  // 월요일이 되었는지 확인
   const canChangeGoal = () => {
     if (!goalSetDate) return true;
     const now = new Date();
-    const weekInMs = 7 * 24 * 60 * 60 * 1000;
-    return (now - new Date(goalSetDate)) > weekInMs;
+    const lastSetDate = new Date(goalSetDate);
+    
+    // 현재 날짜의 월요일 찾기
+    const currentMonday = new Date(now);
+    const dayOfWeek = currentMonday.getDay();
+    const mondayOffset = dayOfWeek === 0 ? 1 : 1 - dayOfWeek + 7;
+    currentMonday.setDate(currentMonday.getDate() + mondayOffset);
+    currentMonday.setHours(0, 0, 0, 0);
+    
+    // 설정 날짜의 다음 월요일 찾기
+    const nextMonday = new Date(lastSetDate);
+    const setDayOfWeek = nextMonday.getDay();
+    const nextMondayOffset = setDayOfWeek === 0 ? 1 : (8 - setDayOfWeek) % 7 || 7;
+    nextMonday.setDate(nextMonday.getDate() + nextMondayOffset);
+    nextMonday.setHours(0, 0, 0, 0);
+    
+    // 현재 시간이 설정 날짜의 다음 월요일 이후인지 확인
+    return now >= nextMonday;
   };
 
-  // 남은 일수 계산
-  const getDaysLeft = () => {
+  // 다음 월요일까지 남은 일수 계산
+  const getDaysUntilMonday = () => {
     if (!goalSetDate) return 0;
     const now = new Date();
-    const daysPassed = (now - new Date(goalSetDate)) / (24 * 60 * 60 * 1000);
-    const daysLeft = Math.ceil(7 - daysPassed);
-    return Math.max(0, daysLeft);
+    const dayOfWeek = now.getDay();
+    // 월요일은 1, 일요일은 0
+    const daysUntilMonday = dayOfWeek === 0 ? 1 : (8 - dayOfWeek) % 7 || 7;
+    return daysUntilMonday;
   };
 
   // 목표 설정 (일주일 제한 포함)
@@ -128,8 +145,7 @@ const Challenge = ({
       localStorage.setItem('goalSetDate', new Date().toISOString());
       setShowGoalDropdown(false);
     } else {
-      const daysLeft = getDaysLeft();
-      showToast(`목표 변경은 ${daysLeft}일 후에 가능합니다`);
+      showToast(`목표 변경은 월요일에 가능합니다`);
     }
   };
 
@@ -299,6 +315,46 @@ const Challenge = ({
     localStorage.setItem('completedChallenges', JSON.stringify(exampleChallenges));
     return exampleChallenges;
   });
+
+  // 매주 월요일에 플라스틱 사용 기록 리셋
+  useEffect(() => {
+    const checkAndResetOnMonday = () => {
+      const now = new Date();
+      const dayOfWeek = now.getDay();
+      
+      // 월요일인 경우 (1) 확인
+      if (dayOfWeek === 1) {
+        const lastReset = localStorage.getItem('lastMondayReset');
+        const todayString = now.toISOString().split('T')[0];
+        
+        // 오늘 리셋하지 않았다면
+        if (lastReset !== todayString) {
+          // 플라스틱 기록 리셋
+          setPlasticRecords([]);
+          localStorage.removeItem('plasticRecords');
+          
+          // 목표 설정 날짜 리셋 (월요일에 변경 가능하도록)
+          localStorage.removeItem('goalSetDate');
+          setGoalSetDate(null);
+          
+          // 리셋 날짜 저장
+          localStorage.setItem('lastMondayReset', todayString);
+          
+          showToast('새로운 주가 시작되었습니다! 플라스틱 사용 기록이 리셋되었습니다.');
+        }
+      }
+    };
+    
+    // 처음 로드시 확인
+    checkAndResetOnMonday();
+    
+    // 매일 자정에 체크 (월요일이 되는 순간 리셋)
+    const checkInterval = setInterval(() => {
+      checkAndResetOnMonday();
+    }, 60 * 60 * 1000); // 1시간마다 체크
+    
+    return () => clearInterval(checkInterval);
+  }, []);
 
   // 월요일 기준 주차 계산
   useEffect(() => {
@@ -1060,7 +1116,7 @@ const Challenge = ({
                 <h3 className={`${textColor} text-sm font-medium`}>플라스틱 사용 한도 설정</h3>
                 {goalSetDate && !canChangeGoal() && (
                   <span className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                    {getDaysLeft()}일 후 변경 가능
+                    월요일 변경 가능
                   </span>
                 )}
               </div>
@@ -1093,6 +1149,16 @@ const Challenge = ({
                 
                 {/* 드롭다운 리스트 */}
                 {showGoalDropdown && (
+                  <>
+                    {/* 드롭다운 바로 뒤쪽만 블러 처리 */}
+                    <div 
+                      className="absolute inset-0 -z-10" 
+                      style={{
+                        backdropFilter: 'blur(2px)',
+                        WebkitBackdropFilter: 'blur(2px)',
+                        backgroundColor: 'rgba(0, 0, 0, 0.05)'
+                      }}
+                    />
                     <div 
                       className={`absolute w-full mt-1 border ${borderColor} ${
                         isDarkMode ? 'bg-gray-800' : 'bg-white'
@@ -1104,11 +1170,21 @@ const Challenge = ({
                           type="number"
                           value={customGoalInput}
                           onChange={(e) => setCustomGoalInput(e.target.value)}
-                          className={`flex-1 border ${borderColor} ${
+                          className={`flex-1 border ${
                             isDarkMode ? 'bg-gray-700 text-white placeholder-gray-400' : 'bg-gray-50 text-gray-900 placeholder-gray-500'
-                          } rounded px-2 py-1 text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
+                          } rounded px-2 py-1 text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none transition-all focus:outline-none`}
+                          style={{
+                            borderColor: getThemeColor(),
+                            boxShadow: `0 0 0 0.5px ${getThemeColor()}20`
+                          }}
                           placeholder="직접 설정"
                           onClick={(e) => e.stopPropagation()}
+                          onFocus={(e) => {
+                            e.target.style.boxShadow = `0 0 0 2px ${getThemeColor()}30`;
+                          }}
+                          onBlur={(e) => {
+                            e.target.style.boxShadow = `0 0 0 0.5px ${getThemeColor()}20`;
+                          }}
                         />
                         <button 
                           onClick={addCustomGoal}
@@ -1166,6 +1242,7 @@ const Challenge = ({
                           })}
                         </div>
                     </div>
+                  </>
                 )}
               </div>
               )}

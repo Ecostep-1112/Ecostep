@@ -335,9 +335,9 @@ const Challenge = ({
         
         // 오늘 리셋하지 않았다면
         if (lastReset !== todayString) {
-          // 플라스틱 기록 리셋
-          setPlasticRecords([]);
-          localStorage.removeItem('plasticRecords');
+          // 플라스틱 기록은 리셋하지 않음 (계속 유지)
+          // setPlasticRecords([]);
+          // localStorage.removeItem('plasticRecords');
           
           // 목표 설정 날짜 리셋 (월요일에 변경 가능하도록)
           localStorage.removeItem('goalSetDate');
@@ -1694,68 +1694,95 @@ const Challenge = ({
               <h3 className={`${textColor} text-sm font-medium mb-3`}>사용량 분석</h3>
               <div className="space-y-2">
                 {(() => {
-                  // 실제 데이터 기반 분석
+                  // 아이템별로 그룹핑 및 정렬
                   const analysis = {};
                   let totalWeight = 0;
                   
                   plasticRecords.forEach(record => {
                     const itemName = record.item;
                     if (!analysis[itemName]) {
-                      analysis[itemName] = 0;
+                      analysis[itemName] = { weight: 0, count: 0 };
                     }
-                    analysis[itemName] += record.totalWeight;
+                    analysis[itemName].weight += record.totalWeight;
+                    analysis[itemName].count += record.quantity;
                     totalWeight += record.totalWeight;
                   });
                   
-                  // 카테고리별로 그룹핑
-                  const categories = {
-                    '플라스틱병': { weight: 0, color: 'bg-blue-500' },
-                    '음식용기': { weight: 0, color: 'bg-green-500' },
-                    '컵': { weight: 0, color: 'bg-yellow-500' },
-                    '기타': { weight: 0, color: 'bg-gray-500' }
-                  };
+                  // 무게 기준으로 정렬
+                  const sortedItems = Object.entries(analysis)
+                    .sort((a, b) => b[1].weight - a[1].weight)
+                    .map(([name, data]) => ({
+                      name,
+                      weight: data.weight,
+                      count: data.count,
+                      percentage: totalWeight > 0 ? Math.round((data.weight / totalWeight) * 100) : 0
+                    }));
                   
-                  Object.entries(analysis).forEach(([item, weight]) => {
-                    if (item.includes('병')) {
-                      categories['플라스틱병'].weight += weight;
-                    } else if (item.includes('용기')) {
-                      categories['음식용기'].weight += weight;
-                    } else if (item.includes('컵')) {
-                      categories['컵'].weight += weight;
-                    } else {
-                      categories['기타'].weight += weight;
-                    }
-                  });
-                  
-                  const categoryData = Object.entries(categories).map(([name, data]) => ({
-                    name,
-                    value: totalWeight > 0 ? Math.round((data.weight / totalWeight) * 100) : 0,
-                    color: userRanking === 'basic' ? (isDarkMode ? 'bg-white' : 'bg-gray-800') :
-                           userRanking === 'bronze' ? 'bg-cyan-500' :
-                           userRanking === 'silver' ? 'bg-teal-500' :
-                           userRanking === 'gold' ? 'bg-yellow-500' :
-                           userRanking === 'platinum' ? 'bg-purple-500' :
-                           'bg-gray-500',
-                    weight: data.weight
-                  }));
-                  
-                  if (totalWeight === 0) {
+                  if (sortedItems.length === 0) {
                     return <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} text-center`}>아직 기록된 데이터가 없습니다</p>;
                   }
                   
-                  return categoryData.map((item) => (
-                    <div key={item.name}>
-                      <div className="flex justify-between text-xs mb-1">
-                        <span className={`${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                          {item.name} ({item.weight}g)
-                        </span>
-                        <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>{item.value}%</span>
-                      </div>
-                      <div className={`w-full ${isDarkMode ? 'bg-gray-700' : 'bg-gray-200'} rounded-full h-1.5`}>
-                        <div className={`${item.color} h-1.5 rounded-full`} style={{ width: `${item.value}%` }}></div>
-                      </div>
+                  // 색상 테마 함수
+                  const getItemColor = (index) => {
+                    if (index === 0) {
+                      // 1위는 풀 컬러
+                      return getThemeGradient();
+                    } else if (index === 1) {
+                      // 2위는 75% 농도
+                      return userRanking === 'basic' ? (isDarkMode ? 'linear-gradient(to right, rgba(255,255,255,0.75), rgba(255,255,255,0.75))' : 'linear-gradient(to right, rgba(31,41,55,0.75), rgba(31,41,55,0.75))') :
+                             userRanking === 'bronze' ? 'linear-gradient(to right, rgba(6,182,212,0.75), rgba(59,130,246,0.75))' :
+                             userRanking === 'silver' ? 'linear-gradient(to right, rgba(203,213,225,0.75), rgba(20,184,166,0.75))' :
+                             userRanking === 'gold' ? 'linear-gradient(to right, rgba(252,211,77,0.75), rgba(250,204,21,0.75))' :
+                             userRanking === 'platinum' ? 'linear-gradient(to right, rgba(192,132,252,0.75), rgba(236,72,153,0.75))' :
+                             'linear-gradient(to right, rgba(6,182,212,0.75), rgba(59,130,246,0.75))';
+                    } else if (index === 2) {
+                      // 3위는 50% 농도
+                      return userRanking === 'basic' ? (isDarkMode ? 'linear-gradient(to right, rgba(255,255,255,0.5), rgba(255,255,255,0.5))' : 'linear-gradient(to right, rgba(31,41,55,0.5), rgba(31,41,55,0.5))') :
+                             userRanking === 'bronze' ? 'linear-gradient(to right, rgba(6,182,212,0.5), rgba(59,130,246,0.5))' :
+                             userRanking === 'silver' ? 'linear-gradient(to right, rgba(203,213,225,0.5), rgba(20,184,166,0.5))' :
+                             userRanking === 'gold' ? 'linear-gradient(to right, rgba(252,211,77,0.5), rgba(250,204,21,0.5))' :
+                             userRanking === 'platinum' ? 'linear-gradient(to right, rgba(192,132,252,0.5), rgba(236,72,153,0.5))' :
+                             'linear-gradient(to right, rgba(6,182,212,0.5), rgba(59,130,246,0.5))';
+                    } else if (index === 3) {
+                      // 4위는 25% 농도
+                      return userRanking === 'basic' ? (isDarkMode ? 'linear-gradient(to right, rgba(255,255,255,0.25), rgba(255,255,255,0.25))' : 'linear-gradient(to right, rgba(31,41,55,0.25), rgba(31,41,55,0.25))') :
+                             userRanking === 'bronze' ? 'linear-gradient(to right, rgba(6,182,212,0.25), rgba(59,130,246,0.25))' :
+                             userRanking === 'silver' ? 'linear-gradient(to right, rgba(203,213,225,0.25), rgba(20,184,166,0.25))' :
+                             userRanking === 'gold' ? 'linear-gradient(to right, rgba(252,211,77,0.25), rgba(250,204,21,0.25))' :
+                             userRanking === 'platinum' ? 'linear-gradient(to right, rgba(192,132,252,0.25), rgba(236,72,153,0.25))' :
+                             'linear-gradient(to right, rgba(6,182,212,0.25), rgba(59,130,246,0.25))';
+                    } else {
+                      // 5위 이후는 지난 챌린지 바 색상 (회색)
+                      return isDarkMode ? 'linear-gradient(to right, #4b5563, #4b5563)' : 
+                             'linear-gradient(to right, #d1d5db, #d1d5db)';
+                    }
+                  };
+                  
+                  return (
+                    <div className={`${sortedItems.length > 4 ? 'max-h-[135px] overflow-y-auto' : ''}`} style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+                      <style>{`
+                        div::-webkit-scrollbar {
+                          display: none;
+                        }
+                      `}</style>
+                      {sortedItems.map((item, index) => (
+                        <div key={item.name} className="mb-2">
+                          <div className="flex justify-between text-xs mb-1">
+                            <span className={`${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                              {item.name} ({item.count}개, {item.weight}g)
+                            </span>
+                            <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>{item.percentage}%</span>
+                          </div>
+                          <div className={`w-full ${isDarkMode ? 'bg-gray-700' : 'bg-gray-200'} rounded-full h-1.5`}>
+                            <div className="h-1.5 rounded-full transition-all duration-300" style={{ 
+                              width: `${item.percentage}%`,
+                              background: getItemColor(index)
+                            }}></div>
+                          </div>
+                        </div>
+                      ))}
                     </div>
-                  ));
+                  );
                 })()}
               </div>
             </div>

@@ -305,10 +305,10 @@ const Challenge = ({
     const today = new Date(testDate || new Date());
     const dayOfWeek = today.getDay();
     
-    // 월요일이고 목표 설정이 가능한 경우 알림
-    if (dayOfWeek === 1 && canChangeGoal() && !plasticGoal) {
-      showToast('이번 주 플라스틱 사용 한도를 설정해주세요!', 'info');
-    }
+    // 월요일이고 목표 설정이 가능한 경우 알림 (주석 처리)
+    // if (dayOfWeek === 1 && canChangeGoal() && !plasticGoal) {
+    //   showToast('이번 주 플라스틱 사용 한도를 설정해주세요!', 'info');
+    // }
   }, [testDate]);
 
   // 월요일 기준 주차 계산

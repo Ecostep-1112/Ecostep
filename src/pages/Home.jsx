@@ -191,7 +191,7 @@ const Home = ({
                   <div className="flex justify-between items-center mb-1">
                     <span className="text-white text-xs">
                       {tankName}
-                      {daysWithoutChallenge > 0 && (
+                      {daysWithoutChallenge > 1 && (
                         <span className="text-red-300 ml-1">
                           ({daysWithoutChallenge}일째 미완료)
                         </span>

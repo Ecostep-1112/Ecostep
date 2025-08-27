@@ -149,22 +149,22 @@ const EcostepApp = () => {
     bronze: [
       { name: '해초', description: '자연스러운 수초', price: 100 },
       { name: '용암석', description: '신비로운 화산석', price: 150 },
-      { name: '작은동굴', description: '아늑한 은신처', price: 200 }
+      { name: '작은 동굴', description: '아늑한 은신처', price: 200 }
     ],
     silver: [
       { name: '산호', description: '화려한 바다 정원', price: 250 },
-      { name: '드리프트우드', description: '오래된 바다 목재', price: 300 },
-      { name: '조개껍질', description: '바다의 보석함', price: 350 }
+      { name: '드리프트 우드', description: '오래된 바다 목재', price: 300 },
+      { name: '조개 껍질', description: '바다의 보석함', price: 350 }
     ],
     gold: [
-      { name: '그리스신전', description: '고대 문명의 흔적', price: 400 },
-      { name: '보물상자', description: '해적의 황금 보물', price: 450 },
+      { name: '그리스 신전', description: '고대 문명의 흔적', price: 400 },
+      { name: '보물 상자', description: '해적의 황금 보물', price: 450 },
       { name: '해적선', description: '전설의 침몰선', price: 500 }
     ],
     platinum: [
-      { name: '크리스탈동굴', description: '신비한 크리스탈', price: 600 },
-      { name: 'LED해파리', description: '빛나는 수중 요정', price: 700 },
-      { name: '아틀란티스유적', description: '잃어버린 문명', price: 800 }
+      { name: '크리스탈 동굴', description: '신비한 크리스탈', price: 600 },
+      { name: 'LED 해파리', description: '빛나는 수중 요정', price: 700 },
+      { name: '아틀란티스 유적', description: '잃어버린 문명', price: 800 }
     ]
   };
 
@@ -583,6 +583,7 @@ const EcostepApp = () => {
         isVisible={toast.isVisible}
         onClose={() => setToast(prev => ({ ...prev, isVisible: false }))}
         isDarkMode={isDarkMode}
+        rankTheme={rankTheme}
       />
     </div>
   );

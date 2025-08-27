@@ -481,7 +481,7 @@ const Challenge = ({
   const plasticItems = [
     // 음료 관련
     { name: '플라스틱병', weight: 25, category: 'drink', desc: '500ml' },
-    { name: '일회용컵', weight: 10, category: 'drink', desc: '카페' },
+    { name: '일회용 컵', weight: 10, category: 'drink', desc: '카페' },
     { name: '페트병(대)', weight: 45, category: 'drink', desc: '1.5L' },
     { name: '빨대', weight: 1, category: 'drink', desc: '개당' },
     // 봉투류
@@ -1838,9 +1838,9 @@ const Challenge = ({
               </div>
             </div>
 
-            {/* 이번주 기록 */}
+            {/* 이번 주 기록 */}
             <div className={`${cardBg} border ${borderColor} rounded-xl p-3 h-[280px] flex flex-col`}>
-              <h3 className={`${textColor} text-sm font-medium mb-1.5`}>이번주 기록</h3>
+              <h3 className={`${textColor} text-sm font-medium mb-1.5`}>이번 주 기록</h3>
               <div className="flex-1 overflow-y-auto scrollbar-hide">
                 {(() => {
                   // 이번 주 시작일 (월요일) 계산

@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { FiX } from 'react-icons/fi';
 
-const Toast = ({ message, type = 'success', isVisible, onClose, isDarkMode }) => {
+const Toast = ({ message, type = 'success', isVisible, onClose, isDarkMode, rankTheme }) => {
   useEffect(() => {
     if (isVisible) {
       const timer = setTimeout(() => {
@@ -14,25 +14,34 @@ const Toast = ({ message, type = 'success', isVisible, onClose, isDarkMode }) =>
 
   if (!isVisible) return null;
 
-  const getBgColor = () => {
-    switch (type) {
-      case 'success':
-        return 'bg-gradient-to-r from-green-500 to-green-600';
-      case 'warning':
-        return 'bg-gradient-to-r from-yellow-500 to-orange-500';
-      case 'info':
-        return 'bg-gradient-to-r from-blue-500 to-blue-600';
-      case 'error':
+  const getRankColors = () => {
+    switch(rankTheme) {
+      case 'bronze':
+        return 'bg-gradient-to-r from-cyan-500 to-blue-500';
+      case 'silver':
+        return 'bg-gradient-to-r from-slate-300 via-cyan-500 to-teal-500';
+      case 'gold':
+        return 'bg-gradient-to-r from-amber-300 to-yellow-400';
+      case 'platinum':
+        return 'bg-gradient-to-r from-purple-400 to-pink-500';
       default:
-        return 'bg-gradient-to-r from-red-500 to-red-600';
+        return 'bg-gradient-to-r from-cyan-500 to-blue-500';
     }
+  };
+
+  const getBgColor = () => {
+    if (type === 'error') {
+      return 'bg-gradient-to-r from-red-500 to-red-600';
+    }
+    return getRankColors();
   };
   
   const bgColor = getBgColor();
+  const textColor = isDarkMode || type === 'error' ? 'text-white' : 'text-black';
 
   return (
     <div className="fixed top-20 left-1/2 transform -translate-x-1/2 z-50 animate-slide-down">
-      <div className={`${bgColor} text-white rounded-xl shadow-2xl px-4 py-2 flex items-center justify-center whitespace-nowrap inline-flex`}>
+      <div className={`${bgColor} ${textColor} rounded-xl shadow-2xl px-4 py-2 flex items-center justify-center whitespace-nowrap inline-flex`}>
         <p className="text-xs font-medium text-center">{message}</p>
         <button 
           onClick={onClose}

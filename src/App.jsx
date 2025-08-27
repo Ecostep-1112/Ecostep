@@ -18,12 +18,16 @@ const EcostepApp = () => {
   const [activeTab, setActiveTab] = useState('home');
   const [activeSubTab, setActiveSubTab] = useState('habit');
   const [challengeDay, setChallengeDay] = useState(4);
-  const [plasticGoal, setPlasticGoal] = useState(500);
+  const [plasticGoal, setPlasticGoal] = useState(() => {
+    const saved = localStorage.getItem('plasticGoal');
+    return saved ? parseInt(saved) : null;
+  });
   const [currentPlastic, setCurrentPlastic] = useState(320);
   const [points, setPoints] = useState(() => {
     const savedPoints = localStorage.getItem('userPoints');
     return savedPoints ? parseInt(savedPoints) : 10000; // 충분한 포인트로 설정
   });
+  const [testDate, setTestDate] = useState(new Date()); // 테스트용 날짜 상태
   const [showSettings, setShowSettings] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
   const [showAquariumSettings, setShowAquariumSettings] = useState(false);
@@ -509,6 +513,8 @@ const EcostepApp = () => {
                 actualRanking={userRanking}
                 showToast={showToast}
                 setTotalPlasticSaved={setTotalPlasticSaved}
+                testDate={testDate}
+                setTestDate={setTestDate}
               />}
               {activeTab === 'reward' && <RewardsPage 
                 isDarkMode={isDarkMode} 

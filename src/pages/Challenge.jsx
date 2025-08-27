@@ -4,6 +4,7 @@ import { BronzeIcon, SilverIcon, GoldIcon, PlatinumIcon } from '../components/Ra
 import { challengeSavings, isPlasticRelated, estimateSavings } from '../data/challengeData';
 import { validatePlasticChallenge, fallbackValidation } from '../api/validatePlastic';
 import { validatePlasticItem, fallbackEstimation } from '../api/validatePlasticItem';
+import { formatWeight } from '../utils/formatters';
 
 const Challenge = ({ 
   isDarkMode,
@@ -30,7 +31,9 @@ const Challenge = ({
   userRanking, // Now this is actually rankTheme from App.jsx
   actualRanking, // This is the actual user ranking for badges
   showToast,
-  setTotalPlasticSaved
+  setTotalPlasticSaved,
+  testDate,
+  setTestDate
 }) => {
   const [customChallenge, setCustomChallenge] = useState('');
   const [showCustomChallenge, setShowCustomChallenge] = useState(false);
@@ -112,7 +115,7 @@ const Challenge = ({
   // 월요일이 되었는지 확인
   const canChangeGoal = () => {
     if (!goalSetDate) return true;
-    const now = new Date();
+    const now = new Date(testDate || new Date());
     const lastSetDate = new Date(goalSetDate);
     
     // 현재 날짜의 월요일 찾기
@@ -136,7 +139,7 @@ const Challenge = ({
   // 다음 월요일까지 남은 일수 계산
   const getDaysUntilMonday = () => {
     if (!goalSetDate) return 0;
-    const now = new Date();
+    const now = new Date(testDate || new Date());
     const dayOfWeek = now.getDay();
     // 월요일은 1, 일요일은 0
     const daysUntilMonday = dayOfWeek === 0 ? 1 : (8 - dayOfWeek) % 7 || 7;
@@ -147,8 +150,9 @@ const Challenge = ({
   const handleSetGoal = (value) => {
     if (canChangeGoal()) {
       setPlasticGoal(value);
-      setGoalSetDate(new Date());
-      localStorage.setItem('goalSetDate', new Date().toISOString());
+      localStorage.setItem('plasticGoal', value); // localStorage에 저장
+      setGoalSetDate(new Date(testDate || new Date()));
+      localStorage.setItem('goalSetDate', new Date(testDate || new Date()).toISOString());
       setShowGoalDropdown(false);
     } else {
       showToast(`목표 변경은 월요일에 가능합니다`);
@@ -179,7 +183,7 @@ const Challenge = ({
   const getWeeklyPlasticUsage = () => {
     if (!plasticRecords || plasticRecords.length === 0) return 0;
     
-    const now = new Date();
+    const now = new Date(testDate || new Date());
     const weekStart = new Date(now);
     weekStart.setDate(weekStart.getDate() - weekStart.getDay()); // 이번 주 일요일
     weekStart.setHours(0, 0, 0, 0);
@@ -202,7 +206,7 @@ const Challenge = ({
     localStorage.removeItem('userCustomGoals');
     localStorage.removeItem('plasticRecords');
     setGoalSetDate(null);
-    setPlasticGoal(500);
+    setPlasticGoal(null);
     setUserCustomGoals([]);
     setPlasticRecords([]);
     showToast('테스트 데이터가 리셋되었습니다');
@@ -223,109 +227,14 @@ const Challenge = ({
       return filtered;
     }
     
-    // 예시 데이터 10개
-    const today = new Date();
-    const exampleChallenges = [
-      {
-        challenge: '텀블러 사용하기',
-        startDate: new Date(today.getTime() - 70 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-        endDate: new Date(today.getTime() - 64 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-        progress: 100,
-        completed: true,
-        completedDays: 7,
-        rankColor: 'bronze'
-      },
-      {
-        challenge: '장바구니 사용하기',
-        startDate: new Date(today.getTime() - 63 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-        endDate: new Date(today.getTime() - 57 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-        progress: 43,
-        completed: false,
-        completedDays: 3,
-        rankColor: 'bronze'
-      },
-      {
-        challenge: '일회용 컵 안쓰기',
-        startDate: new Date(today.getTime() - 56 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-        endDate: new Date(today.getTime() - 50 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-        progress: 86,
-        completed: true,
-        completedDays: 6,
-        rankColor: 'bronze'
-      },
-      {
-        challenge: '비닐봉지 안쓰기',
-        startDate: new Date(today.getTime() - 49 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-        endDate: new Date(today.getTime() - 43 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-        progress: 100,
-        completed: true,
-        completedDays: 7,
-        rankColor: 'silver'
-      },
-      {
-        challenge: '에코백 사용하기',
-        startDate: new Date(today.getTime() - 42 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-        endDate: new Date(today.getTime() - 36 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-        progress: 57,
-        completed: false,
-        completedDays: 4,
-        rankColor: 'silver'
-      },
-      {
-        challenge: '물티슈 줄이기',
-        startDate: new Date(today.getTime() - 35 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-        endDate: new Date(today.getTime() - 29 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-        progress: 71,
-        completed: true,
-        completedDays: 5,
-        rankColor: 'silver'
-      },
-      {
-        challenge: '플라스틱 빨대 안 쓰기',
-        startDate: new Date(today.getTime() - 28 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-        endDate: new Date(today.getTime() - 22 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-        progress: 100,
-        completed: true,
-        completedDays: 7,
-        rankColor: 'silver'
-      },
-      {
-        challenge: '텀블러 사용하기',
-        startDate: new Date(today.getTime() - 21 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-        endDate: new Date(today.getTime() - 15 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-        progress: 100,
-        completed: true,
-        completedDays: 7,
-        rankColor: 'gold'
-      },
-      {
-        challenge: '일회용 컵 안쓰기',
-        startDate: new Date(today.getTime() - 14 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-        endDate: new Date(today.getTime() - 8 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-        progress: 29,
-        completed: false,
-        completedDays: 2,
-        rankColor: 'gold'
-      },
-      {
-        challenge: '배달음식 줄이기',
-        startDate: new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-        endDate: new Date(today.getTime() - 1 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-        progress: 71,
-        completed: true,
-        completedDays: 5,
-        rankColor: 'gold'
-      }
-    ];
-    
-    localStorage.setItem('completedChallenges', JSON.stringify(exampleChallenges));
-    return exampleChallenges;
+    // 실제 완료된 챌린지만 반환 (예시 데이터 제거)
+    return [];
   });
 
   // 매주 월요일에 플라스틱 사용 기록 리셋
   useEffect(() => {
     const checkAndResetOnMonday = () => {
-      const now = new Date();
+      const now = new Date(testDate || new Date());
       const dayOfWeek = now.getDay();
       
       // 월요일인 경우 (1) 확인
@@ -353,8 +262,6 @@ const Challenge = ({
           
           // 리셋 날짜 저장
           localStorage.setItem('lastMondayReset', todayString);
-          
-          showToast('새로운 주가 시작되었습니다! 플라스틱 사용 기록이 리셋되었습니다.');
         }
       }
     };
@@ -368,11 +275,22 @@ const Challenge = ({
     }, 60 * 60 * 1000); // 1시간마다 체크
     
     return () => clearInterval(checkInterval);
-  }, []);
+  }, [testDate]); // testDate 변경 시 재확인
+
+  // 월요일에 목표 재설정 알림
+  useEffect(() => {
+    const today = new Date(testDate || new Date());
+    const dayOfWeek = today.getDay();
+    
+    // 월요일이고 목표 설정이 가능한 경우 알림
+    if (dayOfWeek === 1 && canChangeGoal() && !plasticGoal) {
+      showToast('이번 주 플라스틱 사용 한도를 설정해주세요!', 'info');
+    }
+  }, [testDate]);
 
   // 월요일 기준 주차 계산
   useEffect(() => {
-    const today = new Date();
+    const today = new Date(testDate || new Date());
     const dayOfWeek = today.getDay();
     const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
     const monday = new Date(today);
@@ -428,12 +346,12 @@ const Challenge = ({
       // 오늘 이미 완료했는지 확인
       setTodayCompleted(weeklyProgress[weekKey].days[currentDay] === true);
     }
-  }, []);  // 의존성 배열 비워두기
+  }, [testDate]);  // testDate 변경시 재계산
 
   // 자정이 지나면 자동으로 미완료 처리
   useEffect(() => {
     const checkMidnight = () => {
-      const now = new Date();
+      const now = new Date(testDate || new Date());
       const tomorrow = new Date(now);
       tomorrow.setDate(tomorrow.getDate() + 1);
       tomorrow.setHours(0, 0, 0, 0);
@@ -460,7 +378,7 @@ const Challenge = ({
     };
     
     checkMidnight();
-  }, [currentWeekStart, currentDayIndex, weeklyProgress]);
+  }, [currentWeekStart, currentDayIndex, weeklyProgress, testDate]);
 
   const handleCompleteToday = () => {
     if (!todayCompleted && currentWeekStart) {
@@ -473,6 +391,12 @@ const Challenge = ({
       
       // 챌린지가 설정되지 않았으면 현재 선택된 챌린지 사용
       const finalChallenge = currentWeekData.challenge || selectedChallenge;
+      
+      // 챌린지가 없으면 에러 메시지 표시
+      if (!finalChallenge) {
+        showToast('챌린지를 먼저 선택해주세요', 'error');
+        return;
+      }
       
       const updatedWeek = {
         ...currentWeekData,
@@ -1032,17 +956,19 @@ const Challenge = ({
 
               <button 
                 onClick={handleCompleteToday}
-                disabled={todayCompleted}
+                disabled={todayCompleted || (!weeklyProgress[currentWeekStart]?.challenge && !selectedChallenge)}
                 className={`w-full h-9 rounded-lg text-sm font-medium transition-all ${
-                  todayCompleted 
+                  todayCompleted || (!weeklyProgress[currentWeekStart]?.challenge && !selectedChallenge)
                     ? 'bg-gray-400 text-gray-200 cursor-not-allowed' 
                     : `${getButtonTextColor()} hover:opacity-90`
                 }`}
-                style={!todayCompleted ? {
+                style={!todayCompleted && (weeklyProgress[currentWeekStart]?.challenge || selectedChallenge) ? {
                   background: getThemeGradient()
                 } : {}}
               >
-                {todayCompleted ? '오늘 완료' : '오늘 완료하기 (+10P)'}
+                {todayCompleted ? '오늘 완료' : 
+                 (!weeklyProgress[currentWeekStart]?.challenge && !selectedChallenge) ? '챌린지를 선택해주세요' : 
+                 '오늘 완료하기 (+10P)'}
               </button>
             </div>
 
@@ -1120,7 +1046,7 @@ const Challenge = ({
                 setShowChallengeSelect(false);
                 
                 // 새로운 주차 데이터 생성
-                const today = new Date();
+                const today = new Date(testDate || new Date());
                 const dayOfWeek = today.getDay();
                 const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
                 const monday = new Date(today);
@@ -1288,28 +1214,52 @@ const Challenge = ({
               {/* 플라스틱 사용 현황 - 같은 카드에 통합 */}
               {(() => {
                 const weeklyUsage = getWeeklyPlasticUsage() || 0;
-                const currentGoal = plasticGoal || 500;
-                const usagePercentage = (weeklyUsage / currentGoal) * 100;
-                const remainingPercentage = Math.max(0, Math.min(100, Math.round(100 - usagePercentage)));
                 
-                return (
-                  <>
-                    <div className="flex justify-between text-xs mb-2">
-                      <span className={`${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                        달성률
-                      </span>
-                      <span className={`font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                        {isNaN(remainingPercentage) ? 100 : remainingPercentage}%
-                      </span>
-                    </div>
-                    <div className={`w-full ${isDarkMode ? 'bg-gray-700' : 'bg-gray-200'} rounded-full h-1.5`}>
-                      <div className="h-1.5 rounded-full transition-all duration-300" style={{ 
-                        width: `${isNaN(remainingPercentage) ? 100 : remainingPercentage}%`,
-                        background: getThemeGradient()
-                      }}></div>
-                    </div>
-                  </>
-                );
+                // 목표가 설정되어 있는지 확인
+                if (plasticGoal && plasticGoal > 0) {
+                  // 목표가 설정된 경우 - 달성률 표시
+                  const usagePercentage = (weeklyUsage / plasticGoal) * 100;
+                  const remainingPercentage = Math.max(0, Math.min(100, Math.round(100 - usagePercentage)));
+                  
+                  return (
+                    <>
+                      <div className="flex justify-between text-xs mb-2">
+                        <span className={`${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                          달성률
+                        </span>
+                        <span className={`font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                          {remainingPercentage}%
+                        </span>
+                      </div>
+                      <div className={`w-full ${isDarkMode ? 'bg-gray-700' : 'bg-gray-200'} rounded-full h-1.5`}>
+                        <div className="h-1.5 rounded-full transition-all duration-300" style={{ 
+                          width: `${remainingPercentage}%`,
+                          background: getThemeGradient()
+                        }}></div>
+                      </div>
+                    </>
+                  );
+                } else {
+                  // 목표가 설정되지 않은 경우 - 사용량만 표시
+                  return (
+                    <>
+                      <div className="flex justify-between text-xs mb-2">
+                        <span className={`${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                          이번 주 사용량
+                        </span>
+                        <span className={`font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                          {formatWeight(weeklyUsage)}
+                        </span>
+                      </div>
+                      <div className={`w-full ${isDarkMode ? 'bg-gray-700' : 'bg-gray-200'} rounded-full h-1.5`}>
+                        <div className="h-1.5 rounded-full transition-all duration-300" style={{ 
+                          width: '0%',
+                          background: 'transparent'
+                        }}></div>
+                      </div>
+                    </>
+                  );
+                }
               })()}
             </div>
 
@@ -1663,7 +1613,7 @@ const Challenge = ({
                     
                     if (recordItem && plasticQuantity > 0) {
                       const newRecord = {
-                        date: new Date().toISOString(),
+                        date: new Date(testDate || new Date()).toISOString(),
                         item: recordItem.name,
                         quantity: plasticQuantity,
                         unitWeight: recordItem.weight,
@@ -1677,7 +1627,6 @@ const Challenge = ({
                       // 입력 초기화
                       setSelectedPlasticItem(null);
                       setPlasticQuantity(1);
-                      showToast('기록이 저장되었습니다', 'success');
                     }
                   }}
                   className={`w-full py-2 rounded-lg text-sm font-medium transition-colors ${
@@ -1769,7 +1718,7 @@ const Challenge = ({
                         <div key={item.name} className="mb-2">
                           <div className="flex justify-between text-xs mb-1">
                             <span className={`${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                              {item.name} ({item.count}개, {item.weight}g)
+                              {item.name} ({item.count}개, {formatWeight(item.weight)})
                             </span>
                             <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>{item.percentage}%</span>
                           </div>
@@ -1789,11 +1738,11 @@ const Challenge = ({
 
             {/* 주간 사용량 그래프 */}
             <div className={`${cardBg} border ${borderColor} rounded-xl p-4`}>
-              <h3 className={`${textColor} text-sm font-medium mb-3`}>주간 사용량 추이 (지난 7일)</h3>
-              <div className="flex justify-between items-end h-32">
+              <h3 className={`${textColor} text-sm font-medium mb-3`}>주간 사용량(지난 7일)</h3>
+              <div className="flex justify-between items-end" style={{ height: '135px' }}>
                 {(() => {
                   // 지난 7일간의 데이터 계산
-                  const today = new Date();
+                  const today = new Date(testDate || new Date());
                   const weekData = [];
                   
                   for (let i = 6; i >= 0; i--) {
@@ -1821,19 +1770,57 @@ const Challenge = ({
                   
                   const maxUsage = Math.max(...weekData.map(d => d.usage), 100);
                   
+                  // 사용량 기준으로 순위 정렬하여 색상 농도 계산
+                  const sortedByUsage = [...weekData].sort((a, b) => b.usage - a.usage);
+                  const getBarColor = (usage) => {
+                    const rank = sortedByUsage.findIndex(d => d.usage === usage);
+                    let opacity = 1;
+                    if (rank === 0) opacity = 1;        // 1위 100%
+                    else if (rank === 1) opacity = 0.85; // 2위 85%
+                    else if (rank === 2) opacity = 0.7;  // 3위 70%
+                    else if (rank === 3) opacity = 0.55; // 4위 55%
+                    else if (rank === 4) opacity = 0.4;  // 5위 40%
+                    else if (rank === 5) opacity = 0.25; // 6위 25%
+                    else opacity = 0.15;                 // 7위 15%
+                    
+                    // 테마별 색상 적용
+                    if (userRanking === 'basic') {
+                      return isDarkMode 
+                        ? `rgba(255, 255, 255, ${opacity})`
+                        : `rgba(31, 41, 55, ${opacity})`;
+                    } else if (userRanking === 'bronze') {
+                      return `linear-gradient(to top, rgba(6, 182, 212, ${opacity}), rgba(59, 130, 246, ${opacity}))`;
+                    } else if (userRanking === 'silver') {
+                      return `linear-gradient(to top, rgba(203, 213, 225, ${opacity}), rgba(20, 184, 166, ${opacity}))`;
+                    } else if (userRanking === 'gold') {
+                      return `linear-gradient(to top, rgba(252, 211, 77, ${opacity}), rgba(250, 204, 21, ${opacity}))`;
+                    } else if (userRanking === 'platinum') {
+                      return `linear-gradient(to top, rgba(192, 132, 252, ${opacity}), rgba(236, 72, 153, ${opacity}))`;
+                    }
+                    return `linear-gradient(to top, rgba(6, 182, 212, ${opacity}), rgba(59, 130, 246, ${opacity}))`;
+                  };
+                  
                   return weekData.map((data) => (
                     <div key={data.date} className="flex flex-col items-center flex-1">
-                      <div className="relative h-24 flex flex-col justify-end">
+                      <div className="relative flex flex-col justify-end" style={{ height: '110px' }}>
                         <div 
-                          className="w-8 rounded-t"
+                          className="w-8 rounded-t relative"
                           style={{ 
-                            height: `${data.usage > 0 ? (data.usage / maxUsage) * 96 : 0}px`,
-                            background: getThemeGradient().replace('to right', 'to top')
+                            height: `${data.usage > 0 ? (data.usage / maxUsage) * 110 : 0}px`,
+                            background: getBarColor(data.usage)
                           }}
                         >
+                          {/* 사용량 텍스트를 그래프 높이에 맞춰 표시 */}
                           {data.usage > 0 && (
-                            <span className="text-[10px] text-white text-center block pt-1">
-                              {data.usage}g
+                            <span 
+                              className={`text-[10px] font-medium absolute left-1/2 -translate-x-1/2 whitespace-nowrap ${
+                                isDarkMode ? 'text-gray-300' : 'text-gray-700'
+                              }`}
+                              style={{
+                                bottom: `${(data.usage / maxUsage) * 110 + 4}px`
+                              }}
+                            >
+                              {formatWeight(data.usage)}
                             </span>
                           )}
                         </div>
@@ -1856,11 +1843,12 @@ const Challenge = ({
               <div className="space-y-2 max-h-80 overflow-y-auto scrollbar-hide">
                 {(() => {
                   // 이번 주 시작일 (월요일) 계산
-                  const today = new Date();
-                  const dayOfWeek = today.getDay();
+                  const currentDate = new Date(testDate || new Date());
+                  const today = new Date(testDate || new Date());
+                  const dayOfWeek = currentDate.getDay();
                   const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
-                  const monday = new Date(today);
-                  monday.setDate(today.getDate() + mondayOffset);
+                  const monday = new Date(currentDate);
+                  monday.setDate(currentDate.getDate() + mondayOffset);
                   monday.setHours(0, 0, 0, 0);
                   
                   const weekDays = ['월', '화', '수', '목', '금', '토', '일'];
@@ -1901,7 +1889,7 @@ const Challenge = ({
                             <div className={`text-xs ${isDarkMode ? 'text-gray-500' : 'text-gray-400'} mt-1`}>
                               {dayData.records.map((record, idx) => (
                                 <div key={idx}>
-                                  {record.item} {record.quantity}개 ({record.totalWeight}g)
+                                  {record.item} {record.quantity}개 ({formatWeight(record.totalWeight)})
                                 </div>
                               ))}
                             </div>
@@ -1921,7 +1909,7 @@ const Challenge = ({
                           WebkitTextFillColor: 'transparent',
                           backgroundClip: 'text'
                         } : {}}>
-                          {dayData.totalWeight > 0 ? `${dayData.totalWeight}g` : dayData.date > today ? '-' : '0g'}
+                          {dayData.totalWeight > 0 ? formatWeight(dayData.totalWeight) : dayData.date > today ? '-' : '0g'}
                         </span>
                       </div>
                     </div>
@@ -1942,7 +1930,7 @@ const Challenge = ({
                     backgroundClip: 'text'
                   }}>
                     {(() => {
-                      const today = new Date();
+                      const today = new Date(testDate || new Date());
                       const dayOfWeek = today.getDay();
                       const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
                       const monday = new Date(today);
@@ -2001,7 +1989,7 @@ const Challenge = ({
               
               <div className="h-48 relative">
                 {(() => {
-                  const today = new Date();
+                  const today = new Date(testDate || new Date());
                   const graphData = [];
                   let maxValue = 100;
                   
@@ -2198,6 +2186,40 @@ const Challenge = ({
               >
                 🔄 테스트용 기록 리셋
               </button>
+            </div>
+            
+            {/* 테스트용 날짜 변경 컨트롤 - 제로 챌린지 하단에 배치 */}
+            <div className={`mt-4 mx-3 p-3 ${cardBg} border ${borderColor} rounded-xl`}>
+              <div className="flex items-center justify-center gap-3">
+                <span className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                  테스트 날짜: {testDate ? testDate.toLocaleDateString('ko-KR') : new Date().toLocaleDateString('ko-KR')}
+                </span>
+                <button
+                  onClick={() => {
+                    const newDate = new Date();
+                    setTestDate(newDate);
+                    showToast('오늘 날짜로 변경됨', 'info');
+                  }}
+                  className={`px-3 py-1 rounded text-xs font-medium ${
+                    isDarkMode ? 'bg-gray-700 text-white hover:bg-gray-600' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                  } transition-colors`}
+                >
+                  오늘
+                </button>
+                <button
+                  onClick={() => {
+                    const newDate = new Date(testDate || new Date());
+                    newDate.setDate(newDate.getDate() + 1);
+                    setTestDate(newDate);
+                    showToast(`날짜 변경: ${newDate.toLocaleDateString('ko-KR')}`, 'info');
+                  }}
+                  className={`px-3 py-1 rounded text-xs font-medium ${
+                    isDarkMode ? 'bg-gray-700 text-white hover:bg-gray-600' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                  } transition-colors`}
+                >
+                  +1일
+                </button>
+              </div>
             </div>
           </div>
         )}

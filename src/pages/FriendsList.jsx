@@ -1,32 +1,57 @@
 import React, { useState } from 'react';
 import { FiChevronRight, FiSearch } from 'react-icons/fi';
 
-const FriendsList = ({ isDarkMode, onBack }) => {
+const FriendsList = ({ isDarkMode, onBack, isGlobalRanking = false }) => {
   const [searchQuery, setSearchQuery] = useState('');
   
   // Extended friends data with scores in kg
-  const allFriends = [
-    { rank: 1, name: '일이', score: '27.3kg' },
-    { rank: 2, name: '이이', score: '18.7kg' },
-    { rank: 3, name: '삼이', score: '15.2kg' },
-    { rank: 4, name: '사이', score: '12.1kg' },
-    { rank: 5, name: '나', score: '8.5kg' },
-    { rank: 6, name: '오이', score: '7.8kg' },
-    { rank: 7, name: '육이', score: '6.2kg' },
-    { rank: 8, name: '칠이', score: '5.9kg' },
-    { rank: 9, name: '팔이', score: '5.3kg' },
-    { rank: 10, name: '구이', score: '4.7kg' },
-    { rank: 11, name: '십이', score: '4.2kg' },
-    { rank: 12, name: '십일이', score: '3.8kg' },
-    { rank: 13, name: '십이이', score: '3.4kg' },
-    { rank: 14, name: '십삼이', score: '3.1kg' },
-    { rank: 15, name: '십사이', score: '2.8kg' },
-    { rank: 16, name: '십오이', score: '2.5kg' },
-    { rank: 17, name: '십육이', score: '2.2kg' },
-    { rank: 18, name: '십칠이', score: '1.9kg' },
-    { rank: 19, name: '십팔이', score: '1.6kg' },
-    { rank: 20, name: '십구이', score: '1.3kg' }
-  ];
+  const globalRankingData = [];
+  
+  // 1-99위까지 생성
+  for (let i = 1; i <= 99; i++) {
+    let name, score;
+    if (i === 1) {
+      name = 'PlasticZero';
+      score = '45.2kg';
+    } else if (i === 2) {
+      name = 'EcoMaster';
+      score = '42.1kg';
+    } else if (i === 3) {
+      name = 'GreenWarrior';
+      score = '38.9kg';
+    } else {
+      name = `User${i}`;
+      score = `${(50 - i * 0.4).toFixed(1)}kg`;
+    }
+    globalRankingData.push({ rank: i, name, score });
+  }
+  
+  // 나의 순위 추가 (152위)
+  globalRankingData.push({ rank: 152, name: '나', score: '8.5kg' });
+  
+  // 친구 목록 데이터 생성
+  const friendsRankingData = [];
+  
+  // 친구 목록 최대 99명까지 생성
+  const friendNames = ['일이', '이이', '삼이', '사이'];
+  const myFriendRank = 5; // 친구 중 나의 순위
+  
+  for (let i = 1; i <= 99; i++) {
+    let name, score;
+    if (i < 5) {
+      name = friendNames[i - 1];
+      score = `${(30 - i * 3).toFixed(1)}kg`;
+    } else if (i === myFriendRank) {
+      name = '나';
+      score = '8.5kg';
+    } else {
+      name = `친구${i}`;
+      score = `${Math.max(1, 30 - i * 0.3).toFixed(1)}kg`;
+    }
+    friendsRankingData.push({ rank: i, name, score });
+  }
+  
+  const allFriends = isGlobalRanking ? globalRankingData : friendsRankingData;
   
   const filteredFriends = allFriends.filter(friend =>
     friend.name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -46,7 +71,7 @@ const FriendsList = ({ isDarkMode, onBack }) => {
         <button onClick={onBack} className="mr-3">
           <FiChevronRight className={`w-5 h-5 rotate-180 ${textColor}`} />
         </button>
-        <h2 className={`text-base font-medium ${textColor}`}>친구</h2>
+        <h2 className={`text-base font-medium ${textColor}`}>{isGlobalRanking ? '전체' : '친구'}</h2>
       </div>
       
       {/* Search Bar */}
@@ -55,7 +80,7 @@ const FriendsList = ({ isDarkMode, onBack }) => {
           <FiSearch className={`absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`} />
           <input
             type="text"
-            placeholder="친구 검색"
+            placeholder={isGlobalRanking ? "검색" : "친구 검색"}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className={`w-full pl-10 pr-4 py-2 ${inputBg} rounded-lg text-sm ${textColor} placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400`}
@@ -70,7 +95,7 @@ const FriendsList = ({ isDarkMode, onBack }) => {
       </div>
       
       {/* Friends List */}
-      <div className={`flex-1 overflow-y-auto custom-scrollbar scrollbar-hide px-3 py-4`}>
+      <div className={`flex-1 overflow-y-auto custom-scrollbar scrollbar-hide px-3 py-4 pb-20`}>
         {filteredFriends.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-8">
             <p className={`${isDarkMode ? 'text-gray-400' : 'text-gray-500'} text-sm`}>
@@ -97,7 +122,7 @@ const FriendsList = ({ isDarkMode, onBack }) => {
                           color: !isMe && rankColor ? rankColor : undefined
                         }}
                       >
-                        {friend.rank}
+                        {friend.rank > 99 ? '···' : friend.rank}
                       </div>
                       <span className={`text-sm ${isMe ? `font-medium ${textColor}` : isDarkMode ? 'text-gray-300' : 'text-gray-700'} relative`} style={{ top: '-1px' }}>{friend.name}</span>
                     </div>

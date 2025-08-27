@@ -106,6 +106,7 @@ const EcostepApp = () => {
   const [tankName, setTankName] = useState('수질');
   const [isEditingTankName, setIsEditingTankName] = useState(false);
   const [showFriendsList, setShowFriendsList] = useState(false);
+  const [showGlobalList, setShowGlobalList] = useState(false);
   const [purchasedDecorations, setPurchasedDecorations] = useState(() => {
     const saved = localStorage.getItem('purchasedDecorations');
     return saved ? JSON.parse(saved) : [];
@@ -532,14 +533,15 @@ const EcostepApp = () => {
                 showToast={showToast}
                 setCurrentTank={setCurrentTank}
               />}
-              {activeTab === 'community' && !showFriendsList && <CommunityPage isDarkMode={isDarkMode} onShowFriendsList={() => setShowFriendsList(true)} showToast={showToast} userRanking={rankTheme} />}
+              {activeTab === 'community' && !showFriendsList && !showGlobalList && <CommunityPage isDarkMode={isDarkMode} onShowFriendsList={() => setShowFriendsList(true)} onShowGlobalList={() => setShowGlobalList(true)} showToast={showToast} userRanking={rankTheme} />}
               {activeTab === 'community' && showFriendsList && <FriendsList isDarkMode={isDarkMode} onBack={() => setShowFriendsList(false)} />}
+              {activeTab === 'community' && showGlobalList && <FriendsList isDarkMode={isDarkMode} onBack={() => setShowGlobalList(false)} isGlobalRanking={true} />}
               {activeTab === 'more' && <MorePage isDarkMode={isDarkMode} userPoints={points} setUserPoints={setPoints} />}
             </>
           )}
 
           {/* 하단 네비게이션 - 글래스모피즘 효과 */}
-          {!showNotifications && !showSettings && !showProfile && !showAquariumSettings && !showThemeSettings && !showRankThemeSettings && !showLanguageSettings && !showNotificationSettings && !showFriendsList && (
+          {!showNotifications && !showSettings && !showProfile && !showAquariumSettings && !showThemeSettings && !showRankThemeSettings && !showLanguageSettings && !showNotificationSettings && !showFriendsList && !showGlobalList && (
             <div style={{
               backgroundColor: isDarkMode ? 'rgba(55, 65, 81, 0.3)' : 'rgba(255, 255, 255, 0.3)',
               backdropFilter: isDarkMode ? 'blur(20px) saturate(1.5)' : 'blur(20px) saturate(2.5)',

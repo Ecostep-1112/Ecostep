@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { MessageCircle, Link, UserSearch, ChevronDown } from 'lucide-react';
 import SearchFriends from './SearchFriends';
 
-const Community = ({ isDarkMode, onShowFriendsList, showToast, userRanking }) => {
+const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast, userRanking }) => {
   const [showSearchPage, setShowSearchPage] = useState(false);
   const bgColor = isDarkMode ? 'bg-gray-900' : 'bg-white';
   const textColor = isDarkMode ? 'text-white' : 'text-gray-900';
@@ -13,6 +13,11 @@ const Community = ({ isDarkMode, onShowFriendsList, showToast, userRanking }) =>
   // 나의 랭킹 (1~3위가 아닐 경우를 위한 더미 데이터)
   const myRank = 5;
   const isInTop3 = myRank <= 3;
+  
+  // 전체 사용자 수와 나의 순위로 상위 퍼센트 계산
+  const totalUsers = 1500; // 전체 사용자 수
+  const myGlobalRank = 152; // 나의 전체 순위
+  const topPercentage = Math.round((myGlobalRank / totalUsers) * 100);
   
   // 친구 목록 데이터
   const friendsList = [
@@ -251,31 +256,62 @@ const Community = ({ isDarkMode, onShowFriendsList, showToast, userRanking }) =>
 
         {/* 전체 랭킹 */}
         <div className={`mx-3 mt-4 ${cardBg} border ${borderColor} rounded-xl p-4`}>
-          <h3 className={`${textColor} text-sm font-medium mb-3`}>전체 랭킹</h3>
-          <div className="space-y-2">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className={`${textColor} text-sm font-medium`}>전체</h3>
+            <button 
+              onClick={onShowGlobalList} 
+              className={`text-xs ${textColor} hover:opacity-70 transition-opacity flex items-center gap-0.5`}
+            >
+              더보기
+              <ChevronDown className="w-3 h-3" />
+            </button>
+          </div>
+          <div>
             {[
               { rank: 1, name: 'PlasticZero', score: '45.2kg' },
               { rank: 2, name: 'EcoMaster', score: '42.1kg' },
               { rank: 3, name: 'GreenWarrior', score: '38.9kg' },
-            ].map((team) => (
-              <div key={team.rank} className="flex items-center justify-between py-2">
-                <div className="flex items-center">
-                  <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center text-white text-xs font-medium mr-3">
-                    {team.rank}
+            ].map((user, index) => {
+              // 1등: 플래티넘, 2등: 골드, 3등: 실버
+              const rankColor = user.rank === 1 ? '#c084fc' : user.rank === 2 ? '#facc15' : '#14b8a6';
+              const isMe = false; // 전체 랭킹에는 '나'가 상위 3명에 없다고 가정
+              
+              return (
+                <div key={user.rank}>
+                  <div className="flex items-center justify-between py-1.5">
+                    <div className="flex items-center">
+                      <div 
+                        className={`w-4 h-4 rounded-full border flex items-center justify-center mr-3 text-[10px] font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}
+                        style={{ 
+                          borderColor: rankColor,
+                          color: rankColor
+                        }}
+                      >
+                        {user.rank}
+                      </div>
+                      <span className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} relative`} style={{ top: '-1px' }}>{user.name}</span>
+                    </div>
+                    <span className={`text-xs ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} relative`} style={{ top: '-1px' }}>{user.score}</span>
                   </div>
-                  <span className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>{team.name}</span>
+                  {index < 2 && <div className={`border-b ${borderColor}`}></div>}
                 </div>
-                <span className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>{team.score}</span>
-              </div>
-            ))}
-            <div className={`border-t ${isDarkMode ? 'border-gray-700' : 'border-gray-100'} pt-2 mt-2`}>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center">
-                  <div className={`w-6 h-6 ${inputBg} rounded-full flex items-center justify-center text-xs mr-3`}>나</div>
-                  <span className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>나</span>
+              );
+            })}
+            {/* 나의 랭킹 (전체에서는 상위 %로 표시) */}
+            <div className={`border-t ${borderColor}`}></div>
+            <div className="flex items-center justify-between py-1.5">
+              <div className="flex items-center">
+                <div 
+                  className={`w-4 h-4 rounded-full border flex items-center justify-center mr-3 text-[11px] font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
+                  style={{ borderColor: isDarkMode ? '#9ca3af' : '#6b7280' }}
+                >
+                  ···
                 </div>
-                <span className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>상위 12%</span>
+                <span className={`text-sm font-medium ${textColor} relative`} style={{ top: '-1px' }}>나</span>
               </div>
+              <span className={`text-xs font-medium ${textColor} relative`} style={{ top: '-1px' }}>
+                <span style={{ fontSize: '11px' }}>상위</span> {topPercentage}%
+              </span>
             </div>
           </div>
         </div>

@@ -120,7 +120,7 @@ export const ThemeSettings = ({ isDarkMode, setIsDarkMode, setShowThemeSettings 
       <div className="mx-3 mt-4 space-y-2">
         <button 
           onClick={() => setIsDarkMode(false)}
-          className={`w-full ${cardBg} border ${borderColor} rounded-xl p-4 flex items-center justify-between ${!isDarkMode ? 'border-blue-500' : ''}`}
+          className={`w-full ${cardBg} border ${borderColor} rounded-xl p-3 flex items-center justify-between ${!isDarkMode ? 'border-blue-500' : ''}`}
         >
           <div className="flex items-center">
             <FiSun className={`w-5 h-5 mr-3 ${!isDarkMode ? 'text-blue-500' : isDarkMode ? 'text-gray-400' : 'text-gray-600'}`} />
@@ -131,7 +131,7 @@ export const ThemeSettings = ({ isDarkMode, setIsDarkMode, setShowThemeSettings 
         
         <button 
           onClick={() => setIsDarkMode(true)}
-          className={`w-full ${cardBg} border ${borderColor} rounded-xl p-4 flex items-center justify-between ${isDarkMode ? 'border-blue-500' : ''}`}
+          className={`w-full ${cardBg} border ${borderColor} rounded-xl p-3 flex items-center justify-between ${isDarkMode ? 'border-blue-500' : ''}`}
         >
           <div className="flex items-center">
             <FiMoon className={`w-5 h-5 mr-3 ${isDarkMode ? 'text-blue-500' : 'text-gray-600'}`} />
@@ -162,7 +162,7 @@ export const LanguageSettings = ({ isDarkMode, language, setLanguage, setShowLan
       <div className="mx-3 mt-4 space-y-2">
         <button 
           onClick={() => setLanguage('ko')}
-          className={`w-full ${cardBg} border ${borderColor} rounded-xl p-4 flex items-center justify-between ${language === 'ko' ? 'border-blue-500' : ''}`}
+          className={`w-full ${cardBg} border ${borderColor} rounded-xl p-3 flex items-center justify-between ${language === 'ko' ? 'border-blue-500' : ''}`}
         >
           <span className={`text-sm ${textColor}`}>한국어</span>
           {language === 'ko' && <FiCheck className="w-5 h-5 text-blue-500" />}
@@ -170,7 +170,7 @@ export const LanguageSettings = ({ isDarkMode, language, setLanguage, setShowLan
         
         <button 
           onClick={() => setLanguage('en')}
-          className={`w-full ${cardBg} border ${borderColor} rounded-xl p-4 flex items-center justify-between ${language === 'en' ? 'border-blue-500' : ''}`}
+          className={`w-full ${cardBg} border ${borderColor} rounded-xl p-3 flex items-center justify-between ${language === 'en' ? 'border-blue-500' : ''}`}
         >
           <span className={`text-sm ${textColor}`}>English</span>
           {language === 'en' && <FiCheck className="w-5 h-5 text-blue-500" />}
@@ -196,7 +196,7 @@ export const NotificationSettings = ({ isDarkMode, notifications, setNotificatio
       </div>
       
       <div className="mx-3 mt-4">
-        <div className={`${cardBg} border ${borderColor} rounded-xl p-4 flex items-center justify-between`}>
+        <div className={`${cardBg} border ${borderColor} rounded-xl p-3 flex items-center justify-between`}>
           <span className={`text-sm ${textColor}`}>알림 받기</span>
           <button 
             onClick={() => setNotifications(!notifications)}
@@ -226,7 +226,7 @@ export const LocationSettings = ({ isDarkMode, locationSharing, setLocationShari
       </div>
       
       <div className="mx-3 mt-4">
-        <div className={`${cardBg} border ${borderColor} rounded-xl p-4 flex items-center justify-between`}>
+        <div className={`${cardBg} border ${borderColor} rounded-xl p-3 flex items-center justify-between`}>
           <span className={`text-sm ${textColor}`}>위치 공유 동의</span>
           <button 
             onClick={() => setLocationSharing(!locationSharing)}

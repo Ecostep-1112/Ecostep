@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FiFeather, FiRefreshCw, FiShare2, FiChevronDown, FiChevronUp, FiBook, FiPhone, FiChevronRight } from 'react-icons/fi';
+import { FiShare2, FiChevronDown, FiChevronUp, FiBook, FiPhone, FiChevronRight, FiArrowRight } from 'react-icons/fi';
 import { Check } from 'lucide-react';
 import { generateEnvironmentalTip } from '../services/claudeService';
 
@@ -9,6 +9,11 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints }) => {
   const [environmentalTip, setEnvironmentalTip] = useState(null);
   const [errorMessage, setErrorMessage] = useState('');
   const [hasCheckedTip, setHasCheckedTip] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState('랜덤');
+  const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
+  const [categoryIndices, setCategoryIndices] = useState({});
+
+  const categories = ['랜덤', '재활용 팁', '생활 습관', '에너지 절약', '제로웨이스트'];
 
   // 컴포넌트 마운트 시 초기 팁 로드
   useEffect(() => {
@@ -18,7 +23,7 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints }) => {
   const loadInitialTip = async () => {
     setIsLoadingTip(true);
     try {
-      const tip = await generateEnvironmentalTip();
+      const tip = await generateEnvironmentalTip(selectedCategory === '랜덤' ? null : selectedCategory);
       setEnvironmentalTip(tip);
       setErrorMessage('');
     } catch (error) {
@@ -26,6 +31,45 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints }) => {
       setErrorMessage('환경 팁을 불러오는 데 실패했습니다.');
     } finally {
       setIsLoadingTip(false);
+    }
+  };
+
+  const handleCategoryClick = async (category) => {
+    setShowCategoryDropdown(false);
+    
+    if (selectedCategory === category) {
+      // 같은 카테고리 클릭 시 새로운 팁 로드
+      const currentIndex = categoryIndices[category] || 0;
+      setIsLoadingTip(true);
+      try {
+        const tip = await generateEnvironmentalTip(category === '랜덤' ? null : category, currentIndex + 1);
+        setEnvironmentalTip(tip);
+        setHasCheckedTip(false);
+        
+        if (category !== '랜덤' && tip.currentIndex !== undefined) {
+          setCategoryIndices(prev => ({
+            ...prev,
+            [category]: tip.currentIndex
+          }));
+        }
+      } catch (error) {
+        console.error('팁 로드 실패:', error);
+      } finally {
+        setIsLoadingTip(false);
+      }
+    } else {
+      // 다른 카테고리 선택
+      setSelectedCategory(category);
+      setIsLoadingTip(true);
+      try {
+        const tip = await generateEnvironmentalTip(category === '랜덤' ? null : category);
+        setEnvironmentalTip(tip);
+        setHasCheckedTip(false);
+      } catch (error) {
+        console.error('팁 로드 실패:', error);
+      } finally {
+        setIsLoadingTip(false);
+      }
     }
   };
 
@@ -57,17 +101,13 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints }) => {
 
   const openInNaverMap = (place) => {
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-    const encodedName = encodeURIComponent(place.name);
     const encodedAddress = encodeURIComponent(place.address);
     
     if (isMobile) {
-      const appUrl = `nmap://place?lat=${place.lat}&lng=${place.lng}&name=${encodedName}&appname=com.ecostep`;
-      const webUrl = `https://map.naver.com/v5/search/${encodedAddress}`;
-      
+      const appUrl = `nmap://place?lat=${place.lat}&lng=${place.lng}&name=${encodeURIComponent(place.name)}&appname=com.ecostep`;
       window.location.href = appUrl;
-      
       setTimeout(() => {
-        window.open(webUrl, '_blank');
+        window.open(`https://map.naver.com/v5/search/${encodedAddress}`, '_blank');
       }, 1000);
     } else {
       window.open(`https://map.naver.com/v5/search/${encodedAddress}`, '_blank');
@@ -87,12 +127,47 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints }) => {
         <div className={`mx-3 mt-4 ${cardBg} border ${borderColor} rounded-xl p-4`}>
           <div className="flex justify-between items-center mb-3">
             <div className="flex items-center">
-              <FiFeather className={`w-4 h-4 text-green-500 mr-2`} />
               <h3 className={`${textColor} text-sm font-medium`}>오늘의 환경 상식</h3>
             </div>
-            {hasCheckedTip && (
-              <span className="text-green-500 text-xs font-medium">+100 포인트 획득!</span>
-            )}
+            <div className="flex items-center gap-2">
+              {hasCheckedTip && (
+                <span className="text-green-500 text-xs font-medium">+100 포인트 획득!</span>
+              )}
+              <div className="relative">
+                <button
+                  onClick={() => setShowCategoryDropdown(!showCategoryDropdown)}
+                  className={`flex items-center gap-1 px-2 py-1 text-xs rounded-lg ${
+                    isDarkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-700'
+                  } hover:opacity-80 transition-opacity`}
+                >
+                  <span>{selectedCategory}</span>
+                  {showCategoryDropdown ? (
+                    <FiChevronUp className="w-3 h-3" />
+                  ) : (
+                    <FiChevronDown className="w-3 h-3" />
+                  )}
+                </button>
+                {showCategoryDropdown && (
+                  <div className={`absolute right-0 mt-1 w-max rounded-lg shadow-lg z-10 ${
+                    isDarkMode ? 'bg-gray-700' : 'bg-white'
+                  } border ${isDarkMode ? 'border-gray-600' : 'border-gray-200'}`}>
+                    {categories.map((category) => (
+                      <button
+                        key={category}
+                        onClick={() => handleCategoryClick(category)}
+                        className={`block w-full text-left px-3 py-2 text-xs whitespace-nowrap first:rounded-t-lg last:rounded-b-lg ${
+                          selectedCategory === category
+                            ? isDarkMode ? 'bg-gray-600 text-white' : 'bg-gray-100 text-gray-900'
+                            : isDarkMode ? 'text-gray-300 hover:bg-gray-600' : 'text-gray-700 hover:bg-gray-50'
+                        } transition-colors`}
+                      >
+                        {category}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
           
           {errorMessage && (
@@ -105,32 +180,23 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints }) => {
             </div>
           ) : environmentalTip ? (
             <div>
-              <div className={`border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-100'} pb-3`}>
+              <div className="pb-3">
                 <div 
                   className="cursor-pointer"
                   onClick={() => setExpandedTip(expandedTip === environmentalTip.id ? null : environmentalTip.id)}
                 >
-                  <div className="flex justify-between items-start">
-                    <div className="flex-1 pr-2">
-                      <span className={`inline-block text-[10px] px-2 py-0.5 rounded-full mb-1 ${
-                        isDarkMode ? 'bg-green-900 text-green-300' : 'bg-green-100 text-green-700'
-                      }`}>
-                        {environmentalTip.category}
-                      </span>
-                      <p className={`text-sm font-medium ${isDarkMode ? 'text-gray-200' : 'text-gray-800'} mb-1`}>
-                        {environmentalTip.title}
-                      </p>
-                      <p className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} line-clamp-2`}>
-                        {environmentalTip.preview}
-                      </p>
-                    </div>
-                    <button className="flex-shrink-0 mt-1">
+                  <div className="flex flex-col">
+                    <p className={`text-sm font-medium ${isDarkMode ? 'text-gray-200' : 'text-gray-800'} mb-1`}>
+                      {environmentalTip.title}
+                    </p>
+                    <p className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                      {environmentalTip.preview}
                       {expandedTip === environmentalTip.id ? (
-                        <FiChevronUp className={`w-4 h-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
+                        <FiChevronUp className={`inline w-3 h-3 ml-1 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
                       ) : (
-                        <FiChevronDown className={`w-4 h-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
+                        <FiArrowRight className={`inline w-3 h-3 ml-1 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
                       )}
-                    </button>
+                    </p>
                   </div>
                 </div>
                 
@@ -139,17 +205,17 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints }) => {
                   expandedTip === environmentalTip.id ? 'max-h-96 opacity-100 mt-3' : 'max-h-0 opacity-0'
                 }`}>
                   <div className={`${isDarkMode ? 'bg-gray-800' : 'bg-gray-50'} rounded-lg p-3`}>
-                    <p className={`text-sm leading-relaxed ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                    <p className={`text-sm leading-relaxed text-justify ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                       {environmentalTip.content}
                     </p>
-                    <div className="flex items-center justify-between mt-3 pt-3 border-t ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}">
+                    <div className={`flex items-center justify-between mt-3 pt-3 border-t ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
                       <button 
                         onClick={handleCheckTip}
                         className={`${
                           hasCheckedTip 
                             ? 'bg-green-500 text-white cursor-not-allowed' 
                             : 'bg-blue-500 hover:bg-blue-600 text-white'
-                        } px-3 py-1 rounded-lg text-xs flex items-center transition-colors`}
+                        } px-3 py-1.5 rounded-lg text-xs font-medium flex items-center transition-colors`}
                         disabled={hasCheckedTip}
                       >
                         {hasCheckedTip ? (
@@ -158,7 +224,7 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints }) => {
                             확인 완료
                           </>
                         ) : (
-                          <>확인하고 100 포인트 받기</>
+                          <>확인(+100P)</>
                         )}
                       </button>
                       <button className="text-blue-500 text-xs flex items-center">
@@ -178,7 +244,8 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints }) => {
             </div>
           )}
           
-          <div className={`mt-3 pt-3 border-t ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
+          <div className="mt-2 pt-2">
+            <div className={`h-[1px] mb-2 bg-gradient-to-r from-transparent ${isDarkMode ? 'via-gray-700' : 'via-gray-200'} to-transparent`}></div>
             <p className={`text-xs ${isDarkMode ? 'text-gray-500' : 'text-gray-400'} text-center`}>
               매일 새로운 환경 팁을 확인하세요 🌱
             </p>

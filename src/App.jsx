@@ -12,9 +12,11 @@ import FriendsList from './pages/FriendsList';
 import NotificationsScreen from './pages/NotificationsScreen';
 import { ThemeSettings, RankThemeSettings, LanguageSettings, NotificationSettings, LocationSettings, AquariumSettings } from './pages/Settings';
 import Toast from './components/Toast';
+import Login from './components/Login';
 import fishData from './data/fishData.json';
 
 const EcostepApp = () => {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [activeTab, setActiveTab] = useState('home');
   const [activeSubTab, setActiveSubTab] = useState('habit');
   const [challengeDay, setChallengeDay] = useState(4);
@@ -398,6 +400,11 @@ const EcostepApp = () => {
 
   const bgColor = isDarkMode ? 'bg-black' : 'bg-white';
   const borderColor = isDarkMode ? 'border-gray-800' : 'border-gray-200';
+
+  // 로그인 화면 표시
+  if (!isLoggedIn) {
+    return <Login onLogin={() => setIsLoggedIn(true)} />;
+  }
 
   return (
     <div className={`flex items-center justify-center min-h-screen ${isDarkMode ? 'bg-gray-950' : 'bg-gray-100'} p-4`}>

@@ -7,11 +7,13 @@ const SettingsScreen = ({
   setShowProfile, 
   setShowLanguageSettings, 
   setShowNotificationSettings, 
+  setShowLocationSettings,
   setShowThemeSettings,
   setShowRankThemeSettings,
   userRanking, 
   language, 
-  notifications 
+  notifications,
+  locationSharing
 }) => {
   const bgColor = isDarkMode ? 'bg-gray-900' : 'bg-white';
   const textColor = isDarkMode ? 'text-white' : 'text-gray-900';
@@ -64,6 +66,19 @@ const SettingsScreen = ({
           <div className="flex items-center">
             <span className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} mr-2`}>
               {notifications ? '켜짐' : '꺼짐'}
+            </span>
+            <FiChevronRight className={`w-4 h-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-400'}`} />
+          </div>
+        </button>
+        
+        <button 
+          onClick={() => setShowLocationSettings(true)}
+          className={`w-full ${cardBg} border ${borderColor} rounded-xl p-4 flex justify-between items-center`}
+        >
+          <span className={`text-sm ${textColor}`}>위치</span>
+          <div className="flex items-center">
+            <span className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} mr-2`}>
+              {locationSharing ? '켜짐' : '꺼짐'}
             </span>
             <FiChevronRight className={`w-4 h-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-400'}`} />
           </div>

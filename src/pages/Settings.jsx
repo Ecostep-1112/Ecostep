@@ -210,6 +210,36 @@ export const NotificationSettings = ({ isDarkMode, notifications, setNotificatio
   );
 };
 
+export const LocationSettings = ({ isDarkMode, locationSharing, setLocationSharing, setShowLocationSettings }) => {
+  const bgColor = isDarkMode ? 'bg-gray-900' : 'bg-white';
+  const textColor = isDarkMode ? 'text-white' : 'text-gray-900';
+  const borderColor = isDarkMode ? 'border-gray-700' : 'border-gray-200';
+  const cardBg = isDarkMode ? 'bg-gray-800' : 'bg-white';
+
+  return (
+    <div className={`flex-1 ${bgColor}`}>
+      <div className={`${bgColor} p-4 flex items-center border-b ${borderColor}`}>
+        <button onClick={() => setShowLocationSettings(false)} className="mr-3">
+          <FiChevronRight className={`w-5 h-5 rotate-180 ${textColor}`} />
+        </button>
+        <h2 className={`text-base font-medium ${textColor}`}>위치</h2>
+      </div>
+      
+      <div className="mx-3 mt-4">
+        <div className={`${cardBg} border ${borderColor} rounded-xl p-4 flex items-center justify-between`}>
+          <span className={`text-sm ${textColor}`}>위치 공유 동의</span>
+          <button 
+            onClick={() => setLocationSharing(!locationSharing)}
+            className={`w-12 h-6 rounded-full ${locationSharing ? 'bg-blue-500' : isDarkMode ? 'bg-gray-600' : 'bg-gray-300'} relative transition-colors`}
+          >
+            <div className={`w-5 h-5 bg-white rounded-full absolute top-0.5 transition-transform ${locationSharing ? 'translate-x-6' : 'translate-x-0.5'}`}></div>
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 export const AquariumSettings = ({ 
   isDarkMode, 
   setShowAquariumSettings, 

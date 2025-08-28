@@ -10,7 +10,7 @@ import SettingsScreen from './pages/SettingsScreen';
 import ProfileScreen from './pages/ProfileScreen';
 import FriendsList from './pages/FriendsList';
 import NotificationsScreen from './pages/NotificationsScreen';
-import { ThemeSettings, RankThemeSettings, LanguageSettings, NotificationSettings, AquariumSettings } from './pages/Settings';
+import { ThemeSettings, RankThemeSettings, LanguageSettings, NotificationSettings, LocationSettings, AquariumSettings } from './pages/Settings';
 import Toast from './components/Toast';
 import fishData from './data/fishData.json';
 
@@ -71,8 +71,10 @@ const EcostepApp = () => {
   const [showRankThemeSettings, setShowRankThemeSettings] = useState(false);
   const [showLanguageSettings, setShowLanguageSettings] = useState(false);
   const [showNotificationSettings, setShowNotificationSettings] = useState(false);
+  const [showLocationSettings, setShowLocationSettings] = useState(false);
   const [language, setLanguage] = useState('ko');
   const [notificationEnabled, setNotificationEnabled] = useState(true);
+  const [locationSharing, setLocationSharing] = useState(false);
   const [fishCount, setFishCount] = useState(5);
   const [isRandomFish, setIsRandomFish] = useState(true);
   const [isRandomDecorations, setIsRandomDecorations] = useState(true);
@@ -453,17 +455,20 @@ const EcostepApp = () => {
             showRankThemeSettings ? <RankThemeSettings isDarkMode={isDarkMode} userRanking={rankTheme} setUserRanking={setRankTheme} setShowRankThemeSettings={setShowRankThemeSettings} currentUserRank={userRanking} showToast={showToast} /> :
             showLanguageSettings ? <LanguageSettings isDarkMode={isDarkMode} language={language} setLanguage={setLanguage} setShowLanguageSettings={setShowLanguageSettings} /> :
             showNotificationSettings ? <NotificationSettings isDarkMode={isDarkMode} notifications={notificationEnabled} setNotifications={setNotificationEnabled} setShowNotificationSettings={setShowNotificationSettings} /> :
+            showLocationSettings ? <LocationSettings isDarkMode={isDarkMode} locationSharing={locationSharing} setLocationSharing={setLocationSharing} setShowLocationSettings={setShowLocationSettings} /> :
             <SettingsScreen 
               isDarkMode={isDarkMode}
               setShowSettings={setShowSettings}
               setShowProfile={setShowProfile}
               setShowLanguageSettings={setShowLanguageSettings}
               setShowNotificationSettings={setShowNotificationSettings}
+              setShowLocationSettings={setShowLocationSettings}
               setShowThemeSettings={setShowThemeSettings}
               setShowRankThemeSettings={setShowRankThemeSettings}
               userRanking={rankTheme}
               language={language}
               notifications={notificationEnabled}
+              locationSharing={locationSharing}
             />
           ) : showAquariumSettings ? (
             <AquariumSettings 
@@ -571,7 +576,7 @@ const EcostepApp = () => {
           )}
 
           {/* 하단 네비게이션 - 글래스모피즘 효과 */}
-          {!showNotifications && !showSettings && !showProfile && !showAquariumSettings && !showThemeSettings && !showRankThemeSettings && !showLanguageSettings && !showNotificationSettings && !showFriendsList && !showGlobalList && (
+          {!showNotifications && !showSettings && !showProfile && !showAquariumSettings && !showThemeSettings && !showRankThemeSettings && !showLanguageSettings && !showNotificationSettings && !showLocationSettings && !showFriendsList && !showGlobalList && (
             <div style={{
               backgroundColor: isDarkMode ? 'rgba(55, 65, 81, 0.3)' : 'rgba(255, 255, 255, 0.3)',
               backdropFilter: isDarkMode ? 'blur(20px) saturate(1.5)' : 'blur(20px) saturate(2.5)',

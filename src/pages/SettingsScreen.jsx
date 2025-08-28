@@ -39,7 +39,7 @@ const SettingsScreen = ({
             송일
           </div>
           <div className="flex-1 text-left">
-            <p className={`text-sm font-medium ${textColor}`}>송일님의 정보</p>
+            <p className={`text-sm font-medium ${textColor}`}>이름</p>
             <p className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>내 정보</p>
           </div>
           <FiChevronRight className={`w-4 h-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-400'}`} />

@@ -61,6 +61,15 @@ const EcostepApp = () => {
   const [testDate, setTestDate] = useState(new Date()); // 테스트용 날짜 상태
   const [showSettings, setShowSettings] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
+  
+  // 프로필 데이터 상태 관리
+  const [profileData, setProfileData] = useState({
+    name: '송일',
+    userId: '',  
+    birthDate: '',
+    phone: '',
+    email: 'callmesongil@kakao.com'
+  });
   const [showAquariumSettings, setShowAquariumSettings] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const [notificationsList, setNotificationsList] = useState([]);
@@ -450,7 +459,7 @@ const EcostepApp = () => {
               rankTheme={rankTheme}
             />
           ) : showSettings ? (
-            showProfile ? <ProfileScreen isDarkMode={isDarkMode} setShowProfile={setShowProfile} /> : 
+            showProfile ? <ProfileScreen isDarkMode={isDarkMode} setShowProfile={setShowProfile} profileData={profileData} setProfileData={setProfileData} /> : 
             showThemeSettings ? <ThemeSettings isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} setShowThemeSettings={setShowThemeSettings} /> :
             showRankThemeSettings ? <RankThemeSettings isDarkMode={isDarkMode} userRanking={rankTheme} setUserRanking={setRankTheme} setShowRankThemeSettings={setShowRankThemeSettings} currentUserRank={userRanking} showToast={showToast} /> :
             showLanguageSettings ? <LanguageSettings isDarkMode={isDarkMode} language={language} setLanguage={setLanguage} setShowLanguageSettings={setShowLanguageSettings} /> :

@@ -20,7 +20,12 @@ const Rewards = ({
   points,
   setPoints,
   showToast,
-  setCurrentTank
+  setCurrentTank,
+  calculateRankProgress,
+  calculateRankFromPoints,
+  totalEarnedPoints,
+  setTotalEarnedPoints,
+  spendPoints
 }) => {
   const bgColor = isDarkMode ? 'bg-gray-900' : 'bg-white';
   const textColor = isDarkMode ? 'text-white' : 'text-gray-900';
@@ -196,12 +201,32 @@ const Rewards = ({
             <div className={`w-full h-1.5 ${isDarkMode ? 'bg-gray-700/50' : 'bg-gray-200'} rounded-full overflow-hidden shadow-inner`}>
               <div 
                 className={`h-full ${getProgressGradient(userRanking)} rounded-full transition-all duration-500`} 
-                style={{ width: '70%' }}
+                style={{ width: `${calculateRankProgress ? calculateRankProgress(totalEarnedPoints || 0) : 0}%` }}
               />
             </div>
             
             <p className={`text-center ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} text-xs mt-1`}>
-              플래티넘까지 30% 남음
+              {(() => {
+                const progress = calculateRankProgress ? calculateRankProgress(totalEarnedPoints || 0) : 0;
+                const nextRank = userRanking === 'bronze' ? '실버' : 
+                               userRanking === 'silver' ? '골드' : 
+                               userRanking === 'gold' ? '플래티넘' : '최고 등급';
+                
+                if (userRanking === 'platinum' && progress >= 100) {
+                  return '플래티넘 최고 등급 달성!';
+                }
+                
+                // 플래티넘 등급에서는 소수점 1자리까지 표시 (0%나 100%는 제외)
+                const remaining = 100 - progress;
+                if (userRanking === 'platinum') {
+                  // 0% 또는 100% 근처인 경우 정수로 표시
+                  if (remaining === 0 || remaining === 100 || remaining % 1 === 0) {
+                    return `${nextRank}까지 ${remaining.toFixed(0)}% 남음`;
+                  }
+                  return `${nextRank}까지 ${remaining.toFixed(1)}% 남음`;
+                }
+                return `${nextRank}까지 ${remaining.toFixed(0)}% 남음`;
+              })()}
             </p>
           </div>
           
@@ -446,7 +471,11 @@ const Rewards = ({
                           // 포인트가 충분한지 확인
                           if (points >= fishPrice) {
                             // 포인트 차감
-                            setPoints(prev => prev - fishPrice);
+                            if (spendPoints) {
+                              spendPoints(fishPrice);
+                            } else {
+                              setPoints(prev => prev - fishPrice);
+                            }
                             // 물고기 추가
                             setPurchasedFish(prev => [...prev, fish.name]);
                             // 성공 알림
@@ -547,7 +576,11 @@ const Rewards = ({
                           // 포인트가 충분한지 확인
                           if (points >= deco.price) {
                             // 포인트 차감
-                            setPoints(prev => prev - deco.price);
+                            if (spendPoints) {
+                              spendPoints(deco.price);
+                            } else {
+                              setPoints(prev => prev - deco.price);
+                            }
                             // 장식품 추가
                             setPurchasedDecorations(prev => [...prev, deco.name]);
                             // 성공 알림
@@ -615,8 +648,9 @@ const Rewards = ({
             <div className="grid grid-cols-4 gap-2">
               <button
                 onClick={() => {
-                  setUserRanking('bronze');
-                  showToast('브론즈 랭크로 변경', 'success');
+                  setPoints(0); // 브론즈: 0P
+                  setTotalEarnedPoints(0); // 누적 포인트도 0P
+                  showToast('브론즈 랭크로 변경 (0P)', 'success');
                 }}
                 className={`py-2 px-3 rounded-lg ${
                   userRanking === 'bronze' 
@@ -630,8 +664,9 @@ const Rewards = ({
               </button>
               <button
                 onClick={() => {
-                  setUserRanking('silver');
-                  showToast('실버 랭크로 변경', 'success');
+                  setPoints(2100); // 실버: 2100P
+                  setTotalEarnedPoints(2100); // 누적 포인트도 2100P
+                  showToast('실버 랭크로 변경 (2100P)', 'success');
                 }}
                 className={`py-2 px-3 rounded-lg ${
                   userRanking === 'silver' 
@@ -645,8 +680,9 @@ const Rewards = ({
               </button>
               <button
                 onClick={() => {
-                  setUserRanking('gold');
-                  showToast('골드 랭크로 변경', 'success');
+                  setPoints(6300); // 골드: 6300P
+                  setTotalEarnedPoints(6300); // 누적 포인트도 6300P
+                  showToast('골드 랭크로 변경 (6300P)', 'success');
                 }}
                 className={`py-2 px-3 rounded-lg ${
                   userRanking === 'gold' 
@@ -660,8 +696,9 @@ const Rewards = ({
               </button>
               <button
                 onClick={() => {
-                  setUserRanking('platinum');
-                  showToast('플래티넘 랭크로 변경', 'success');
+                  setPoints(12600); // 플래티넘: 12600P
+                  setTotalEarnedPoints(12600); // 누적 포인트도 12600P
+                  showToast('플래티넘 랭크로 변경 (12600P)', 'success');
                 }}
                 className={`py-2 px-3 rounded-lg ${
                   userRanking === 'platinum' 
@@ -677,23 +714,21 @@ const Rewards = ({
           </div>
         </div>
 
-        {/* 테스트용 초기화 버튼 */}
+        {/* 테스트용 구매내역 초기화 버튼 */}
         <div className="mx-3 mt-4 mb-6">
           <button
             onClick={() => {
-              // 구매 이력 완전 초기화 (아무것도 구매하지 않은 상태)
+              // 구매 이력만 초기화 (포인트는 유지)
               setPurchasedFish([]);
               setPurchasedDecorations([]);
               setClaimedTanks([]); // 랭킹 보상 초기화
-              setPoints(10000);
               
-              // localStorage 초기화
+              // localStorage에서 구매내역만 초기화
               localStorage.setItem('purchasedFish', JSON.stringify([]));
               localStorage.setItem('purchasedDecorations', JSON.stringify([]));
               localStorage.setItem('claimedTanks', JSON.stringify([])); // 랭킹 보상 초기화
-              localStorage.setItem('userPoints', '10000');
               
-              showToast('테스트 데이터 초기화 완료', 'success');
+              showToast('구매내역 초기화 완료', 'success');
             }}
             className={`w-full py-3 px-4 rounded-xl ${
               isDarkMode 
@@ -702,10 +737,10 @@ const Rewards = ({
             } transition-colors flex items-center justify-center gap-2 text-sm font-medium`}
           >
             <span>🔄</span>
-            <span>테스트용 초기화</span>
+            <span>구매내역 초기화</span>
           </button>
           <p className={`text-xs ${isDarkMode ? 'text-gray-500' : 'text-gray-400'} text-center mt-2`}>
-            구매 이력과 포인트를 초기 상태로 되돌립니다
+            구매 이력만 초기화합니다 (포인트는 유지)
           </p>
         </div>
       </div>

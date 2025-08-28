@@ -3,7 +3,7 @@ import { FiFeather, FiRefreshCw, FiShare2, FiChevronDown, FiChevronUp, FiBook, F
 import { Check } from 'lucide-react';
 import { generateEnvironmentalTip } from '../services/claudeService';
 
-const More = ({ isDarkMode, userPoints, setUserPoints }) => {
+const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints }) => {
   const [expandedTip, setExpandedTip] = useState(null);
   const [isLoadingTip, setIsLoadingTip] = useState(false);
   const [environmentalTip, setEnvironmentalTip] = useState(null);
@@ -32,7 +32,9 @@ const More = ({ isDarkMode, userPoints, setUserPoints }) => {
   const handleCheckTip = () => {
     if (!hasCheckedTip && environmentalTip) {
       setHasCheckedTip(true);
-      if (setUserPoints) {
+      if (earnPoints) {
+        earnPoints(100);
+      } else if (setUserPoints) {
         setUserPoints(prev => prev + 100);
       }
     }

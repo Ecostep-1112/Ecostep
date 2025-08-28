@@ -27,6 +27,37 @@ const EcostepApp = () => {
     const savedPoints = localStorage.getItem('userPoints');
     return savedPoints ? parseInt(savedPoints) : 10000; // 충분한 포인트로 설정
   });
+  
+  // 누적 포인트 (랭크 계산용 - 소비해도 감소하지 않음)
+  const [totalEarnedPoints, setTotalEarnedPoints] = useState(() => {
+    const savedTotal = localStorage.getItem('totalEarnedPoints');
+    return savedTotal ? parseInt(savedTotal) : 10000; // 초기값은 현재 포인트와 동일
+  });
+  
+  // 포인트 기반 랭크 계산 함수 (누적 포인트 사용)
+  const calculateRankFromPoints = (currentPoints) => {
+    if (currentPoints < 2100) return 'bronze';
+    if (currentPoints < 6300) return 'silver';
+    if (currentPoints < 12600) return 'gold';
+    return 'platinum';
+  };
+  
+  // 랭크 진행도 계산 함수
+  const calculateRankProgress = (currentPoints) => {
+    const ranks = {
+      bronze: { min: 0, max: 2100 },
+      silver: { min: 2100, max: 6300 },
+      gold: { min: 6300, max: 12600 },
+      platinum: { min: 12600, max: 210000 }
+    };
+    
+    const currentRank = calculateRankFromPoints(currentPoints);
+    const rankData = ranks[currentRank];
+    
+    const progress = ((currentPoints - rankData.min) / (rankData.max - rankData.min)) * 100;
+    return Math.min(Math.max(progress, 0), 100);
+  };
+  
   const [testDate, setTestDate] = useState(new Date()); // 테스트용 날짜 상태
   const [showSettings, setShowSettings] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
@@ -61,7 +92,11 @@ const EcostepApp = () => {
   });
   const [currentTank, setCurrentTank] = useState('basic');
   const [unlockedTanks, setUnlockedTanks] = useState(['basic', 'silver', 'gold', 'platinum']); // 모든 어항 잠금 해제
-  const [userRanking, setUserRanking] = useState('silver'); // 실제 사용자 랭킹 (변경되지 않음)
+  const [userRanking, setUserRanking] = useState(() => {
+    const savedTotal = localStorage.getItem('totalEarnedPoints');
+    const totalPoints = savedTotal ? parseInt(savedTotal) : 10000;
+    return calculateRankFromPoints(totalPoints);
+  }); // 실제 사용자 랭킹 (누적 포인트 기반)
   const [rankTheme, setRankTheme] = useState('bronze'); // 색상 테마 (색상만 변경)
   const [claimedTanks, setClaimedTanks] = useState(() => {
     const saved = localStorage.getItem('claimedTanks');
@@ -107,6 +142,17 @@ const EcostepApp = () => {
       message,
       type
     });
+  };
+  
+  // 포인트 획득 함수 (누적 포인트도 함께 증가)
+  const earnPoints = (amount) => {
+    setPoints(prev => prev + amount);
+    setTotalEarnedPoints(prev => prev + amount);
+  };
+  
+  // 포인트 소비 함수 (누적 포인트는 변경 안함)
+  const spendPoints = (amount) => {
+    setPoints(prev => Math.max(0, prev - amount));
   };
 
   // master의 decorationsData
@@ -201,6 +247,15 @@ const EcostepApp = () => {
   useEffect(() => {
     localStorage.setItem('userPoints', points.toString());
   }, [points]);
+  
+  // 누적 포인트 변경시 localStorage에 저장 및 랭크 업데이트
+  useEffect(() => {
+    localStorage.setItem('totalEarnedPoints', totalEarnedPoints.toString());
+    const newRank = calculateRankFromPoints(totalEarnedPoints);
+    if (newRank !== userRanking) {
+      setUserRanking(newRank);
+    }
+  }, [totalEarnedPoints]);
 
   // 구매한 장식품 저장
   useEffect(() => {
@@ -389,6 +444,7 @@ const EcostepApp = () => {
               setNotifications={setNotificationsList}
               points={points}
               setPoints={setPoints}
+              earnPoints={earnPoints}
               rankTheme={rankTheme}
             />
           ) : showSettings ? (
@@ -473,6 +529,7 @@ const EcostepApp = () => {
                 setCustomPlasticItems={setCustomPlasticItems}
                 points={points}
                 setPoints={setPoints}
+                earnPoints={earnPoints}
                 setLastChallengeDate={setLastChallengeDate}
                 setWaterQuality={setWaterQuality}
                 challengeHistory={challengeHistory}
@@ -500,11 +557,16 @@ const EcostepApp = () => {
                 setPoints={setPoints}
                 showToast={showToast}
                 setCurrentTank={setCurrentTank}
+                calculateRankProgress={calculateRankProgress}
+                calculateRankFromPoints={calculateRankFromPoints}
+                totalEarnedPoints={totalEarnedPoints}
+                setTotalEarnedPoints={setTotalEarnedPoints}
+                spendPoints={spendPoints}
               />}
               {activeTab === 'community' && !showFriendsList && !showGlobalList && <CommunityPage isDarkMode={isDarkMode} onShowFriendsList={() => setShowFriendsList(true)} onShowGlobalList={() => setShowGlobalList(true)} showToast={showToast} userRanking={rankTheme} />}
               {activeTab === 'community' && showFriendsList && <FriendsList isDarkMode={isDarkMode} onBack={() => setShowFriendsList(false)} />}
               {activeTab === 'community' && showGlobalList && <FriendsList isDarkMode={isDarkMode} onBack={() => setShowGlobalList(false)} isGlobalRanking={true} />}
-              {activeTab === 'more' && <MorePage isDarkMode={isDarkMode} userPoints={points} setUserPoints={setPoints} />}
+              {activeTab === 'more' && <MorePage isDarkMode={isDarkMode} userPoints={points} setUserPoints={setPoints} earnPoints={earnPoints} />}
             </>
           )}
 

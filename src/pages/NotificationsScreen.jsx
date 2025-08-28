@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { FiChevronRight } from 'react-icons/fi';
 
-const NotificationsScreen = ({ isDarkMode, setShowNotifications, notifications, setNotifications, points, setPoints, rankTheme }) => {
+const NotificationsScreen = ({ isDarkMode, setShowNotifications, notifications, setNotifications, points, setPoints, earnPoints, rankTheme }) => {
   const getTimeDisplay = (timestamp) => {
     const now = new Date();
     const notificationTime = new Date(timestamp);
@@ -152,7 +152,11 @@ const NotificationsScreen = ({ isDarkMode, setShowNotifications, notifications, 
                                   onClick={(e) => {
                                     e.stopPropagation();
                                     if (setPoints) {
-                                      setPoints(prev => prev + notification.pointsAmount);
+                                      if (earnPoints) {
+                                        earnPoints(notification.pointsAmount);
+                                      } else {
+                                        setPoints(prev => prev + notification.pointsAmount);
+                                      }
                                     }
                                     setNotifications(prev => 
                                       prev.map(n => 

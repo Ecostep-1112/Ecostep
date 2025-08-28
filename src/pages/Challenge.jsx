@@ -24,6 +24,7 @@ const Challenge = ({
   setCustomPlasticItems,
   points,
   setPoints,
+  earnPoints,
   setLastChallengeDate,
   setWaterQuality,
   challengeHistory,
@@ -506,7 +507,9 @@ const Challenge = ({
       }
       
       // 포인트 증가 및 토스트 메시지 표시
-      if (setPoints) {
+      if (earnPoints) {
+        earnPoints(100);
+      } else if (setPoints) {
         setPoints(prev => prev + 100);
       }
       

@@ -45,7 +45,8 @@
       "Read(/c:\\Users\\user\\Desktop\\Ecostep\\복사한 이미지/**)",
       "Read(/c:\\Users\\user\\Desktop\\Ecostep\\복사한 이미지/**)",
       "Bash(claude --version)",
-      "Read(/c:\\Users\\user\\Desktop\\Ecostep\\복사한 이미지/**)"
+      "Read(/c:\\Users\\user\\Desktop\\Ecostep\\복사한 이미지/**)",
+      "Bash(start http://localhost:5180/)"
     ],
     "deny": [],
     "ask": [],

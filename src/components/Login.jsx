@@ -14,10 +14,42 @@ function Login({ onLogin }) {
     <div className="flex items-center justify-center min-h-screen bg-gray-100 p-4">
       <div className="relative w-full max-w-[375px] h-[812px] bg-gray-900 rounded-[2.5rem] p-[3px] shadow-2xl">
         <div className="w-full h-full bg-black rounded-[2.3rem] p-[8px]">
-          <div className="w-full h-full bg-gradient-to-br from-cyan-400 via-blue-500 to-blue-600 rounded-[2rem] overflow-hidden flex flex-col items-center justify-center px-6 py-8">
-            <h1 className="text-5xl text-center mb-20 text-gray-700" style={{ fontFamily: 'Brush Script MT, cursive' }}>Ecostep</h1>
+          <div className="w-full h-full bg-gradient-to-br from-cyan-400 via-blue-500 to-blue-600 rounded-[2rem] overflow-hidden flex flex-col items-center justify-center px-6 py-8 relative">
+            {/* 상단에서 내려오는 구불구불한 선과 박스 */}
+            <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
+              <svg className="w-full h-full" viewBox="0 0 327 812" preserveAspectRatio="xMidYMid meet">
+                {/* 위에서 내려오는 구불구불한 선 - 원과 연결 */}
+                <path 
+                  d="M 163.5 0 Q 158 40, 166 80 T 161 140 Q 168 160, 163.5 180 T 163.5 195" 
+                  stroke="white" 
+                  strokeWidth="0.5" 
+                  fill="none"
+                  opacity="0.8"
+                />
+                
+                {/* 구불구불한 완전 원형 박스 - 화면 중앙 정렬 */}
+                <path 
+                  d="M 163.5 195 Q 143 197, 123 207 T 98 232 Q 93 252, 95 272 T 105 307 Q 118 327, 138 335 T 173 340 Q 193 337, 213 327 T 238 302 Q 243 282, 241 262 T 229 227 Q 216 207, 196 199 T 163 193 Q 165 194, 163.5 195 Z" 
+                  stroke="white" 
+                  strokeWidth="0.5" 
+                  fill="none"
+                  opacity="0.8"
+                />
+                
+                {/* Ecostep 텍스트 - 화면 중앙 정렬 */}
+                <text x="163.5" y="270" 
+                  fontFamily="Brush Script MT, cursive" 
+                  fontSize="48" 
+                  fill="#374151"
+                  textAnchor="middle"
+                  dominantBaseline="middle">
+                  Ecostep
+                </text>
+              </svg>
+            </div>
             
-            <div className="w-full space-y-4">
+            {/* 로그인 버튼들 */}
+            <div className="w-full space-y-4 mt-auto mb-40">
               <button
                 onClick={() => handleLogin('Google')}
                 className="w-full flex items-center justify-between bg-white/90 border border-gray-200 rounded-xl py-2.5 pl-5 pr-4 hover:bg-white transition-colors"

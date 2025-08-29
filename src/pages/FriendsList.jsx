@@ -1,59 +1,120 @@
 import React, { useState } from 'react';
 import { FiChevronRight, FiSearch } from 'react-icons/fi';
 
-const FriendsList = ({ isDarkMode, onBack, isGlobalRanking = false }) => {
+const FriendsList = ({ isDarkMode, onBack, isGlobalRanking = false, totalPlasticSaved = 0 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   
-  // Extended friends data with scores in kg
-  const globalRankingData = [];
-  
-  // 1-99위까지 생성
-  for (let i = 1; i <= 99; i++) {
-    let name, score;
-    if (i === 1) {
-      name = 'PlasticZero';
-      score = '45.2kg';
-    } else if (i === 2) {
-      name = 'EcoMaster';
-      score = '42.1kg';
-    } else if (i === 3) {
-      name = 'GreenWarrior';
-      score = '38.9kg';
+  // 나의 실제 플라스틱 절약량 반영
+  const getDisplayScore = (grams) => {
+    if (grams < 1000) {
+      return `${Math.round(grams)}g`;
     } else {
-      name = `User${i}`;
-      score = `${(50 - i * 0.4).toFixed(1)}kg`;
+      return `${(grams / 1000).toFixed(1)}kg`;
     }
-    globalRankingData.push({ rank: i, name, score });
+  };
+  
+  const myScore = getDisplayScore(totalPlasticSaved);
+  
+  // 전체 랭킹 데이터 생성 (플라스틱 절약량 포함)
+  let globalRankingDataRaw = [
+    { name: 'PlasticZero', score: '45.2kg', grams: 45200 },
+    { name: 'EcoMaster', score: '42.1kg', grams: 42100 },
+    { name: 'GreenWarrior', score: '38.9kg', grams: 38900 },
+    { name: '나', score: myScore, grams: totalPlasticSaved },
+  ];
+  
+  // 더 많은 사용자 추가
+  for (let i = 4; i <= 200; i++) {
+    const grams = Math.max(500, 50000 - i * 200); // 50kg부터 점진적으로 감소
+    globalRankingDataRaw.push({
+      name: `User${i}`,
+      score: getDisplayScore(grams),
+      grams: grams
+    });
   }
   
-  // 나의 순위 추가 (152위)
-  globalRankingData.push({ rank: 152, name: '나', score: '8.5kg' });
+  // 플라스틱 절약량으로 정렬 (내림차순)
+  globalRankingDataRaw.sort((a, b) => b.grams - a.grams);
   
-  // 친구 목록 데이터 생성
-  const friendsRankingData = [];
+  // 정렬 후 순위 부여
+  const globalRankingData = globalRankingDataRaw.map((user, index) => ({
+    ...user,
+    rank: index + 1
+  }));
   
-  // 친구 목록 최대 99명까지 생성
-  const friendNames = ['일이', '이이', '삼이', '사이'];
-  const myFriendRank = 5; // 친구 중 나의 순위
+  // 친구 목록 데이터 생성 (정렬을 위해 grams 값 포함)
+  let friendsRankingDataRaw = [
+    { name: '일이', score: '27.0kg', grams: 27000 },
+    { name: '이이', score: '24.0kg', grams: 24000 },
+    { name: '삼이', score: '21.0kg', grams: 21000 },
+    { name: '사이', score: '18.0kg', grams: 18000 },
+    { name: '나', score: myScore, grams: totalPlasticSaved },
+  ];
   
-  for (let i = 1; i <= 99; i++) {
-    let name, score;
-    if (i < 5) {
-      name = friendNames[i - 1];
-      score = `${(30 - i * 3).toFixed(1)}kg`;
-    } else if (i === myFriendRank) {
-      name = '나';
-      score = '8.5kg';
+  // 더미 친구 데이터 추가 (친구6 ~ 친구20) - 고정된 값으로
+  const additionalFriends = [
+    { name: '친구6', grams: 28200 },
+    { name: '친구7', grams: 27900 },
+    { name: '친구8', grams: 27600 },
+    { name: '친구9', grams: 27300 },
+    { name: '친구10', grams: 27000 },
+    { name: '친구11', grams: 26700 },
+    { name: '친구12', grams: 26400 },
+    { name: '친구13', grams: 26100 },
+    { name: '친구14', grams: 25800 },
+    { name: '친구15', grams: 25500 },
+    { name: '친구16', grams: 25200 },
+    { name: '친구17', grams: 24900 },
+    { name: '친구18', grams: 24600 },
+    { name: '친구19', grams: 15000 },
+    { name: '친구20', grams: 12000 },
+  ];
+  
+  additionalFriends.forEach(friend => {
+    friendsRankingDataRaw.push({
+      name: friend.name,
+      score: getDisplayScore(friend.grams),
+      grams: friend.grams
+    });
+  });
+  
+  // 플라스틱 절약량으로 정렬 (내림차순)
+  friendsRankingDataRaw.sort((a, b) => b.grams - a.grams);
+  
+  // 정렬 후 순위 부여
+  const friendsRankingData = friendsRankingDataRaw.map((friend, index) => ({
+    ...friend,
+    rank: index + 1
+  }));
+  
+  // 친구 목록에서는 최대 99명 + 나의 순위만 표시
+  let displayFriends;
+  if (!isGlobalRanking) {
+    const myRankInFriends = friendsRankingData.findIndex(f => f.name === '나') + 1;
+    
+    if (myRankInFriends <= 99) {
+      // 내가 99등 이내면 상위 99명만 표시
+      displayFriends = friendsRankingData.slice(0, 99);
     } else {
-      name = `친구${i}`;
-      score = `${Math.max(1, 30 - i * 0.3).toFixed(1)}kg`;
+      // 내가 100등 이상이면 상위 99명 + 나 표시
+      const top99 = friendsRankingData.slice(0, 99);
+      const myData = friendsRankingData.find(f => f.name === '나');
+      displayFriends = [...top99, myData].filter(Boolean);
     }
-    friendsRankingData.push({ rank: i, name, score });
+  } else {
+    // 전체 랭킹도 동일하게 처리
+    const myRankInGlobal = globalRankingData.findIndex(f => f.name === '나') + 1;
+    
+    if (myRankInGlobal <= 99) {
+      displayFriends = globalRankingData.slice(0, 99);
+    } else {
+      const top99 = globalRankingData.slice(0, 99);
+      const myData = globalRankingData.find(f => f.name === '나');
+      displayFriends = [...top99, myData].filter(Boolean);
+    }
   }
   
-  const allFriends = isGlobalRanking ? globalRankingData : friendsRankingData;
-  
-  const filteredFriends = allFriends.filter(friend =>
+  const filteredFriends = displayFriends.filter(friend =>
     friend.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
   

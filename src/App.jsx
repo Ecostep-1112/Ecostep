@@ -141,6 +141,9 @@ const EcostepApp = () => {
     return saved ? parseFloat(saved) : 0;
   });
   
+  // 테스트용 플라스틱 절약량 (개발용)
+  const [testPlasticSaved, setTestPlasticSaved] = useState(0);
+  
   // 토스트 메시지 상태
   const [toast, setToast] = useState({
     isVisible: false,
@@ -531,6 +534,8 @@ const EcostepApp = () => {
                 fishCount={fishCount}
                 consecutiveDays={consecutiveDays}
                 totalPlasticSaved={totalPlasticSaved}
+                testPlasticSaved={testPlasticSaved}
+                setTestPlasticSaved={setTestPlasticSaved}
               />}
               {activeTab === 'challenge' && <ChallengePage 
                 isDarkMode={isDarkMode}
@@ -584,9 +589,9 @@ const EcostepApp = () => {
                 setTotalEarnedPoints={setTotalEarnedPoints}
                 spendPoints={spendPoints}
               />}
-              {activeTab === 'community' && !showFriendsList && !showGlobalList && <CommunityPage isDarkMode={isDarkMode} onShowFriendsList={() => setShowFriendsList(true)} onShowGlobalList={() => setShowGlobalList(true)} showToast={showToast} userRanking={rankTheme} />}
-              {activeTab === 'community' && showFriendsList && <FriendsList isDarkMode={isDarkMode} onBack={() => setShowFriendsList(false)} />}
-              {activeTab === 'community' && showGlobalList && <FriendsList isDarkMode={isDarkMode} onBack={() => setShowGlobalList(false)} isGlobalRanking={true} />}
+              {activeTab === 'community' && !showFriendsList && !showGlobalList && <CommunityPage isDarkMode={isDarkMode} onShowFriendsList={() => setShowFriendsList(true)} onShowGlobalList={() => setShowGlobalList(true)} showToast={showToast} userRanking={rankTheme} totalPlasticSaved={testPlasticSaved > 0 ? testPlasticSaved : totalPlasticSaved} />}
+              {activeTab === 'community' && showFriendsList && <FriendsList isDarkMode={isDarkMode} onBack={() => setShowFriendsList(false)} totalPlasticSaved={testPlasticSaved > 0 ? testPlasticSaved : totalPlasticSaved} />}
+              {activeTab === 'community' && showGlobalList && <FriendsList isDarkMode={isDarkMode} onBack={() => setShowGlobalList(false)} isGlobalRanking={true} totalPlasticSaved={testPlasticSaved > 0 ? testPlasticSaved : totalPlasticSaved} />}
               {activeTab === 'more' && <MorePage isDarkMode={isDarkMode} userPoints={points} setUserPoints={setPoints} earnPoints={earnPoints} rankTheme={rankTheme} showToast={showToast} />}
             </>
           )}

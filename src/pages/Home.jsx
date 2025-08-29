@@ -22,14 +22,15 @@ const Home = ({
   selectedFish = [],
   fishCount = 0,
   consecutiveDays = 0,
-  totalPlasticSaved = 0
+  totalPlasticSaved = 0,
+  testPlasticSaved = 0,
+  setTestPlasticSaved
 }) => {
   const bgColor = isDarkMode ? 'bg-gray-900' : 'bg-white';
   const textColor = isDarkMode ? 'text-white' : 'text-gray-900';
   const [fishPositions, setFishPositions] = useState([]);
   const [displayFish, setDisplayFish] = useState([]);
   const [displayDecorations, setDisplayDecorations] = useState([]);
-  const [testPlasticSaved, setTestPlasticSaved] = useState(0);
   
   // totalPlasticSaved는 g 단위로 저장되어 있음
   // kg으로 변환: 1000g = 1kg
@@ -380,7 +381,7 @@ const Home = ({
             step="500"
             value={testPlasticSaved}
             onChange={(e) => {
-              setTestPlasticSaved(e.target.value);
+              setTestPlasticSaved && setTestPlasticSaved(parseInt(e.target.value));
             }}
             className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
             style={{

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { MessageCircle, Link, UserSearch, ChevronDown } from 'lucide-react';
 import SearchFriends from './SearchFriends';
 
-const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast, userRanking }) => {
+const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast, userRanking, totalPlasticSaved = 0 }) => {
   const [showSearchPage, setShowSearchPage] = useState(false);
   const bgColor = isDarkMode ? 'bg-gray-900' : 'bg-white';
   const textColor = isDarkMode ? 'text-white' : 'text-gray-900';
@@ -10,25 +10,94 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
   const cardBg = isDarkMode ? 'bg-gray-800' : 'bg-white';
   const inputBg = isDarkMode ? 'bg-gray-700' : 'bg-gray-50';
   
-  // 나의 랭킹 (1~3위가 아닐 경우를 위한 더미 데이터)
-  const myRank = 5;
-  const isInTop3 = myRank <= 3;
+  // 나의 실제 플라스틱 절약량 (g 단위를 kg 또는 g으로 표시)
+  const getDisplayScore = (grams) => {
+    if (grams < 1000) {
+      return `${Math.round(grams)}g`;
+    } else {
+      return `${(grams / 1000).toFixed(1)}kg`;
+    }
+  };
   
-  // 전체 사용자 수와 나의 순위로 상위 퍼센트 계산
-  const totalUsers = 1500; // 전체 사용자 수
-  const myGlobalRank = 152; // 나의 전체 순위
+  const myScore = getDisplayScore(totalPlasticSaved);
+  
+  // 전체 랭킹 데이터 생성 (FriendsList와 동일한 로직)
+  let globalRankingDataRaw = [
+    { name: 'PlasticZero', score: '45.2kg', grams: 45200 },
+    { name: 'EcoMaster', score: '42.1kg', grams: 42100 },
+    { name: 'GreenWarrior', score: '38.9kg', grams: 38900 },
+    { name: '나', score: myScore, grams: totalPlasticSaved },
+  ];
+  
+  // 더 많은 사용자 추가 (전체 200명)
+  for (let i = 4; i <= 200; i++) {
+    const grams = Math.max(500, 50000 - i * 200);
+    globalRankingDataRaw.push({
+      name: `User${i}`,
+      score: getDisplayScore(grams),
+      grams: grams
+    });
+  }
+  
+  // 플라스틱 절약량으로 정렬
+  globalRankingDataRaw.sort((a, b) => b.grams - a.grams);
+  
+  // 나의 전체 순위 찾기
+  const myGlobalRank = globalRankingDataRaw.findIndex(u => u.name === '나') + 1;
+  const totalUsers = globalRankingDataRaw.length;
   const topPercentage = Math.round((myGlobalRank / totalUsers) * 100);
   
-  // 친구 목록 데이터
-  const friendsList = [
-    { rank: 1, name: '일이', score: '27.3kg' },
-    { rank: 2, name: '이이', score: '18.7kg' },
-    { rank: 3, name: '삼이', score: '15.2kg' },
-    { rank: 4, name: '사이', score: '12.1kg' },
-    { rank: 5, name: '나', score: '8.5kg' },
-    { rank: 6, name: '오이', score: '7.8kg' },
-    { rank: 7, name: '육이', score: '6.2kg' },
+  // kg로 변환하는 함수 (정렬을 위해 숫자로 반환)
+  const parseScoreToGrams = (score) => {
+    if (typeof score === 'string') {
+      if (score.includes('kg')) {
+        return parseFloat(score) * 1000;
+      } else if (score.includes('g')) {
+        return parseFloat(score);
+      }
+    }
+    return 0;
+  };
+  
+  // 친구 목록 데이터 (나의 실제 데이터 반영) - FriendsList와 동일하게
+  let friendsListRaw = [
+    { name: '일이', score: '27.0kg', grams: 27000 },
+    { name: '이이', score: '24.0kg', grams: 24000 },
+    { name: '삼이', score: '21.0kg', grams: 21000 },
+    { name: '사이', score: '18.0kg', grams: 18000 },
+    { name: '나', score: myScore, grams: totalPlasticSaved },
+    { name: '친구6', score: '28.2kg', grams: 28200 },
+    { name: '친구7', score: '27.9kg', grams: 27900 },
+    { name: '친구8', score: '27.6kg', grams: 27600 },
+    { name: '친구9', score: '27.3kg', grams: 27300 },
+    { name: '친구10', score: '27.0kg', grams: 27000 },
+    { name: '친구11', score: '26.7kg', grams: 26700 },
+    { name: '친구12', score: '26.4kg', grams: 26400 },
+    { name: '친구13', score: '26.1kg', grams: 26100 },
+    { name: '친구14', score: '25.8kg', grams: 25800 },
+    { name: '친구15', score: '25.5kg', grams: 25500 },
+    { name: '친구16', score: '25.2kg', grams: 25200 },
+    { name: '친구17', score: '24.9kg', grams: 24900 },
+    { name: '친구18', score: '24.6kg', grams: 24600 },
+    { name: '친구19', score: '15.0kg', grams: 15000 },
+    { name: '친구20', score: '12.0kg', grams: 12000 },
   ];
+  
+  // 점수로 정렬 (내림차순) - 플라스틱 절약량이 많을수록 상위
+  friendsListRaw.sort((a, b) => {
+    // grams 값으로 비교 (큰 값이 먼저 오도록)
+    return b.grams - a.grams;
+  });
+  
+  // 랭킹 부여
+  const friendsList = friendsListRaw.map((friend, index) => ({
+    ...friend,
+    rank: index + 1
+  }));
+  
+  // 나의 친구 중 랭킹 찾기
+  const myRank = friendsList.findIndex(f => f.name === '나') + 1;
+  const isInTop3 = myRank <= 3;
 
   if (showSearchPage) {
     return <SearchFriends isDarkMode={isDarkMode} onBack={() => setShowSearchPage(false)} userRanking={userRanking} showToast={showToast} />;
@@ -208,7 +277,8 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
           <div>
             {friendsList.slice(0, 3).map((friend, index) => {
               // 1등: 플래티넘, 2등: 골드, 3등: 실버
-              const rankColor = friend.rank === 1 ? '#c084fc' : friend.rank === 2 ? '#facc15' : '#14b8a6';
+              const displayRank = index + 1; // 화면에 표시할 순위 (1, 2, 3)
+              const rankColor = displayRank === 1 ? '#c084fc' : displayRank === 2 ? '#facc15' : '#14b8a6';
               const isMe = friend.name === '나';
               
               return (
@@ -216,7 +286,7 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
                   <div className="flex items-center justify-between py-1.5">
                     <div className="flex items-center">
                       <div className="flex items-center justify-center mr-2" style={{ width: '20px', height: '20px' }}>
-                        {friend.rank === 1 ? (
+                        {displayRank === 1 ? (
                           <svg width="20" height="20" viewBox="0 0 100 100" fill="none">
                             <defs>
                               <linearGradient id="platinumGradient-comm-f" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -233,7 +303,7 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
                             <path d="M35 40 L50 70 L65 40 Z" fill="#ede9fe" stroke="#e9d5ff" strokeWidth="1"/>
                             <ellipse cx="48" cy="35" rx="8" ry="4" fill="white" opacity="0.4"/>
                           </svg>
-                        ) : friend.rank === 2 ? (
+                        ) : displayRank === 2 ? (
                           <svg width="20" height="20" viewBox="0 0 100 100" fill="none">
                             <defs>
                               <linearGradient id="goldGradient-comm-f" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -250,7 +320,7 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
                             ))}
                             <circle cx="47" cy="47" r="6" fill="white" opacity="0.4"/>
                           </svg>
-                        ) : friend.rank === 3 ? (
+                        ) : displayRank === 3 ? (
                           <svg width="20" height="20" viewBox="0 0 100 100" fill="none">
                             <defs>
                               <linearGradient id="silverGradient-comm-f" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -273,7 +343,7 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
                               borderColor: isMe ? (isDarkMode ? '#9ca3af' : '#6b7280') : (isDarkMode ? '#4b5563' : '#d1d5db')
                             }}
                           >
-                            {friend.rank}
+                            {displayRank}
                           </div>
                         )}
                       </div>
@@ -300,7 +370,7 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
                     </div>
                     <span className={`text-sm font-medium ${textColor} relative`} style={{ top: '-1px' }}>나</span>
                   </div>
-                  <span className={`text-xs font-medium ${textColor} relative`} style={{ top: '-1px' }}>{friendsList.find(f => f.name === '나')?.score || '8.5kg'}</span>
+                  <span className={`text-xs font-medium ${textColor} relative`} style={{ top: '-1px' }}>{myScore}</span>
                 </div>
               </>
             )}
@@ -320,21 +390,18 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
             </button>
           </div>
           <div>
-            {[
-              { rank: 1, name: 'PlasticZero', score: '45.2kg' },
-              { rank: 2, name: 'EcoMaster', score: '42.1kg' },
-              { rank: 3, name: 'GreenWarrior', score: '38.9kg' },
-            ].map((user, index) => {
+            {globalRankingDataRaw.slice(0, 3).map((user, index) => {
               // 1등: 플래티넘, 2등: 골드, 3등: 실버
-              const rankColor = user.rank === 1 ? '#c084fc' : user.rank === 2 ? '#facc15' : '#14b8a6';
-              const isMe = false; // 전체 랭킹에는 '나'가 상위 3명에 없다고 가정
+              const displayRank = index + 1;
+              const rankColor = displayRank === 1 ? '#c084fc' : displayRank === 2 ? '#facc15' : '#14b8a6';
+              const isMe = user.name === '나';
               
               return (
                 <div key={user.rank}>
                   <div className="flex items-center justify-between py-1.5">
                     <div className="flex items-center">
                       <div className="flex items-center justify-center mr-2" style={{ width: '20px', height: '20px' }}>
-                        {user.rank === 1 ? (
+                        {displayRank === 1 ? (
                           <svg width="20" height="20" viewBox="0 0 100 100" fill="none">
                             <defs>
                               <linearGradient id="platinumGradient-comm-g" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -351,7 +418,7 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
                             <path d="M35 40 L50 70 L65 40 Z" fill="#ede9fe" stroke="#e9d5ff" strokeWidth="1"/>
                             <ellipse cx="48" cy="35" rx="8" ry="4" fill="white" opacity="0.4"/>
                           </svg>
-                        ) : user.rank === 2 ? (
+                        ) : displayRank === 2 ? (
                           <svg width="20" height="20" viewBox="0 0 100 100" fill="none">
                             <defs>
                               <linearGradient id="goldGradient-comm-g" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -368,7 +435,7 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
                             ))}
                             <circle cx="47" cy="47" r="6" fill="white" opacity="0.4"/>
                           </svg>
-                        ) : user.rank === 3 ? (
+                        ) : displayRank === 3 ? (
                           <svg width="20" height="20" viewBox="0 0 100 100" fill="none">
                             <defs>
                               <linearGradient id="silverGradient-comm-g" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -393,32 +460,36 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
                           </div>
                         )}
                       </div>
-                      <span className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} relative`} style={{ top: '-1px' }}>{user.name}</span>
+                      <span className={`text-sm ${isMe ? `font-medium ${textColor}` : isDarkMode ? 'text-gray-300' : 'text-gray-700'} relative`} style={{ top: '-1px' }}>{user.name}</span>
                     </div>
-                    <span className={`text-xs ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} relative`} style={{ top: '-1px' }}>{user.score}</span>
+                    <span className={`text-xs ${isMe ? `font-medium ${textColor}` : isDarkMode ? 'text-gray-300' : 'text-gray-700'} relative`} style={{ top: '-1px' }}>{user.score}</span>
                   </div>
                   {index < 2 && <div className={`border-b ${borderColor}`}></div>}
                 </div>
               );
             })}
-            {/* 나의 랭킹 (전체에서는 상위 %로 표시) */}
-            <div className={`border-t ${borderColor}`}></div>
-            <div className="flex items-center justify-between py-1.5">
-              <div className="flex items-center">
-                <div className="flex items-center justify-center mr-2" style={{ width: '20px', height: '20px' }}>
-                  <div 
-                    className={`w-[17.6px] h-[17.6px] rounded-full border flex items-center justify-center text-[11px] font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
-                    style={{ borderColor: isDarkMode ? '#9ca3af' : '#6b7280' }}
-                  >
-                    ···
+            {/* 나의 랭킹 (1~3등이 아닐 때만 표시) */}
+            {myGlobalRank > 3 && (
+              <>
+                <div className={`border-t ${borderColor}`}></div>
+                <div className="flex items-center justify-between py-1.5">
+                  <div className="flex items-center">
+                    <div className="flex items-center justify-center mr-2" style={{ width: '20px', height: '20px' }}>
+                      <div 
+                        className={`w-[17.6px] h-[17.6px] rounded-full border flex items-center justify-center text-[11px] font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
+                        style={{ borderColor: isDarkMode ? '#9ca3af' : '#6b7280' }}
+                      >
+                        {myGlobalRank <= 99 ? myGlobalRank : '···'}
+                      </div>
+                    </div>
+                    <span className={`text-sm font-medium ${textColor} relative`} style={{ top: '-1px' }}>나</span>
                   </div>
+                  <span className={`text-xs font-medium ${textColor} relative`} style={{ top: '-1px' }}>
+                    상위 {topPercentage}%
+                  </span>
                 </div>
-                <span className={`text-sm font-medium ${textColor} relative`} style={{ top: '-1px' }}>나</span>
-              </div>
-              <span className={`text-xs font-medium ${textColor} relative`} style={{ top: '-1px' }}>
-                <span style={{ fontSize: '11px' }}>상위</span> {topPercentage}%
-              </span>
-            </div>
+              </>
+            )}
           </div>
         </div>
       </div>

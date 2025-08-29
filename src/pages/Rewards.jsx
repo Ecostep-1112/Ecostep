@@ -119,10 +119,17 @@ const Rewards = ({
   };
 
   const rankNames = {
-    bronze: 'BRONZE',
-    silver: 'SILVER',
-    gold: 'GOLD',
-    platinum: 'PLATINUM'
+    bronze: '브론즈',
+    silver: '실버',
+    gold: '골드',
+    platinum: '플래티넘'
+  };
+
+  const rankColors = {
+    bronze: '#3b82f6',
+    silver: '#06b6d4',
+    gold: '#facc15',
+    platinum: '#ec4899'
   };
 
   return (
@@ -166,25 +173,10 @@ const Rewards = ({
                 <div className="flex flex-col items-center">
                   {/* 리본 */}
                   <div className="relative">
-                    <div className={`w-2 h-5 rounded-t-sm ${
-                      userRanking === 'bronze' ? 'bg-gradient-to-b from-amber-500 via-amber-600 to-amber-700' :
-                      userRanking === 'silver' ? 'bg-gradient-to-b from-slate-400 via-slate-500 to-slate-600' :
-                      userRanking === 'gold' ? 'bg-gradient-to-b from-yellow-400 via-yellow-500 to-amber-600' :
-                      'bg-gradient-to-b from-purple-500 via-purple-600 to-indigo-700'
-                    }`}></div>
+                    <div className="w-1 h-5 rounded-t-sm bg-gradient-to-b from-gray-100 via-white to-gray-200"></div>
                     {/* 리본 끝 V자 모양 */}
-                    <div className={`absolute bottom-0 left-0 w-0 h-0 border-l-[4px] border-l-transparent border-t-[3px] ${
-                      userRanking === 'bronze' ? 'border-t-amber-700' :
-                      userRanking === 'silver' ? 'border-t-slate-600' :
-                      userRanking === 'gold' ? 'border-t-amber-600' :
-                      'border-t-indigo-700'
-                    }`}></div>
-                    <div className={`absolute bottom-0 right-0 w-0 h-0 border-r-[4px] border-r-transparent border-t-[3px] ${
-                      userRanking === 'bronze' ? 'border-t-amber-700' :
-                      userRanking === 'silver' ? 'border-t-slate-600' :
-                      userRanking === 'gold' ? 'border-t-amber-600' :
-                      'border-t-indigo-700'
-                    }`}></div>
+                    <div className="absolute bottom-0 left-0 w-0 h-0 border-l-[4px] border-l-transparent border-t-[3px] border-t-gray-300"></div>
+                    <div className="absolute bottom-0 right-0 w-0 h-0 border-r-[4px] border-r-transparent border-t-[3px] border-t-gray-300"></div>
                   </div>
                   {/* 메달 */}
                   <div className="relative -mt-1 bg-white/90 rounded-full p-0.5 shadow-md">
@@ -247,7 +239,7 @@ const Rewards = ({
               <div className={`${userRanking === 'bronze' || userRanking === 'silver' || userRanking === 'gold' || userRanking === 'platinum' ? '' : 'opacity-20 grayscale'}`}>
                 <BronzeIcon size={28} />
               </div>
-              <span className={`font-medium ${userRanking === 'bronze' || userRanking === 'silver' || userRanking === 'gold' || userRanking === 'platinum' ? (isDarkMode ? 'text-amber-400' : 'text-amber-600') : (isDarkMode ? 'text-gray-600' : 'text-gray-400')}`}>
+              <span className={`font-medium ${userRanking === 'bronze' || userRanking === 'silver' || userRanking === 'gold' || userRanking === 'platinum' ? 'text-blue-500' : (isDarkMode ? 'text-gray-600' : 'text-gray-400')}`}>
                 브론즈
               </span>
             </div>
@@ -255,7 +247,7 @@ const Rewards = ({
               <div className={`${userRanking === 'silver' || userRanking === 'gold' || userRanking === 'platinum' ? '' : 'opacity-20 grayscale'}`}>
                 <SilverIcon size={28} />
               </div>
-              <span className={`font-medium ${userRanking === 'silver' || userRanking === 'gold' || userRanking === 'platinum' ? (isDarkMode ? 'text-cyan-400' : 'text-cyan-600') : (isDarkMode ? 'text-gray-600' : 'text-gray-400')}`}>
+              <span className={`font-medium ${userRanking === 'silver' || userRanking === 'gold' || userRanking === 'platinum' ? 'text-cyan-500' : (isDarkMode ? 'text-gray-600' : 'text-gray-400')}`}>
                 실버
               </span>
             </div>
@@ -263,7 +255,7 @@ const Rewards = ({
               <div className={`${userRanking === 'gold' || userRanking === 'platinum' ? '' : 'opacity-20 grayscale'}`}>
                 <GoldIcon size={28} />
               </div>
-              <span className={`font-medium ${userRanking === 'gold' || userRanking === 'platinum' ? (isDarkMode ? 'text-yellow-400' : 'text-yellow-600') : (isDarkMode ? 'text-gray-600' : 'text-gray-400')}`}>
+              <span className={`font-medium ${userRanking === 'gold' || userRanking === 'platinum' ? 'text-yellow-500' : (isDarkMode ? 'text-gray-600' : 'text-gray-400')}`}>
                 골드
               </span>
             </div>
@@ -271,7 +263,7 @@ const Rewards = ({
               <div className={`${userRanking === 'platinum' ? '' : 'opacity-20 grayscale'}`}>
                 <PlatinumIcon size={28} />
               </div>
-              <span className={`font-medium ${userRanking === 'platinum' ? (isDarkMode ? 'text-purple-400' : 'text-purple-600') : (isDarkMode ? 'text-gray-600' : 'text-gray-400')}`}>
+              <span className={`font-medium ${userRanking === 'platinum' ? 'text-pink-500' : (isDarkMode ? 'text-gray-600' : 'text-gray-400')}`}>
                 플래티넘
               </span>
             </div>

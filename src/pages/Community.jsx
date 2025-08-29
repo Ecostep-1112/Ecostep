@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { MessageCircle, Link, UserSearch, ChevronDown } from 'lucide-react';
 import SearchFriends from './SearchFriends';
+import { BronzeIcon, SilverIcon, GoldIcon, PlatinumIcon } from '../components/RankIcons';
 
 const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast, userRanking, totalPlasticSaved = 0, currentUserId = '', currentUserName = '' }) => {
   const [showSearchPage, setShowSearchPage] = useState(false);
@@ -322,7 +323,7 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
             {friendsList.slice(0, 3).map((friend, index) => {
               // 1등: 플래티넘, 2등: 골드, 3등: 실버
               const displayRank = index + 1; // 화면에 표시할 순위 (1, 2, 3)
-              const rankColor = displayRank === 1 ? '#c084fc' : displayRank === 2 ? '#facc15' : '#14b8a6';
+              const rankColor = displayRank === 1 ? '#ec4899' : displayRank === 2 ? '#facc15' : '#06b6d4';
               const isMe = friend.name === '나';
               
               return (
@@ -331,53 +332,11 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
                     <div className="flex items-center">
                       <div className="flex items-center justify-center mr-2" style={{ width: '20px', height: '20px' }}>
                         {displayRank === 1 ? (
-                          <svg width="20" height="20" viewBox="0 0 100 100" fill="none">
-                            <defs>
-                              <linearGradient id="platinumGradient-comm-f" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" stopColor="#e9d5ff" />
-                                <stop offset="30%" stopColor="#c084fc" />
-                                <stop offset="60%" stopColor="#a855f7" />
-                                <stop offset="100%" stopColor="#6366f1" />
-                              </linearGradient>
-                            </defs>
-                            <circle cx="50" cy="50" r="45" fill="url(#platinumGradient-comm-f)"/>
-                            <circle cx="50" cy="50" r="40" fill="none" stroke="#e9d5ff" strokeWidth="1" opacity="0.8"/>
-                            <circle cx="50" cy="50" r="36" fill="none" stroke="#e9d5ff" strokeWidth="1" opacity="0.6"/>
-                            <path d="M50 25 L35 40 L65 40 Z" fill="#f3e8ff" stroke="#e9d5ff" strokeWidth="1"/>
-                            <path d="M35 40 L50 70 L65 40 Z" fill="#ede9fe" stroke="#e9d5ff" strokeWidth="1"/>
-                            <ellipse cx="48" cy="35" rx="8" ry="4" fill="white" opacity="0.4"/>
-                          </svg>
+                          <PlatinumIcon size={20} />
                         ) : displayRank === 2 ? (
-                          <svg width="20" height="20" viewBox="0 0 100 100" fill="none">
-                            <defs>
-                              <linearGradient id="goldGradient-comm-f" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" stopColor="#fde047" />
-                                <stop offset="50%" stopColor="#facc15" />
-                                <stop offset="100%" stopColor="#f59e0b" />
-                              </linearGradient>
-                            </defs>
-                            <circle cx="50" cy="50" r="45" fill="url(#goldGradient-comm-f)"/>
-                            <circle cx="50" cy="50" r="38" fill="none" stroke="#fef3c7" strokeWidth="2" opacity="0.8"/>
-                            <circle cx="50" cy="50" r="15" fill="#fef3c7"/>
-                            {[0, 45, 90, 135, 180, 225, 270, 315].map((angle, i) => (
-                              <rect key={i} x="48" y="25" width="4" height="12" fill="#fef3c7" rx="2" transform={`rotate(${angle} 50 50)`}/>
-                            ))}
-                            <circle cx="47" cy="47" r="6" fill="white" opacity="0.4"/>
-                          </svg>
+                          <GoldIcon size={20} />
                         ) : displayRank === 3 ? (
-                          <svg width="20" height="20" viewBox="0 0 100 100" fill="none">
-                            <defs>
-                              <linearGradient id="silverGradient-comm-f" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" stopColor="#e2e8f0" />
-                                <stop offset="50%" stopColor="#94a3b8" />
-                                <stop offset="100%" stopColor="#64748b" />
-                              </linearGradient>
-                            </defs>
-                            <circle cx="50" cy="50" r="45" fill="url(#silverGradient-comm-f)"/>
-                            <circle cx="50" cy="50" r="38" fill="none" stroke="#06b6d4" strokeWidth="2" opacity="0.7"/>
-                            <path d="M 40 30 C 30 30, 25 40, 25 50 C 25 60, 30 70, 40 70 C 35 65, 32 58, 32 50 C 32 42, 35 35, 40 30" fill="#e0f2fe"/>
-                            <path d="M 60 40 L 63 47 L 70 47 L 64 52 L 67 59 L 60 54 L 53 59 L 56 52 L 50 47 L 57 47 Z" fill="#bae6fd"/>
-                          </svg>
+                          <SilverIcon size={20} />
                         ) : (
                           <div 
                             className={`w-[17.6px] h-[17.6px] rounded-full border flex items-center justify-center text-[11px] font-medium ${
@@ -437,7 +396,7 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
             {globalRankingDataRaw.slice(0, 3).map((user, index) => {
               // 1등: 플래티넘, 2등: 골드, 3등: 실버
               const displayRank = index + 1;
-              const rankColor = displayRank === 1 ? '#c084fc' : displayRank === 2 ? '#facc15' : '#14b8a6';
+              const rankColor = displayRank === 1 ? '#ec4899' : displayRank === 2 ? '#facc15' : '#06b6d4';
               const isMe = user.name === '나';
               
               return (
@@ -446,53 +405,11 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
                     <div className="flex items-center">
                       <div className="flex items-center justify-center mr-2" style={{ width: '20px', height: '20px' }}>
                         {displayRank === 1 ? (
-                          <svg width="20" height="20" viewBox="0 0 100 100" fill="none">
-                            <defs>
-                              <linearGradient id="platinumGradient-comm-g" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" stopColor="#e9d5ff" />
-                                <stop offset="30%" stopColor="#c084fc" />
-                                <stop offset="60%" stopColor="#a855f7" />
-                                <stop offset="100%" stopColor="#6366f1" />
-                              </linearGradient>
-                            </defs>
-                            <circle cx="50" cy="50" r="45" fill="url(#platinumGradient-comm-g)"/>
-                            <circle cx="50" cy="50" r="40" fill="none" stroke="#e9d5ff" strokeWidth="1" opacity="0.8"/>
-                            <circle cx="50" cy="50" r="36" fill="none" stroke="#e9d5ff" strokeWidth="1" opacity="0.6"/>
-                            <path d="M50 25 L35 40 L65 40 Z" fill="#f3e8ff" stroke="#e9d5ff" strokeWidth="1"/>
-                            <path d="M35 40 L50 70 L65 40 Z" fill="#ede9fe" stroke="#e9d5ff" strokeWidth="1"/>
-                            <ellipse cx="48" cy="35" rx="8" ry="4" fill="white" opacity="0.4"/>
-                          </svg>
+                          <PlatinumIcon size={20} />
                         ) : displayRank === 2 ? (
-                          <svg width="20" height="20" viewBox="0 0 100 100" fill="none">
-                            <defs>
-                              <linearGradient id="goldGradient-comm-g" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" stopColor="#fde047" />
-                                <stop offset="50%" stopColor="#facc15" />
-                                <stop offset="100%" stopColor="#f59e0b" />
-                              </linearGradient>
-                            </defs>
-                            <circle cx="50" cy="50" r="45" fill="url(#goldGradient-comm-g)"/>
-                            <circle cx="50" cy="50" r="38" fill="none" stroke="#fef3c7" strokeWidth="2" opacity="0.8"/>
-                            <circle cx="50" cy="50" r="15" fill="#fef3c7"/>
-                            {[0, 45, 90, 135, 180, 225, 270, 315].map((angle, i) => (
-                              <rect key={i} x="48" y="25" width="4" height="12" fill="#fef3c7" rx="2" transform={`rotate(${angle} 50 50)`}/>
-                            ))}
-                            <circle cx="47" cy="47" r="6" fill="white" opacity="0.4"/>
-                          </svg>
+                          <GoldIcon size={20} />
                         ) : displayRank === 3 ? (
-                          <svg width="20" height="20" viewBox="0 0 100 100" fill="none">
-                            <defs>
-                              <linearGradient id="silverGradient-comm-g" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" stopColor="#e2e8f0" />
-                                <stop offset="50%" stopColor="#94a3b8" />
-                                <stop offset="100%" stopColor="#64748b" />
-                              </linearGradient>
-                            </defs>
-                            <circle cx="50" cy="50" r="45" fill="url(#silverGradient-comm-g)"/>
-                            <circle cx="50" cy="50" r="38" fill="none" stroke="#06b6d4" strokeWidth="2" opacity="0.7"/>
-                            <path d="M 40 30 C 30 30, 25 40, 25 50 C 25 60, 30 70, 40 70 C 35 65, 32 58, 32 50 C 32 42, 35 35, 40 30" fill="#e0f2fe"/>
-                            <path d="M 60 40 L 63 47 L 70 47 L 64 52 L 67 59 L 60 54 L 53 59 L 56 52 L 50 47 L 57 47 Z" fill="#bae6fd"/>
-                          </svg>
+                          <SilverIcon size={20} />
                         ) : (
                           <div 
                             className={`w-[17px] h-[17px] rounded-full border flex items-center justify-center text-[10px] font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}

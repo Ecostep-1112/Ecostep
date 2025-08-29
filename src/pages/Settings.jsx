@@ -17,7 +17,7 @@ export const RankThemeSettings = ({ isDarkMode, userRanking, setUserRanking, set
 
   const ranks = [
     { id: 'basic', name: '기본', icon: null, color: isDarkMode ? '#e5e7eb' : '#374151', level: 0 },
-    { id: 'bronze', name: '브론즈', icon: BronzeIcon, color: '#06b6d4', level: 1 },
+    { id: 'bronze', name: '브론즈', icon: BronzeIcon, color: '#3b82f6', level: 1 },
     { id: 'silver', name: '실버', icon: SilverIcon, color: '#14b8a6', level: 2 },
     { id: 'gold', name: '골드', icon: GoldIcon, color: '#facc15', level: 3 },
     { id: 'platinum', name: '플래티넘', icon: PlatinumIcon, color: '#c084fc', level: 4 }
@@ -80,7 +80,10 @@ export const RankThemeSettings = ({ isDarkMode, userRanking, setUserRanking, set
                     }} 
                   />
                 )}
-                <span className={`text-sm ${textColor} ${isLocked ? 'opacity-50' : ''}`}>{rank.name}</span>
+                <span 
+                  className={`text-sm ${isLocked ? 'opacity-50' : ''}`}
+                  style={{ color: isSelected && !isLocked ? rank.color : isDarkMode ? '#ffffff' : '#1f2937' }}
+                >{rank.name}</span>
               </div>
               
               <div className="relative z-0">
@@ -200,9 +203,14 @@ export const NotificationSettings = ({ isDarkMode, notifications, setNotificatio
           <span className={`text-sm ${textColor}`}>알림 받기</span>
           <button 
             onClick={() => setNotifications(!notifications)}
-            className={`w-12 h-6 rounded-full ${notifications ? 'bg-blue-500' : isDarkMode ? 'bg-gray-600' : 'bg-gray-300'} relative transition-colors`}
+            className={`w-11 h-6 rounded-full relative transition-all`}
+            style={{
+              background: notifications 
+                ? 'linear-gradient(135deg, #06b6d4 0%, #3b82f6 50%, #2563eb 100%)'
+                : isDarkMode ? '#4b5563' : '#d1d5db'
+            }}
           >
-            <div className={`w-5 h-5 bg-white rounded-full absolute top-0.5 transition-transform ${notifications ? 'translate-x-6' : 'translate-x-0.5'}`}></div>
+            <div className={`w-5 h-5 bg-white rounded-full absolute top-0.5 transition-transform ${notifications ? 'translate-x-[20px]' : 'translate-x-0.5'}`}></div>
           </button>
         </div>
       </div>
@@ -230,9 +238,14 @@ export const LocationSettings = ({ isDarkMode, locationSharing, setLocationShari
           <span className={`text-sm ${textColor}`}>위치 공유 동의</span>
           <button 
             onClick={() => setLocationSharing(!locationSharing)}
-            className={`w-12 h-6 rounded-full ${locationSharing ? 'bg-blue-500' : isDarkMode ? 'bg-gray-600' : 'bg-gray-300'} relative transition-colors`}
+            className={`w-11 h-6 rounded-full relative transition-all`}
+            style={{
+              background: locationSharing 
+                ? 'linear-gradient(135deg, #06b6d4 0%, #3b82f6 50%, #2563eb 100%)'
+                : isDarkMode ? '#4b5563' : '#d1d5db'
+            }}
           >
-            <div className={`w-5 h-5 bg-white rounded-full absolute top-0.5 transition-transform ${locationSharing ? 'translate-x-6' : 'translate-x-0.5'}`}></div>
+            <div className={`w-5 h-5 bg-white rounded-full absolute top-0.5 transition-transform ${locationSharing ? 'translate-x-[20px]' : 'translate-x-0.5'}`}></div>
           </button>
         </div>
       </div>

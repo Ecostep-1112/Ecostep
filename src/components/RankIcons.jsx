@@ -11,9 +11,9 @@ export const BronzeIcon = ({ size = 24, className = "" }) => (
   >
     <defs>
       <linearGradient id="bronzeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stopColor="#d97706" />
-        <stop offset="50%" stopColor="#92400e" />
-        <stop offset="100%" stopColor="#78350f" />
+        <stop offset="0%" stopColor="#06b6d4" />
+        <stop offset="50%" stopColor="#3b82f6" />
+        <stop offset="100%" stopColor="#2563eb" />
       </linearGradient>
       <filter id="bronzeShadow">
         <feDropShadow dx="2" dy="2" stdDeviation="2" floodOpacity="0.3"/>
@@ -35,7 +35,7 @@ export const BronzeIcon = ({ size = 24, className = "" }) => (
       cy="50" 
       r="38" 
       fill="none"
-      stroke="#fbbf24"
+      stroke="#ffffff"
       strokeWidth="2"
       opacity="0.6"
     />
@@ -46,7 +46,7 @@ export const BronzeIcon = ({ size = 24, className = "" }) => (
       y="55" 
       width="4" 
       height="20"
-      fill="#84cc16"
+      fill="#ffffff"
       rx="2"
     />
     
@@ -56,7 +56,7 @@ export const BronzeIcon = ({ size = 24, className = "" }) => (
       cy="45" 
       rx="12" 
       ry="8"
-      fill="#84cc16"
+      fill="#ffffff"
       transform="rotate(-30 40 45)"
     />
     
@@ -66,7 +66,7 @@ export const BronzeIcon = ({ size = 24, className = "" }) => (
       cy="45" 
       rx="12" 
       ry="8"
-      fill="#84cc16"
+      fill="#ffffff"
       transform="rotate(30 60 45)"
     />
     
@@ -76,7 +76,7 @@ export const BronzeIcon = ({ size = 24, className = "" }) => (
       cy="35" 
       rx="8" 
       ry="12"
-      fill="#a3e635"
+      fill="#ffffff"
     />
     
     {/* 하이라이트 */}
@@ -86,7 +86,7 @@ export const BronzeIcon = ({ size = 24, className = "" }) => (
       rx="3" 
       ry="5"
       fill="white"
-      opacity="0.4"
+      opacity="0.6"
     />
   </svg>
 );
@@ -102,9 +102,9 @@ export const SilverIcon = ({ size = 24, className = "" }) => (
   >
     <defs>
       <linearGradient id="silverGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stopColor="#e2e8f0" />
-        <stop offset="50%" stopColor="#94a3b8" />
-        <stop offset="100%" stopColor="#64748b" />
+        <stop offset="0%" stopColor="#cbd5e1" />
+        <stop offset="50%" stopColor="#06b6d4" />
+        <stop offset="100%" stopColor="#14b8a6" />
       </linearGradient>
       <filter id="silverShadow">
         <feDropShadow dx="2" dy="2" stdDeviation="2" floodOpacity="0.3"/>
@@ -126,7 +126,7 @@ export const SilverIcon = ({ size = 24, className = "" }) => (
       cy="50" 
       r="38" 
       fill="none"
-      stroke="#06b6d4"
+      stroke="#ffffff"
       strokeWidth="2"
       opacity="0.7"
     />
@@ -185,9 +185,9 @@ export const GoldIcon = ({ size = 24, className = "" }) => (
   >
     <defs>
       <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stopColor="#fde047" />
+        <stop offset="0%" stopColor="#fcd34d" />
         <stop offset="50%" stopColor="#facc15" />
-        <stop offset="100%" stopColor="#f59e0b" />
+        <stop offset="100%" stopColor="#fb923c" />
       </linearGradient>
       <filter id="goldShadow">
         <feDropShadow dx="2" dy="2" stdDeviation="2" floodOpacity="0.3"/>
@@ -209,7 +209,7 @@ export const GoldIcon = ({ size = 24, className = "" }) => (
       cy="50" 
       r="38" 
       fill="none"
-      stroke="#fef3c7"
+      stroke="#ffffff"
       strokeWidth="2"
       opacity="0.8"
     />
@@ -264,9 +264,8 @@ export const PlatinumIcon = ({ size = 24, className = "" }) => (
   >
     <defs>
       <linearGradient id="platinumGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stopColor="#e9d5ff" />
-        <stop offset="30%" stopColor="#c084fc" />
-        <stop offset="60%" stopColor="#a855f7" />
+        <stop offset="0%" stopColor="#c084fc" />
+        <stop offset="50%" stopColor="#ec4899" />
         <stop offset="100%" stopColor="#6366f1" />
       </linearGradient>
       <filter id="platinumShadow">
@@ -296,7 +295,7 @@ export const PlatinumIcon = ({ size = 24, className = "" }) => (
       cy="50" 
       r="40" 
       fill="none"
-      stroke="#e9d5ff"
+      stroke="#ffffff"
       strokeWidth="1"
       opacity="0.8"
     />
@@ -305,7 +304,7 @@ export const PlatinumIcon = ({ size = 24, className = "" }) => (
       cy="50" 
       r="36" 
       fill="none"
-      stroke="#e9d5ff"
+      stroke="#ffffff"
       strokeWidth="1"
       opacity="0.6"
     />

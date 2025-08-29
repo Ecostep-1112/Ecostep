@@ -875,9 +875,9 @@ const Challenge = ({
                weeklyProgress[currentWeekStart].days.some(day => day !== null) ? (
                 // 챌린지가 시작됨 - 변경 불가, 가운데 정렬
                 <div 
-                  className={`w-full h-full ${inputBg} rounded-lg flex items-center justify-center border`}
+                  className={`w-full h-full ${inputBg} rounded-lg flex items-center justify-center gradient-border`}
                   style={{
-                    borderColor: getThemeColor()
+                    '--gradient': getThemeGradient()
                   }}>
                   <span className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                     {weeklyProgress[currentWeekStart].challenge || '챌린지를 선택해 주세요'}
@@ -885,22 +885,18 @@ const Challenge = ({
                 </div>
               ) : !showCustomChallenge ? (
                 // 챌린지 시작 전 - 선택 가능
-                <div className="relative w-full h-full">
-                  <div 
-                    className="absolute inset-0 rounded-lg p-[1px]"
-                    style={{ background: selectedChallenge ? getThemeGradient() : 'transparent' }}
-                  >
-                    <button
-                      onClick={() => setShowChallengeSelect(!showChallengeSelect)}
-                      className={`w-full h-full ${inputBg} rounded-lg px-2 flex justify-between items-center`}
-                    >
-                      <span className={`text-sm flex-1 text-center ${selectedChallenge ? (isDarkMode ? 'text-gray-300' : 'text-gray-700') : (isDarkMode ? 'text-gray-500' : 'text-gray-400')}`}>
-                        {selectedChallenge || '챌린지를 선택해 주세요'}
-                      </span>
-                      <FiChevronDown className={`w-4 h-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
-                    </button>
-                  </div>
-                </div>
+                <button
+                  onClick={() => setShowChallengeSelect(!showChallengeSelect)}
+                  className={`w-full h-full ${inputBg} rounded-lg px-2 flex justify-between items-center ${selectedChallenge ? 'gradient-border' : ''}`}
+                  style={{
+                    '--gradient': selectedChallenge ? getThemeGradient() : 'transparent'
+                  }}
+                >
+                  <span className={`text-sm flex-1 text-center ${selectedChallenge ? (isDarkMode ? 'text-gray-300' : 'text-gray-700') : (isDarkMode ? 'text-gray-500' : 'text-gray-400')}`}>
+                    {selectedChallenge || '챌린지를 선택해 주세요'}
+                  </span>
+                  <FiChevronDown className={`w-4 h-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
+                </button>
               ) : (
                 <>
                   {/* 배경 블러 오버레이 - 카드 영역만 */}
@@ -1330,11 +1326,11 @@ const Challenge = ({
               
               {/* 이미 목표가 설정되어 있고 일주일이 안 지난 경우 */}
               {goalSetDate && !canChangeGoal() ? (
-                <div className={`mb-4 border rounded-lg py-2 px-4 text-center ${
+                <div className={`mb-4 rounded-lg py-2 px-4 text-center gradient-border ${
                   isDarkMode ? 'bg-gray-800' : 'bg-gray-50'
                 }`}
                   style={{
-                    borderColor: getThemeColor()
+                    '--gradient': getThemeGradient()
                   }}
                 >
                   <div className={`${textColor} text-sm font-medium`}>
@@ -1344,24 +1340,22 @@ const Challenge = ({
               ) : (
                 <div className="relative mb-4 dropdown-container">
                   {/* 드롭다운 버튼 */}
-                  <div 
-                    className="relative rounded-lg p-[1px]"
-                    style={{ background: tempPlasticGoal ? getThemeGradient() : 'transparent' }}
+                  <button
+                    onClick={() => {
+                      setShowGoalDropdown(!showGoalDropdown);
+                      // 다른 드롭다운 닫기
+                      setShowPlasticSelect(false);
+                    }}
+                    className={`w-full flex justify-between items-center rounded-lg px-3 py-2 text-sm ${tempPlasticGoal ? 'gradient-border' : ''} ${isDarkMode ? 'bg-gray-700' : 'bg-white'}`}
+                    style={{
+                      '--gradient': tempPlasticGoal ? getThemeGradient() : 'transparent'
+                    }}
                   >
-                    <button
-                      onClick={() => {
-                        setShowGoalDropdown(!showGoalDropdown);
-                        // 다른 드롭다운 닫기
-                        setShowPlasticSelect(false);
-                      }}
-                      className={`w-full flex justify-between items-center rounded-lg px-3 py-2 text-sm ${isDarkMode ? 'bg-gray-700' : 'bg-white'}`}
-                    >
-                      <span className={tempPlasticGoal ? (isDarkMode ? 'text-gray-300' : 'text-gray-700') : (isDarkMode ? 'text-gray-500' : 'text-gray-400')}>
-                        {tempPlasticGoal ? formatWeight(tempPlasticGoal) : '플라스틱 사용 한도를 설정해 주세요'}
-                      </span>
-                      <FiChevronDown className={`transition-transform ${showGoalDropdown ? 'rotate-180' : ''} ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
-                    </button>
-                  </div>
+                    <span className={tempPlasticGoal ? (isDarkMode ? 'text-gray-300' : 'text-gray-700') : (isDarkMode ? 'text-gray-500' : 'text-gray-400')}>
+                      {tempPlasticGoal ? formatWeight(tempPlasticGoal) : '플라스틱 사용 한도를 설정해 주세요'}
+                    </span>
+                    <FiChevronDown className={`transition-transform ${showGoalDropdown ? 'rotate-180' : ''} ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
+                  </button>
                 
                 {/* 드롭다운 리스트 */}
                 {showGoalDropdown && (
@@ -1386,12 +1380,11 @@ const Challenge = ({
                           type="number"
                           value={customGoalInput}
                           onChange={(e) => setCustomGoalInput(e.target.value)}
-                          className={`flex-1 border ${
+                          className={`flex-1 ${
                             isDarkMode ? 'bg-gray-700 text-white placeholder-gray-400' : 'bg-gray-50 text-gray-900 placeholder-gray-500'
                           } rounded px-2 py-1 text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none transition-all focus:outline-none`}
                           style={{
-                            borderColor: getThemeColor(),
-                            boxShadow: `0 0 0 0.5px ${getThemeColor()}20`
+                            boxShadow: `inset 0 0 0 1px ${getThemeColor()}30`
                           }}
                           placeholder="직접 설정"
                           onClick={(e) => e.stopPropagation()}
@@ -1820,7 +1813,7 @@ const Challenge = ({
                 <div className="flex gap-2">
                   <div className="flex-1">
                     <label className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} text-xs text-center block`}>수량</label>
-                    <div className={`flex items-center justify-center gap-1 mt-1 h-9 ${isDarkMode ? 'bg-gray-700' : 'bg-white'} border ${borderColor} rounded-lg px-1`}>
+                    <div className={`flex items-center justify-center gap-1 mt-1 h-9 ${isDarkMode ? 'bg-gray-700' : 'bg-white'} rounded-lg px-1`}>
                       <button
                         onClick={() => setPlasticQuantity(Math.max(1, plasticQuantity - 1))}
                         className={`flex-1 h-7 rounded-md ${isDarkMode ? 'bg-gray-600 hover:bg-gray-500 text-white' : 'bg-gray-50 hover:bg-gray-100'} flex items-center justify-center text-lg font-medium transition-colors`}
@@ -1840,7 +1833,7 @@ const Challenge = ({
                   </div>
                   <div className="flex-1">
                     <label className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} text-xs text-center block`}>총 무게</label>
-                    <div className={`h-9 mt-1 ${isDarkMode ? 'bg-gray-700' : 'bg-white'} border ${borderColor} rounded-lg flex items-center justify-center text-sm font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                    <div className={`h-9 mt-1 ${isDarkMode ? 'bg-gray-700' : 'bg-white'} rounded-lg flex items-center justify-center text-sm font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
                       {(() => {
                         let totalWeight = 0;
                         if (showCustomPlastic && customPlasticWeight) {

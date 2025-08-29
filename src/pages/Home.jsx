@@ -224,7 +224,7 @@ const Home = ({
         </div>
 
         {/* 연속 사용 알림 */}
-        <div className={`mx-4 mt-4 p-3 ${isDarkMode ? 'bg-gray-800 border-green-800' : 'bg-green-50 border-green-200'} border rounded-xl`}>
+        <div className={`mx-4 mt-4 p-3 ${isDarkMode ? 'bg-gray-800' : 'bg-gray-50'} rounded-xl`}>
           <div className="flex items-center justify-center gap-2">
             {/* 왼쪽 불꽃 SVG 아이콘 */}
             <svg 
@@ -249,7 +249,7 @@ const Home = ({
               </defs>
             </svg>
             
-            <span className="text-green-500 text-sm font-medium">
+            <span className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
               챌린지 {consecutiveDays.toString().padStart(2, '0')}일 연속 달성!
             </span>
             

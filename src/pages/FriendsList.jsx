@@ -113,16 +113,67 @@ const FriendsList = ({ isDarkMode, onBack, isGlobalRanking = false }) => {
                 <div key={friend.rank}>
                   <div className="flex items-center justify-between py-1.5">
                     <div className="flex items-center">
-                      <div 
-                        className={`w-4 h-4 rounded-full border flex items-center justify-center mr-3 text-[10px] font-medium ${
-                          isMe ? (isDarkMode ? 'text-white' : 'text-gray-900') : (isDarkMode ? 'text-gray-300' : 'text-gray-700')
-                        }`}
-                        style={{ 
-                          borderColor: isMe ? (isDarkMode ? '#9ca3af' : '#6b7280') : (rankColor || (isDarkMode ? '#4b5563' : '#d1d5db')),
-                          color: !isMe && rankColor ? rankColor : undefined
-                        }}
-                      >
-                        {friend.rank > 99 ? '···' : friend.rank}
+                      <div className="flex items-center justify-center mr-2" style={{ width: '20px', height: '20px' }}>
+                        {friend.rank === 1 ? (
+                          <svg width="20" height="20" viewBox="0 0 100 100" fill="none">
+                            <defs>
+                              <linearGradient id="platinumGradient-list" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stopColor="#e9d5ff" />
+                                <stop offset="30%" stopColor="#c084fc" />
+                                <stop offset="60%" stopColor="#a855f7" />
+                                <stop offset="100%" stopColor="#6366f1" />
+                              </linearGradient>
+                            </defs>
+                            <circle cx="50" cy="50" r="45" fill="url(#platinumGradient-list)"/>
+                            <circle cx="50" cy="50" r="40" fill="none" stroke="#e9d5ff" strokeWidth="1" opacity="0.8"/>
+                            <circle cx="50" cy="50" r="36" fill="none" stroke="#e9d5ff" strokeWidth="1" opacity="0.6"/>
+                            <path d="M50 25 L35 40 L65 40 Z" fill="#f3e8ff" stroke="#e9d5ff" strokeWidth="1"/>
+                            <path d="M35 40 L50 70 L65 40 Z" fill="#ede9fe" stroke="#e9d5ff" strokeWidth="1"/>
+                            <ellipse cx="48" cy="35" rx="8" ry="4" fill="white" opacity="0.4"/>
+                          </svg>
+                        ) : friend.rank === 2 ? (
+                          <svg width="20" height="20" viewBox="0 0 100 100" fill="none">
+                            <defs>
+                              <linearGradient id="goldGradient-list" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stopColor="#fde047" />
+                                <stop offset="50%" stopColor="#facc15" />
+                                <stop offset="100%" stopColor="#f59e0b" />
+                              </linearGradient>
+                            </defs>
+                            <circle cx="50" cy="50" r="45" fill="url(#goldGradient-list)"/>
+                            <circle cx="50" cy="50" r="38" fill="none" stroke="#fef3c7" strokeWidth="2" opacity="0.8"/>
+                            <circle cx="50" cy="50" r="15" fill="#fef3c7"/>
+                            {[0, 45, 90, 135, 180, 225, 270, 315].map((angle, i) => (
+                              <rect key={i} x="48" y="25" width="4" height="12" fill="#fef3c7" rx="2" transform={`rotate(${angle} 50 50)`}/>
+                            ))}
+                            <circle cx="47" cy="47" r="6" fill="white" opacity="0.4"/>
+                          </svg>
+                        ) : friend.rank === 3 ? (
+                          <svg width="20" height="20" viewBox="0 0 100 100" fill="none">
+                            <defs>
+                              <linearGradient id="silverGradient-list" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stopColor="#e2e8f0" />
+                                <stop offset="50%" stopColor="#94a3b8" />
+                                <stop offset="100%" stopColor="#64748b" />
+                              </linearGradient>
+                            </defs>
+                            <circle cx="50" cy="50" r="45" fill="url(#silverGradient-list)"/>
+                            <circle cx="50" cy="50" r="38" fill="none" stroke="#06b6d4" strokeWidth="2" opacity="0.7"/>
+                            <path d="M 40 30 C 30 30, 25 40, 25 50 C 25 60, 30 70, 40 70 C 35 65, 32 58, 32 50 C 32 42, 35 35, 40 30" fill="#e0f2fe"/>
+                            <path d="M 60 40 L 63 47 L 70 47 L 64 52 L 67 59 L 60 54 L 53 59 L 56 52 L 50 47 L 57 47 Z" fill="#bae6fd"/>
+                          </svg>
+                        ) : (
+                          <div 
+                            className={`w-[17.6px] h-[17.6px] rounded-full border flex items-center justify-center text-[11px] font-medium ${
+                              isMe ? (isDarkMode ? 'text-white' : 'text-gray-900') : (isDarkMode ? 'text-gray-300' : 'text-gray-700')
+                            }`}
+                            style={{ 
+                              borderColor: isMe ? (isDarkMode ? '#9ca3af' : '#6b7280') : (isDarkMode ? '#4b5563' : '#d1d5db')
+                            }}
+                          >
+                            {friend.rank > 99 ? '···' : friend.rank}
+                          </div>
+                        )}
                       </div>
                       <span className={`text-sm ${isMe ? `font-medium ${textColor}` : isDarkMode ? 'text-gray-300' : 'text-gray-700'} relative`} style={{ top: '-1px' }}>{friend.name}</span>
                     </div>

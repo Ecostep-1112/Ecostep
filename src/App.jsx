@@ -425,7 +425,7 @@ const EcostepApp = () => {
               {activeTab === 'more' && '기타'}
             </h1>
             <div className="flex items-center gap-3">
-              <div className={`flex items-center px-2 py-1 rounded ${isDarkMode ? 'bg-white/20' : 'bg-gray-100'}`}>
+              <div className={`flex items-center px-2 py-0.5 rounded border ${isDarkMode ? 'border-gray-600' : 'border-gray-300'}`}>
                 <span className={`${isDarkMode ? 'text-white' : 'text-gray-700'} text-xs font-medium`}>{points}P</span>
               </div>
               <button className="relative" onClick={() => {

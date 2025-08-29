@@ -1,19 +1,164 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { FiFeather, FiRefreshCw, FiShare2, FiChevronDown, FiChevronUp, FiBook, FiPhone, FiChevronRight } from 'react-icons/fi';
 import { Check } from 'lucide-react';
 import { generateEnvironmentalTip } from '../services/claudeService';
 
-const More = ({ isDarkMode, userPoints, setUserPoints }) => {
+const More = ({ isDarkMode, userPoints, setUserPoints, onShowChatBot }) => {
   const [expandedTip, setExpandedTip] = useState(null);
   const [isLoadingTip, setIsLoadingTip] = useState(false);
   const [environmentalTip, setEnvironmentalTip] = useState(null);
   const [errorMessage, setErrorMessage] = useState('');
   const [hasCheckedTip, setHasCheckedTip] = useState(false);
+  const mapRef = useRef(null);
+  const [map, setMap] = useState(null);
+  const [markers, setMarkers] = useState([]);
+  const [userLocation, setUserLocation] = useState(null);
+  const [sortedPlaces, setSortedPlaces] = useState([]);
 
-  // 컴포넌트 마운트 시 초기 팁 로드
+  // 컴포넌트 마운트 시 초기 팁 로드 및 지도 초기화
   useEffect(() => {
     loadInitialTip();
+    // 지도 초기화를 지연시킴
+    const timer = setTimeout(() => {
+      initializeMap();
+    }, 500);
+    return () => clearTimeout(timer);
   }, []);
+
+  // 마커 추가 effect
+  useEffect(() => {
+    if (map && zeroWastePlaces) {
+      addMarkersToMap();
+    }
+  }, [map]);
+
+  // 사용자 위치 기반으로 장소 정렬
+  useEffect(() => {
+    if (userLocation) {
+      const placesWithDistance = zeroWastePlaces.map(place => ({
+        ...place,
+        distance: calculateDistance(userLocation.lat, userLocation.lng, place.lat, place.lng)
+      }));
+      const sorted = placesWithDistance.sort((a, b) => a.distance - b.distance);
+      setSortedPlaces(sorted);
+    } else {
+      // 위치 정보가 없으면 원래 순서대로
+      setSortedPlaces(zeroWastePlaces.map(place => ({ ...place, distance: null })));
+    }
+  }, [userLocation]);
+
+  const initializeMap = () => {
+    // API 로드 확인
+    if (!window.naver || !window.naver.maps) {
+      console.warn('Naver Maps API not loaded. Please check your API key and domain settings.');
+      return;
+    }
+    
+    if (mapRef.current && window.naver && window.naver.maps) {
+      // 현재 위치 가져오기
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const { latitude, longitude } = position.coords;
+            const mapOptions = {
+              center: new window.naver.maps.LatLng(latitude, longitude),
+              zoom: 13,
+              zoomControl: true,
+              zoomControlOptions: {
+                style: window.naver.maps.ZoomControlStyle.SMALL,
+                position: window.naver.maps.Position.TOP_RIGHT
+              }
+            };
+            const mapInstance = new window.naver.maps.Map(mapRef.current, mapOptions);
+            setMap(mapInstance);
+            setUserLocation({ lat: latitude, lng: longitude });
+
+            // 현재 위치 마커 추가
+            new window.naver.maps.Marker({
+              position: new window.naver.maps.LatLng(latitude, longitude),
+              map: mapInstance,
+              title: '현재 위치',
+              icon: {
+                content: '<div style="cursor:pointer;width:24px;height:24px;line-height:24px;font-size:12px;color:white;text-align:center;background-color:#2563eb;border-radius:50%;box-shadow:0 2px 4px rgba(0,0,0,0.3);">ME</div>',
+                size: new window.naver.maps.Size(24, 24),
+                anchor: new window.naver.maps.Point(12, 12)
+              }
+            });
+          },
+          (error) => {
+            console.error('위치 정보를 가져올 수 없습니다:', error);
+            // 기본 위치 (서울)
+            const mapOptions = {
+              center: new window.naver.maps.LatLng(37.5665, 126.9780),
+              zoom: 11,
+              zoomControl: true,
+              zoomControlOptions: {
+                style: window.naver.maps.ZoomControlStyle.SMALL,
+                position: window.naver.maps.Position.TOP_RIGHT
+              }
+            };
+            const mapInstance = new window.naver.maps.Map(mapRef.current, mapOptions);
+            setMap(mapInstance);
+            // 기본 위치 사용
+            setUserLocation({ lat: 37.5665, lng: 126.9780 });
+          }
+        );
+      } else {
+        // Geolocation을 지원하지 않는 경우 기본 위치
+        const mapOptions = {
+          center: new window.naver.maps.LatLng(37.5665, 126.9780),
+          zoom: 11,
+          zoomControl: true,
+          zoomControlOptions: {
+            style: window.naver.maps.ZoomControlStyle.SMALL,
+            position: window.naver.maps.Position.TOP_RIGHT
+          }
+        };
+        const mapInstance = new window.naver.maps.Map(mapRef.current, mapOptions);
+        setMap(mapInstance);
+        // 기본 위치 사용
+        setUserLocation({ lat: 37.5665, lng: 126.9780 });
+      }
+    }
+  };
+
+  const addMarkersToMap = () => {
+    // 기존 마커 제거
+    markers.forEach(marker => marker.setMap(null));
+    
+    const newMarkers = [];
+    zeroWastePlaces.forEach((place, index) => {
+      const marker = new window.naver.maps.Marker({
+        position: new window.naver.maps.LatLng(place.lat, place.lng),
+        map: map,
+        title: place.name,
+        icon: {
+          content: `<div style="cursor:pointer;width:32px;height:32px;line-height:32px;font-size:14px;color:white;text-align:center;background-color:#10b981;border-radius:50%;box-shadow:0 2px 4px rgba(0,0,0,0.3);">${index + 1}</div>`,
+          size: new window.naver.maps.Size(32, 32),
+          anchor: new window.naver.maps.Point(16, 16)
+        }
+      });
+
+      // 마커 클릭 시 정보창 표시
+      const infoWindow = new window.naver.maps.InfoWindow({
+        content: `
+          <div style="padding:10px;min-width:150px;">
+            <h4 style="margin:0 0 5px 0;font-size:14px;font-weight:bold;">${place.name}</h4>
+            <p style="margin:0 0 3px 0;font-size:12px;color:#666;">${place.description}</p>
+            <p style="margin:0;font-size:11px;color:#999;">${place.address}</p>
+          </div>
+        `
+      });
+
+      window.naver.maps.Event.addListener(marker, 'click', () => {
+        infoWindow.open(map, marker);
+      });
+
+      newMarkers.push(marker);
+    });
+    
+    setMarkers(newMarkers);
+  };
 
   const loadInitialTip = async () => {
     setIsLoadingTip(true);
@@ -36,6 +181,18 @@ const More = ({ isDarkMode, userPoints, setUserPoints }) => {
         setUserPoints(prev => prev + 10);
       }
     }
+  };
+
+  // Haversine formula to calculate distance between two coordinates
+  const calculateDistance = (lat1, lng1, lat2, lng2) => {
+    const R = 6371; // Earth's radius in km
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLng = (lng2 - lng1) * Math.PI / 180;
+    const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+              Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+              Math.sin(dLng/2) * Math.sin(dLng/2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    return R * c; // Distance in km
   };
 
   const zeroWastePlaces = [
@@ -186,18 +343,44 @@ const More = ({ isDarkMode, userPoints, setUserPoints }) => {
         {/* 제로웨이스트 맵 */}
         <div className={`mx-3 mt-4 ${cardBg} border ${borderColor} rounded-xl p-4`}>
           <h3 className={`${textColor} text-sm font-medium mb-3`}>제로웨이스트 맵</h3>
+          
+          {/* 네이버 지도 */}
+          <div className="relative w-full h-64 rounded-lg mb-3 overflow-hidden">
+            <div ref={mapRef} className="w-full h-full" />
+            {!map && (
+              <div className="absolute inset-0 flex items-center justify-center bg-gray-100 dark:bg-gray-800">
+                <div className="text-center">
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">지도를 불러오는 중...</p>
+                  <p className="text-xs text-gray-400 dark:text-gray-500">네이버 지도 API 연결 중</p>
+                </div>
+              </div>
+            )}
+          </div>
+          
           <div className="space-y-3 max-h-64 overflow-y-auto custom-scrollbar">
-            {zeroWastePlaces.map((place, index) => (
+            {sortedPlaces.map((place, index) => (
               <div key={index} className={`border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-100'} pb-2`}>
-                <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} mb-1`}>{place.name}</p>
-                <div className="flex justify-between items-center">
-                  <span className={`text-xs ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>{place.description}</span>
-                  <button 
-                    onClick={() => openInNaverMap(place)}
-                    className="text-blue-500 text-xs"
-                  >
-                    이동 →
-                  </button>
+                <div className="flex justify-between items-start">
+                  <div className="flex-1">
+                    <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} mb-1`}>{place.name}</p>
+                    <span className={`text-xs ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>{place.description}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {place.distance !== null && (
+                      <span className={`text-xs font-medium ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                        {place.distance < 1 ? 
+                          `${Math.round(place.distance * 1000)}m` : 
+                          `${place.distance.toFixed(1)}km`
+                        }
+                      </span>
+                    )}
+                    <button 
+                      onClick={() => openInNaverMap(place)}
+                      className="text-blue-500 text-xs whitespace-nowrap"
+                    >
+                      이동 →
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}
@@ -215,7 +398,10 @@ const More = ({ isDarkMode, userPoints, setUserPoints }) => {
               </div>
               <FiChevronRight className={`w-4 h-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
             </button>
-            <button className={`w-full flex items-center justify-between p-3 ${inputBg} rounded-lg`}>
+            <button 
+              onClick={onShowChatBot}
+              className={`w-full flex items-center justify-between p-3 ${inputBg} rounded-lg`}
+            >
               <div className="flex items-center">
                 <FiPhone className={`w-4 h-4 mr-2 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
                 <span className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>고객 센터</span>

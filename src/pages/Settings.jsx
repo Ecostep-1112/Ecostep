@@ -333,7 +333,7 @@ export const AquariumSettings = ({
                       setFishCount(Math.max(1, selectedFish.length - 1));
                     }
                   }}
-                  className={`w-8 h-8 ${cardBg} border ${borderColor} rounded flex items-center justify-center`}
+                  className={`w-8 h-8 ${cardBg} border ${borderColor} rounded flex items-center justify-center ${textColor}`}
                 >-</button>
                 <span className={`text-sm font-medium px-3 ${textColor}`}>{selectedFish.length}</span>
                 <button 
@@ -347,19 +347,25 @@ export const AquariumSettings = ({
                       }
                     }
                   }}
-                  className={`w-8 h-8 ${cardBg} border ${borderColor} rounded flex items-center justify-center`}
+                  className={`w-8 h-8 ${cardBg} border ${borderColor} rounded flex items-center justify-center ${textColor}`}
                 >+</button>
               </div>
             </div>
             
-            <div className="flex items-center">
-              <input 
-                type="checkbox" 
-                checked={isRandomFish}
-                onChange={() => setIsRandomFish(!isRandomFish)}
-                className="mr-2"
-              />
-              <label className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>랜덤 선택</label>
+            <div className="flex items-center justify-end">
+              <button
+                onClick={() => setIsRandomFish(!isRandomFish)}
+                className={`flex items-center border ${isDarkMode ? 'border-gray-600' : 'border-gray-300'} rounded-lg px-3 py-1.5 ${isDarkMode ? 'hover:bg-gray-800' : 'hover:bg-gray-50'} transition-colors`}
+              >
+                <div className={`w-4 h-4 mr-2 border ${isDarkMode ? 'border-gray-600' : 'border-gray-300'} rounded flex items-center justify-center`}>
+                  {isRandomFish && (
+                    <svg className={`w-3 h-3 ${isDarkMode ? 'text-white' : 'text-gray-700'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                  )}
+                </div>
+                <span className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>랜덤 선택</span>
+              </button>
             </div>
           </div>
 
@@ -432,7 +438,7 @@ export const AquariumSettings = ({
                       setSelectedDecorations(selectedDecorations.slice(0, -1));
                     }
                   }}
-                  className={`w-8 h-8 ${cardBg} border ${borderColor} rounded flex items-center justify-center`}
+                  className={`w-8 h-8 ${cardBg} border ${borderColor} rounded flex items-center justify-center ${textColor}`}
                 >-</button>
                 <span className={`text-sm font-medium px-3 ${textColor}`}>{selectedDecorations.length}</span>
                 <button 
@@ -442,19 +448,25 @@ export const AquariumSettings = ({
                       if (nextDeco) setSelectedDecorations([...selectedDecorations, nextDeco.name]);
                     }
                   }}
-                  className={`w-8 h-8 ${cardBg} border ${borderColor} rounded flex items-center justify-center`}
+                  className={`w-8 h-8 ${cardBg} border ${borderColor} rounded flex items-center justify-center ${textColor}`}
                 >+</button>
               </div>
             </div>
             
-            <div className="flex items-center">
-              <input 
-                type="checkbox" 
-                checked={isRandomDecorations}
-                onChange={() => setIsRandomDecorations(!isRandomDecorations)}
-                className="mr-2"
-              />
-              <label className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>랜덤 선택</label>
+            <div className="flex items-center justify-end">
+              <button
+                onClick={() => setIsRandomDecorations(!isRandomDecorations)}
+                className={`flex items-center border ${isDarkMode ? 'border-gray-600' : 'border-gray-300'} rounded-lg px-3 py-1.5 ${isDarkMode ? 'hover:bg-gray-800' : 'hover:bg-gray-50'} transition-colors`}
+              >
+                <div className={`w-4 h-4 mr-2 border ${isDarkMode ? 'border-gray-600' : 'border-gray-300'} rounded flex items-center justify-center`}>
+                  {isRandomDecorations && (
+                    <svg className={`w-3 h-3 ${isDarkMode ? 'text-white' : 'text-gray-700'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                  )}
+                </div>
+                <span className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>랜덤 선택</span>
+              </button>
             </div>
           </div>
           
@@ -528,7 +540,13 @@ export const AquariumSettings = ({
             // 설정 저장
             setShowAquariumSettings(false);
           }}
-          className="w-full bg-blue-500 text-white py-3 rounded-lg text-sm font-medium"
+          className={`w-full py-2.5 rounded-lg text-sm font-medium relative ${isDarkMode ? 'text-white hover:bg-gray-800' : 'text-gray-700 hover:bg-gray-50'} transition-colors`}
+          style={{
+            background: `linear-gradient(90deg, transparent, ${isDarkMode ? '#4b5563' : '#d1d5db'} 20%, ${isDarkMode ? '#4b5563' : '#d1d5db'} 80%, transparent) no-repeat 0 0 / 100% 1px,
+                         linear-gradient(90deg, transparent, ${isDarkMode ? '#4b5563' : '#d1d5db'} 20%, ${isDarkMode ? '#4b5563' : '#d1d5db'} 80%, transparent) no-repeat 0 100% / 100% 1px,
+                         linear-gradient(180deg, ${isDarkMode ? '#4b5563' : '#d1d5db'}, ${isDarkMode ? '#4b5563' : '#d1d5db'}) no-repeat 0 0 / 1px 100%,
+                         linear-gradient(180deg, ${isDarkMode ? '#4b5563' : '#d1d5db'}, ${isDarkMode ? '#4b5563' : '#d1d5db'}) no-repeat 100% 0 / 1px 100%`
+          }}
         >
           적용하기
         </button>

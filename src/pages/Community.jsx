@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { MessageCircle, Link, UserSearch, ChevronDown } from 'lucide-react';
 import SearchFriends from './SearchFriends';
 
-const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast, userRanking, totalPlasticSaved = 0 }) => {
+const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast, userRanking, totalPlasticSaved = 0, currentUserId = '', currentUserName = '' }) => {
   const [showSearchPage, setShowSearchPage] = useState(false);
   const bgColor = isDarkMode ? 'bg-gray-900' : 'bg-white';
   const textColor = isDarkMode ? 'text-white' : 'text-gray-900';
@@ -59,29 +59,73 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
     return 0;
   };
   
-  // 친구 목록 데이터 (나의 실제 데이터 반영) - FriendsList와 동일하게
-  let friendsListRaw = [
-    { name: '일이', score: '27.0kg', grams: 27000 },
-    { name: '이이', score: '24.0kg', grams: 24000 },
-    { name: '삼이', score: '21.0kg', grams: 21000 },
-    { name: '사이', score: '18.0kg', grams: 18000 },
-    { name: '나', score: myScore, grams: totalPlasticSaved },
-    { name: '친구6', score: '28.2kg', grams: 28200 },
-    { name: '친구7', score: '27.9kg', grams: 27900 },
-    { name: '친구8', score: '27.6kg', grams: 27600 },
-    { name: '친구9', score: '27.3kg', grams: 27300 },
-    { name: '친구10', score: '27.0kg', grams: 27000 },
-    { name: '친구11', score: '26.7kg', grams: 26700 },
-    { name: '친구12', score: '26.4kg', grams: 26400 },
-    { name: '친구13', score: '26.1kg', grams: 26100 },
-    { name: '친구14', score: '25.8kg', grams: 25800 },
-    { name: '친구15', score: '25.5kg', grams: 25500 },
-    { name: '친구16', score: '25.2kg', grams: 25200 },
-    { name: '친구17', score: '24.9kg', grams: 24900 },
-    { name: '친구18', score: '24.6kg', grams: 24600 },
-    { name: '친구19', score: '15.0kg', grams: 15000 },
-    { name: '친구20', score: '12.0kg', grams: 12000 },
-  ];
+  // localStorage에서 추가된 친구 목록 가져오기
+  const addedFriends = JSON.parse(localStorage.getItem('addedFriends') || '[]');
+  
+  // 전체 사용자 데이터베이스 (SearchFriends와 동일)
+  const getAllUsers = () => {
+    const baseUsers = [
+      { id: 'songil_eco', name: '송일', profileImage: null, plasticSaved: 15500 },
+      { id: 'wonhee_nature', name: '원희', profileImage: null, plasticSaved: 27000 },
+    ];
+    
+    // 현재 사용자가 프로필에 등록되어 있으면 데이터베이스에 추가
+    if (currentUserId && currentUserName) {
+      // 이미 존재하는 사용자인지 확인
+      const existingUser = baseUsers.find(u => u.id === currentUserId);
+      if (!existingUser) {
+        baseUsers.unshift({ 
+          id: currentUserId, 
+          name: currentUserName, 
+          profileImage: null, 
+          plasticSaved: totalPlasticSaved || 15500 
+        });
+      }
+    }
+    
+    return baseUsers;
+  };
+  
+  const allUsers = getAllUsers();
+  
+  // 친구 목록 데이터 생성 - 실제 추가된 친구들 사용
+  let friendsListRaw = [];
+  
+  // 추가된 친구들의 데이터 가져오기
+  addedFriends.forEach(friendId => {
+    const friend = allUsers.find(u => u.id === friendId);
+    if (friend) {
+      friendsListRaw.push({
+        name: friend.name,
+        score: getDisplayScore(friend.plasticSaved),
+        grams: friend.plasticSaved
+      });
+    }
+  });
+  
+  // 나 자신 추가
+  friendsListRaw.push({
+    name: '나',
+    score: myScore,
+    grams: totalPlasticSaved
+  });
+  
+  // 친구가 없거나 적을 경우 기본 친구 데이터 추가
+  if (friendsListRaw.length < 5) {
+    const defaultFriends = [
+      { name: '일이', score: '27.0kg', grams: 27000 },
+      { name: '이이', score: '24.0kg', grams: 24000 },
+      { name: '삼이', score: '21.0kg', grams: 21000 },
+      { name: '사이', score: '18.0kg', grams: 18000 },
+    ];
+    
+    defaultFriends.forEach(friend => {
+      // 중복 체크
+      if (!friendsListRaw.some(f => f.name === friend.name)) {
+        friendsListRaw.push(friend);
+      }
+    });
+  }
   
   // 점수로 정렬 (내림차순) - 플라스틱 절약량이 많을수록 상위
   friendsListRaw.sort((a, b) => {
@@ -100,7 +144,7 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
   const isInTop3 = myRank <= 3;
 
   if (showSearchPage) {
-    return <SearchFriends isDarkMode={isDarkMode} onBack={() => setShowSearchPage(false)} userRanking={userRanking} showToast={showToast} />;
+    return <SearchFriends isDarkMode={isDarkMode} onBack={() => setShowSearchPage(false)} userRanking={userRanking} showToast={showToast} currentUserId={currentUserId} currentUserName={currentUserName} />;
   }
 
   return (

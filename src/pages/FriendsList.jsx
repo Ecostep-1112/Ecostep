@@ -4,6 +4,40 @@ import { FiChevronRight, FiSearch } from 'react-icons/fi';
 const FriendsList = ({ isDarkMode, onBack, isGlobalRanking = false, totalPlasticSaved = 0 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   
+  // localStorage에서 추가된 친구 목록 가져오기
+  const addedFriends = JSON.parse(localStorage.getItem('addedFriends') || '[]');
+  
+  // 프로필 데이터 가져오기
+  const profileData = JSON.parse(localStorage.getItem('profileData') || '{}');
+  const currentUserId = profileData.userId || '';
+  const currentUserName = profileData.name || '';
+  
+  // 전체 사용자 데이터베이스 (SearchFriends와 동일)
+  const getAllUsers = () => {
+    const baseUsers = [
+      { id: 'songil_eco', name: '송일', profileImage: null, plasticSaved: 15500 },
+      { id: 'wonhee_nature', name: '원희', profileImage: null, plasticSaved: 27000 },
+    ];
+    
+    // 현재 사용자가 프로필에 등록되어 있으면 데이터베이스에 추가
+    if (currentUserId && currentUserName) {
+      // 이미 존재하는 사용자인지 확인
+      const existingUser = baseUsers.find(u => u.id === currentUserId);
+      if (!existingUser) {
+        baseUsers.unshift({ 
+          id: currentUserId, 
+          name: currentUserName, 
+          profileImage: null, 
+          plasticSaved: totalPlasticSaved || 15500 
+        });
+      }
+    }
+    
+    return baseUsers;
+  };
+  
+  const allUsers = getAllUsers();
+  
   // 나의 실제 플라스틱 절약량 반영
   const getDisplayScore = (grams) => {
     if (grams < 1000) {
@@ -42,41 +76,44 @@ const FriendsList = ({ isDarkMode, onBack, isGlobalRanking = false, totalPlastic
     rank: index + 1
   }));
   
-  // 친구 목록 데이터 생성 (정렬을 위해 grams 값 포함)
-  let friendsRankingDataRaw = [
-    { name: '일이', score: '27.0kg', grams: 27000 },
-    { name: '이이', score: '24.0kg', grams: 24000 },
-    { name: '삼이', score: '21.0kg', grams: 21000 },
-    { name: '사이', score: '18.0kg', grams: 18000 },
-    { name: '나', score: myScore, grams: totalPlasticSaved },
-  ];
+  // 친구 목록 데이터 생성 - 실제 추가된 친구들 사용
+  let friendsRankingDataRaw = [];
   
-  // 더미 친구 데이터 추가 (친구6 ~ 친구20) - 고정된 값으로
-  const additionalFriends = [
-    { name: '친구6', grams: 28200 },
-    { name: '친구7', grams: 27900 },
-    { name: '친구8', grams: 27600 },
-    { name: '친구9', grams: 27300 },
-    { name: '친구10', grams: 27000 },
-    { name: '친구11', grams: 26700 },
-    { name: '친구12', grams: 26400 },
-    { name: '친구13', grams: 26100 },
-    { name: '친구14', grams: 25800 },
-    { name: '친구15', grams: 25500 },
-    { name: '친구16', grams: 25200 },
-    { name: '친구17', grams: 24900 },
-    { name: '친구18', grams: 24600 },
-    { name: '친구19', grams: 15000 },
-    { name: '친구20', grams: 12000 },
-  ];
-  
-  additionalFriends.forEach(friend => {
-    friendsRankingDataRaw.push({
-      name: friend.name,
-      score: getDisplayScore(friend.grams),
-      grams: friend.grams
-    });
+  // 추가된 친구들의 데이터 가져오기
+  addedFriends.forEach(friendId => {
+    const friend = allUsers.find(u => u.id === friendId);
+    if (friend) {
+      friendsRankingDataRaw.push({
+        name: friend.name,
+        score: getDisplayScore(friend.plasticSaved),
+        grams: friend.plasticSaved
+      });
+    }
   });
+  
+  // 나 자신 추가
+  friendsRankingDataRaw.push({
+    name: '나',
+    score: myScore,
+    grams: totalPlasticSaved
+  });
+  
+  // 친구가 없거나 적을 경우 기본 친구 데이터 추가
+  if (friendsRankingDataRaw.length < 10) {
+    const defaultFriends = [
+      { name: '일이', score: '27.0kg', grams: 27000 },
+      { name: '이이', score: '24.0kg', grams: 24000 },
+      { name: '삼이', score: '21.0kg', grams: 21000 },
+      { name: '사이', score: '18.0kg', grams: 18000 },
+    ];
+    
+    defaultFriends.forEach(friend => {
+      // 중복 체크
+      if (!friendsRankingDataRaw.some(f => f.name === friend.name)) {
+        friendsRankingDataRaw.push(friend);
+      }
+    });
+  }
   
   // 플라스틱 절약량으로 정렬 (내림차순)
   friendsRankingDataRaw.sort((a, b) => b.grams - a.grams);

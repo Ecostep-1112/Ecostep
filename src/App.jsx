@@ -64,13 +64,19 @@ const EcostepApp = () => {
   const [showSettings, setShowSettings] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
   
-  // 프로필 데이터 상태 관리
-  const [profileData, setProfileData] = useState({
-    name: '송일',
-    userId: '',  
-    birthDate: '',
-    phone: '',
-    email: 'callmesongil@kakao.com'
+  // 프로필 데이터 상태 관리 (localStorage에서 불러오기)
+  const [profileData, setProfileData] = useState(() => {
+    const saved = localStorage.getItem('profileData');
+    if (saved) {
+      return JSON.parse(saved);
+    }
+    return {
+      name: '송일',
+      userId: '',  
+      birthDate: '',
+      phone: '',
+      email: 'callmesongil@kakao.com'
+    };
   });
   const [showAquariumSettings, setShowAquariumSettings] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
@@ -282,6 +288,11 @@ const EcostepApp = () => {
   useEffect(() => {
     localStorage.setItem('purchasedFish', JSON.stringify(purchasedFish));
   }, [purchasedFish]);
+
+  // 프로필 데이터 저장
+  useEffect(() => {
+    localStorage.setItem('profileData', JSON.stringify(profileData));
+  }, [profileData]);
 
   useEffect(() => {
     if (lastChallengeDate) {
@@ -589,7 +600,7 @@ const EcostepApp = () => {
                 setTotalEarnedPoints={setTotalEarnedPoints}
                 spendPoints={spendPoints}
               />}
-              {activeTab === 'community' && !showFriendsList && !showGlobalList && <CommunityPage isDarkMode={isDarkMode} onShowFriendsList={() => setShowFriendsList(true)} onShowGlobalList={() => setShowGlobalList(true)} showToast={showToast} userRanking={rankTheme} totalPlasticSaved={testPlasticSaved > 0 ? testPlasticSaved : totalPlasticSaved} />}
+              {activeTab === 'community' && !showFriendsList && !showGlobalList && <CommunityPage isDarkMode={isDarkMode} onShowFriendsList={() => setShowFriendsList(true)} onShowGlobalList={() => setShowGlobalList(true)} showToast={showToast} userRanking={rankTheme} totalPlasticSaved={testPlasticSaved > 0 ? testPlasticSaved : totalPlasticSaved} currentUserId={profileData.userId} currentUserName={profileData.name} />}
               {activeTab === 'community' && showFriendsList && <FriendsList isDarkMode={isDarkMode} onBack={() => setShowFriendsList(false)} totalPlasticSaved={testPlasticSaved > 0 ? testPlasticSaved : totalPlasticSaved} />}
               {activeTab === 'community' && showGlobalList && <FriendsList isDarkMode={isDarkMode} onBack={() => setShowGlobalList(false)} isGlobalRanking={true} totalPlasticSaved={testPlasticSaved > 0 ? testPlasticSaved : totalPlasticSaved} />}
               {activeTab === 'more' && <MorePage isDarkMode={isDarkMode} userPoints={points} setUserPoints={setPoints} earnPoints={earnPoints} rankTheme={rankTheme} showToast={showToast} />}

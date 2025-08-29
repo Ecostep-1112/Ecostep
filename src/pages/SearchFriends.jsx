@@ -1,10 +1,14 @@
 import React, { useState } from 'react';
 import { FiSearch, FiChevronRight, FiX } from 'react-icons/fi';
 
-const SearchFriends = ({ isDarkMode, onBack, userRanking = 'bronze', showToast }) => {
+const SearchFriends = ({ isDarkMode, onBack, userRanking = 'bronze', showToast, currentUserId = '', currentUserName = '' }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [hasSearched, setHasSearched] = useState(false);
+  const [addedFriends, setAddedFriends] = useState(() => {
+    const saved = localStorage.getItem('addedFriends');
+    return saved ? JSON.parse(saved) : [];
+  });
   
   const bgColor = isDarkMode ? 'bg-gray-900' : 'bg-white';
   const textColor = isDarkMode ? 'text-white' : 'text-gray-900';
@@ -13,24 +17,85 @@ const SearchFriends = ({ isDarkMode, onBack, userRanking = 'bronze', showToast }
   const inputBg = isDarkMode ? 'bg-gray-700' : 'bg-gray-50';
   const placeholderColor = isDarkMode ? 'placeholder-gray-400' : 'placeholder-gray-400';
 
-  // 나의 아이디
-  const myId = 'songil_eco';
+  // 전체 사용자 데이터베이스 (실제로는 서버에서 관리)
+  // 현재 사용자도 포함하여 검색 가능하도록 함
+  const getAllUsers = () => {
+    const baseUsers = [
+      { id: 'songil_eco', name: '송일', profileImage: null, plasticSaved: 15500 },
+      { id: 'wonhee_nature', name: '원희', profileImage: null, plasticSaved: 27000 },
+    ];
+    
+    // 현재 사용자가 프로필에 등록되어 있으면 데이터베이스에 추가
+    if (currentUserId && currentUserName) {
+      // 이미 존재하는 사용자인지 확인
+      const existingUser = baseUsers.find(u => u.id === currentUserId);
+      if (!existingUser) {
+        baseUsers.unshift({ 
+          id: currentUserId, 
+          name: currentUserName, 
+          profileImage: null, 
+          plasticSaved: 15500 
+        });
+      }
+    }
+    
+    return baseUsers;
+  };
+  
+  const allUsers = getAllUsers();
 
   // 검색 함수
   const handleSearch = () => {
     setHasSearched(true);
+    
+    // 디버깅용 로그
+    console.log('Current User ID:', currentUserId);
+    console.log('Current User Name:', currentUserName);
+    console.log('Search Term:', searchTerm);
+    
+    // 프로필 아이디나 이름이 설정되지 않은 경우
+    if (!currentUserId && !currentUserName) {
+      if (showToast) {
+        showToast('먼저 설정에서 프로필을 등록해주세요', 'warning');
+      }
+      setSearchResults([]);
+      return;
+    }
+    
     if (searchTerm.trim()) {
-      // 여기서는 예시 데이터를 사용합니다. 실제로는 API 호출이 필요합니다.
-      const mockResults = [
-        { id: 'songil_eco', name: '송일', profileImage: null },
-        { id: 'minsu_123', name: '김민수', profileImage: null },
-        { id: 'jieun_green', name: '이지은', profileImage: null },
-        { id: 'seojun_earth', name: '박서준', profileImage: null },
-      ].filter(user => 
-        user.id.toLowerCase() === searchTerm.toLowerCase() || 
-        user.name === searchTerm
-      );
-      setSearchResults(mockResults);
+      const searchLower = searchTerm.toLowerCase().trim();
+      let results = [];
+      
+      // 아이디로 검색하는 경우 (프로필에 아이디가 설정되어 있어야 함)
+      if (currentUserId) {
+        const idResults = allUsers.filter(user => {
+          // 정확한 아이디 매치
+          return user.id.toLowerCase() === searchLower;
+        });
+        
+        if (idResults.length > 0) {
+          results = idResults;
+        }
+      }
+      
+      // 이름으로 검색하는 경우 (프로필에 이름이 설정되어 있어야 함)
+      if (currentUserName && results.length === 0) {
+        const nameResults = allUsers.filter(user => {
+          // 정확한 이름 매치
+          return user.name === searchTerm.trim();
+        });
+        
+        if (nameResults.length > 0) {
+          results = nameResults;
+        }
+      }
+      
+      // 본인은 검색 결과에서 제외
+      if (currentUserId) {
+        results = results.filter(user => user.id !== currentUserId);
+      }
+      
+      setSearchResults(results);
     } else {
       setSearchResults([]);
     }
@@ -43,10 +108,21 @@ const SearchFriends = ({ isDarkMode, onBack, userRanking = 'bronze', showToast }
   };
 
   const handleAddFriend = (userId) => {
-    // 친구 추가 로직
-    console.log('친구 추가:', userId);
+    // 이미 친구인지 확인
+    if (addedFriends.includes(userId)) {
+      if (showToast) {
+        showToast('이미 친구입니다!', 'warning');
+      }
+      return;
+    }
+    
+    // 친구 추가
+    const newAddedFriends = [...addedFriends, userId];
+    setAddedFriends(newAddedFriends);
+    localStorage.setItem('addedFriends', JSON.stringify(newAddedFriends));
+    
     if (showToast) {
-      showToast('친구 요청을 보냈습니다!', 'success');
+      showToast('친구가 추가되었습니다!', 'success');
     }
   };
 
@@ -172,17 +248,22 @@ const SearchFriends = ({ isDarkMode, onBack, userRanking = 'bronze', showToast }
                     {/* 추가하기 버튼 */}
                     <button 
                       onClick={() => handleAddFriend(user.id)}
-                      className={`px-4 py-1.5 rounded-full text-sm transition-colors border bg-transparent ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}
+                      className={`px-4 py-1.5 rounded-full text-sm transition-colors border ${
+                        addedFriends.includes(user.id) ? 'bg-gray-100' : 'bg-transparent'
+                      } ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}
                       style={{
-                        borderColor: userRanking === 'bronze' ? '#06b6d4' : 
-                                    userRanking === 'silver' ? '#14b8a6' : 
-                                    userRanking === 'gold' ? '#facc15' : 
-                                    userRanking === 'platinum' ? '#c084fc' : 
-                                    userRanking === 'basic' ? (isDarkMode ? '#e5e7eb' : '#374151') :
-                                    isDarkMode ? '#e5e7eb' : '#374151'
+                        borderColor: addedFriends.includes(user.id) ? 
+                          (isDarkMode ? '#4b5563' : '#d1d5db') :
+                          (userRanking === 'bronze' ? '#06b6d4' : 
+                           userRanking === 'silver' ? '#14b8a6' : 
+                           userRanking === 'gold' ? '#facc15' : 
+                           userRanking === 'platinum' ? '#c084fc' : 
+                           userRanking === 'basic' ? (isDarkMode ? '#e5e7eb' : '#374151') :
+                           isDarkMode ? '#e5e7eb' : '#374151')
                       }}
+                      disabled={addedFriends.includes(user.id)}
                     >
-                      추가하기
+                      {addedFriends.includes(user.id) ? '친구' : '추가하기'}
                     </button>
                   </div>
                   {/* 그라데이션 테두리 */}

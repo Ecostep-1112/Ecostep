@@ -3,7 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
-import fetch from 'node-fetch';
+import Anthropic from '@anthropic-ai/sdk';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -23,7 +23,11 @@ app.use(express.json());
 
 // Claude API configuration
 const CLAUDE_API_KEY = process.env.VITE_CLAUDE_API_KEY;
-const CLAUDE_API_URL = 'https://api.anthropic.com/v1/messages';
+
+// Initialize Anthropic client
+const anthropic = new Anthropic({
+  apiKey: CLAUDE_API_KEY || 'dummy-key-for-mock',
+});
 
 // Helper function to generate mock tips
 const generateMockTip = () => {
@@ -108,45 +112,31 @@ app.post('/api/chatbot', async (req, res) => {
     }
 
     // Call Claude API for chatbot response
-    const response = await fetch(CLAUDE_API_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': CLAUDE_API_KEY,
-        'anthropic-version': '2023-06-01'
-      },
-      body: JSON.stringify({
-        model: 'claude-3-sonnet-20240229',
-        max_tokens: 500,
-        system: `당신은 에코스텝(EcoStep) 앱의 친절한 고객센터 챗봇입니다. 
-        에코스텝은 환경 보호와 물고기 키우기 게임을 결합한 모바일 앱입니다.
-        주요 기능:
-        - 플라스틱 사용량 추적 및 감소 목표 설정
-        - 가상 물고기 키우기 (12종류)
-        - 수족관 커스터마이징
-        - 일일/주간 챌린지
-        - 친구 랭킹 시스템
-        - 제로웨이스트 지도
-        - 환경 팁 제공
-        
-        항상 친절하고 도움이 되는 답변을 한국어로 제공하세요.
-        이모지를 적절히 사용하여 친근한 분위기를 만드세요.`,
-        messages: [
-          {
-            role: 'user',
-            content: message
-          }
-        ]
-      })
+    const response = await anthropic.messages.create({
+      model: 'claude-3-haiku-20240307',
+      max_tokens: 500,
+      system: `당신은 에코스텝(EcoStep) 앱의 친절한 고객센터 챗봇입니다. 
+      에코스텝은 환경 보호와 물고기 키우기 게임을 결합한 모바일 앱입니다.
+      주요 기능:
+      - 플라스틱 사용량 추적 및 감소 목표 설정
+      - 가상 물고기 키우기 (12종류)
+      - 수족관 커스터마이징
+      - 일일/주간 챌린지
+      - 친구 랭킹 시스템
+      - 제로웨이스트 지도
+      - 환경 팁 제공
+      
+      항상 친절하고 도움이 되는 답변을 한국어로 제공하세요.
+      이모지를 적절히 사용하여 친근한 분위기를 만드세요.`,
+      messages: [
+        {
+          role: 'user',
+          content: message
+        }
+      ]
     });
 
-    if (!response.ok) {
-      console.error('Claude API request failed:', response.status, response.statusText);
-      return res.json({ response: '죄송합니다. 일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요.' });
-    }
-
-    const data = await response.json();
-    const botResponse = data.content[0].text;
+    const botResponse = response.content[0].text;
     
     res.json({ response: botResponse });
     
@@ -166,42 +156,27 @@ app.post('/api/environmental-tip', async (req, res) => {
     }
 
     // Call Claude API
-    const response = await fetch(CLAUDE_API_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': CLAUDE_API_KEY,
-        'anthropic-version': '2023-06-01'
-      },
-      body: JSON.stringify({
-        model: 'claude-3-sonnet-20240229',
-        max_tokens: 500,
-        messages: [{
-          role: 'user',
-          content: `환경 보호와 제로웨이스트에 관한 실용적인 팁을 하나 생성해주세요. 
-          
-          다음 형식으로 JSON 응답을 보내주세요:
-          {
-            "title": "간단한 제목 (20자 이내)",
-            "preview": "짧은 미리보기 텍스트 (40자 이내)",
-            "content": "자세한 설명 (200자 이내, 실천 방법 포함)",
-            "category": "카테고리 (재활용 팁, 생활 습관, 에너지 절약, 제로웨이스트 중 하나)"
-          }
-          
-          실용적이고 한국에서 실천 가능한 내용으로 작성해주세요.`
-        }]
-      })
+    const response = await anthropic.messages.create({
+      model: 'claude-3-haiku-20240307',
+      max_tokens: 500,
+      messages: [{
+        role: 'user',
+        content: `환경 보호와 제로웨이스트에 관한 실용적인 팁을 하나 생성해주세요. 
+        
+        다음 형식으로 JSON 응답을 보내주세요:
+        {
+          "title": "간단한 제목 (20자 이내)",
+          "preview": "짧은 미리보기 텍스트 (40자 이내)",
+          "content": "자세한 설명 (200자 이내, 실천 방법 포함)",
+          "category": "카테고리 (재활용 팁, 생활 습관, 에너지 절약, 제로웨이스트 중 하나)"
+        }
+        
+        실용적이고 한국에서 실천 가능한 내용으로 작성해주세요.`
+      }]
     });
-
-    if (!response.ok) {
-      console.error('Claude API request failed:', response.status, response.statusText);
-      return res.json(generateMockTip());
-    }
-
-    const data = await response.json();
     
     // Extract JSON from Claude's response
-    const content = data.content[0].text;
+    const content = response.content[0].text;
     let tipData;
     
     try {

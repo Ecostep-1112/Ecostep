@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FiSearch } from 'react-icons/fi';
 import { MessageCircle, Link, Check } from 'lucide-react';
 import friendsRanking from '../data/friendsRanking.json';
@@ -13,6 +13,54 @@ const Community = ({ isDarkMode, onShowFriendsList }) => {
   const cardBg = isDarkMode ? 'bg-gray-800' : 'bg-white';
   const inputBg = isDarkMode ? 'bg-gray-700' : 'bg-gray-50';
 
+  // Initialize Kakao SDK when component mounts
+  useEffect(() => {
+    const kakaoApiKey = import.meta.env.VITE_KAKAO_API_KEY;
+    if (window.Kakao && !window.Kakao.isInitialized() && kakaoApiKey && kakaoApiKey !== 'your-kakao-api-key-here') {
+      window.Kakao.init(kakaoApiKey);
+      console.log('Kakao SDK initialized');
+    }
+  }, []);
+
+  // 카카오톡 공유 함수
+  const shareToKakao = () => {
+    // Generate unique invite code
+    const inviteCode = 'ECO' + Math.random().toString(36).substr(2, 6).toUpperCase();
+    const inviteLink = `https://ecostep.app/invite?code=${inviteCode}`;
+
+    if (window.Kakao && window.Kakao.isInitialized()) {
+      window.Kakao.Share.sendDefault({
+        objectType: 'feed',
+        content: {
+          title: '🌍 Ecostep - 함께 지구를 지켜요!',
+          description: '플라스틱 사용량을 줄이고 귀여운 물고기를 키워보세요! 친구와 함께 환경 보호에 동참해요.',
+          imageUrl: 'https://ecostep.app/share-image.png', // 실제 이미지 URL로 교체 필요
+          link: {
+            mobileWebUrl: inviteLink,
+            webUrl: inviteLink,
+          },
+        },
+        social: {
+          likeCount: 286,
+          commentCount: 45,
+          sharedCount: 845,
+        },
+        buttons: [
+          {
+            title: '앱에서 시작하기',
+            link: {
+              mobileWebUrl: inviteLink,
+              webUrl: inviteLink,
+            },
+          },
+        ],
+      });
+    } else {
+      // Fallback: 카카오 SDK가 초기화되지 않았을 때
+      alert('카카오톡 공유를 위해 카카오 API 키를 설정해주세요.\n.env.local 파일에 VITE_KAKAO_API_KEY를 추가하고\nhttps://developers.kakao.com 에서 앱을 등록하세요.');
+    }
+  };
+
   return (
     <div className={`flex-1 overflow-y-auto custom-scrollbar scrollbar-hide-idle pb-20 ${bgColor}`}>
       <div className="min-h-full">
@@ -22,41 +70,7 @@ const Community = ({ isDarkMode, onShowFriendsList }) => {
           <p className={`${isDarkMode ? 'text-gray-400' : 'text-gray-500'} text-xs mb-3`}>친구들과 함께 지구를 지켜요!</p>
           <div className="flex gap-2 mb-3">
             <button 
-              onClick={() => {
-                // KakaoTalk share
-                if (window.Kakao) {
-                  window.Kakao.Share.sendDefault({
-                    objectType: 'feed',
-                    content: {
-                      title: 'Ecostep - 함께 지구를 지켜요!',
-                      description: '플라스틱 사용량을 줄이고 물고기를 키워보세요! 함께 환경을 보호해요.',
-                      imageUrl: 'https://ecostep.app/share-image.png',
-                      link: {
-                        mobileWebUrl: 'https://ecostep.app/invite?code=ABC123',
-                        webUrl: 'https://ecostep.app/invite?code=ABC123',
-                      },
-                    },
-                    buttons: [
-                      {
-                        title: '앱 시작하기',
-                        link: {
-                          mobileWebUrl: 'https://ecostep.app/invite?code=ABC123',
-                          webUrl: 'https://ecostep.app/invite?code=ABC123',
-                        },
-                      },
-                    ],
-                  });
-                } else {
-                  // Fallback: open KakaoTalk app or web
-                  const message = encodeURIComponent('Ecostep 앱에서 함께 환경을 보호해요! https://ecostep.app/invite?code=ABC123');
-                  window.open(`kakaotalk://msg/text/${message}`, '_blank');
-                  
-                  // If KakaoTalk app doesn't open, try web version
-                  setTimeout(() => {
-                    window.open(`https://talk.kakao.com`, '_blank');
-                  }, 1000);
-                }
-              }}
+              onClick={shareToKakao}
               className="flex-1 bg-yellow-400 hover:bg-yellow-500 text-black py-2 rounded-lg text-sm font-medium flex items-center justify-center transition-colors"
             >
               <MessageCircle className="w-4 h-4 mr-1" />

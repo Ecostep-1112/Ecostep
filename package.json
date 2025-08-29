@@ -12,6 +12,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.60.0",
     "@supabase/supabase-js": "^2.55.0",
     "cors": "^2.8.5",
     "dotenv": "^17.2.1",

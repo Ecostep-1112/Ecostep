@@ -54,10 +54,23 @@ Ecostep is a mobile app concept that combines environmental protection with a fi
 
 ## Project Setup
 - **Development Server**: `npm run dev`
+- **Backend Server**: `npm run server`
+- **Both Servers**: `npm run dev:all`
 - **Build**: `npm run build`
 - **Environment Variables**: Configured in `.env.local`
   - Supabase URL and API keys are set up
+  - Claude API key for chatbot functionality
+  - Kakao API key for KakaoTalk sharing (get from https://developers.kakao.com)
+  - Naver Maps API credentials
   - Do not commit `.env.local` file (already in .gitignore)
+
+## Kakao API Setup
+1. Visit https://developers.kakao.com
+2. Create an application
+3. Get your JavaScript API key
+4. Add the key to `.env.local` as `VITE_KAKAO_API_KEY`
+5. Register your domain (localhost:5175 for development) in Kakao console
+6. Enable "카카오톡 공유" in your app settings
 
 ## Git Workflow
 After making changes:

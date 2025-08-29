@@ -597,15 +597,21 @@ const Challenge = ({
     return '#06b6d4'; // default
   };
 
+  // Helper function to get gradient colors
   const getThemeGradient = () => {
-    if (userRanking === 'basic') {
-      return isDarkMode ? '#e5e7eb' : '#374151';
+    if (userRanking === 'basic' || userRanking === 'bronze') {
+      return 'linear-gradient(135deg, #06b6d4 0%, #3b82f6 50%, #2563eb 100%)';
     }
-    if (userRanking === 'bronze') return 'linear-gradient(to right, #06b6d4, #3b82f6)';
-    if (userRanking === 'silver') return 'linear-gradient(to right, #cbd5e1, #06b6d4, #14b8a6)';
-    if (userRanking === 'gold') return 'linear-gradient(to right, #fcd34d, #facc15)';
-    if (userRanking === 'platinum') return 'linear-gradient(to right, #c084fc, #ec4899)';
-    return 'linear-gradient(to right, #06b6d4, #3b82f6)'; // default
+    if (userRanking === 'silver') {
+      return 'linear-gradient(135deg, #14b8a6 0%, #10b981 50%, #059669 100%)';
+    }
+    if (userRanking === 'gold') {
+      return 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 50%, #f97316 100%)';
+    }
+    if (userRanking === 'platinum') {
+      return 'linear-gradient(135deg, #e879f9 0%, #d946ef 50%, #c026d3 100%)';
+    }
+    return 'linear-gradient(135deg, #06b6d4 0%, #3b82f6 50%, #2563eb 100%)'; // default
   };
   
   // Helper function to get text color for buttons based on theme
@@ -879,18 +885,22 @@ const Challenge = ({
                 </div>
               ) : !showCustomChallenge ? (
                 // 챌린지 시작 전 - 선택 가능
-                <button
-                  onClick={() => setShowChallengeSelect(!showChallengeSelect)}
-                  className={`w-full h-full ${inputBg} rounded-lg px-2 flex justify-between items-center border`}
-                  style={{
-                    borderColor: getThemeColor()
-                  }}
-                >
-                  <span className={`text-sm ${selectedChallenge ? (isDarkMode ? 'text-gray-300' : 'text-gray-700') : (isDarkMode ? 'text-gray-500' : 'text-gray-400')} flex-1 text-center`}>
-                    {selectedChallenge || '챌린지를 선택해 주세요'}
-                  </span>
-                  <FiChevronDown className={`w-4 h-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
-                </button>
+                <div className="relative w-full h-full">
+                  <div 
+                    className="absolute inset-0 rounded-lg p-[1px]"
+                    style={{ background: selectedChallenge ? getThemeGradient() : 'transparent' }}
+                  >
+                    <button
+                      onClick={() => setShowChallengeSelect(!showChallengeSelect)}
+                      className={`w-full h-full ${inputBg} rounded-lg px-2 flex justify-between items-center`}
+                    >
+                      <span className={`text-sm flex-1 text-center ${selectedChallenge ? (isDarkMode ? 'text-gray-300' : 'text-gray-700') : (isDarkMode ? 'text-gray-500' : 'text-gray-400')}`}>
+                        {selectedChallenge || '챌린지를 선택해 주세요'}
+                      </span>
+                      <FiChevronDown className={`w-4 h-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
+                    </button>
+                  </div>
+                </div>
               ) : (
                 <>
                   {/* 배경 블러 오버레이 - 카드 영역만 */}
@@ -903,11 +913,15 @@ const Challenge = ({
                   }} />
                   <div className="relative z-20 flex gap-2">
                   <div className="relative flex-1">
-                    <input
-                      type="text"
-                      value={customChallenge}
-                      onChange={(e) => setCustomChallenge(e.target.value)}
-                      onKeyPress={async (e) => {
+                    <div 
+                      className="relative rounded-lg p-[1px]"
+                      style={{ background: getThemeGradient() }}
+                    >
+                      <input
+                        type="text"
+                        value={customChallenge}
+                        onChange={(e) => setCustomChallenge(e.target.value)}
+                        onKeyPress={async (e) => {
                         if (e.key === 'Enter' && customChallenge) {
                           // 중복 체크
                           const allChallenges = [...challenges];
@@ -943,10 +957,11 @@ const Challenge = ({
                           setShowCustomChallenge(false);
                         }
                       }}
-                      placeholder="챌린지 이름 입력"
-                      className={`w-full ${inputBg} rounded-lg p-2 pr-8 text-sm ${textColor}`}
-                      autoFocus
-                    />
+                        placeholder="챌린지 이름 입력"
+                        className={`w-full ${inputBg} rounded-lg p-2 pr-8 text-sm ${textColor}`}
+                        autoFocus
+                      />
+                    </div>
                     <button
                       onClick={() => {
                         setShowCustomChallenge(false);
@@ -1109,39 +1124,56 @@ const Challenge = ({
                   
                   return (
                     <div key={idx} className="flex flex-col items-center">
-                      <span className={`text-xs mb-1 ${
-                        isToday ? `font-bold` : ''
-                      }`} style={{
-                        color: isToday ? (
-                          getThemeColor()
-                        ) : isDarkMode ? '#6b7280' : '#9ca3af'
-                      }}>
-                        {dayName}
-                      </span>
-                      <div 
-                        className={`w-7 h-7 rounded-full flex items-center justify-center ${
-                          dayStatus === false ? (isDarkMode ? 'bg-gray-700' : 'bg-gray-200') : 
-                          dayStatus !== true && (isDarkMode ? 'bg-gray-700' : 'bg-gray-200')
-                        }`}
-                        style={dayStatus === true ? {
-                          background: getThemeGradient().replace('to right', '135deg')
-                        } : isToday && dayStatus !== true ? {
-                          background: 'transparent',
-                          border: `2px solid ${getThemeColor()}`
-                        } : {}}
-                      >
+                      {isToday ? (
+                        <span 
+                          className="text-xs mb-1 font-bold bg-clip-text text-transparent"
+                          style={{
+                            backgroundImage: getThemeGradient(),
+                            WebkitBackgroundClip: 'text',
+                            WebkitTextFillColor: 'transparent'
+                          }}
+                        >
+                          {dayName}
+                        </span>
+                      ) : (
+                        <span className={`text-xs mb-1 ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                          {dayName}
+                        </span>
+                      )}
+                      {isToday && dayStatus !== true ? (
+                        <div className="relative w-7 h-7">
+                          <div 
+                            className="absolute inset-0 rounded-full p-[2px]"
+                            style={{ background: getThemeGradient() }}
+                          >
+                            <div className={`w-full h-full rounded-full flex items-center justify-center ${isDarkMode ? 'bg-gray-900' : 'bg-white'}`}>
+                              <span className="text-sm font-bold" style={{
+                                backgroundImage: getThemeGradient(),
+                                WebkitBackgroundClip: 'text',
+                                WebkitTextFillColor: 'transparent'
+                              }}>!</span>
+                            </div>
+                          </div>
+                        </div>
+                      ) : (
+                        <div 
+                          className={`w-7 h-7 rounded-full flex items-center justify-center ${
+                            dayStatus === false ? (isDarkMode ? 'bg-gray-700' : 'bg-gray-200') : 
+                            dayStatus !== true && (isDarkMode ? 'bg-gray-700' : 'bg-gray-200')
+                          }`}
+                          style={dayStatus === true ? {
+                            background: getThemeGradient()
+                          } : {}}
+                        >
                         {dayStatus === true ? (
                           <FiCheck className={`w-3.5 h-3.5 ${getIconColor()}`} />
                         ) : dayStatus === false ? (
                           <FiX className={`w-3.5 h-3.5 ${isDarkMode ? 'text-white' : 'text-gray-600'}`} />
-                        ) : isToday ? (
-                          <span className="text-sm font-bold" style={{
-                            color: getThemeColor()
-                          }}>!</span>
                         ) : (
                           <div className={`w-1 h-1 rounded-full ${isDarkMode ? 'bg-gray-500' : 'bg-gray-400'}`} />
                         )}
-                      </div>
+                        </div>
+                      )}
                     </div>
                   );
                 })}
@@ -1312,21 +1344,24 @@ const Challenge = ({
               ) : (
                 <div className="relative mb-4 dropdown-container">
                   {/* 드롭다운 버튼 */}
-                  <button
-                    onClick={() => {
-                    setShowGoalDropdown(!showGoalDropdown);
-                    // 다른 드롭다운 닫기
-                    setShowPlasticSelect(false);
-                  }}
-                    className={`w-full flex justify-between items-center border ${borderColor} ${
-                      isDarkMode ? 'bg-gray-700' : 'bg-white'
-                    } rounded-lg px-3 py-2 text-sm`}
+                  <div 
+                    className="relative rounded-lg p-[1px]"
+                    style={{ background: tempPlasticGoal ? getThemeGradient() : 'transparent' }}
                   >
-                    <span className={tempPlasticGoal ? (isDarkMode ? 'text-white' : 'text-gray-900') : (isDarkMode ? 'text-gray-500' : 'text-gray-400')}>
-                      {tempPlasticGoal ? formatWeight(tempPlasticGoal) : '플라스틱 사용 한도를 설정해 주세요'}
-                    </span>
-                    <FiChevronDown className={`transition-transform ${showGoalDropdown ? 'rotate-180' : ''}`} />
-                  </button>
+                    <button
+                      onClick={() => {
+                        setShowGoalDropdown(!showGoalDropdown);
+                        // 다른 드롭다운 닫기
+                        setShowPlasticSelect(false);
+                      }}
+                      className={`w-full flex justify-between items-center rounded-lg px-3 py-2 text-sm ${isDarkMode ? 'bg-gray-700' : 'bg-white'}`}
+                    >
+                      <span className={tempPlasticGoal ? (isDarkMode ? 'text-gray-300' : 'text-gray-700') : (isDarkMode ? 'text-gray-500' : 'text-gray-400')}>
+                        {tempPlasticGoal ? formatWeight(tempPlasticGoal) : '플라스틱 사용 한도를 설정해 주세요'}
+                      </span>
+                      <FiChevronDown className={`transition-transform ${showGoalDropdown ? 'rotate-180' : ''} ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
+                    </button>
+                  </div>
                 
                 {/* 드롭다운 리스트 */}
                 {showGoalDropdown && (
@@ -1486,19 +1521,24 @@ const Challenge = ({
               <div className="space-y-3">
                 <div className="relative dropdown-container">
                   {!showCustomPlastic ? (
-                    <button
-                      onClick={() => {
-                        setShowPlasticSelect(!showPlasticSelect);
-                        // 다른 드롭다운 닫기
-                        setShowGoalDropdown(false);
-                      }}
-                      className={`w-full ${inputBg} rounded-lg p-2 flex justify-between items-center`}
+                    <div 
+                      className="relative rounded-lg p-[1px]"
+                      style={{ background: selectedPlasticItem ? getThemeGradient() : 'transparent' }}
                     >
-                      <span className={`text-sm flex-1 text-center ${selectedPlasticItem ? (isDarkMode ? 'text-gray-300' : 'text-gray-700') : (isDarkMode ? 'text-gray-500' : 'text-gray-400')}`}>
-                        {selectedPlasticItem || '아이템을 선택해 주세요'}
-                      </span>
-                      <FiChevronDown className={`w-4 h-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
-                    </button>
+                      <button
+                        onClick={() => {
+                          setShowPlasticSelect(!showPlasticSelect);
+                          // 다른 드롭다운 닫기
+                          setShowGoalDropdown(false);
+                        }}
+                        className={`w-full ${inputBg} rounded-lg p-2 flex justify-between items-center`}
+                      >
+                        <span className={`text-sm flex-1 text-center ${selectedPlasticItem ? (isDarkMode ? 'text-gray-300' : 'text-gray-700') : (isDarkMode ? 'text-gray-500' : 'text-gray-400')}`}>
+                          {selectedPlasticItem || '아이템을 선택해 주세요'}
+                        </span>
+                        <FiChevronDown className={`w-4 h-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
+                      </button>
+                    </div>
                   ) : (
                     <>
                       {/* 배경 블러 오버레이 - 카드 영역만 */}
@@ -1514,10 +1554,14 @@ const Challenge = ({
                       <div className="mt-1 relative z-20 space-y-2">
                       <div className="flex gap-2">
                         <div className="relative flex-1">
-                          <input
-                            type="text"
-                            value={customPlasticItem}
-                            onChange={async (e) => {
+                          <div 
+                            className="relative rounded-lg p-[1px]"
+                            style={{ background: getThemeGradient() }}
+                          >
+                            <input
+                              type="text"
+                              value={customPlasticItem}
+                              onChange={async (e) => {
                               const value = e.target.value;
                               setCustomPlasticItem(value);
                               
@@ -1544,10 +1588,11 @@ const Challenge = ({
                                 }
                               }
                             }}
-                            placeholder="항목 이름 입력"
-                            className={`w-full ${inputBg} rounded-lg p-2 pr-8 text-sm ${textColor}`}
-                            autoFocus
-                          />
+                              placeholder="항목 이름 입력"
+                              className={`w-full ${inputBg} rounded-lg p-2 pr-8 text-sm ${textColor}`}
+                              autoFocus
+                            />
+                          </div>
                           <button
                             onClick={() => {
                               setShowCustomPlastic(false);
@@ -1567,11 +1612,15 @@ const Challenge = ({
                       </div>
                       <div className="flex gap-2">
                         <div className="relative flex-1">
-                          <input
-                            type="number"
-                            value={isLoadingWeight ? '' : customPlasticWeight}
-                            onChange={(e) => setCustomPlasticWeight(e.target.value)}
-                            onKeyPress={async (e) => {
+                          <div 
+                            className="relative rounded-lg p-[1px]"
+                            style={{ background: getThemeGradient() }}
+                          >
+                            <input
+                              type="number"
+                              value={isLoadingWeight ? '' : customPlasticWeight}
+                              onChange={(e) => setCustomPlasticWeight(e.target.value)}
+                              onKeyPress={async (e) => {
                               if (e.key === 'Enter' && customPlasticItem && customPlasticWeight) {
                                 // 중복 체크
                                 const allItems = [...plasticItems, ...customAddedItems];
@@ -1595,14 +1644,15 @@ const Challenge = ({
                                 }
                               }
                             }}
-                            placeholder={isLoadingWeight ? "추천 중..." : "개당 무게"}
-                            className={`w-full ${inputBg} rounded-lg p-2 pr-8 text-sm ${textColor} [
-                              appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
-                            disabled={isLoadingWeight}
-                          />
-                          <span className={`absolute right-3 top-1/2 -translate-y-1/2 text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                            g
-                          </span>
+                              placeholder={isLoadingWeight ? "추천 중..." : "개당 무게"}
+                              className={`w-full ${inputBg} rounded-lg p-2 pr-8 text-sm ${textColor} [
+                                appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
+                              disabled={isLoadingWeight}
+                            />
+                            <span className={`absolute right-3 top-1/2 -translate-y-1/2 text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                              g
+                            </span>
+                          </div>
                         </div>
                         <button
                           onClick={async () => {

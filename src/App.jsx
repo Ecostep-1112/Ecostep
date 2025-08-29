@@ -448,7 +448,7 @@ const EcostepApp = () => {
               }}>
                 <IoNotificationsOutline className={`w-[18px] h-[18px] ${
                   notificationsList.some(n => !n.read) 
-                    ? 'text-blue-500' 
+                    ? 'text-cyan-500' 
                     : isDarkMode ? 'text-white' : 'text-gray-700'
                 }`} />
               </button>
@@ -456,6 +456,13 @@ const EcostepApp = () => {
                 if (showNotifications) {
                   setShowNotifications(false);
                 }
+                // Reset all sub-screens when opening settings
+                setShowProfile(false);
+                setShowThemeSettings(false);
+                setShowRankThemeSettings(false);
+                setShowLanguageSettings(false);
+                setShowNotificationSettings(false);
+                setShowLocationSettings(false);
                 setShowSettings(true);
               }}>
                 <FiSettings className={`w-4 h-4 ${isDarkMode ? 'text-white' : 'text-gray-700'}`} />
@@ -499,6 +506,7 @@ const EcostepApp = () => {
               language={language}
               notifications={notificationEnabled}
               locationSharing={locationSharing}
+              userProfile={profileData}
             />
           ) : showAquariumSettings ? (
             <AquariumSettings 

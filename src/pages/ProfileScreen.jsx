@@ -122,7 +122,7 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
             <h2 className={`text-sm font-medium ${textColor}`}>{label}</h2>
           </div>
           
-          <div className="p-4 max-w-xs mx-auto">
+          <div className="p-4 max-w-md mx-auto">
             <div className="flex gap-2 justify-center mb-4">
               <div className="flex-1">
                 <input
@@ -131,7 +131,7 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
                   onChange={(e) => setBirthDateParts({...birthDateParts, year: e.target.value})}
                   placeholder="년도"
                   maxLength="4"
-                  className={`w-full px-3 py-2.5 text-sm text-center ${textColor} ${inputBg} rounded-lg border ${borderColor} focus:outline-none focus:border-gray-500 placeholder:text-gray-400`}
+                  className={`w-full px-3 py-2 text-sm text-center ${textColor} bg-transparent rounded-lg border ${borderColor} focus:outline-none focus:border-gray-400 placeholder:text-gray-400`}
                   autoFocus
                 />
               </div>
@@ -142,7 +142,7 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
                   onChange={(e) => setBirthDateParts({...birthDateParts, month: e.target.value})}
                   placeholder="월"
                   maxLength="2"
-                  className={`w-full px-3 py-2.5 text-sm text-center ${textColor} ${inputBg} rounded-lg border ${borderColor} focus:outline-none focus:border-gray-500 placeholder:text-gray-400`}
+                  className={`w-full px-3 py-2 text-sm text-center ${textColor} bg-transparent rounded-lg border ${borderColor} focus:outline-none focus:border-gray-400 placeholder:text-gray-400`}
                 />
               </div>
               <div className="flex-1">
@@ -152,14 +152,14 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
                   onChange={(e) => setBirthDateParts({...birthDateParts, day: e.target.value})}
                   placeholder="일"
                   maxLength="2"
-                  className={`w-full px-3 py-2.5 text-sm text-center ${textColor} ${inputBg} rounded-lg border ${borderColor} focus:outline-none focus:border-gray-500 placeholder:text-gray-400`}
+                  className={`w-full px-3 py-2 text-sm text-center ${textColor} bg-transparent rounded-lg border ${borderColor} focus:outline-none focus:border-gray-400 placeholder:text-gray-400`}
                 />
               </div>
             </div>
             
             <button
               onClick={handleBirthDateSave}
-              className={`w-full py-2.5 text-sm ${isDarkMode ? 'bg-white text-black' : 'bg-black text-white'} rounded-lg font-medium`}
+              className="w-full py-2.5 text-sm text-white rounded-lg font-medium bg-gradient-to-r from-cyan-500 via-blue-500 to-blue-600 hover:opacity-90 transition-opacity"
             >
               저장
             </button>
@@ -178,19 +178,19 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
             <h2 className={`text-sm font-medium ${textColor}`}>{label}</h2>
           </div>
           
-          <div className="p-4 max-w-xs mx-auto">
+          <div className="p-4 max-w-md mx-auto">
             <input
               type="tel"
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               placeholder="휴대폰 번호를 입력하세요"
-              className={`w-full px-4 py-2.5 text-sm ${textColor} ${inputBg} rounded-lg border ${borderColor} focus:outline-none focus:border-gray-500`}
+              className={`w-full px-4 py-2.5 text-sm ${textColor} bg-transparent rounded-lg border ${borderColor} focus:outline-none focus:border-gray-400`}
               autoFocus
             />
             
             <button
               onClick={handlePhoneSave}
-              className={`w-full mt-4 py-2.5 text-sm ${isDarkMode ? 'bg-white text-black' : 'bg-black text-white'} rounded-lg font-medium`}
+              className="w-full mt-4 py-2.5 text-sm text-white rounded-lg font-medium bg-gradient-to-r from-cyan-500 via-blue-500 to-blue-600 hover:opacity-90 transition-opacity"
             >
               저장
             </button>
@@ -208,13 +208,13 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
           <h2 className={`text-sm font-medium ${textColor}`}>{label}</h2>
         </div>
         
-        <div className="p-4 max-w-xs mx-auto">
+        <div className="p-4 max-w-md mx-auto">
           <input
             type={field === 'email' ? 'email' : 'text'}
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             placeholder={getPlaceholder(field)}
-            className={`w-full px-4 py-2.5 text-sm ${textColor} ${inputBg} rounded-lg border ${borderColor} focus:outline-none focus:border-gray-500`}
+            className={`w-full px-4 py-2.5 text-sm ${textColor} bg-transparent rounded-lg border ${borderColor} focus:outline-none focus:border-gray-400`}
             autoFocus
           />
           
@@ -223,7 +223,7 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
               onSave(inputValue);
               onClose();
             }}
-            className={`w-full mt-4 py-2.5 text-sm ${isDarkMode ? 'bg-white text-black' : 'bg-black text-white'} rounded-lg font-medium`}
+            className="w-full mt-4 py-2.5 text-sm text-white rounded-lg font-medium bg-gradient-to-r from-cyan-500 via-blue-500 to-blue-600 hover:opacity-90 transition-opacity"
           >
             저장
           </button>

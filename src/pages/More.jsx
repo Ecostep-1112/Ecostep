@@ -224,9 +224,9 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
               <div className="relative">
                 <button
                   onClick={() => setShowCategoryDropdown(!showCategoryDropdown)}
-                  className={`flex items-center gap-1 px-2 py-1 text-xs rounded-lg ${
-                    isDarkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-700'
-                  } hover:opacity-80 transition-opacity`}
+                  className={`flex items-center gap-1 px-2 py-1 text-xs rounded-lg border ${
+                    isDarkMode ? 'border-gray-600 text-gray-300' : 'border-gray-300 text-gray-700'
+                  } hover:opacity-80 transition-opacity bg-transparent`}
                 >
                   <span>{selectedCategory}</span>
                   {showCategoryDropdown ? (
@@ -298,11 +298,7 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
                     </p>
                     <div className={`flex items-center justify-between mt-3 pt-3 border-t ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
                       <button 
-                        className={`
-                          px-3 py-1.5 rounded-lg text-xs font-medium flex items-center transition-all
-                          border ${getOutlineColor()} ${getOutlineTextColor()}
-                          hover:opacity-80 bg-transparent
-                        `}
+                        className="px-3 py-1.5 rounded-lg text-xs font-medium flex items-center transition-all bg-gradient-to-r from-cyan-500 via-blue-500 to-blue-600 text-white hover:opacity-90"
                       >
                         <FiShare2 className="w-3 h-3 mr-1" />
                         공유하기
@@ -312,7 +308,7 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
                         className={`${
                           hasCheckedTip 
                             ? isDarkMode ? 'bg-gray-700 text-gray-400 cursor-not-allowed' : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                            : `${getThemeColor()} ${getThemeHoverColor()} ${getButtonTextColor()}`
+                            : 'bg-gradient-to-r from-cyan-500 via-blue-500 to-blue-600 text-white hover:opacity-90'
                         } px-3 py-1.5 rounded-lg text-xs font-medium flex items-center transition-colors`}
                         disabled={hasCheckedTip}
                       >
@@ -357,7 +353,7 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
                   <span className={`text-xs ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>{place.description}</span>
                   <button 
                     onClick={() => openInNaverMap(place)}
-                    className="text-blue-500 text-xs"
+                    className="text-xs font-medium bg-gradient-to-r from-cyan-500 via-blue-500 to-blue-600 bg-clip-text text-transparent"
                   >
                     이동 →
                   </button>

@@ -16,11 +16,11 @@ export const RankThemeSettings = ({ isDarkMode, userRanking, setUserRanking, set
   const cardBg = isDarkMode ? 'bg-gray-800' : 'bg-white';
 
   const ranks = [
-    { id: 'basic', name: '기본', icon: null, color: isDarkMode ? '#e5e7eb' : '#374151', level: 0 },
-    { id: 'bronze', name: '브론즈', icon: BronzeIcon, color: '#3b82f6', level: 1 },
-    { id: 'silver', name: '실버', icon: SilverIcon, color: '#14b8a6', level: 2 },
-    { id: 'gold', name: '골드', icon: GoldIcon, color: '#facc15', level: 3 },
-    { id: 'platinum', name: '플래티넘', icon: PlatinumIcon, color: '#c084fc', level: 4 }
+    { id: 'basic', name: '기본', subName: '(다크/화이트)', icon: null, color: isDarkMode ? '#e5e7eb' : '#374151', level: 0 },
+    { id: 'bronze', name: '브론즈', subName: '(청록)', icon: BronzeIcon, color: '#06b6d4', level: 1 },
+    { id: 'silver', name: '실버', subName: '(민트)', icon: SilverIcon, color: '#14b8a6', level: 2 },
+    { id: 'gold', name: '골드', subName: '(황금)', icon: GoldIcon, color: '#facc15', level: 3 },
+    { id: 'platinum', name: '플래티넘', subName: '(보라)', icon: PlatinumIcon, color: '#c084fc', level: 4 }
   ];
   
   const currentRankLevel = ranks.find(r => r.id === currentUserRank)?.level || 1;
@@ -73,17 +73,29 @@ export const RankThemeSettings = ({ isDarkMode, userRanking, setUserRanking, set
                 {RankIcon ? (
                   <RankIcon className={`mr-3 ${isLocked ? 'opacity-50' : ''}`} />
                 ) : (
-                  <div className={`w-6 h-6 mr-3 rounded-full border-2 ${isLocked ? 'opacity-50' : ''}`} 
+                  <div className={`w-[24px] h-[24px] mr-3 rounded-full flex items-center justify-center ${isLocked ? 'opacity-50' : ''}`} 
                     style={{ 
-                      borderColor: rank.color,
-                      backgroundColor: rank.id === 'basic' ? (isDarkMode ? '#374151' : '#e5e7eb') : 'transparent'
-                    }} 
-                  />
+                      backgroundColor: isDarkMode ? '#ffffff' : '#1f2937'
+                    }}
+                  >
+                    <div className="w-[16px] h-[16px] rounded-full" 
+                      style={{ 
+                        border: `1px solid ${isDarkMode ? '#374151' : '#e5e7eb'}`,
+                        backgroundColor: 'transparent'
+                      }} 
+                    />
+                  </div>
                 )}
-                <span 
-                  className={`text-sm ${isLocked ? 'opacity-50' : ''}`}
-                  style={{ color: isSelected && !isLocked ? rank.color : isDarkMode ? '#ffffff' : '#1f2937' }}
-                >{rank.name}</span>
+                <div className="flex items-center">
+                  <span 
+                    className={`text-sm ${isLocked ? 'opacity-50' : ''}`}
+                    style={{ color: isSelected && !isLocked ? rank.color : isDarkMode ? '#ffffff' : '#1f2937' }}
+                  >{rank.name}</span>
+                  <span 
+                    className={`text-xs ml-1 ${isLocked ? 'opacity-50' : ''}`}
+                    style={{ color: isSelected && !isLocked ? rank.color : isDarkMode ? '#9ca3af' : '#6b7280' }}
+                  >{rank.subName}</span>
+                </div>
               </div>
               
               <div className="relative z-0">
@@ -93,7 +105,50 @@ export const RankThemeSettings = ({ isDarkMode, userRanking, setUserRanking, set
                   </svg>
                 ) : (
                   isSelected && (
-                    <FiCheck className="w-5 h-5" style={{ color: rank.color, strokeWidth: 2 }} />
+                    <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none">
+                      <defs>
+                        <linearGradient id={`checkGradient-${rank.id}`} x1="0%" y1="0%" x2="100%" y2="100%">
+                          {rank.id === 'basic' ? (
+                            <>
+                              <stop offset="0%" stopColor={isDarkMode ? '#9ca3af' : '#6b7280'} />
+                              <stop offset="50%" stopColor={isDarkMode ? '#e5e7eb' : '#374151'} />
+                              <stop offset="100%" stopColor={isDarkMode ? '#f3f4f6' : '#1f2937'} />
+                            </>
+                          ) : rank.id === 'bronze' ? (
+                            <>
+                              <stop offset="0%" stopColor="#06b6d4" />
+                              <stop offset="50%" stopColor="#3b82f6" />
+                              <stop offset="100%" stopColor="#2563eb" />
+                            </>
+                          ) : rank.id === 'silver' ? (
+                            <>
+                              <stop offset="0%" stopColor="#14b8a6" />
+                              <stop offset="50%" stopColor="#10b981" />
+                              <stop offset="100%" stopColor="#059669" />
+                            </>
+                          ) : rank.id === 'gold' ? (
+                            <>
+                              <stop offset="0%" stopColor="#facc15" />
+                              <stop offset="50%" stopColor="#f59e0b" />
+                              <stop offset="100%" stopColor="#d97706" />
+                            </>
+                          ) : (
+                            <>
+                              <stop offset="0%" stopColor="#c084fc" />
+                              <stop offset="50%" stopColor="#a855f7" />
+                              <stop offset="100%" stopColor="#9333ea" />
+                            </>
+                          )}
+                        </linearGradient>
+                      </defs>
+                      <path 
+                        d="M5 13l4 4L19 7" 
+                        stroke={`url(#checkGradient-${rank.id})`} 
+                        strokeWidth="2.5" 
+                        strokeLinecap="round" 
+                        strokeLinejoin="round"
+                      />
+                    </svg>
                   )
                 )}
               </div>
@@ -123,24 +178,82 @@ export const ThemeSettings = ({ isDarkMode, setIsDarkMode, setShowThemeSettings 
       <div className="mx-3 mt-4 space-y-2">
         <button 
           onClick={() => setIsDarkMode(false)}
-          className={`w-full ${cardBg} border ${borderColor} rounded-xl p-3 flex items-center justify-between ${!isDarkMode ? 'border-blue-500' : ''}`}
+          className={`w-full ${cardBg} border ${borderColor} rounded-xl p-3 flex items-center justify-between ${!isDarkMode ? 'border-cyan-500' : ''}`}
         >
           <div className="flex items-center">
-            <FiSun className={`w-5 h-5 mr-3 ${!isDarkMode ? 'text-blue-500' : isDarkMode ? 'text-gray-400' : 'text-gray-600'}`} />
+            <svg className="w-5 h-5 mr-3" viewBox="0 0 24 24" fill="none">
+              <defs>
+                <linearGradient id="sunGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor={!isDarkMode ? "#06b6d4" : "#9ca3af"} />
+                  <stop offset="50%" stopColor={!isDarkMode ? "#3b82f6" : "#9ca3af"} />
+                  <stop offset="100%" stopColor={!isDarkMode ? "#2563eb" : "#9ca3af"} />
+                </linearGradient>
+                <radialGradient id="sunFillGradient" cx="50%" cy="50%" r="50%">
+                  <stop offset="0%" stopColor="transparent" />
+                  <stop offset="100%" stopColor="transparent" />
+                </radialGradient>
+              </defs>
+              <circle cx="12" cy="12" r="4" fill="url(#sunFillGradient)" />
+              <circle cx="12" cy="12" r="4" stroke="url(#sunGradient)" strokeWidth="1.5" fill="none" />
+              <path d="M12 1v4M12 19v4M23 12h-4M5 12H1M20.5 3.5l-3 3M6.5 17.5l-3 3M20.5 20.5l-3-3M6.5 6.5l-3-3" stroke="url(#sunGradient)" strokeWidth="2" strokeLinecap="round" />
+            </svg>
             <span className={`text-sm ${textColor}`}>라이트 모드</span>
           </div>
-          {!isDarkMode && <FiCheck className="w-5 h-5 text-blue-500" />}
+          {!isDarkMode && (
+            <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none">
+              <defs>
+                <linearGradient id="checkGradientMode" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#06b6d4" />
+                  <stop offset="50%" stopColor="#3b82f6" />
+                  <stop offset="100%" stopColor="#2563eb" />
+                </linearGradient>
+              </defs>
+              <path 
+                d="M5 13l4 4L19 7" 
+                stroke="url(#checkGradientMode)" 
+                strokeWidth="2.5" 
+                strokeLinecap="round" 
+                strokeLinejoin="round"
+              />
+            </svg>
+          )}
         </button>
         
         <button 
           onClick={() => setIsDarkMode(true)}
-          className={`w-full ${cardBg} border ${borderColor} rounded-xl p-3 flex items-center justify-between ${isDarkMode ? 'border-blue-500' : ''}`}
+          className={`w-full ${cardBg} border ${borderColor} rounded-xl p-3 flex items-center justify-between ${isDarkMode ? 'border-cyan-500' : ''}`}
         >
           <div className="flex items-center">
-            <FiMoon className={`w-5 h-5 mr-3 ${isDarkMode ? 'text-blue-500' : 'text-gray-600'}`} />
+            <svg className="w-5 h-5 mr-3" viewBox="0 0 24 24" fill="none">
+              <defs>
+                <linearGradient id="moonGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor={isDarkMode ? "#06b6d4" : "#9ca3af"} />
+                  <stop offset="50%" stopColor={isDarkMode ? "#3b82f6" : "#9ca3af"} />
+                  <stop offset="100%" stopColor={isDarkMode ? "#2563eb" : "#9ca3af"} />
+                </linearGradient>
+              </defs>
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" stroke="url(#moonGradient)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+            </svg>
             <span className={`text-sm ${textColor}`}>다크 모드</span>
           </div>
-          {isDarkMode && <FiCheck className="w-5 h-5 text-blue-500" />}
+          {isDarkMode && (
+            <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none">
+              <defs>
+                <linearGradient id="checkGradientDark" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#06b6d4" />
+                  <stop offset="50%" stopColor="#3b82f6" />
+                  <stop offset="100%" stopColor="#2563eb" />
+                </linearGradient>
+              </defs>
+              <path 
+                d="M5 13l4 4L19 7" 
+                stroke="url(#checkGradientDark)" 
+                strokeWidth="2.5" 
+                strokeLinecap="round" 
+                strokeLinejoin="round"
+              />
+            </svg>
+          )}
         </button>
       </div>
     </div>
@@ -165,18 +278,52 @@ export const LanguageSettings = ({ isDarkMode, language, setLanguage, setShowLan
       <div className="mx-3 mt-4 space-y-2">
         <button 
           onClick={() => setLanguage('ko')}
-          className={`w-full ${cardBg} border ${borderColor} rounded-xl p-3 flex items-center justify-between ${language === 'ko' ? 'border-blue-500' : ''}`}
+          className={`w-full ${cardBg} border ${borderColor} rounded-xl p-3 flex items-center justify-between ${language === 'ko' ? 'border-cyan-500' : ''}`}
         >
           <span className={`text-sm ${textColor}`}>한국어</span>
-          {language === 'ko' && <FiCheck className="w-5 h-5 text-blue-500" />}
+          {language === 'ko' && (
+            <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none">
+              <defs>
+                <linearGradient id="checkGradientKo" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#06b6d4" />
+                  <stop offset="50%" stopColor="#3b82f6" />
+                  <stop offset="100%" stopColor="#2563eb" />
+                </linearGradient>
+              </defs>
+              <path 
+                d="M5 13l4 4L19 7" 
+                stroke="url(#checkGradientKo)" 
+                strokeWidth="2.5" 
+                strokeLinecap="round" 
+                strokeLinejoin="round"
+              />
+            </svg>
+          )}
         </button>
         
         <button 
           onClick={() => setLanguage('en')}
-          className={`w-full ${cardBg} border ${borderColor} rounded-xl p-3 flex items-center justify-between ${language === 'en' ? 'border-blue-500' : ''}`}
+          className={`w-full ${cardBg} border ${borderColor} rounded-xl p-3 flex items-center justify-between ${language === 'en' ? 'border-cyan-500' : ''}`}
         >
           <span className={`text-sm ${textColor}`}>English</span>
-          {language === 'en' && <FiCheck className="w-5 h-5 text-blue-500" />}
+          {language === 'en' && (
+            <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none">
+              <defs>
+                <linearGradient id="checkGradientEn" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#06b6d4" />
+                  <stop offset="50%" stopColor="#3b82f6" />
+                  <stop offset="100%" stopColor="#2563eb" />
+                </linearGradient>
+              </defs>
+              <path 
+                d="M5 13l4 4L19 7" 
+                stroke="url(#checkGradientEn)" 
+                strokeWidth="2.5" 
+                strokeLinecap="round" 
+                strokeLinejoin="round"
+              />
+            </svg>
+          )}
         </button>
       </div>
     </div>
@@ -210,7 +357,7 @@ export const NotificationSettings = ({ isDarkMode, notifications, setNotificatio
                 : isDarkMode ? '#4b5563' : '#d1d5db'
             }}
           >
-            <div className={`w-5 h-5 bg-white rounded-full absolute top-0.5 transition-transform ${notifications ? 'translate-x-[20px]' : 'translate-x-0.5'}`}></div>
+            <div className={`w-5 h-5 bg-white rounded-full absolute top-0.5 transition-transform ${notifications ? 'translate-x-[22px]' : 'translate-x-0.5'}`}></div>
           </button>
         </div>
       </div>
@@ -245,7 +392,7 @@ export const LocationSettings = ({ isDarkMode, locationSharing, setLocationShari
                 : isDarkMode ? '#4b5563' : '#d1d5db'
             }}
           >
-            <div className={`w-5 h-5 bg-white rounded-full absolute top-0.5 transition-transform ${locationSharing ? 'translate-x-[20px]' : 'translate-x-0.5'}`}></div>
+            <div className={`w-5 h-5 bg-white rounded-full absolute top-0.5 transition-transform ${locationSharing ? 'translate-x-[22px]' : 'translate-x-0.5'}`}></div>
           </button>
         </div>
       </div>
@@ -309,7 +456,7 @@ export const AquariumSettings = ({
                 <button
                   key={type}
                   onClick={() => isUnlocked && setCurrentTank(type)}
-                  className={`flex-1 border ${isSelected ? 'border-blue-500 bg-blue-50' : borderColor} rounded-xl p-2 ${isUnlocked ? cardBg : 'bg-gray-100 opacity-50'} ${isUnlocked ? 'cursor-pointer' : 'cursor-not-allowed'}`}
+                  className={`flex-1 border ${isSelected ? 'border-cyan-500 bg-cyan-50' : borderColor} rounded-xl p-2 ${isUnlocked ? cardBg : 'bg-gray-100 opacity-50'} ${isUnlocked ? 'cursor-pointer' : 'cursor-not-allowed'}`}
                   disabled={!isUnlocked}
                 >
                   <div className={`w-full aspect-square rounded-lg mb-1 flex items-center justify-center relative overflow-hidden`}>
@@ -318,7 +465,7 @@ export const AquariumSettings = ({
                     {type === 'gold' && <GoldTank isPreview={true} />}
                     {type === 'platinum' && <PlatinumTank isPreview={true} />}
                   </div>
-                  <p className={`text-[10px] text-center ${isSelected ? 'text-blue-600 font-medium' : isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                  <p className={`text-[10px] text-center ${isSelected ? 'text-cyan-600 font-medium' : isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                     {type === 'basic' ? '기본' : type === 'silver' ? '실버' : type === 'gold' ? '골드' : '플래티넘'}
                   </p>
                   {!isUnlocked && (
@@ -411,7 +558,7 @@ export const AquariumSettings = ({
                               }
                             }}
                             className={`rounded-lg border ${
-                              isSelected ? 'border-blue-500 bg-blue-50' : borderColor
+                              isSelected ? 'border-cyan-500 bg-cyan-50' : borderColor
                             } ${cardBg} flex flex-col items-center justify-center h-[85px] p-2`}
                             disabled={!isSelected && selectedFish.length >= purchasedFish.length}
                           >
@@ -424,7 +571,7 @@ export const AquariumSettings = ({
                             </div>
                             
                             {/* 물고기 이름 */}
-                            <p className={`text-[10px] ${isSelected ? 'text-blue-600 font-medium' : isDarkMode ? 'text-gray-300' : 'text-gray-700'} text-center`}>
+                            <p className={`text-[10px] ${isSelected ? 'text-cyan-600 font-medium' : isDarkMode ? 'text-gray-300' : 'text-gray-700'} text-center`}>
                               {fish.name}
                             </p>
                           </button>
@@ -512,7 +659,7 @@ export const AquariumSettings = ({
                                 }
                               }}
                               className={`rounded-lg border ${
-                                isSelected ? 'border-blue-500 bg-blue-50' : borderColor
+                                isSelected ? 'border-cyan-500 bg-cyan-50' : borderColor
                               } ${cardBg} flex flex-col items-center justify-center h-[85px] p-2`}
                               disabled={!isSelected && selectedDecorations.length >= availableDecorations.length}
                             >
@@ -524,7 +671,7 @@ export const AquariumSettings = ({
                               </div>
                               
                               {/* 장식품 이름 */}
-                              <p className={`text-[10px] ${isSelected ? 'text-blue-600 font-medium' : isDarkMode ? 'text-gray-300' : 'text-gray-700'} text-center`}>
+                              <p className={`text-[10px] ${isSelected ? 'text-cyan-600 font-medium' : isDarkMode ? 'text-gray-300' : 'text-gray-700'} text-center`}>
                                 {deco.name}
                               </p>
                             </button>
@@ -553,12 +700,9 @@ export const AquariumSettings = ({
             // 설정 저장
             setShowAquariumSettings(false);
           }}
-          className={`w-full py-2.5 rounded-lg text-sm font-medium relative ${isDarkMode ? 'text-white hover:bg-gray-800' : 'text-gray-700 hover:bg-gray-50'} transition-colors`}
+          className={`w-full py-2.5 rounded-lg text-sm font-medium text-white transition-all hover:opacity-90`}
           style={{
-            background: `linear-gradient(90deg, transparent, ${isDarkMode ? '#4b5563' : '#d1d5db'} 20%, ${isDarkMode ? '#4b5563' : '#d1d5db'} 80%, transparent) no-repeat 0 0 / 100% 1px,
-                         linear-gradient(90deg, transparent, ${isDarkMode ? '#4b5563' : '#d1d5db'} 20%, ${isDarkMode ? '#4b5563' : '#d1d5db'} 80%, transparent) no-repeat 0 100% / 100% 1px,
-                         linear-gradient(180deg, ${isDarkMode ? '#4b5563' : '#d1d5db'}, ${isDarkMode ? '#4b5563' : '#d1d5db'}) no-repeat 0 0 / 1px 100%,
-                         linear-gradient(180deg, ${isDarkMode ? '#4b5563' : '#d1d5db'}, ${isDarkMode ? '#4b5563' : '#d1d5db'}) no-repeat 100% 0 / 1px 100%`
+            background: 'linear-gradient(135deg, #06b6d4 0%, #3b82f6 50%, #2563eb 100%)'
           }}
         >
           적용하기

@@ -90,7 +90,7 @@ const NotificationsScreen = ({ isDarkMode, setShowNotifications, notifications, 
           {notifications.length > 0 && notifications.filter(n => !n.read).length > 0 && (
             <button
               onClick={handleMarkAllAsRead}
-              className={`text-xs ${isDarkMode ? 'text-blue-400 hover:text-blue-300' : 'text-blue-600 hover:text-blue-700'}`}
+              className={`text-xs ${isDarkMode ? 'text-cyan-400 hover:text-cyan-300' : 'text-cyan-600 hover:text-cyan-700'}`}
             >
               읽음
             </button>

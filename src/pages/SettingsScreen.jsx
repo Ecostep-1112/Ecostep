@@ -13,7 +13,8 @@ const SettingsScreen = ({
   userRanking, 
   language, 
   notifications,
-  locationSharing
+  locationSharing,
+  userProfile
 }) => {
   const bgColor = isDarkMode ? 'bg-gray-900' : 'bg-white';
   const textColor = isDarkMode ? 'text-white' : 'text-gray-900';
@@ -35,11 +36,13 @@ const SettingsScreen = ({
           onClick={() => setShowProfile(true)}
           className={`w-full ${cardBg} border ${borderColor} rounded-xl p-3 flex items-center`}
         >
-          <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-medium text-sm mr-3">
-            송일
+          <div className={`w-10 h-10 ${isDarkMode ? 'bg-gray-700' : 'bg-gray-200'} rounded-full flex items-center justify-center mr-3`}>
+            <span className={`font-medium text-sm ${isDarkMode ? 'text-gray-100' : 'text-gray-700'}`}>
+              {userProfile?.name?.charAt(0) || '송'}
+            </span>
           </div>
           <div className="flex-1 text-left">
-            <p className={`text-sm font-medium ${textColor}`}>송일</p>
+            <p className={`text-sm font-medium ${textColor}`}>{userProfile?.name || '송일'}</p>
           </div>
           <div className="flex items-center">
             <span className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} mr-2`}>

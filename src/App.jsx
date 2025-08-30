@@ -8,7 +8,7 @@ import CommunityPage from './pages/Community';
 import MorePage from './pages/More';
 import SettingsScreen from './pages/SettingsScreen';
 import ProfileScreen from './pages/ProfileScreen';
-import RankingList from './pages/RankingList';
+import FriendsList from './pages/FriendsList';
 import ChatBot from './pages/ChatBot';
 import NotificationsScreen from './pages/NotificationsScreen';
 import { ThemeSettings, RankThemeSettings, LanguageSettings, NotificationSettings, LocationSettings, AquariumSettings } from './pages/Settings';
@@ -611,8 +611,9 @@ const EcostepApp = () => {
                 setTotalEarnedPoints={setTotalEarnedPoints}
                 spendPoints={spendPoints}
               />}
-              {activeTab === 'community' && !showFriendsList && <CommunityPage isDarkMode={isDarkMode} onShowFriendsList={(tab) => { setRankingInitialTab(tab); setShowFriendsList(true); }} showToast={showToast} userRanking={rankTheme} totalPlasticSaved={testPlasticSaved > 0 ? testPlasticSaved : totalPlasticSaved} currentUserId={profileData.userId} currentUserName={profileData.name} />}
-              {activeTab === 'community' && showFriendsList && <RankingList isDarkMode={isDarkMode} onBack={() => setShowFriendsList(false)} initialTab={rankingInitialTab} totalPlasticSaved={testPlasticSaved > 0 ? testPlasticSaved : totalPlasticSaved} />}
+              {activeTab === 'community' && !showFriendsList && !showGlobalList && <CommunityPage isDarkMode={isDarkMode} onShowFriendsList={() => setShowFriendsList(true)} onShowGlobalList={() => setShowGlobalList(true)} showToast={showToast} userRanking={rankTheme} totalPlasticSaved={testPlasticSaved > 0 ? testPlasticSaved : totalPlasticSaved} currentUserId={profileData.userId} currentUserName={profileData.name} />}
+              {activeTab === 'community' && showFriendsList && <FriendsList isDarkMode={isDarkMode} onBack={() => setShowFriendsList(false)} isGlobalRanking={false} totalPlasticSaved={testPlasticSaved > 0 ? testPlasticSaved : totalPlasticSaved} />}
+              {activeTab === 'community' && showGlobalList && <FriendsList isDarkMode={isDarkMode} onBack={() => setShowGlobalList(false)} isGlobalRanking={true} totalPlasticSaved={testPlasticSaved > 0 ? testPlasticSaved : totalPlasticSaved} />}
               {activeTab === 'more' && !showChatBot && <MorePage isDarkMode={isDarkMode} userPoints={points} setUserPoints={setPoints} onShowChatBot={() => setShowChatBot(true)} earnPoints={earnPoints} rankTheme={rankTheme} showToast={showToast} />}
               {activeTab === 'more' && showChatBot && <ChatBot isDarkMode={isDarkMode} onBack={() => setShowChatBot(false)} />}
             </>

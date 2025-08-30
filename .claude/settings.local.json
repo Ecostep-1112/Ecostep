@@ -44,7 +44,8 @@
       "Bash(claude --version)",
       "Bash(start http://localhost:5180/)",
       "Bash(npx eslint:*)",
-      "Bash(git merge:*)"
+      "Bash(git merge:*)",
+      "Bash(start http://localhost:5175)"
     ],
     "deny": [],
     "ask": [],

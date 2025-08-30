@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { FiSettings, FiHome, FiTarget, FiGift, FiUsers, FiMoreHorizontal } from 'react-icons/fi';
+import { IoNotificationsOutline } from 'react-icons/io5';
 import HomePage from './pages/Home';
 import ChallengePage from './pages/Challenge';
 import RewardsPage from './pages/Rewards';
@@ -9,32 +10,90 @@ import SettingsScreen from './pages/SettingsScreen';
 import ProfileScreen from './pages/ProfileScreen';
 import RankingList from './pages/RankingList';
 import ChatBot from './pages/ChatBot';
-import { ThemeSettings, LanguageSettings, NotificationSettings, AquariumSettings } from './pages/Settings';
+import NotificationsScreen from './pages/NotificationsScreen';
+import { ThemeSettings, RankThemeSettings, LanguageSettings, NotificationSettings, LocationSettings, AquariumSettings } from './pages/Settings';
 import Toast from './components/Toast';
+import Login from './components/Login';
 import fishData from './data/fishData.json';
 
 const EcostepApp = () => {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [activeTab, setActiveTab] = useState('home');
   const [activeSubTab, setActiveSubTab] = useState('habit');
   const [challengeDay, setChallengeDay] = useState(4);
-  const [plasticGoal, setPlasticGoal] = useState(500);
+  const [plasticGoal, setPlasticGoal] = useState(() => {
+    const saved = localStorage.getItem('plasticGoal');
+    return saved ? parseInt(saved) : null;
+  });
   const [currentPlastic, setCurrentPlastic] = useState(320);
   const [points, setPoints] = useState(() => {
     const savedPoints = localStorage.getItem('userPoints');
     return savedPoints ? parseInt(savedPoints) : 10000; // 충분한 포인트로 설정
   });
+  
+  // 누적 포인트 (랭크 계산용 - 소비해도 감소하지 않음)
+  const [totalEarnedPoints, setTotalEarnedPoints] = useState(() => {
+    const savedTotal = localStorage.getItem('totalEarnedPoints');
+    return savedTotal ? parseInt(savedTotal) : 10000; // 초기값은 현재 포인트와 동일
+  });
+  
+  // 포인트 기반 랭크 계산 함수 (누적 포인트 사용)
+  const calculateRankFromPoints = (currentPoints) => {
+    if (currentPoints < 2100) return 'bronze';
+    if (currentPoints < 6300) return 'silver';
+    if (currentPoints < 12600) return 'gold';
+    return 'platinum';
+  };
+  
+  // 랭크 진행도 계산 함수
+  const calculateRankProgress = (currentPoints) => {
+    const ranks = {
+      bronze: { min: 0, max: 2100 },
+      silver: { min: 2100, max: 6300 },
+      gold: { min: 6300, max: 12600 },
+      platinum: { min: 12600, max: 210000 }
+    };
+    
+    const currentRank = calculateRankFromPoints(currentPoints);
+    const rankData = ranks[currentRank];
+    
+    const progress = ((currentPoints - rankData.min) / (rankData.max - rankData.min)) * 100;
+    return Math.min(Math.max(progress, 0), 100);
+  };
+  
+  const [testDate, setTestDate] = useState(new Date()); // 테스트용 날짜 상태
   const [showSettings, setShowSettings] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
+  
+  // 프로필 데이터 상태 관리 (localStorage에서 불러오기)
+  const [profileData, setProfileData] = useState(() => {
+    const saved = localStorage.getItem('profileData');
+    if (saved) {
+      return JSON.parse(saved);
+    }
+    return {
+      name: '송일',
+      userId: '',  
+      birthDate: '',
+      phone: '',
+      email: 'callmesongil@kakao.com'
+    };
+  });
   const [showAquariumSettings, setShowAquariumSettings] = useState(false);
-  const [selectedChallenge, setSelectedChallenge] = useState('플라스틱 빨대 안쓰기');
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [notificationsList, setNotificationsList] = useState([]);
+  const [selectedChallenge, setSelectedChallenge] = useState(null);
   const [showChallengeSelect, setShowChallengeSelect] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [showChatBot, setShowChatBot] = useState(false);
   const [showThemeSettings, setShowThemeSettings] = useState(false);
+  const [showRankThemeSettings, setShowRankThemeSettings] = useState(false);
   const [showLanguageSettings, setShowLanguageSettings] = useState(false);
   const [showNotificationSettings, setShowNotificationSettings] = useState(false);
+  const [showLocationSettings, setShowLocationSettings] = useState(false);
   const [language, setLanguage] = useState('ko');
-  const [notifications, setNotifications] = useState(true);
+  const [notificationEnabled, setNotificationEnabled] = useState(true);
+  const [locationSharing, setLocationSharing] = useState(false);
   const [fishCount, setFishCount] = useState(5);
   const [isRandomFish, setIsRandomFish] = useState(true);
   const [isRandomDecorations, setIsRandomDecorations] = useState(true);
@@ -44,16 +103,31 @@ const EcostepApp = () => {
     const saved = localStorage.getItem('purchasedFish');
     return saved ? JSON.parse(saved) : [];
   });
-  const [customChallenges, setCustomChallenges] = useState([]);
-  const [customPlasticItems, setCustomPlasticItems] = useState([]);
+  const [customChallenges, setCustomChallenges] = useState(() => {
+    const saved = localStorage.getItem('customChallenges');
+    return saved ? JSON.parse(saved) : [];
+  });
+  const [customPlasticItems, setCustomPlasticItems] = useState(() => {
+    const saved = localStorage.getItem('customPlasticItems');
+    return saved ? JSON.parse(saved) : [];
+  });
   const [currentTank, setCurrentTank] = useState('basic');
   const [unlockedTanks, setUnlockedTanks] = useState(['basic', 'silver', 'gold', 'platinum']); // 모든 어항 잠금 해제
-  const [userRanking, setUserRanking] = useState('gold'); // 골드 랭킹으로 설정
-  const [claimedTanks, setClaimedTanks] = useState([]); // 수령 완료한 어항 목록
+  const [userRanking, setUserRanking] = useState(() => {
+    const savedTotal = localStorage.getItem('totalEarnedPoints');
+    const totalPoints = savedTotal ? parseInt(savedTotal) : 10000;
+    return calculateRankFromPoints(totalPoints);
+  }); // 실제 사용자 랭킹 (누적 포인트 기반)
+  const [rankTheme, setRankTheme] = useState('bronze'); // 색상 테마 (색상만 변경)
+  const [claimedTanks, setClaimedTanks] = useState(() => {
+    const saved = localStorage.getItem('claimedTanks');
+    return saved ? JSON.parse(saved) : [];
+  }); // 수령 완료한 어항 목록
   const [tankName, setTankName] = useState('수질');
   const [isEditingTankName, setIsEditingTankName] = useState(false);
   const [showFriendsList, setShowFriendsList] = useState(false);
   const [rankingInitialTab, setRankingInitialTab] = useState('friends');
+  const [showGlobalList, setShowGlobalList] = useState(false);
   const [purchasedDecorations, setPurchasedDecorations] = useState(() => {
     const saved = localStorage.getItem('purchasedDecorations');
     return saved ? JSON.parse(saved) : [];
@@ -70,6 +144,15 @@ const EcostepApp = () => {
     return saved ? JSON.parse(saved) : [];
   });
   
+  // 총 플라스틱 절약량 상태
+  const [totalPlasticSaved, setTotalPlasticSaved] = useState(() => {
+    const saved = localStorage.getItem('totalPlasticSaved');
+    return saved ? parseFloat(saved) : 0;
+  });
+  
+  // 테스트용 플라스틱 절약량 (개발용)
+  const [testPlasticSaved, setTestPlasticSaved] = useState(0);
+  
   // 토스트 메시지 상태
   const [toast, setToast] = useState({
     isVisible: false,
@@ -85,28 +168,39 @@ const EcostepApp = () => {
       type
     });
   };
+  
+  // 포인트 획득 함수 (누적 포인트도 함께 증가)
+  const earnPoints = (amount) => {
+    setPoints(prev => prev + amount);
+    setTotalEarnedPoints(prev => prev + amount);
+  };
+  
+  // 포인트 소비 함수 (누적 포인트는 변경 안함)
+  const spendPoints = (amount) => {
+    setPoints(prev => Math.max(0, prev - amount));
+  };
 
   // master의 decorationsData
   const decorationsData = {
     bronze: [
       { name: '해초', description: '자연스러운 수초', price: 100 },
       { name: '용암석', description: '신비로운 화산석', price: 150 },
-      { name: '작은동굴', description: '아늑한 은신처', price: 200 }
+      { name: '작은 동굴', description: '아늑한 은신처', price: 200 }
     ],
     silver: [
       { name: '산호', description: '화려한 바다 정원', price: 250 },
-      { name: '드리프트우드', description: '오래된 바다 목재', price: 300 },
-      { name: '조개껍질', description: '바다의 보석함', price: 350 }
+      { name: '드리프트 우드', description: '오래된 바다 목재', price: 300 },
+      { name: '조개 껍질', description: '바다의 보석함', price: 350 }
     ],
     gold: [
-      { name: '그리스신전', description: '고대 문명의 흔적', price: 400 },
-      { name: '보물상자', description: '해적의 황금 보물', price: 450 },
+      { name: '그리스 신전', description: '고대 문명의 흔적', price: 400 },
+      { name: '보물 상자', description: '해적의 황금 보물', price: 450 },
       { name: '해적선', description: '전설의 침몰선', price: 500 }
     ],
     platinum: [
-      { name: '크리스탈동굴', description: '신비한 크리스탈', price: 600 },
-      { name: 'LED해파리', description: '빛나는 수중 요정', price: 700 },
-      { name: '아틀란티스유적', description: '잃어버린 문명', price: 800 }
+      { name: '크리스탈 동굴', description: '신비한 크리스탈', price: 600 },
+      { name: 'LED 해파리', description: '빛나는 수중 요정', price: 700 },
+      { name: '아틀란티스 유적', description: '잃어버린 문명', price: 800 }
     ]
   };
 
@@ -115,13 +209,17 @@ const EcostepApp = () => {
     const savedTank = localStorage.getItem('currentTank');
     const savedUnlockedTanks = localStorage.getItem('unlockedTanks');
     const savedRanking = localStorage.getItem('userRanking');
+    const savedRankTheme = localStorage.getItem('rankTheme');
     const savedTankName = localStorage.getItem('tankName');
     const savedWaterQuality = localStorage.getItem('waterQuality');
     const savedLastChallengeDate = localStorage.getItem('lastChallengeDate');
+    const savedTotalPlasticSaved = localStorage.getItem('totalPlasticSaved');
     
     if (savedTank) setCurrentTank(savedTank);
     if (savedUnlockedTanks) setUnlockedTanks(JSON.parse(savedUnlockedTanks));
     if (savedRanking) setUserRanking(savedRanking);
+    if (savedRankTheme) setRankTheme(savedRankTheme);
+    else if (savedRanking) setRankTheme(savedRanking); // 초기값은 실제 랭킹과 동일
     if (savedTankName && savedTankName !== '나의 어항') {
       setTankName(savedTankName);
     } else {
@@ -140,6 +238,9 @@ const EcostepApp = () => {
       const daysDiff = Math.floor((today - lastDate) / (1000 * 60 * 60 * 24));
       setDaysWithoutChallenge(daysDiff);
     }
+    if (savedTotalPlasticSaved) {
+      setTotalPlasticSaved(parseFloat(savedTotalPlasticSaved));
+    }
   }, []);
 
   // 상태 변경시 localStorage에 저장
@@ -156,6 +257,10 @@ const EcostepApp = () => {
   }, [userRanking]);
 
   useEffect(() => {
+    localStorage.setItem('rankTheme', rankTheme);
+  }, [rankTheme]);
+
+  useEffect(() => {
     localStorage.setItem('tankName', tankName);
   }, [tankName]);
 
@@ -167,6 +272,15 @@ const EcostepApp = () => {
   useEffect(() => {
     localStorage.setItem('userPoints', points.toString());
   }, [points]);
+  
+  // 누적 포인트 변경시 localStorage에 저장 및 랭크 업데이트
+  useEffect(() => {
+    localStorage.setItem('totalEarnedPoints', totalEarnedPoints.toString());
+    const newRank = calculateRankFromPoints(totalEarnedPoints);
+    if (newRank !== userRanking) {
+      setUserRanking(newRank);
+    }
+  }, [totalEarnedPoints]);
 
   // 구매한 장식품 저장
   useEffect(() => {
@@ -177,6 +291,11 @@ const EcostepApp = () => {
   useEffect(() => {
     localStorage.setItem('purchasedFish', JSON.stringify(purchasedFish));
   }, [purchasedFish]);
+
+  // 프로필 데이터 저장
+  useEffect(() => {
+    localStorage.setItem('profileData', JSON.stringify(profileData));
+  }, [profileData]);
 
   useEffect(() => {
     if (lastChallengeDate) {
@@ -191,6 +310,24 @@ const EcostepApp = () => {
   useEffect(() => {
     localStorage.setItem('challengeHistory', JSON.stringify(challengeHistory));
   }, [challengeHistory]);
+
+  useEffect(() => {
+    localStorage.setItem('claimedTanks', JSON.stringify(claimedTanks));
+  }, [claimedTanks]);
+
+  // customChallenges 저장
+  useEffect(() => {
+    if (customChallenges.length > 0) {
+      localStorage.setItem('customChallenges', JSON.stringify(customChallenges));
+    }
+  }, [customChallenges]);
+
+  // customPlasticItems 저장
+  useEffect(() => {
+    if (customPlasticItems.length > 0) {
+      localStorage.setItem('customPlasticItems', JSON.stringify(customPlasticItems));
+    }
+  }, [customPlasticItems]);
 
   // 연속 달성 일수 계산 로직
   useEffect(() => {
@@ -281,8 +418,13 @@ const EcostepApp = () => {
   const bgColor = isDarkMode ? 'bg-black' : 'bg-white';
   const borderColor = isDarkMode ? 'border-gray-800' : 'border-gray-200';
 
+  // 로그인 화면 표시
+  if (!isLoggedIn) {
+    return <Login onLogin={() => setIsLoggedIn(true)} />;
+  }
+
   return (
-    <div className={`flex items-center justify-center min-h-screen ${isDarkMode ? 'bg-black' : 'bg-gray-100'} p-4`}>
+    <div className={`flex items-center justify-center min-h-screen ${isDarkMode ? 'bg-gray-950' : 'bg-gray-100'} p-4`}>
       {/* 핸드폰 프레임 - 더 현실적인 디자인 */}
       <div className="relative w-full max-w-[375px] h-[812px] bg-gray-900 rounded-[2.5rem] p-[3px] shadow-2xl">
         {/* 핸드폰 베젤 */}
@@ -300,11 +442,33 @@ const EcostepApp = () => {
               {activeTab === 'more' && '기타'}
             </h1>
             <div className="flex items-center gap-3">
-              <div className={`flex items-center px-2 py-1 rounded ${isDarkMode ? 'bg-white/20' : 'bg-gray-100'}`}>
+              <div className={`flex items-center px-2 py-0.5 rounded border ${isDarkMode ? 'border-gray-600' : 'border-gray-300'}`}>
                 <span className={`${isDarkMode ? 'text-white' : 'text-gray-700'} text-xs font-medium`}>{points}P</span>
               </div>
-              <button onClick={() => setShowSettings(true)}>
-                <FiSettings className={`w-5 h-5 ${isDarkMode ? 'text-white' : 'text-gray-700'}`} />
+              <button className="relative" onClick={() => {
+                setShowNotifications(true);
+                setNotificationsList(prev => prev.map(n => ({ ...n, read: true })));
+              }}>
+                <IoNotificationsOutline className={`w-[18px] h-[18px] ${
+                  notificationsList.some(n => !n.read) 
+                    ? 'text-cyan-500' 
+                    : isDarkMode ? 'text-white' : 'text-gray-700'
+                }`} />
+              </button>
+              <button onClick={() => {
+                if (showNotifications) {
+                  setShowNotifications(false);
+                }
+                // Reset all sub-screens when opening settings
+                setShowProfile(false);
+                setShowThemeSettings(false);
+                setShowRankThemeSettings(false);
+                setShowLanguageSettings(false);
+                setShowNotificationSettings(false);
+                setShowLocationSettings(false);
+                setShowSettings(true);
+              }}>
+                <FiSettings className={`w-4 h-4 ${isDarkMode ? 'text-white' : 'text-gray-700'}`} />
               </button>
             </div>
             {/* 그라데이션 테두리 */}
@@ -314,20 +478,38 @@ const EcostepApp = () => {
           </div>
 
           {/* 메인 콘텐츠 */}
-          {showSettings ? (
-            showProfile ? <ProfileScreen isDarkMode={isDarkMode} setShowProfile={setShowProfile} /> : 
+          {showNotifications ? (
+            <NotificationsScreen 
+              isDarkMode={isDarkMode} 
+              setShowNotifications={setShowNotifications}
+              notifications={notificationsList}
+              setNotifications={setNotificationsList}
+              points={points}
+              setPoints={setPoints}
+              earnPoints={earnPoints}
+              rankTheme={rankTheme}
+            />
+          ) : showSettings ? (
+            showProfile ? <ProfileScreen isDarkMode={isDarkMode} setShowProfile={setShowProfile} profileData={profileData} setProfileData={setProfileData} /> : 
             showThemeSettings ? <ThemeSettings isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} setShowThemeSettings={setShowThemeSettings} /> :
+            showRankThemeSettings ? <RankThemeSettings isDarkMode={isDarkMode} userRanking={rankTheme} setUserRanking={setRankTheme} setShowRankThemeSettings={setShowRankThemeSettings} currentUserRank={userRanking} showToast={showToast} /> :
             showLanguageSettings ? <LanguageSettings isDarkMode={isDarkMode} language={language} setLanguage={setLanguage} setShowLanguageSettings={setShowLanguageSettings} /> :
-            showNotificationSettings ? <NotificationSettings isDarkMode={isDarkMode} notifications={notifications} setNotifications={setNotifications} setShowNotificationSettings={setShowNotificationSettings} /> :
+            showNotificationSettings ? <NotificationSettings isDarkMode={isDarkMode} notifications={notificationEnabled} setNotifications={setNotificationEnabled} setShowNotificationSettings={setShowNotificationSettings} /> :
+            showLocationSettings ? <LocationSettings isDarkMode={isDarkMode} locationSharing={locationSharing} setLocationSharing={setLocationSharing} setShowLocationSettings={setShowLocationSettings} /> :
             <SettingsScreen 
               isDarkMode={isDarkMode}
               setShowSettings={setShowSettings}
               setShowProfile={setShowProfile}
               setShowLanguageSettings={setShowLanguageSettings}
               setShowNotificationSettings={setShowNotificationSettings}
+              setShowLocationSettings={setShowLocationSettings}
               setShowThemeSettings={setShowThemeSettings}
+              setShowRankThemeSettings={setShowRankThemeSettings}
+              userRanking={rankTheme}
               language={language}
-              notifications={notifications}
+              notifications={notificationEnabled}
+              locationSharing={locationSharing}
+              userProfile={profileData}
             />
           ) : showAquariumSettings ? (
             <AquariumSettings 
@@ -352,6 +534,7 @@ const EcostepApp = () => {
               decorationsData={decorationsData}
               isRandomDecorations={isRandomDecorations}
               setIsRandomDecorations={setIsRandomDecorations}
+              claimedTanks={claimedTanks}
             />
           ) : (
             <>
@@ -372,6 +555,9 @@ const EcostepApp = () => {
                 selectedFish={selectedFish}
                 fishCount={fishCount}
                 consecutiveDays={consecutiveDays}
+                totalPlasticSaved={totalPlasticSaved}
+                testPlasticSaved={testPlasticSaved}
+                setTestPlasticSaved={setTestPlasticSaved}
               />}
               {activeTab === 'challenge' && <ChallengePage 
                 isDarkMode={isDarkMode}
@@ -391,10 +577,18 @@ const EcostepApp = () => {
                 setCustomPlasticItems={setCustomPlasticItems}
                 points={points}
                 setPoints={setPoints}
+                earnPoints={earnPoints}
                 setLastChallengeDate={setLastChallengeDate}
                 setWaterQuality={setWaterQuality}
                 challengeHistory={challengeHistory}
                 setChallengeHistory={setChallengeHistory}
+                userRanking={rankTheme}
+                actualRanking={userRanking}
+                showToast={showToast}
+                setTotalPlasticSaved={setTotalPlasticSaved}
+                testDate={testDate}
+                setTestDate={setTestDate}
+                setNotificationsList={setNotificationsList}
               />}
               {activeTab === 'reward' && <RewardsPage 
                 isDarkMode={isDarkMode} 
@@ -410,17 +604,29 @@ const EcostepApp = () => {
                 points={points}
                 setPoints={setPoints}
                 showToast={showToast}
+                setCurrentTank={setCurrentTank}
+                calculateRankProgress={calculateRankProgress}
+                calculateRankFromPoints={calculateRankFromPoints}
+                totalEarnedPoints={totalEarnedPoints}
+                setTotalEarnedPoints={setTotalEarnedPoints}
+                spendPoints={spendPoints}
               />}
-              {activeTab === 'community' && !showFriendsList && <CommunityPage isDarkMode={isDarkMode} onShowFriendsList={(tab) => { setRankingInitialTab(tab); setShowFriendsList(true); }} />}
-              {activeTab === 'community' && showFriendsList && <RankingList isDarkMode={isDarkMode} onBack={() => setShowFriendsList(false)} initialTab={rankingInitialTab} />}
-              {activeTab === 'more' && !showChatBot && <MorePage isDarkMode={isDarkMode} userPoints={points} setUserPoints={setPoints} onShowChatBot={() => setShowChatBot(true)} />}
+              {activeTab === 'community' && !showFriendsList && <CommunityPage isDarkMode={isDarkMode} onShowFriendsList={(tab) => { setRankingInitialTab(tab); setShowFriendsList(true); }} showToast={showToast} userRanking={rankTheme} totalPlasticSaved={testPlasticSaved > 0 ? testPlasticSaved : totalPlasticSaved} currentUserId={profileData.userId} currentUserName={profileData.name} />}
+              {activeTab === 'community' && showFriendsList && <RankingList isDarkMode={isDarkMode} onBack={() => setShowFriendsList(false)} initialTab={rankingInitialTab} totalPlasticSaved={testPlasticSaved > 0 ? testPlasticSaved : totalPlasticSaved} />}
+              {activeTab === 'more' && !showChatBot && <MorePage isDarkMode={isDarkMode} userPoints={points} setUserPoints={setPoints} onShowChatBot={() => setShowChatBot(true)} earnPoints={earnPoints} rankTheme={rankTheme} showToast={showToast} />}
               {activeTab === 'more' && showChatBot && <ChatBot isDarkMode={isDarkMode} onBack={() => setShowChatBot(false)} />}
             </>
           )}
 
-          {/* 하단 네비게이션 */}
-          {!showSettings && !showProfile && !showAquariumSettings && !showThemeSettings && !showLanguageSettings && !showNotificationSettings && !showFriendsList && (
-            <div className={`${bgColor} border-t ${borderColor}`}>
+          {/* 하단 네비게이션 - 글래스모피즘 효과 */}
+          {!showNotifications && !showSettings && !showProfile && !showAquariumSettings && !showThemeSettings && !showRankThemeSettings && !showLanguageSettings && !showNotificationSettings && !showLocationSettings && !showFriendsList && !showGlobalList && (
+            <div style={{
+              backgroundColor: isDarkMode ? 'rgba(55, 65, 81, 0.3)' : 'rgba(255, 255, 255, 0.3)',
+              backdropFilter: isDarkMode ? 'blur(20px) saturate(1.5)' : 'blur(20px) saturate(2.5)',
+              WebkitBackdropFilter: isDarkMode ? 'blur(20px) saturate(1.5)' : 'blur(20px) saturate(2.5)',
+              borderTop: isDarkMode ? '1px solid rgba(107, 114, 128, 0.3)' : '1px solid rgba(209, 213, 219, 0.8)',
+              boxShadow: '0 -4px 30px rgba(0, 0, 0, 0.05)'
+            }}>
               <div className="flex justify-around py-2">
                 {[
                   { id: 'home', icon: FiHome, label: '홈' },
@@ -435,8 +641,8 @@ const EcostepApp = () => {
                       key={tab.id}
                       onClick={() => setActiveTab(tab.id)}
                       className={`flex flex-col items-center py-1 px-3 ${
-                        activeTab === tab.id ? 'text-blue-500' : isDarkMode ? 'text-gray-400' : 'text-gray-400'
-                      }`}
+                        isDarkMode ? 'text-white' : 'text-gray-700'
+                      } ${activeTab === tab.id ? 'opacity-100' : 'opacity-50'}`}
                     >
                       <Icon className="w-5 h-5 mb-0.5" fill={activeTab === tab.id ? 'currentColor' : 'none'} />
                       <span className="text-xs">{tab.label}</span>
@@ -457,6 +663,7 @@ const EcostepApp = () => {
         isVisible={toast.isVisible}
         onClose={() => setToast(prev => ({ ...prev, isVisible: false }))}
         isDarkMode={isDarkMode}
+        rankTheme={rankTheme}
       />
     </div>
   );

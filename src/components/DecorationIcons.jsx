@@ -147,7 +147,7 @@ const DecorationIcons = {
     </svg>
   ),
   
-  작은동굴: () => (
+  '작은 동굴': () => (
     <svg viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
       {/* 동굴 외형 - 더 입체적으로 */}
       <path 
@@ -284,7 +284,7 @@ const DecorationIcons = {
     </svg>
   ),
   
-  드리프트우드: () => (
+  '드리프트 우드': () => (
     <svg viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
       {/* 메인 나무 줄기 - 자연스러운 유목 형태 */}
       <path 
@@ -352,7 +352,7 @@ const DecorationIcons = {
     </svg>
   ),
   
-  조개껍질: () => (
+  '조개 껍질': () => (
     <svg viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
       {/* 소라 껍질 메인 - 더 나선형으로 */}
       <path 
@@ -424,7 +424,7 @@ const DecorationIcons = {
   ),
   
   // 골드 랭크 장식품
-  그리스신전: () => (
+  '그리스 신전': () => (
     <svg viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
       {/* 지붕 */}
       <path 
@@ -512,7 +512,7 @@ const DecorationIcons = {
     </svg>
   ),
   
-  보물상자: () => (
+  '보물 상자': () => (
     <svg viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
       {/* 상자 뚜껑 (열린 상태) */}
       <g transform="rotate(-20 30 25)">
@@ -702,7 +702,7 @@ const DecorationIcons = {
   ),
   
   // 플래티넘 랭크 장식품 (블러 완전 제거, 100% 선명)
-  크리스탈동굴: () => (
+  '크리스탈 동굴': () => (
     <svg viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
       {/* 동굴 외형 */}
       <path 
@@ -787,7 +787,7 @@ const DecorationIcons = {
     </svg>
   ),
   
-  LED해파리: () => (
+  'LED 해파리': () => (
     <svg viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
       {/* 해파리 머리 - 선명하게 */}
       <ellipse cx="30" cy="25" rx="16" ry="13" fill="url(#jellyHead)"/>
@@ -928,7 +928,7 @@ const DecorationIcons = {
     </svg>
   ),
   
-  아틀란티스유적: () => (
+  '아틀란티스 유적': () => (
     <svg viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
       {/* 메인 건물 - 더 웅장하게 */}
       <path 

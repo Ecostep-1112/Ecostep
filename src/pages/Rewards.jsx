@@ -19,7 +19,13 @@ const Rewards = ({
   setPurchasedDecorations,
   points,
   setPoints,
-  showToast
+  showToast,
+  setCurrentTank,
+  calculateRankProgress,
+  calculateRankFromPoints,
+  totalEarnedPoints,
+  setTotalEarnedPoints,
+  spendPoints
 }) => {
   const bgColor = isDarkMode ? 'bg-gray-900' : 'bg-white';
   const textColor = isDarkMode ? 'text-white' : 'text-gray-900';
@@ -52,24 +58,24 @@ const Rewards = ({
 
   const decorationsData = {
     bronze: [
-      { name: '해초', description: '자연스러운 수초', price: 100 },
-      { name: '용암석', description: '신비로운 화산석', price: 150 },
-      { name: '작은동굴', description: '아늑한 은신처', price: 200 }
+      { name: '해초', description: '자연스러운 수초', price: 200 },
+      { name: '용암석', description: '신비로운 화산석', price: 300 },
+      { name: '작은 동굴', description: '아늑한 은신처', price: 400 }
     ],
     silver: [
-      { name: '산호', description: '화려한 바다 정원', price: 250 },
-      { name: '드리프트우드', description: '오래된 바다 목재', price: 300 },
-      { name: '조개껍질', description: '바다의 보석함', price: 350 }
+      { name: '산호', description: '화려한 바다 정원', price: 500 },
+      { name: '드리프트 우드', description: '오래된 바다 목재', price: 600 },
+      { name: '조개 껍질', description: '바다의 보석함', price: 700 }
     ],
     gold: [
-      { name: '그리스신전', description: '고대 문명의 흔적', price: 400 },
-      { name: '보물상자', description: '해적의 황금 보물', price: 450 },
-      { name: '해적선', description: '전설의 침몰선', price: 500 }
+      { name: '그리스 신전', description: '고대 문명의 흔적', price: 900 },
+      { name: '보물 상자', description: '해적의 황금 보물', price: 1000 },
+      { name: '해적선', description: '전설의 침몰선', price: 1100 }
     ],
     platinum: [
-      { name: '크리스탈동굴', description: '신비한 크리스탈', price: 600 },
-      { name: 'LED해파리', description: '빛나는 수중 요정', price: 700 },
-      { name: '아틀란티스유적', description: '잃어버린 문명', price: 800 }
+      { name: '크리스탈 동굴', description: '신비한 크리스탈', price: 1400 },
+      { name: 'LED 해파리', description: '빛나는 수중 요정', price: 1500 },
+      { name: '아틀란티스 유적', description: '잃어버린 문명', price: 1600 }
     ]
   };
 
@@ -77,7 +83,7 @@ const Rewards = ({
   const getRankGradient = (rank) => {
     switch(rank) {
       case 'bronze':
-        return 'bg-gradient-to-br from-amber-600 to-amber-800';
+        return 'bg-gradient-to-br from-cyan-500 to-blue-600';
       case 'silver':
         return 'bg-gradient-to-br from-cyan-400 to-teal-500';
       case 'gold':
@@ -89,12 +95,20 @@ const Rewards = ({
     }
   };
 
-  // 진행바 색상 - 차분하고 부드러운 색상
-  const getProgressGradient = (isDark) => {
-    // 부드러운 블루-그레이 계열
-    return isDark 
-      ? 'bg-gradient-to-r from-slate-500 to-slate-400'
-      : 'bg-gradient-to-r from-slate-400 to-slate-500';
+  // 진행바 색상 - 현재 랭크와 동일한 색상
+  const getProgressGradient = (rank) => {
+    switch(rank) {
+      case 'bronze':
+        return 'bg-gradient-to-r from-cyan-500 to-blue-600';
+      case 'silver':
+        return 'bg-gradient-to-r from-cyan-400 to-teal-500';
+      case 'gold':
+        return 'bg-gradient-to-r from-yellow-300 to-orange-400';
+      case 'platinum':
+        return 'bg-gradient-to-r from-purple-400 to-indigo-500';
+      default:
+        return 'bg-gradient-to-r from-cyan-500 to-blue-600';
+    }
   };
 
   const rankIcons = {
@@ -105,10 +119,17 @@ const Rewards = ({
   };
 
   const rankNames = {
-    bronze: 'BRONZE',
-    silver: 'SILVER',
-    gold: 'GOLD',
-    platinum: 'PLATINUM'
+    bronze: '브론즈',
+    silver: '실버',
+    gold: '골드',
+    platinum: '플래티넘'
+  };
+
+  const rankColors = {
+    bronze: '#3b82f6',
+    silver: '#06b6d4',
+    gold: '#facc15',
+    platinum: '#ec4899'
   };
 
   return (
@@ -116,7 +137,7 @@ const Rewards = ({
       <div className="min-h-full">
         {/* 현재 랭크 */}
         <div className={`mx-3 mt-4 ${cardBg} border ${borderColor} rounded-xl p-6`}>
-          <h3 className={`${textColor} text-center text-sm font-medium mb-4`}>현재 랭크</h3>
+          <h3 className={`text-center text-sm font-medium mb-4 ${isDarkMode ? 'text-white' : 'text-black'}`}>현재 랭크</h3>
           
           {/* 랭크 표시 직사각형 */}
           <div className="relative mb-4">
@@ -152,25 +173,10 @@ const Rewards = ({
                 <div className="flex flex-col items-center">
                   {/* 리본 */}
                   <div className="relative">
-                    <div className={`w-2 h-5 rounded-t-sm ${
-                      userRanking === 'bronze' ? 'bg-gradient-to-b from-amber-500 via-amber-600 to-amber-700' :
-                      userRanking === 'silver' ? 'bg-gradient-to-b from-slate-400 via-slate-500 to-slate-600' :
-                      userRanking === 'gold' ? 'bg-gradient-to-b from-yellow-400 via-yellow-500 to-amber-600' :
-                      'bg-gradient-to-b from-purple-500 via-purple-600 to-indigo-700'
-                    }`}></div>
+                    <div className="w-1 h-5 rounded-t-sm bg-gradient-to-b from-gray-100 via-white to-gray-200"></div>
                     {/* 리본 끝 V자 모양 */}
-                    <div className={`absolute bottom-0 left-0 w-0 h-0 border-l-[4px] border-l-transparent border-t-[3px] ${
-                      userRanking === 'bronze' ? 'border-t-amber-700' :
-                      userRanking === 'silver' ? 'border-t-slate-600' :
-                      userRanking === 'gold' ? 'border-t-amber-600' :
-                      'border-t-indigo-700'
-                    }`}></div>
-                    <div className={`absolute bottom-0 right-0 w-0 h-0 border-r-[4px] border-r-transparent border-t-[3px] ${
-                      userRanking === 'bronze' ? 'border-t-amber-700' :
-                      userRanking === 'silver' ? 'border-t-slate-600' :
-                      userRanking === 'gold' ? 'border-t-amber-600' :
-                      'border-t-indigo-700'
-                    }`}></div>
+                    <div className="absolute bottom-0 left-0 w-0 h-0 border-l-[4px] border-l-transparent border-t-[3px] border-t-gray-300"></div>
+                    <div className="absolute bottom-0 right-0 w-0 h-0 border-r-[4px] border-r-transparent border-t-[3px] border-t-gray-300"></div>
                   </div>
                   {/* 메달 */}
                   <div className="relative -mt-1 bg-white/90 rounded-full p-0.5 shadow-md">
@@ -186,13 +192,33 @@ const Rewards = ({
             {/* 진행바 */}
             <div className={`w-full h-1.5 ${isDarkMode ? 'bg-gray-700/50' : 'bg-gray-200'} rounded-full overflow-hidden shadow-inner`}>
               <div 
-                className={`h-full ${getProgressGradient(isDarkMode)} rounded-full transition-all duration-500`} 
-                style={{ width: '70%' }}
+                className={`h-full ${getProgressGradient(userRanking)} rounded-full transition-all duration-500`} 
+                style={{ width: `${calculateRankProgress ? calculateRankProgress(totalEarnedPoints || 0) : 0}%` }}
               />
             </div>
             
             <p className={`text-center ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} text-xs mt-1`}>
-              플래티넘까지 30% 남음
+              {(() => {
+                const progress = calculateRankProgress ? calculateRankProgress(totalEarnedPoints || 0) : 0;
+                const nextRank = userRanking === 'bronze' ? '실버' : 
+                               userRanking === 'silver' ? '골드' : 
+                               userRanking === 'gold' ? '플래티넘' : '최고 등급';
+                
+                if (userRanking === 'platinum' && progress >= 100) {
+                  return '플래티넘 최고 등급 달성!';
+                }
+                
+                // 플래티넘 등급에서는 소수점 1자리까지 표시 (0%나 100%는 제외)
+                const remaining = 100 - progress;
+                if (userRanking === 'platinum') {
+                  // 0% 또는 100% 근처인 경우 정수로 표시
+                  if (remaining === 0 || remaining === 100 || remaining % 1 === 0) {
+                    return `${nextRank}까지 ${remaining.toFixed(0)}% 남음`;
+                  }
+                  return `${nextRank}까지 ${remaining.toFixed(1)}% 남음`;
+                }
+                return `${nextRank}까지 ${remaining.toFixed(0)}% 남음`;
+              })()}
             </p>
           </div>
           
@@ -213,33 +239,57 @@ const Rewards = ({
               <div className={`${userRanking === 'bronze' || userRanking === 'silver' || userRanking === 'gold' || userRanking === 'platinum' ? '' : 'opacity-20 grayscale'}`}>
                 <BronzeIcon size={28} />
               </div>
-              <span className={`font-medium ${userRanking === 'bronze' || userRanking === 'silver' || userRanking === 'gold' || userRanking === 'platinum' ? (isDarkMode ? 'text-amber-400' : 'text-amber-600') : (isDarkMode ? 'text-gray-600' : 'text-gray-400')}`}>
-                브론즈
-              </span>
+              {userRanking === 'bronze' || userRanking === 'silver' || userRanking === 'gold' || userRanking === 'platinum' ? (
+                <span className="font-medium bg-gradient-to-r from-cyan-500 via-blue-500 to-blue-600 bg-clip-text text-transparent">
+                  브론즈
+                </span>
+              ) : (
+                <span className={`font-medium ${isDarkMode ? 'text-gray-600' : 'text-gray-400'}`}>
+                  브론즈
+                </span>
+              )}
             </div>
             <div className="flex flex-col items-center gap-1">
               <div className={`${userRanking === 'silver' || userRanking === 'gold' || userRanking === 'platinum' ? '' : 'opacity-20 grayscale'}`}>
                 <SilverIcon size={28} />
               </div>
-              <span className={`font-medium ${userRanking === 'silver' || userRanking === 'gold' || userRanking === 'platinum' ? (isDarkMode ? 'text-cyan-400' : 'text-cyan-600') : (isDarkMode ? 'text-gray-600' : 'text-gray-400')}`}>
-                실버
-              </span>
+              {userRanking === 'silver' || userRanking === 'gold' || userRanking === 'platinum' ? (
+                <span className="font-medium bg-gradient-to-r from-teal-500 via-emerald-500 to-green-500 bg-clip-text text-transparent">
+                  실버
+                </span>
+              ) : (
+                <span className={`font-medium ${isDarkMode ? 'text-gray-600' : 'text-gray-400'}`}>
+                  실버
+                </span>
+              )}
             </div>
             <div className="flex flex-col items-center gap-1">
               <div className={`${userRanking === 'gold' || userRanking === 'platinum' ? '' : 'opacity-20 grayscale'}`}>
                 <GoldIcon size={28} />
               </div>
-              <span className={`font-medium ${userRanking === 'gold' || userRanking === 'platinum' ? (isDarkMode ? 'text-yellow-400' : 'text-yellow-600') : (isDarkMode ? 'text-gray-600' : 'text-gray-400')}`}>
-                골드
-              </span>
+              {userRanking === 'gold' || userRanking === 'platinum' ? (
+                <span className="font-medium bg-gradient-to-r from-yellow-400 via-amber-500 to-orange-500 bg-clip-text text-transparent">
+                  골드
+                </span>
+              ) : (
+                <span className={`font-medium ${isDarkMode ? 'text-gray-600' : 'text-gray-400'}`}>
+                  골드
+                </span>
+              )}
             </div>
             <div className="flex flex-col items-center gap-1">
               <div className={`${userRanking === 'platinum' ? '' : 'opacity-20 grayscale'}`}>
                 <PlatinumIcon size={28} />
               </div>
-              <span className={`font-medium ${userRanking === 'platinum' ? (isDarkMode ? 'text-purple-400' : 'text-purple-600') : (isDarkMode ? 'text-gray-600' : 'text-gray-400')}`}>
-                플래티넘
-              </span>
+              {userRanking === 'platinum' ? (
+                <span className="font-medium bg-gradient-to-r from-purple-400 via-pink-500 to-purple-600 bg-clip-text text-transparent">
+                  플래티넘
+                </span>
+              ) : (
+                <span className={`font-medium ${isDarkMode ? 'text-gray-600' : 'text-gray-400'}`}>
+                  플래티넘
+                </span>
+              )}
             </div>
           </div>
         </div>
@@ -256,11 +306,12 @@ const Rewards = ({
                   showToast('실버 랭크에서 잠금 해제', 'error');
                 } else if (!claimedTanks.includes('silver')) {
                   setClaimedTanks([...claimedTanks, 'silver']);
+                  setCurrentTank('silver');
                   showToast('실버 어항 수령 완료', 'success');
                 }
               }}
               disabled={claimedTanks.includes('silver')}
-              className={`${claimedTanks.includes('silver') ? 'bg-green-50 border-green-300' : (userRanking === 'silver' || userRanking === 'gold' || userRanking === 'platinum') ? `${cardBg} hover:bg-blue-50` : 'bg-gray-100 cursor-not-allowed'} border ${claimedTanks.includes('silver') ? 'border-green-300' : borderColor} rounded-lg relative flex flex-col items-center justify-between h-[125px] p-2 transition-colors overflow-hidden`}
+              className={`${claimedTanks.includes('silver') ? 'bg-green-50 border-green-300' : (userRanking === 'silver' || userRanking === 'gold' || userRanking === 'platinum') ? `${cardBg} hover:bg-cyan-50` : 'bg-gray-100 cursor-not-allowed'} border ${claimedTanks.includes('silver') ? 'border-green-300' : borderColor} rounded-lg relative flex flex-col items-center justify-between h-[125px] p-2 transition-colors overflow-hidden`}
             >
               {/* 블러 효과를 받을 컨테이너 */}
               <div className={`w-full h-full flex flex-col items-center justify-between ${(userRanking !== 'silver' && userRanking !== 'gold' && userRanking !== 'platinum') ? 'filter blur-[1px]' : ''}`}>
@@ -278,9 +329,13 @@ const Rewards = ({
                 </div>
                 
                 <div className="h-[20px] flex items-center justify-center w-full">
-                  <p className={`text-xs ${claimedTanks.includes('silver') ? 'text-green-500 font-medium' : (userRanking === 'silver' || userRanking === 'gold' || userRanking === 'platinum') ? 'text-blue-500 font-medium' : 'text-gray-400'} text-center`}>
-                    {claimedTanks.includes('silver') ? '수령 완료' : (userRanking === 'silver' || userRanking === 'gold' || userRanking === 'platinum') ? '수령 가능' : '실버 도달'}
-                  </p>
+                  {claimedTanks.includes('silver') ? (
+                    <p className="text-xs text-green-500 font-medium text-center">수령 완료</p>
+                  ) : (userRanking === 'silver' || userRanking === 'gold' || userRanking === 'platinum') ? (
+                    <p className="text-xs font-medium text-center bg-gradient-to-r from-cyan-500 via-blue-500 to-blue-600 bg-clip-text text-transparent">수령 가능</p>
+                  ) : (
+                    <p className="text-xs text-gray-400 text-center">실버 도달</p>
+                  )}
                 </div>
               </div>
               
@@ -303,11 +358,12 @@ const Rewards = ({
                   showToast('골드 랭크에서 잠금 해제', 'error');
                 } else if (!claimedTanks.includes('gold')) {
                   setClaimedTanks([...claimedTanks, 'gold']);
+                  setCurrentTank('gold');
                   showToast('골드 어항 수령 완료', 'success');
                 }
               }}
               disabled={claimedTanks.includes('gold')}
-              className={`${claimedTanks.includes('gold') ? 'bg-green-50 border-green-300' : (userRanking === 'gold' || userRanking === 'platinum') ? `${cardBg} hover:bg-blue-50` : 'bg-gray-100 cursor-not-allowed'} border ${claimedTanks.includes('gold') ? 'border-green-300' : borderColor} rounded-lg relative flex flex-col items-center justify-between h-[125px] p-2 transition-colors overflow-hidden`}
+              className={`${claimedTanks.includes('gold') ? 'bg-green-50 border-green-300' : (userRanking === 'gold' || userRanking === 'platinum') ? `${cardBg} hover:bg-cyan-50` : 'bg-gray-100 cursor-not-allowed'} border ${claimedTanks.includes('gold') ? 'border-green-300' : borderColor} rounded-lg relative flex flex-col items-center justify-between h-[125px] p-2 transition-colors overflow-hidden`}
             >
               {/* 블러 효과를 받을 컨테이너 */}
               <div className={`w-full h-full flex flex-col items-center justify-between ${(userRanking !== 'gold' && userRanking !== 'platinum') ? 'filter blur-[1px]' : ''}`}>
@@ -325,9 +381,13 @@ const Rewards = ({
                 </div>
                 
                 <div className="h-[20px] flex items-center justify-center w-full">
-                  <p className={`text-xs ${claimedTanks.includes('gold') ? 'text-green-500 font-medium' : (userRanking === 'gold' || userRanking === 'platinum') ? 'text-blue-500 font-medium' : 'text-gray-400'} text-center`}>
-                    {claimedTanks.includes('gold') ? '수령 완료' : (userRanking === 'gold' || userRanking === 'platinum') ? '수령 가능' : '골드 도달'}
-                  </p>
+                  {claimedTanks.includes('gold') ? (
+                    <p className="text-xs text-green-500 font-medium text-center">수령 완료</p>
+                  ) : (userRanking === 'gold' || userRanking === 'platinum') ? (
+                    <p className="text-xs font-medium text-center bg-gradient-to-r from-cyan-500 via-blue-500 to-blue-600 bg-clip-text text-transparent">수령 가능</p>
+                  ) : (
+                    <p className="text-xs text-gray-400 text-center">골드 도달</p>
+                  )}
                 </div>
               </div>
               
@@ -350,11 +410,12 @@ const Rewards = ({
                   showToast('플래티넘 랭크에서 잠금 해제', 'error');
                 } else if (!claimedTanks.includes('platinum')) {
                   setClaimedTanks([...claimedTanks, 'platinum']);
+                  setCurrentTank('platinum');
                   showToast('플래티넘 어항 수령 완료', 'success');
                 }
               }}
               disabled={claimedTanks.includes('platinum')}
-              className={`${claimedTanks.includes('platinum') ? 'bg-green-50 border-green-300' : userRanking === 'platinum' ? `${cardBg} hover:bg-blue-50` : 'bg-gray-100 cursor-not-allowed'} border ${claimedTanks.includes('platinum') ? 'border-green-300' : borderColor} rounded-lg relative flex flex-col items-center justify-between h-[125px] p-2 transition-colors overflow-hidden`}
+              className={`${claimedTanks.includes('platinum') ? 'bg-green-50 border-green-300' : userRanking === 'platinum' ? `${cardBg} hover:bg-cyan-50` : 'bg-gray-100 cursor-not-allowed'} border ${claimedTanks.includes('platinum') ? 'border-green-300' : borderColor} rounded-lg relative flex flex-col items-center justify-between h-[125px] p-2 transition-colors overflow-hidden`}
             >
               {/* 블러 효과를 받을 컨테이너 */}
               <div className={`w-full h-full flex flex-col items-center justify-between ${userRanking !== 'platinum' ? 'filter blur-[1px]' : ''}`}>
@@ -372,9 +433,13 @@ const Rewards = ({
                 </div>
                 
                 <div className="h-[20px] flex items-center justify-center w-full">
-                  <p className={`text-xs ${claimedTanks.includes('platinum') ? 'text-green-500 font-medium' : userRanking === 'platinum' ? 'text-blue-500 font-medium' : 'text-gray-400'} text-center`}>
-                    {claimedTanks.includes('platinum') ? '수령 완료' : userRanking === 'platinum' ? '수령 가능' : '플래티넘 도달'}
-                  </p>
+                  {claimedTanks.includes('platinum') ? (
+                    <p className="text-xs text-green-500 font-medium text-center">수령 완료</p>
+                  ) : userRanking === 'platinum' ? (
+                    <p className="text-xs font-medium text-center bg-gradient-to-r from-cyan-500 via-blue-500 to-blue-600 bg-clip-text text-transparent">수령 가능</p>
+                  ) : (
+                    <p className="text-xs text-gray-400 text-center">플래티넘 도닼</p>
+                  )}
                 </div>
               </div>
               
@@ -411,7 +476,14 @@ const Rewards = ({
                   const itemRankIndex = rankOrder.indexOf(rank);
                   const isLocked = itemRankIndex > userRankIndex;
                   
-                  const fishPrice = (rank === 'bronze' ? 100 : rank === 'silver' ? 300 : rank === 'gold' ? 500 : 700) + i * 100;
+                  // 새로운 물고기 가격 체계
+                  const fishPrices = {
+                    bronze: [200, 300, 400],
+                    silver: [500, 600, 700],
+                    gold: [1000, 1100, 1200],
+                    platinum: [1500, 1600, 1700]
+                  };
+                  const fishPrice = fishPrices[rank][i];
                   
                   return (
                     <button 
@@ -427,7 +499,11 @@ const Rewards = ({
                           // 포인트가 충분한지 확인
                           if (points >= fishPrice) {
                             // 포인트 차감
-                            setPoints(prev => prev - fishPrice);
+                            if (spendPoints) {
+                              spendPoints(fishPrice);
+                            } else {
+                              setPoints(prev => prev - fishPrice);
+                            }
                             // 물고기 추가
                             setPurchasedFish(prev => [...prev, fish.name]);
                             // 성공 알림
@@ -465,9 +541,15 @@ const Rewards = ({
                       {/* 가격/구매완료 - 하단 고정 */}
                       <div className="h-[20px] flex items-center justify-center w-full">
                         {!isLocked && (
-                          <p className={`text-xs ${isPurchased ? 'text-green-500 font-medium' : 'text-blue-500'} text-center`}>
-                            {isPurchased ? '구매완료' : `${fishPrice}P`}
-                          </p>
+                          isPurchased ? (
+                            <p className="text-xs text-green-500 font-medium text-center">
+                              구매완료
+                            </p>
+                          ) : (
+                            <p className="text-xs font-medium text-center bg-gradient-to-r from-cyan-500 via-blue-500 to-blue-600 bg-clip-text text-transparent">
+                              {fishPrice}P
+                            </p>
+                          )
                         )}
                       </div>
                       
@@ -528,7 +610,11 @@ const Rewards = ({
                           // 포인트가 충분한지 확인
                           if (points >= deco.price) {
                             // 포인트 차감
-                            setPoints(prev => prev - deco.price);
+                            if (spendPoints) {
+                              spendPoints(deco.price);
+                            } else {
+                              setPoints(prev => prev - deco.price);
+                            }
                             // 장식품 추가
                             setPurchasedDecorations(prev => [...prev, deco.name]);
                             // 성공 알림
@@ -565,9 +651,15 @@ const Rewards = ({
                         {/* 가격 - 하단 고정 */}
                         <div className="h-[20px] flex items-center justify-center w-full">
                           {!isLocked && (
-                            <p className={`text-xs ${isPurchased ? 'text-green-500 font-medium' : 'text-blue-500'} text-center`}>
-                              {isPurchased ? '구매완료' : `${deco.price}P`}
-                            </p>
+                            isPurchased ? (
+                              <p className="text-xs text-green-500 font-medium text-center">
+                                구매완료
+                              </p>
+                            ) : (
+                              <p className="text-xs font-medium text-center bg-gradient-to-r from-cyan-500 via-blue-500 to-blue-600 bg-clip-text text-transparent">
+                                {deco.price}P
+                              </p>
+                            )
                           )}
                         </div>
                       </div>
@@ -596,8 +688,9 @@ const Rewards = ({
             <div className="grid grid-cols-4 gap-2">
               <button
                 onClick={() => {
-                  setUserRanking('bronze');
-                  showToast('브론즈 랭크로 변경', 'success');
+                  setPoints(0); // 브론즈: 0P
+                  setTotalEarnedPoints(0); // 누적 포인트도 0P
+                  showToast('브론즈 랭크로 변경 (0P)', 'success');
                 }}
                 className={`py-2 px-3 rounded-lg ${
                   userRanking === 'bronze' 
@@ -611,8 +704,9 @@ const Rewards = ({
               </button>
               <button
                 onClick={() => {
-                  setUserRanking('silver');
-                  showToast('실버 랭크로 변경', 'success');
+                  setPoints(2100); // 실버: 2100P
+                  setTotalEarnedPoints(2100); // 누적 포인트도 2100P
+                  showToast('실버 랭크로 변경 (2100P)', 'success');
                 }}
                 className={`py-2 px-3 rounded-lg ${
                   userRanking === 'silver' 
@@ -626,8 +720,9 @@ const Rewards = ({
               </button>
               <button
                 onClick={() => {
-                  setUserRanking('gold');
-                  showToast('골드 랭크로 변경', 'success');
+                  setPoints(6300); // 골드: 6300P
+                  setTotalEarnedPoints(6300); // 누적 포인트도 6300P
+                  showToast('골드 랭크로 변경 (6300P)', 'success');
                 }}
                 className={`py-2 px-3 rounded-lg ${
                   userRanking === 'gold' 
@@ -641,8 +736,9 @@ const Rewards = ({
               </button>
               <button
                 onClick={() => {
-                  setUserRanking('platinum');
-                  showToast('플래티넘 랭크로 변경', 'success');
+                  setPoints(12600); // 플래티넘: 12600P
+                  setTotalEarnedPoints(12600); // 누적 포인트도 12600P
+                  showToast('플래티넘 랭크로 변경 (12600P)', 'success');
                 }}
                 className={`py-2 px-3 rounded-lg ${
                   userRanking === 'platinum' 
@@ -658,23 +754,21 @@ const Rewards = ({
           </div>
         </div>
 
-        {/* 테스트용 초기화 버튼 */}
+        {/* 테스트용 구매내역 초기화 버튼 */}
         <div className="mx-3 mt-4 mb-6">
           <button
             onClick={() => {
-              // 구매 이력 완전 초기화 (아무것도 구매하지 않은 상태)
+              // 구매 이력만 초기화 (포인트는 유지)
               setPurchasedFish([]);
               setPurchasedDecorations([]);
               setClaimedTanks([]); // 랭킹 보상 초기화
-              setPoints(10000);
               
-              // localStorage 초기화
+              // localStorage에서 구매내역만 초기화
               localStorage.setItem('purchasedFish', JSON.stringify([]));
               localStorage.setItem('purchasedDecorations', JSON.stringify([]));
               localStorage.setItem('claimedTanks', JSON.stringify([])); // 랭킹 보상 초기화
-              localStorage.setItem('userPoints', '10000');
               
-              showToast('테스트 데이터 초기화 완료', 'success');
+              showToast('구매내역 초기화 완료', 'success');
             }}
             className={`w-full py-3 px-4 rounded-xl ${
               isDarkMode 
@@ -683,10 +777,10 @@ const Rewards = ({
             } transition-colors flex items-center justify-center gap-2 text-sm font-medium`}
           >
             <span>🔄</span>
-            <span>테스트용 초기화</span>
+            <span>구매내역 초기화</span>
           </button>
           <p className={`text-xs ${isDarkMode ? 'text-gray-500' : 'text-gray-400'} text-center mt-2`}>
-            구매 이력과 포인트를 초기 상태로 되돌립니다
+            구매 이력만 초기화합니다 (포인트는 유지)
           </p>
         </div>
       </div>

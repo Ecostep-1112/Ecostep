@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "server": "node server.js",
+    "server": "nodemon server.js",
     "dev:all": "concurrently --kill-others --raw \"npm run server\" \"npm run dev\"",
     "stop": "npx kill-port 5175 5176",
     "build": "vite build",
@@ -16,7 +16,7 @@
     "@supabase/supabase-js": "^2.55.0",
     "cors": "^2.8.5",
     "dotenv": "^17.2.1",
-    "express": "^5.1.0",
+    "express": "^4.21.2",
     "lucide-react": "^0.541.0",
     "node-fetch": "^3.3.2",
     "react": "^19.1.1",
@@ -30,6 +30,7 @@
     "@vitejs/plugin-react": "^4.3.1",
     "autoprefixer": "^10.4.20",
     "concurrently": "^9.2.1",
+    "nodemon": "^3.1.10",
     "postcss": "^8.4.47",
     "tailwindcss": "^3.4.15",
     "vite": "^5.4.1"

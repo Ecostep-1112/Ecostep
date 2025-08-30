@@ -97,8 +97,9 @@ app.post('/api/chatbot', async (req, res) => {
       return res.status(400).json({ error: 'Message is required' });
     }
 
-    // Check if API key exists
-    if (!CLAUDE_API_KEY || CLAUDE_API_KEY === 'your-api-key-here' || !CLAUDE_API_KEY.startsWith('sk-ant-')) {
+    // Check if API key exists and is valid
+    if (!CLAUDE_API_KEY || CLAUDE_API_KEY === 'your_claude_api_key_here' || !CLAUDE_API_KEY.startsWith('sk-ant-')) {
+      console.log('Using mock response - API key not properly configured');
       // Return a helpful mock response
       const mockResponses = [
         '네, 도와드릴게요! 에코스텝은 환경 보호와 재미있는 물고기 키우기를 결합한 앱입니다.',
@@ -141,7 +142,21 @@ app.post('/api/chatbot', async (req, res) => {
     res.json({ response: botResponse });
     
   } catch (error) {
-    console.error('Chatbot error:', error);
+    console.error('Chatbot error:', error.message);
+    
+    // 크레딧 부족 에러 처리
+    if (error.status === 400 && error.message.includes('credit balance')) {
+      console.log('API credit balance is low - using mock response');
+      const mockResponses = [
+        '안녕하세요! 에코스텝은 환경 보호와 재미있는 물고기 키우기를 결합한 앱입니다. 플라스틱 사용을 줄이면서 가상 물고기를 키울 수 있어요! 🐠',
+        '에코스텝은 일상에서 플라스틱 사용을 추적하고 줄이도록 도와드립니다. 목표를 달성하면 포인트를 받아 새로운 물고기와 장식품을 구매할 수 있어요!',
+        '매일 챌린지에 참여하고, 친구들과 랭킹을 경쟁하며 환경 보호에 동참해보세요! 함께 지구를 지켜요! 🌍',
+        '물고기를 키우면서 환경 보호도 실천할 수 있는 에코스텝! 오늘부터 시작해보세요! 💚'
+      ];
+      const randomResponse = mockResponses[Math.floor(Math.random() * mockResponses.length)];
+      return res.json({ response: randomResponse });
+    }
+    
     res.json({ response: '죄송합니다. 일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요.' });
   }
 });
@@ -210,12 +225,13 @@ app.use((err, req, res, next) => {
 });
 
 // Start server
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`\n🚀 Backend server running on http://localhost:${PORT}`);
   console.log(`📱 Frontend should run on http://localhost:5175`);
   console.log(`\nAvailable endpoints:`);
   console.log(`  GET  http://localhost:${PORT}/`);
   console.log(`  GET  http://localhost:${PORT}/api/health`);
+  console.log(`  POST http://localhost:${PORT}/api/chatbot`);
   console.log(`  POST http://localhost:${PORT}/api/environmental-tip`);
   
   if (!CLAUDE_API_KEY || !CLAUDE_API_KEY.startsWith('sk-ant-')) {
@@ -223,4 +239,20 @@ app.listen(PORT, () => {
   } else {
     console.log('\n✅ Claude API key configured');
   }
+});
+
+// Keep the process alive
+process.on('SIGTERM', () => {
+  console.log('SIGTERM signal received: closing HTTP server');
+  server.close(() => {
+    console.log('HTTP server closed');
+  });
+});
+
+process.on('SIGINT', () => {
+  console.log('SIGINT signal received: closing HTTP server');
+  server.close(() => {
+    console.log('HTTP server closed');
+    process.exit(0);
+  });
 });

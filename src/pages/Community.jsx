@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { MessageCircle, Link, UserSearch, ChevronDown } from 'lucide-react';
 import SearchFriends from './SearchFriends';
 import { BronzeIcon, SilverIcon, GoldIcon, PlatinumIcon } from '../components/RankIcons';
 
-const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast, userRanking, totalPlasticSaved = 0, currentUserId = '', currentUserName = '' }) => {
+const Community = ({ isDarkMode, onShowFriendsList, showToast, userRanking, totalPlasticSaved = 0, currentUserId = '', currentUserName = '' }) => {
   const [showSearchPage, setShowSearchPage] = useState(false);
   const bgColor = isDarkMode ? 'bg-gray-900' : 'bg-white';
   const textColor = isDarkMode ? 'text-white' : 'text-gray-900';
@@ -148,6 +148,54 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
     return <SearchFriends isDarkMode={isDarkMode} onBack={() => setShowSearchPage(false)} userRanking={userRanking} showToast={showToast} currentUserId={currentUserId} currentUserName={currentUserName} />;
   }
 
+  // Initialize Kakao SDK when component mounts
+  useEffect(() => {
+    const kakaoApiKey = import.meta.env.VITE_KAKAO_API_KEY;
+    if (window.Kakao && !window.Kakao.isInitialized() && kakaoApiKey && kakaoApiKey !== 'your-kakao-api-key-here') {
+      window.Kakao.init(kakaoApiKey);
+      console.log('Kakao SDK initialized');
+    }
+  }, []);
+
+  // 카카오톡 공유 함수
+  const shareToKakao = () => {
+    // Generate unique invite code
+    const inviteCode = 'ECO' + Math.random().toString(36).substr(2, 6).toUpperCase();
+    const inviteLink = `https://ecostep.app/invite?code=${inviteCode}`;
+
+    if (window.Kakao && window.Kakao.isInitialized()) {
+      window.Kakao.Share.sendDefault({
+        objectType: 'feed',
+        content: {
+          title: '🌍 Ecostep - 함께 지구를 지켜요!',
+          description: '플라스틱 사용량을 줄이고 귀여운 물고기를 키워보세요! 친구와 함께 환경 보호에 동참해요.',
+          imageUrl: 'https://ecostep.app/share-image.png', // 실제 이미지 URL로 교체 필요
+          link: {
+            mobileWebUrl: inviteLink,
+            webUrl: inviteLink,
+          },
+        },
+        social: {
+          likeCount: 286,
+          commentCount: 45,
+          sharedCount: 845,
+        },
+        buttons: [
+          {
+            title: '앱에서 시작하기',
+            link: {
+              mobileWebUrl: inviteLink,
+              webUrl: inviteLink,
+            },
+          },
+        ],
+      });
+    } else {
+      // Fallback: 카카오 SDK가 초기화되지 않았을 때
+      alert('카카오톡 공유를 위해 카카오 API 키를 설정해주세요.\n.env.local 파일에 VITE_KAKAO_API_KEY를 추가하고\nhttps://developers.kakao.com 에서 앱을 등록하세요.');
+    }
+  };
+
   return (
     <div className={`flex-1 overflow-y-auto custom-scrollbar scrollbar-hide-idle pb-20 ${bgColor}`}>
       <div className="min-h-full">
@@ -156,41 +204,7 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
           <h3 className={`${textColor} text-sm font-medium mb-3 text-center`}>초대</h3>
           <div className="flex gap-2">
             <button 
-              onClick={() => {
-                // KakaoTalk share
-                if (window.Kakao) {
-                  window.Kakao.Share.sendDefault({
-                    objectType: 'feed',
-                    content: {
-                      title: 'Ecostep - 함께 지구를 지켜요!',
-                      description: '플라스틱 사용량을 줄이고 물고기를 키워보세요! 함께 환경을 보호해요.',
-                      imageUrl: 'https://ecostep.app/share-image.png',
-                      link: {
-                        mobileWebUrl: 'https://ecostep.app/invite?code=ABC123',
-                        webUrl: 'https://ecostep.app/invite?code=ABC123',
-                      },
-                    },
-                    buttons: [
-                      {
-                        title: '앱 시작하기',
-                        link: {
-                          mobileWebUrl: 'https://ecostep.app/invite?code=ABC123',
-                          webUrl: 'https://ecostep.app/invite?code=ABC123',
-                        },
-                      },
-                    ],
-                  });
-                } else {
-                  // Fallback: open KakaoTalk app or web
-                  const message = encodeURIComponent('Ecostep 앱에서 함께 환경을 보호해요! https://ecostep.app/invite?code=ABC123');
-                  window.open(`kakaotalk://msg/text/${message}`, '_blank');
-                  
-                  // If KakaoTalk app doesn't open, try web version
-                  setTimeout(() => {
-                    window.open(`https://talk.kakao.com`, '_blank');
-                  }, 1000);
-                }
-              }}
+              onClick={shareToKakao}
               className={`flex-1 relative bg-transparent ${textColor} hover:bg-gray-50 hover:bg-opacity-10 py-2.5 rounded-lg text-sm font-medium flex items-center justify-center transition-colors overflow-hidden`}
             >
               <div 
@@ -312,7 +326,7 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
           <div className="flex items-center justify-between mb-3">
             <h3 className={`${textColor} text-sm font-medium`}>친구</h3>
             <button 
-              onClick={onShowFriendsList} 
+              onClick={() => onShowFriendsList('friends')} 
               className={`text-xs ${textColor} hover:opacity-70 transition-opacity flex items-center gap-0.5`}
             >
               더보기
@@ -385,7 +399,7 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
           <div className="flex items-center justify-between mb-3">
             <h3 className={`${textColor} text-sm font-medium`}>전체</h3>
             <button 
-              onClick={onShowGlobalList} 
+              onClick={() => onShowFriendsList('global')} 
               className={`text-xs ${textColor} hover:opacity-70 transition-opacity flex items-center gap-0.5`}
             >
               더보기

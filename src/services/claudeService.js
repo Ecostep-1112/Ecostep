@@ -12,50 +12,25 @@ export const generateEnvironmentalTip = async (category = null, index = null) =>
     // Mock 데이터 생성 (개발용)
     return generateMockTip(category, index);
   }
-
   try {
-    const response = await fetch(CLAUDE_API_URL, {
+    // 백엔드 서버를 통해 Claude API 호출
+    const response = await fetch('http://localhost:5176/api/environmental-tip', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': CLAUDE_API_KEY,
-        'anthropic-version': '2023-06-01'
-      },
-      body: JSON.stringify({
-        model: 'claude-3-sonnet-20240229',
-        max_tokens: 500,
-        messages: [{
-          role: 'user',
-          content: `환경 보호와 제로웨이스트에 관한 실용적인 팁을 하나 생성해주세요. 
-          
-          다음 형식으로 JSON 응답을 보내주세요:
-          {
-            "title": "간단한 제목 (20자 이내)",
-            "preview": "짧은 미리보기 텍스트 (40자 이내)",
-            "content": "자세한 설명 (200자 이내, 실천 방법 포함)",
-            "category": "카테고리 (재활용 팁, 생활 습관, 에너지 절약, 제로웨이스트 중 하나)"
-          }
-          
-          실용적이고 한국에서 실천 가능한 내용으로 작성해주세요.`
-        }]
-      })
+      }
     });
 
     if (!response.ok) {
       throw new Error('API 요청 실패');
     }
 
-    const data = await response.json();
-    const content = data.content[0].text;
-    const tipData = JSON.parse(content);
+    const tipData = await response.json();
     
-    return {
-      id: Date.now(),
-      ...tipData
-    };
+    return tipData;
   } catch (error) {
-    console.error('Claude API 호출 실패:', error);
-    // 에러 시 Mock 데이터 반환
+    console.error('환경 팁 로드 실패 - Mock 데이터 사용:', error);
+    // 백엔드 서버가 실행되지 않은 경우 Mock 데이터 사용
     return generateMockTip(category, index);
   }
 };

@@ -8,7 +8,8 @@ import CommunityPage from './pages/Community';
 import MorePage from './pages/More';
 import SettingsScreen from './pages/SettingsScreen';
 import ProfileScreen from './pages/ProfileScreen';
-import FriendsList from './pages/FriendsList';
+import RankingList from './pages/RankingList';
+import ChatBot from './pages/ChatBot';
 import NotificationsScreen from './pages/NotificationsScreen';
 import { ThemeSettings, RankThemeSettings, LanguageSettings, NotificationSettings, LocationSettings, AquariumSettings } from './pages/Settings';
 import Toast from './components/Toast';
@@ -84,6 +85,7 @@ const EcostepApp = () => {
   const [selectedChallenge, setSelectedChallenge] = useState(null);
   const [showChallengeSelect, setShowChallengeSelect] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [showChatBot, setShowChatBot] = useState(false);
   const [showThemeSettings, setShowThemeSettings] = useState(false);
   const [showRankThemeSettings, setShowRankThemeSettings] = useState(false);
   const [showLanguageSettings, setShowLanguageSettings] = useState(false);
@@ -124,6 +126,7 @@ const EcostepApp = () => {
   const [tankName, setTankName] = useState('수질');
   const [isEditingTankName, setIsEditingTankName] = useState(false);
   const [showFriendsList, setShowFriendsList] = useState(false);
+  const [rankingInitialTab, setRankingInitialTab] = useState('friends');
   const [showGlobalList, setShowGlobalList] = useState(false);
   const [purchasedDecorations, setPurchasedDecorations] = useState(() => {
     const saved = localStorage.getItem('purchasedDecorations');
@@ -608,10 +611,10 @@ const EcostepApp = () => {
                 setTotalEarnedPoints={setTotalEarnedPoints}
                 spendPoints={spendPoints}
               />}
-              {activeTab === 'community' && !showFriendsList && !showGlobalList && <CommunityPage isDarkMode={isDarkMode} onShowFriendsList={() => setShowFriendsList(true)} onShowGlobalList={() => setShowGlobalList(true)} showToast={showToast} userRanking={rankTheme} totalPlasticSaved={testPlasticSaved > 0 ? testPlasticSaved : totalPlasticSaved} currentUserId={profileData.userId} currentUserName={profileData.name} />}
-              {activeTab === 'community' && showFriendsList && <FriendsList isDarkMode={isDarkMode} onBack={() => setShowFriendsList(false)} totalPlasticSaved={testPlasticSaved > 0 ? testPlasticSaved : totalPlasticSaved} />}
-              {activeTab === 'community' && showGlobalList && <FriendsList isDarkMode={isDarkMode} onBack={() => setShowGlobalList(false)} isGlobalRanking={true} totalPlasticSaved={testPlasticSaved > 0 ? testPlasticSaved : totalPlasticSaved} />}
-              {activeTab === 'more' && <MorePage isDarkMode={isDarkMode} userPoints={points} setUserPoints={setPoints} earnPoints={earnPoints} rankTheme={rankTheme} showToast={showToast} />}
+              {activeTab === 'community' && !showFriendsList && <CommunityPage isDarkMode={isDarkMode} onShowFriendsList={(tab) => { setRankingInitialTab(tab); setShowFriendsList(true); }} showToast={showToast} userRanking={rankTheme} totalPlasticSaved={testPlasticSaved > 0 ? testPlasticSaved : totalPlasticSaved} currentUserId={profileData.userId} currentUserName={profileData.name} />}
+              {activeTab === 'community' && showFriendsList && <RankingList isDarkMode={isDarkMode} onBack={() => setShowFriendsList(false)} initialTab={rankingInitialTab} totalPlasticSaved={testPlasticSaved > 0 ? testPlasticSaved : totalPlasticSaved} />}
+              {activeTab === 'more' && !showChatBot && <MorePage isDarkMode={isDarkMode} userPoints={points} setUserPoints={setPoints} onShowChatBot={() => setShowChatBot(true)} earnPoints={earnPoints} rankTheme={rankTheme} showToast={showToast} />}
+              {activeTab === 'more' && showChatBot && <ChatBot isDarkMode={isDarkMode} onBack={() => setShowChatBot(false)} />}
             </>
           )}
 

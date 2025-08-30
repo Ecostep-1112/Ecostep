@@ -15,9 +15,12 @@ import { ThemeSettings, RankThemeSettings, LanguageSettings, NotificationSetting
 import Toast from './components/Toast';
 import Login from './components/Login';
 import fishData from './data/fishData.json';
+import { onAuthStateChange, getCurrentUser, signOut } from './lib/auth';
 
 const EcostepApp = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+  const [currentUser, setCurrentUser] = useState(null);
   const [activeTab, setActiveTab] = useState('home');
   const [activeSubTab, setActiveSubTab] = useState('habit');
   const [challengeDay, setChallengeDay] = useState(4);
@@ -72,11 +75,11 @@ const EcostepApp = () => {
       return JSON.parse(saved);
     }
     return {
-      name: '송일',
+      name: '',
       userId: '',  
       birthDate: '',
       phone: '',
-      email: 'callmesongil@kakao.com'
+      email: ''
     };
   });
   const [showAquariumSettings, setShowAquariumSettings] = useState(false);
@@ -205,6 +208,61 @@ const EcostepApp = () => {
   };
 
   // localStorage에서 상태 불러오기
+  // 인증 상태 확인
+  useEffect(() => {
+    // 초기 세션 확인
+    const checkUser = async () => {
+      try {
+        const { user } = await getCurrentUser();
+        if (user) {
+          setCurrentUser(user);
+          setIsLoggedIn(true);
+          
+          // 수파베이스 사용자 정보로 프로필 업데이트
+          setProfileData(prev => ({
+            ...prev,
+            email: user.email || prev.email,
+            name: user.user_metadata?.full_name || user.user_metadata?.name || prev.name,
+            userId: user.id || prev.userId
+          }));
+        }
+      } catch (error) {
+        console.error('사용자 확인 에러:', error);
+      } finally {
+        setIsCheckingAuth(false);
+      }
+    };
+    
+    checkUser();
+    
+    // 인증 상태 변경 리스너 설정
+    const { data: { subscription } } = onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN' && session?.user) {
+        setCurrentUser(session.user);
+        setIsLoggedIn(true);
+        
+        // 로그인 시 프로필 업데이트
+        setProfileData(prev => ({
+          ...prev,
+          email: session.user.email || prev.email || '',
+          name: session.user.user_metadata?.full_name || 
+                 session.user.user_metadata?.name || 
+                 session.user.user_metadata?.nickname ||
+                 session.user.user_metadata?.kakao_account?.profile?.nickname ||
+                 prev.name || '사용자',
+          userId: session.user.id || prev.userId
+        }));
+      } else if (event === 'SIGNED_OUT') {
+        setCurrentUser(null);
+        setIsLoggedIn(false);
+      }
+    });
+    
+    return () => {
+      subscription?.unsubscribe();
+    };
+  }, []);
+
   useEffect(() => {
     const savedTank = localStorage.getItem('currentTank');
     const savedUnlockedTanks = localStorage.getItem('unlockedTanks');
@@ -418,6 +476,34 @@ const EcostepApp = () => {
   const bgColor = isDarkMode ? 'bg-black' : 'bg-white';
   const borderColor = isDarkMode ? 'border-gray-800' : 'border-gray-200';
 
+  // 로그아웃 함수
+  const handleLogout = async () => {
+    try {
+      await signOut();
+      setIsLoggedIn(false);
+      setCurrentUser(null);
+      // 프로필 데이터 초기화
+      setProfileData({
+        name: '',
+        userId: '',
+        birthDate: '',
+        phone: '',
+        email: ''
+      });
+    } catch (error) {
+      console.error('로그아웃 에러:', error);
+    }
+  };
+
+  // 인증 상태 확인 중
+  if (isCheckingAuth) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gray-100">
+        <div className="text-gray-600">로딩 중...</div>
+      </div>
+    );
+  }
+
   // 로그인 화면 표시
   if (!isLoggedIn) {
     return <Login onLogin={() => setIsLoggedIn(true)} />;
@@ -510,6 +596,7 @@ const EcostepApp = () => {
               notifications={notificationEnabled}
               locationSharing={locationSharing}
               userProfile={profileData}
+              onLogout={handleLogout}
             />
           ) : showAquariumSettings ? (
             <AquariumSettings 

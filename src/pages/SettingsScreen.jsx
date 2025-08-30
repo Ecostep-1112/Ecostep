@@ -1,5 +1,5 @@
 import React from 'react';
-import { FiChevronRight } from 'react-icons/fi';
+import { FiChevronRight, FiLogOut } from 'react-icons/fi';
 
 const SettingsScreen = ({ 
   isDarkMode, 
@@ -14,7 +14,8 @@ const SettingsScreen = ({
   language, 
   notifications,
   locationSharing,
-  userProfile
+  userProfile,
+  onLogout
 }) => {
   const bgColor = isDarkMode ? 'bg-gray-900' : 'bg-white';
   const textColor = isDarkMode ? 'text-white' : 'text-gray-900';
@@ -131,6 +132,18 @@ const SettingsScreen = ({
             </div>
           </button>
         </div>
+
+        {/* 로그아웃 버튼 */}
+        <button 
+          onClick={onLogout}
+          className={`w-full ${cardBg} border ${borderColor} rounded-xl p-3 flex items-center justify-between mt-4`}
+        >
+          <div className="flex items-center">
+            <FiLogOut className={`w-5 h-5 text-red-500 mr-3`} />
+            <span className="text-sm text-red-500 font-medium">로그아웃</span>
+          </div>
+          <FiChevronRight className="w-4 h-4 text-red-500" />
+        </button>
       </div>
     </div>
   );

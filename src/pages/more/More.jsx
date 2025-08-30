@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { FiShare2, FiChevronDown, FiChevronUp, FiBook, FiPhone, FiChevronRight, FiArrowRight } from 'react-icons/fi';
 import { Check } from 'lucide-react';
-import { generateEnvironmentalTip } from '../services/claudeService';
+import { generateEnvironmentalTip } from '../../services/claudeService';
 
 const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, showToast, onShowChatBot }) => {
   const [expandedTip, setExpandedTip] = useState(null);

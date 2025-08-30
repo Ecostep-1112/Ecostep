@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { FiCheck, FiX, FiChevronDown } from 'react-icons/fi';
-import { BronzeIcon, SilverIcon, GoldIcon, PlatinumIcon } from '../components/RankIcons';
-import { challengeSavings, isPlasticRelated, estimateSavings } from '../data/challengeData';
-import { validatePlasticChallenge, fallbackValidation } from '../api/validatePlastic';
-import { validatePlasticItem, fallbackEstimation } from '../api/validatePlasticItem';
-import { formatWeight } from '../utils/formatters';
+import { BronzeIcon, SilverIcon, GoldIcon, PlatinumIcon } from '../../components/RankIcons';
+import { challengeSavings, isPlasticRelated, estimateSavings } from '../../data/challengeData';
+import { validatePlasticChallenge, fallbackValidation } from '../../api/validatePlastic';
+import { validatePlasticItem, fallbackEstimation } from '../../api/validatePlasticItem';
+import { formatWeight } from '../../utils/formatters';
 
 const Challenge = ({ 
   isDarkMode,

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { FiChevronRight, FiSearch } from 'react-icons/fi';
-import { BronzeIcon, SilverIcon, GoldIcon, PlatinumIcon } from '../components/RankIcons';
+import { BronzeIcon, SilverIcon, GoldIcon, PlatinumIcon } from '../../components/RankIcons';
 
 const FriendsList = ({ isDarkMode, onBack, isGlobalRanking = false, totalPlasticSaved = 0 }) => {
   const [searchQuery, setSearchQuery] = useState('');

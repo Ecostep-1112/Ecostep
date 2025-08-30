@@ -1,13 +1,13 @@
 import React from 'react';
 import { FiChevronRight, FiSun, FiMoon, FiCheck } from 'react-icons/fi';
-import { BronzeIcon, SilverIcon, GoldIcon, PlatinumIcon } from '../components/RankIcons';
-import FishIcons from '../components/FishIcons';
-import DecorationIcons from '../components/DecorationIcons';
-import fishData from '../data/fishData.json';
-import BasicTank from '../components/tanks/BasicTank';
-import SilverTank from '../components/tanks/SilverTank';
-import GoldTank from '../components/tanks/GoldTank';
-import PlatinumTank from '../components/tanks/PlatinumTank';
+import { BronzeIcon, SilverIcon, GoldIcon, PlatinumIcon } from '../../components/RankIcons';
+import FishIcons from '../../components/FishIcons';
+import DecorationIcons from '../../components/DecorationIcons';
+import fishData from '../../data/fishData.json';
+import BasicTank from '../../components/tanks/BasicTank';
+import SilverTank from '../../components/tanks/SilverTank';
+import GoldTank from '../../components/tanks/GoldTank';
+import PlatinumTank from '../../components/tanks/PlatinumTank';
 
 export const RankThemeSettings = ({ isDarkMode, userRanking, setUserRanking, setShowRankThemeSettings, currentUserRank, showToast }) => {
   const bgColor = isDarkMode ? 'bg-gray-900' : 'bg-white';

@@ -1,11 +1,11 @@
 import React from 'react';
 import { FiLock } from 'react-icons/fi';
-import FishIcons from '../components/FishIcons';
-import DecorationIcons from '../components/DecorationIcons';
-import SilverTank from '../components/tanks/SilverTank';
-import GoldTank from '../components/tanks/GoldTank';
-import PlatinumTank from '../components/tanks/PlatinumTank';
-import { BronzeIcon, SilverIcon, GoldIcon, PlatinumIcon } from '../components/RankIcons';
+import FishIcons from '../../components/FishIcons';
+import DecorationIcons from '../../components/DecorationIcons';
+import SilverTank from '../../components/tanks/SilverTank';
+import GoldTank from '../../components/tanks/GoldTank';
+import PlatinumTank from '../../components/tanks/PlatinumTank';
+import { BronzeIcon, SilverIcon, GoldIcon, PlatinumIcon } from '../../components/RankIcons';
 
 const Rewards = ({ 
   isDarkMode, 

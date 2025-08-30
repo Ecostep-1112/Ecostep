@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { FiSettings } from 'react-icons/fi';
-import FishIcons from '../components/FishIcons';
-import DecorationIcons from '../components/DecorationIcons';
-import WaterSurface from '../components/WaterSurface';
-import BubbleSystem from '../components/BubbleSystem';
+import FishIcons from '../../components/FishIcons';
+import DecorationIcons from '../../components/DecorationIcons';
+import WaterSurface from '../../components/WaterSurface';
+import BubbleSystem from '../../components/BubbleSystem';
 
 const Home = ({ 
   isDarkMode, 

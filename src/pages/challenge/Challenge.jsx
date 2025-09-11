@@ -859,7 +859,7 @@ const Challenge = ({
         {activeSubTab === 'habit' ? (
           <div className="mx-3 mt-4 space-y-4">
             {/* 챌린지 */}
-            <div className={`${cardBg} border ${borderColor} rounded-xl p-5 relative`}>
+            <div className={`${cardBg} border-[0.3px] ${borderColor} rounded-xl p-5 relative`}>
               <div className="flex justify-between items-center mb-4">
                 <h3 className={`${textColor} text-sm font-medium`}>챌린지</h3>
                 {/* 랭크 아이콘 - 실제 랭킹 기준 */}
@@ -887,10 +887,7 @@ const Challenge = ({
                 // 챌린지 시작 전 - 선택 가능
                 <button
                   onClick={() => setShowChallengeSelect(!showChallengeSelect)}
-                  className={`w-full h-full ${inputBg} rounded-lg px-2 flex justify-between items-center ${selectedChallenge ? 'gradient-border' : ''}`}
-                  style={{
-                    '--gradient': selectedChallenge ? getThemeGradient() : 'transparent'
-                  }}
+                  className={`w-full h-full ${inputBg} rounded-lg px-2 flex justify-between items-center`}
                 >
                   <span className={`text-sm flex-1 text-center ${selectedChallenge ? (isDarkMode ? 'text-gray-300' : 'text-gray-700') : (isDarkMode ? 'text-gray-500' : 'text-gray-400')}`}>
                     {selectedChallenge || '챌린지를 선택해 주세요'}
@@ -1218,7 +1215,7 @@ const Challenge = ({
             </div>
 
             {/* 지난 챌린지 */}
-            <div className={`${cardBg} border ${borderColor} rounded-xl p-4`}>
+            <div className={`${cardBg} border-[0.3px] ${borderColor} rounded-xl p-4`}>
               <h3 className={`${textColor} text-sm font-medium mb-3`}>지난 챌린지</h3>
               {completedChallenges.length === 0 ? (
                 <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} text-center py-4`}>
@@ -1314,7 +1311,7 @@ const Challenge = ({
         ) : (
           <div className="mx-3 mt-4 space-y-4">
             {/* 목표 설정 및 현황 통합 */}
-            <div className={`${cardBg} border ${borderColor} rounded-xl p-5`}>
+            <div className={`${cardBg} border-[0.3px] ${borderColor} rounded-xl p-5`}>
               <div className="flex justify-between items-center mb-4">
                 <h3 className={`${textColor} text-sm font-medium`}>플라스틱 사용 한도 설정</h3>
                 {goalSetDate && !canChangeGoal() && (
@@ -1509,7 +1506,7 @@ const Challenge = ({
             </div>
 
             {/* 플라스틱 사용 기록하기 */}
-            <div className={`${cardBg} border ${borderColor} rounded-xl p-4`}>
+            <div className={`${cardBg} border-[0.3px] ${borderColor} rounded-xl p-4`}>
               <h3 className={`${textColor} text-sm font-medium mb-3`}>플라스틱 사용 기록하기</h3>
               <div className="space-y-3">
                 <div className="relative dropdown-container">
@@ -1899,7 +1896,7 @@ const Challenge = ({
             </div>
 
             {/* 사용량 분석 */}
-            <div className={`${cardBg} border ${borderColor} rounded-xl p-4`}>
+            <div className={`${cardBg} border-[0.3px] ${borderColor} rounded-xl p-4`}>
               <h3 className={`${textColor} text-sm font-medium mb-3`}>사용량 분석</h3>
               <div className="space-y-2">
                 {(() => {
@@ -1997,7 +1994,7 @@ const Challenge = ({
             </div>
 
             {/* 주간 사용량 그래프 */}
-            <div className={`${cardBg} border ${borderColor} rounded-xl p-4`}>
+            <div className={`${cardBg} border-[0.3px] ${borderColor} rounded-xl p-4`}>
               <h3 className={`${textColor} text-sm font-medium mb-3`}>주간 사용량(지난 7일)</h3>
               <div className="flex justify-between items-end" style={{ height: '135px' }}>
                 {(() => {
@@ -2098,7 +2095,7 @@ const Challenge = ({
             </div>
 
             {/* 이번 주 기록 */}
-            <div className={`${cardBg} border ${borderColor} rounded-xl p-3 h-[280px] flex flex-col`}>
+            <div className={`${cardBg} border-[0.3px] ${borderColor} rounded-xl p-3 h-[280px] flex flex-col`}>
               <h3 className={`${textColor} text-sm font-medium mb-1.5`}>이번 주 기록</h3>
               <div className="flex-1 overflow-y-auto scrollbar-hide">
                 {(() => {
@@ -2242,7 +2239,7 @@ const Challenge = ({
             </div>
 
             {/* 사용량 섹션 */}
-            <div className={`${cardBg} border ${borderColor} rounded-xl p-3 h-[280px] flex flex-col`}>
+            <div className={`${cardBg} border-[0.3px] ${borderColor} rounded-xl p-3 h-[280px] flex flex-col`}>
               <div className="flex justify-between items-center mb-1.5">
                 <h3 className={`${textColor} text-sm font-medium`}>사용량</h3>
                 <div className="relative dropdown-container">
@@ -2498,7 +2495,7 @@ const Challenge = ({
             </div>
             
             {/* 테스트용 날짜 변경 컨트롤 - 제로 챌린지 하단에 배치 */}
-            <div className={`mt-4 mx-3 p-3 ${cardBg} border ${borderColor} rounded-xl`}>
+            <div className={`mt-4 mx-3 p-3 ${cardBg} border-[0.3px] ${borderColor} rounded-xl`}>
               <div className="flex items-center justify-center gap-3">
                 <span className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
                   테스트 날짜: {testDate ? testDate.toLocaleDateString('ko-KR') : new Date().toLocaleDateString('ko-KR')}

@@ -234,7 +234,7 @@ const Home = ({
               fill="none" 
               xmlns="http://www.w3.org/2000/svg"
               className="animate-pulse"
-              style={{ animationDuration: '3s' }}
+              style={{ animationDuration: '2s' }}
             >
               <path 
                 d="M8 20c4.418 0 8-3.582 8-8 0-1.5-.5-3-1.5-4.5L13 6c-1-2-2-4-2-6-1.5 2-2.5 3.5-3 5-.5-1-1.5-2.5-2-4-1 3-3 5-3 9 0 4.418 3.582 8 8 8z" 
@@ -261,7 +261,7 @@ const Home = ({
               fill="none" 
               xmlns="http://www.w3.org/2000/svg"
               className="animate-pulse"
-              style={{ animationDuration: '3s', animationDelay: '1.5s' }}
+              style={{ animationDuration: '2s', animationDelay: '1s' }}
             >
               <path 
                 d="M8 20c4.418 0 8-3.582 8-8 0-1.5-.5-3-1.5-4.5L13 6c-1-2-2-4-2-6-1.5 2-2.5 3.5-3 5-.5-1-1.5-2.5-2-4-1 3-3 5-3 9 0 4.418 3.582 8 8 8z" 
@@ -331,17 +331,17 @@ const Home = ({
                                 animationDelay: `${treeIndex * 0.2}s` 
                               }}
                             >
-                              {/* 나무 잎 부분 */}
+                              {/* 그림자 */}
+                              <ellipse cx="15" cy="32" rx="8" ry="2" fill="#000" opacity="0.1"/>
+                              
+                              {/* 나무 줄기 - 나뭇잎 뒤로 이동 */}
+                              <rect x="13" y="14" width="4" height="17" fill="#92400e" rx="1"/>
+                              
+                              {/* 나무 잎 부분 - 줄기 앞으로 */}
                               <circle cx="15" cy="10" r="8" fill="#22c55e" opacity="0.9"/>
                               <circle cx="10" cy="13" r="6" fill="#16a34a" opacity="0.8"/>
                               <circle cx="20" cy="13" r="6" fill="#16a34a" opacity="0.8"/>
                               <circle cx="15" cy="15" r="7" fill="#10b981" opacity="0.9"/>
-                              
-                              {/* 나무 줄기 */}
-                              <rect x="13" y="15" width="4" height="15" fill="#92400e" rx="1"/>
-                              
-                              {/* 그림자 */}
-                              <ellipse cx="15" cy="32" rx="8" ry="2" fill="#000" opacity="0.1"/>
                             </svg>
                           );
                         })}

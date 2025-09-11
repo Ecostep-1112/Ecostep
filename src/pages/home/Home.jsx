@@ -284,12 +284,14 @@ const Home = ({
             <div className="flex flex-col items-center">
               <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} text-xs mb-3`}>플라스틱 절약량</span>
               
-              {/* 초록색 그라데이션 원 */}
+              {/* 초록색 그라데이션 원 - 입체감 강화 */}
               <div className="relative w-28 h-28 mb-3">
-                <div className="absolute inset-0 bg-gradient-to-br from-green-400 via-emerald-500 to-green-600 rounded-full shadow-lg"></div>
-                <div className="absolute inset-[2px] bg-gradient-to-br from-green-400/20 via-emerald-500/20 to-green-600/20 rounded-full backdrop-blur-sm"></div>
+                <div className="absolute inset-0 bg-gradient-to-br from-green-400 via-emerald-500 to-green-600 rounded-full shadow-2xl"></div>
+                <div className="absolute inset-[2px] bg-gradient-to-br from-green-400/30 via-emerald-500/20 to-green-600/10 rounded-full"></div>
+                <div className="absolute top-2 left-2 w-8 h-8 bg-white/30 rounded-full blur-xl"></div>
+                <div className="absolute bottom-2 right-2 w-16 h-16 bg-green-700/30 rounded-full blur-2xl"></div>
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <p className="text-2xl font-bold text-white">{plasticSavedDisplay}</p>
+                  <p className="text-2xl font-bold text-white drop-shadow-lg">{plasticSavedDisplay}</p>
                 </div>
               </div>
               

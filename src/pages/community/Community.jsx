@@ -203,30 +203,30 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
                   }, 1000);
                 }
               }}
-              className={`flex-1 relative bg-transparent ${textColor} hover:bg-gray-50 hover:bg-opacity-10 py-2.5 rounded-lg text-sm font-medium flex items-center justify-center transition-colors overflow-hidden`}
+              className={`flex-1 relative bg-transparent ${textColor} hover:bg-gray-50 hover:bg-opacity-10 py-2.5 rounded-xl text-sm font-medium flex items-center justify-center transition-colors overflow-hidden`}
             >
               <div 
                 className="absolute top-0 left-0 right-0 h-px"
                 style={{
-                  background: `linear-gradient(to right, transparent 10%, ${isDarkMode ? '#374151' : '#e5e7eb'} 30%, ${isDarkMode ? '#374151' : '#e5e7eb'} 70%, transparent 90%)`
+                  background: `linear-gradient(to right, transparent 0%, ${isDarkMode ? 'rgba(156, 163, 175, 0.2)' : 'rgba(107, 114, 128, 0.2)'} 10%, ${isDarkMode ? 'rgba(156, 163, 175, 0.5)' : 'rgba(107, 114, 128, 0.5)'} 20%, ${isDarkMode ? 'rgba(156, 163, 175, 1)' : 'rgba(107, 114, 128, 1)'} 30%, ${isDarkMode ? 'rgba(156, 163, 175, 1)' : 'rgba(107, 114, 128, 1)'} 70%, ${isDarkMode ? 'rgba(156, 163, 175, 0.5)' : 'rgba(107, 114, 128, 0.5)'} 80%, ${isDarkMode ? 'rgba(156, 163, 175, 0.2)' : 'rgba(107, 114, 128, 0.2)'} 90%, transparent 100%)`
                 }}
               />
               <div 
-                className="absolute bottom-0 left-0 right-0 h-px"
+                className="absolute bottom-0 left-0 right-0 h-[0.5px]"
                 style={{
-                  background: `linear-gradient(to right, transparent 10%, ${isDarkMode ? '#374151' : '#e5e7eb'} 30%, ${isDarkMode ? '#374151' : '#e5e7eb'} 70%, transparent 90%)`
+                  background: `linear-gradient(to right, transparent 0%, ${isDarkMode ? 'rgba(156, 163, 175, 0.15)' : 'rgba(107, 114, 128, 0.15)'} 10%, ${isDarkMode ? 'rgba(156, 163, 175, 0.4)' : 'rgba(107, 114, 128, 0.4)'} 20%, ${isDarkMode ? 'rgba(156, 163, 175, 0.8)' : 'rgba(107, 114, 128, 0.8)'} 30%, ${isDarkMode ? 'rgba(156, 163, 175, 0.8)' : 'rgba(107, 114, 128, 0.8)'} 70%, ${isDarkMode ? 'rgba(156, 163, 175, 0.4)' : 'rgba(107, 114, 128, 0.4)'} 80%, ${isDarkMode ? 'rgba(156, 163, 175, 0.15)' : 'rgba(107, 114, 128, 0.15)'} 90%, transparent 100%)`
                 }}
               />
               <div 
-                className="absolute left-0 top-0 bottom-0 w-px"
+                className="absolute left-0 top-0 bottom-0 w-[0.7px]"
                 style={{
-                  background: `linear-gradient(to bottom, transparent 10%, ${isDarkMode ? '#374151' : '#e5e7eb'} 30%, ${isDarkMode ? '#374151' : '#e5e7eb'} 70%, transparent 90%)`
+                  background: `linear-gradient(to bottom, transparent 0%, ${isDarkMode ? 'rgba(156, 163, 175, 0.2)' : 'rgba(107, 114, 128, 0.2)'} 10%, ${isDarkMode ? 'rgba(156, 163, 175, 0.5)' : 'rgba(107, 114, 128, 0.5)'} 20%, ${isDarkMode ? 'rgba(156, 163, 175, 1)' : 'rgba(107, 114, 128, 1)'} 30%, ${isDarkMode ? 'rgba(156, 163, 175, 1)' : 'rgba(107, 114, 128, 1)'} 70%, ${isDarkMode ? 'rgba(156, 163, 175, 0.5)' : 'rgba(107, 114, 128, 0.5)'} 80%, ${isDarkMode ? 'rgba(156, 163, 175, 0.2)' : 'rgba(107, 114, 128, 0.2)'} 90%, transparent 100%)`
                 }}
               />
               <div 
                 className="absolute right-0 top-0 bottom-0 w-px"
                 style={{
-                  background: `linear-gradient(to bottom, transparent 10%, ${isDarkMode ? '#374151' : '#e5e7eb'} 30%, ${isDarkMode ? '#374151' : '#e5e7eb'} 70%, transparent 90%)`
+                  background: `linear-gradient(to bottom, transparent 0%, ${isDarkMode ? 'rgba(156, 163, 175, 0.2)' : 'rgba(107, 114, 128, 0.2)'} 10%, ${isDarkMode ? 'rgba(156, 163, 175, 0.5)' : 'rgba(107, 114, 128, 0.5)'} 20%, ${isDarkMode ? 'rgba(156, 163, 175, 1)' : 'rgba(107, 114, 128, 1)'} 30%, ${isDarkMode ? 'rgba(156, 163, 175, 1)' : 'rgba(107, 114, 128, 1)'} 70%, ${isDarkMode ? 'rgba(156, 163, 175, 0.5)' : 'rgba(107, 114, 128, 0.5)'} 80%, ${isDarkMode ? 'rgba(156, 163, 175, 0.2)' : 'rgba(107, 114, 128, 0.2)'} 90%, transparent 100%)`
                 }}
               />
               <MessageCircle className="w-4 h-4 mr-1.5" />
@@ -256,30 +256,30 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
                   }
                 });
               }}
-              className={`flex-1 relative bg-transparent ${textColor} hover:bg-gray-50 hover:bg-opacity-10 py-2.5 rounded-lg text-sm font-medium flex items-center justify-center transition-colors overflow-hidden`}
+              className={`flex-1 relative bg-transparent ${textColor} hover:bg-gray-50 hover:bg-opacity-10 py-2.5 rounded-xl text-sm font-medium flex items-center justify-center transition-colors overflow-hidden`}
             >
               <div 
                 className="absolute top-0 left-0 right-0 h-px"
                 style={{
-                  background: `linear-gradient(to right, transparent 10%, ${isDarkMode ? '#374151' : '#e5e7eb'} 30%, ${isDarkMode ? '#374151' : '#e5e7eb'} 70%, transparent 90%)`
+                  background: `linear-gradient(to right, transparent 0%, ${isDarkMode ? 'rgba(156, 163, 175, 0.2)' : 'rgba(107, 114, 128, 0.2)'} 10%, ${isDarkMode ? 'rgba(156, 163, 175, 0.5)' : 'rgba(107, 114, 128, 0.5)'} 20%, ${isDarkMode ? 'rgba(156, 163, 175, 1)' : 'rgba(107, 114, 128, 1)'} 30%, ${isDarkMode ? 'rgba(156, 163, 175, 1)' : 'rgba(107, 114, 128, 1)'} 70%, ${isDarkMode ? 'rgba(156, 163, 175, 0.5)' : 'rgba(107, 114, 128, 0.5)'} 80%, ${isDarkMode ? 'rgba(156, 163, 175, 0.2)' : 'rgba(107, 114, 128, 0.2)'} 90%, transparent 100%)`
                 }}
               />
               <div 
-                className="absolute bottom-0 left-0 right-0 h-px"
+                className="absolute bottom-0 left-0 right-0 h-[0.5px]"
                 style={{
-                  background: `linear-gradient(to right, transparent 10%, ${isDarkMode ? '#374151' : '#e5e7eb'} 30%, ${isDarkMode ? '#374151' : '#e5e7eb'} 70%, transparent 90%)`
+                  background: `linear-gradient(to right, transparent 0%, ${isDarkMode ? 'rgba(156, 163, 175, 0.15)' : 'rgba(107, 114, 128, 0.15)'} 10%, ${isDarkMode ? 'rgba(156, 163, 175, 0.4)' : 'rgba(107, 114, 128, 0.4)'} 20%, ${isDarkMode ? 'rgba(156, 163, 175, 0.8)' : 'rgba(107, 114, 128, 0.8)'} 30%, ${isDarkMode ? 'rgba(156, 163, 175, 0.8)' : 'rgba(107, 114, 128, 0.8)'} 70%, ${isDarkMode ? 'rgba(156, 163, 175, 0.4)' : 'rgba(107, 114, 128, 0.4)'} 80%, ${isDarkMode ? 'rgba(156, 163, 175, 0.15)' : 'rgba(107, 114, 128, 0.15)'} 90%, transparent 100%)`
                 }}
               />
               <div 
-                className="absolute left-0 top-0 bottom-0 w-px"
+                className="absolute left-0 top-0 bottom-0 w-[0.7px]"
                 style={{
-                  background: `linear-gradient(to bottom, transparent 10%, ${isDarkMode ? '#374151' : '#e5e7eb'} 30%, ${isDarkMode ? '#374151' : '#e5e7eb'} 70%, transparent 90%)`
+                  background: `linear-gradient(to bottom, transparent 0%, ${isDarkMode ? 'rgba(156, 163, 175, 0.2)' : 'rgba(107, 114, 128, 0.2)'} 10%, ${isDarkMode ? 'rgba(156, 163, 175, 0.5)' : 'rgba(107, 114, 128, 0.5)'} 20%, ${isDarkMode ? 'rgba(156, 163, 175, 1)' : 'rgba(107, 114, 128, 1)'} 30%, ${isDarkMode ? 'rgba(156, 163, 175, 1)' : 'rgba(107, 114, 128, 1)'} 70%, ${isDarkMode ? 'rgba(156, 163, 175, 0.5)' : 'rgba(107, 114, 128, 0.5)'} 80%, ${isDarkMode ? 'rgba(156, 163, 175, 0.2)' : 'rgba(107, 114, 128, 0.2)'} 90%, transparent 100%)`
                 }}
               />
               <div 
-                className="absolute right-0 top-0 bottom-0 w-px"
+                className="absolute right-0 top-0 bottom-0 w-[0.7px]"
                 style={{
-                  background: `linear-gradient(to bottom, transparent 10%, ${isDarkMode ? '#374151' : '#e5e7eb'} 30%, ${isDarkMode ? '#374151' : '#e5e7eb'} 70%, transparent 90%)`
+                  background: `linear-gradient(to bottom, transparent 0%, ${isDarkMode ? 'rgba(156, 163, 175, 0.2)' : 'rgba(107, 114, 128, 0.2)'} 10%, ${isDarkMode ? 'rgba(156, 163, 175, 0.5)' : 'rgba(107, 114, 128, 0.5)'} 20%, ${isDarkMode ? 'rgba(156, 163, 175, 1)' : 'rgba(107, 114, 128, 1)'} 30%, ${isDarkMode ? 'rgba(156, 163, 175, 1)' : 'rgba(107, 114, 128, 1)'} 70%, ${isDarkMode ? 'rgba(156, 163, 175, 0.5)' : 'rgba(107, 114, 128, 0.5)'} 80%, ${isDarkMode ? 'rgba(156, 163, 175, 0.2)' : 'rgba(107, 114, 128, 0.2)'} 90%, transparent 100%)`
                 }}
               />
               <Link className="w-4 h-4 mr-1.5" />
@@ -287,30 +287,30 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
             </button>
             <button 
               onClick={() => setShowSearchPage(true)}
-              className={`flex-1 relative bg-transparent ${textColor} hover:bg-gray-50 hover:bg-opacity-10 py-2.5 rounded-lg text-sm font-medium flex items-center justify-center transition-colors overflow-hidden`}
+              className={`flex-1 relative bg-transparent ${textColor} hover:bg-gray-50 hover:bg-opacity-10 py-2.5 rounded-xl text-sm font-medium flex items-center justify-center transition-colors overflow-hidden`}
             >
               <div 
                 className="absolute top-0 left-0 right-0 h-px"
                 style={{
-                  background: `linear-gradient(to right, transparent 10%, ${isDarkMode ? '#374151' : '#e5e7eb'} 30%, ${isDarkMode ? '#374151' : '#e5e7eb'} 70%, transparent 90%)`
+                  background: `linear-gradient(to right, transparent 0%, ${isDarkMode ? 'rgba(156, 163, 175, 0.2)' : 'rgba(107, 114, 128, 0.2)'} 10%, ${isDarkMode ? 'rgba(156, 163, 175, 0.5)' : 'rgba(107, 114, 128, 0.5)'} 20%, ${isDarkMode ? 'rgba(156, 163, 175, 1)' : 'rgba(107, 114, 128, 1)'} 30%, ${isDarkMode ? 'rgba(156, 163, 175, 1)' : 'rgba(107, 114, 128, 1)'} 70%, ${isDarkMode ? 'rgba(156, 163, 175, 0.5)' : 'rgba(107, 114, 128, 0.5)'} 80%, ${isDarkMode ? 'rgba(156, 163, 175, 0.2)' : 'rgba(107, 114, 128, 0.2)'} 90%, transparent 100%)`
                 }}
               />
               <div 
-                className="absolute bottom-0 left-0 right-0 h-px"
+                className="absolute bottom-0 left-0 right-0 h-[0.5px]"
                 style={{
-                  background: `linear-gradient(to right, transparent 10%, ${isDarkMode ? '#374151' : '#e5e7eb'} 30%, ${isDarkMode ? '#374151' : '#e5e7eb'} 70%, transparent 90%)`
+                  background: `linear-gradient(to right, transparent 0%, ${isDarkMode ? 'rgba(156, 163, 175, 0.15)' : 'rgba(107, 114, 128, 0.15)'} 10%, ${isDarkMode ? 'rgba(156, 163, 175, 0.4)' : 'rgba(107, 114, 128, 0.4)'} 20%, ${isDarkMode ? 'rgba(156, 163, 175, 0.8)' : 'rgba(107, 114, 128, 0.8)'} 30%, ${isDarkMode ? 'rgba(156, 163, 175, 0.8)' : 'rgba(107, 114, 128, 0.8)'} 70%, ${isDarkMode ? 'rgba(156, 163, 175, 0.4)' : 'rgba(107, 114, 128, 0.4)'} 80%, ${isDarkMode ? 'rgba(156, 163, 175, 0.15)' : 'rgba(107, 114, 128, 0.15)'} 90%, transparent 100%)`
                 }}
               />
               <div 
                 className="absolute left-0 top-0 bottom-0 w-px"
                 style={{
-                  background: `linear-gradient(to bottom, transparent 10%, ${isDarkMode ? '#374151' : '#e5e7eb'} 30%, ${isDarkMode ? '#374151' : '#e5e7eb'} 70%, transparent 90%)`
+                  background: `linear-gradient(to bottom, transparent 0%, ${isDarkMode ? 'rgba(156, 163, 175, 0.2)' : 'rgba(107, 114, 128, 0.2)'} 10%, ${isDarkMode ? 'rgba(156, 163, 175, 0.5)' : 'rgba(107, 114, 128, 0.5)'} 20%, ${isDarkMode ? 'rgba(156, 163, 175, 1)' : 'rgba(107, 114, 128, 1)'} 30%, ${isDarkMode ? 'rgba(156, 163, 175, 1)' : 'rgba(107, 114, 128, 1)'} 70%, ${isDarkMode ? 'rgba(156, 163, 175, 0.5)' : 'rgba(107, 114, 128, 0.5)'} 80%, ${isDarkMode ? 'rgba(156, 163, 175, 0.2)' : 'rgba(107, 114, 128, 0.2)'} 90%, transparent 100%)`
                 }}
               />
               <div 
-                className="absolute right-0 top-0 bottom-0 w-px"
+                className="absolute right-0 top-0 bottom-0 w-[0.7px]"
                 style={{
-                  background: `linear-gradient(to bottom, transparent 10%, ${isDarkMode ? '#374151' : '#e5e7eb'} 30%, ${isDarkMode ? '#374151' : '#e5e7eb'} 70%, transparent 90%)`
+                  background: `linear-gradient(to bottom, transparent 0%, ${isDarkMode ? 'rgba(156, 163, 175, 0.2)' : 'rgba(107, 114, 128, 0.2)'} 10%, ${isDarkMode ? 'rgba(156, 163, 175, 0.5)' : 'rgba(107, 114, 128, 0.5)'} 20%, ${isDarkMode ? 'rgba(156, 163, 175, 1)' : 'rgba(107, 114, 128, 1)'} 30%, ${isDarkMode ? 'rgba(156, 163, 175, 1)' : 'rgba(107, 114, 128, 1)'} 70%, ${isDarkMode ? 'rgba(156, 163, 175, 0.5)' : 'rgba(107, 114, 128, 0.5)'} 80%, ${isDarkMode ? 'rgba(156, 163, 175, 0.2)' : 'rgba(107, 114, 128, 0.2)'} 90%, transparent 100%)`
                 }}
               />
               <UserSearch className="w-4 h-4 mr-1.5" />
@@ -340,7 +340,7 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
               
               return (
                 <div key={friend.rank}>
-                  <div className="flex items-center justify-between py-1.5">
+                  <div className="flex items-center justify-between" style={{ paddingTop: '0.425rem', paddingBottom: '0.425rem' }}>
                     <div className="flex items-center">
                       <div className="flex items-center justify-center mr-2" style={{ width: '20px', height: '20px' }}>
                         {displayRank === 1 ? (
@@ -413,7 +413,7 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
               
               return (
                 <div key={user.rank}>
-                  <div className="flex items-center justify-between py-1.5">
+                  <div className="flex items-center justify-between" style={{ paddingTop: '0.425rem', paddingBottom: '0.425rem' }}>
                     <div className="flex items-center">
                       <div className="flex items-center justify-center mr-2" style={{ width: '20px', height: '20px' }}>
                         {displayRank === 1 ? (

@@ -146,9 +146,8 @@ const SearchFriends = ({ isDarkMode, onBack, userRanking = 'bronze', showToast, 
               onChange={(e) => setSearchTerm(e.target.value)}
               onKeyPress={handleKeyPress}
               placeholder="아이디 검색" 
-              className={`w-full h-full bg-transparent ${textColor} ${placeholderColor} rounded-lg pl-10 ${searchTerm ? 'pr-10' : 'pr-4'} text-sm focus:outline-none`}
+              className={`w-full h-full bg-transparent ${textColor} ${placeholderColor} rounded-xl pl-4 ${searchTerm ? 'pr-10' : 'pr-4'} text-sm focus:outline-none border ${borderColor}`}
             />
-            <FiSearch className={`w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`} />
             {searchTerm && (
               <button
                 onClick={() => {
@@ -161,62 +160,12 @@ const SearchFriends = ({ isDarkMode, onBack, userRanking = 'bronze', showToast, 
                 <FiX className="w-4 h-4" />
               </button>
             )}
-            {/* 그라데이션 테두리 */}
-            <div 
-              className="absolute top-0 left-0 right-0 h-px"
-              style={{
-                background: `linear-gradient(to right, transparent 10%, ${isDarkMode ? '#374151' : '#e5e7eb'} 30%, ${isDarkMode ? '#374151' : '#e5e7eb'} 70%, transparent 90%)`
-              }}
-            />
-            <div 
-              className="absolute bottom-0 left-0 right-0 h-px"
-              style={{
-                background: `linear-gradient(to right, transparent 10%, ${isDarkMode ? '#374151' : '#e5e7eb'} 30%, ${isDarkMode ? '#374151' : '#e5e7eb'} 70%, transparent 90%)`
-              }}
-            />
-            <div 
-              className="absolute left-0 top-0 bottom-0 w-px"
-              style={{
-                background: `linear-gradient(to bottom, transparent 10%, ${isDarkMode ? '#374151' : '#e5e7eb'} 30%, ${isDarkMode ? '#374151' : '#e5e7eb'} 70%, transparent 90%)`
-              }}
-            />
-            <div 
-              className="absolute right-0 top-0 bottom-0 w-px"
-              style={{
-                background: `linear-gradient(to bottom, transparent 10%, ${isDarkMode ? '#374151' : '#e5e7eb'} 30%, ${isDarkMode ? '#374151' : '#e5e7eb'} 70%, transparent 90%)`
-              }}
-            />
           </div>
           <button 
             onClick={handleSearch}
-            className={`relative bg-transparent ${textColor} w-10 h-10 rounded-lg text-sm font-medium hover:opacity-80 transition-opacity overflow-hidden flex items-center justify-center`}
+            className={`bg-transparent ${textColor} w-10 h-10 rounded-xl text-sm font-medium hover:opacity-80 transition-opacity flex items-center justify-center border ${borderColor}`}
           >
-            <FiSearch className={`w-5 h-5 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`} />
-            {/* 그라데이션 테두리 */}
-            <div 
-              className="absolute top-0 left-0 right-0 h-px"
-              style={{
-                background: `linear-gradient(to right, transparent 10%, ${isDarkMode ? '#374151' : '#e5e7eb'} 30%, ${isDarkMode ? '#374151' : '#e5e7eb'} 70%, transparent 90%)`
-              }}
-            />
-            <div 
-              className="absolute bottom-0 left-0 right-0 h-px"
-              style={{
-                background: `linear-gradient(to right, transparent 10%, ${isDarkMode ? '#374151' : '#e5e7eb'} 30%, ${isDarkMode ? '#374151' : '#e5e7eb'} 70%, transparent 90%)`
-              }}
-            />
-            <div 
-              className="absolute left-0 top-0 bottom-0 w-px"
-              style={{
-                background: `linear-gradient(to bottom, transparent 10%, ${isDarkMode ? '#374151' : '#e5e7eb'} 30%, ${isDarkMode ? '#374151' : '#e5e7eb'} 70%, transparent 90%)`
-              }}
-            />
-            <div 
-              className="absolute right-0 top-0 bottom-0 w-px"
-              style={{
-                background: `linear-gradient(to bottom, transparent 10%, ${isDarkMode ? '#374151' : '#e5e7eb'} 30%, ${isDarkMode ? '#374151' : '#e5e7eb'} 70%, transparent 90%)`
-              }}
-            />
+            <FiSearch className={`w-4 h-4 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`} />
           </button>
         </div>
 
@@ -227,7 +176,7 @@ const SearchFriends = ({ isDarkMode, onBack, userRanking = 'bronze', showToast, 
             {searchResults.length > 0 ? (
               searchResults.map((user) => (
                 <div key={user.id} className="relative">
-                  <div className={`bg-transparent rounded-lg p-3 flex items-center justify-between`}>
+                  <div className={`bg-transparent rounded-xl p-3 flex items-center justify-between`}>
                     <div className="flex items-center gap-3">
                       {/* 프로필 이미지 */}
                       <div className={`w-10 h-10 rounded-full ${inputBg} flex items-center justify-center`}>
@@ -270,25 +219,25 @@ const SearchFriends = ({ isDarkMode, onBack, userRanking = 'bronze', showToast, 
                   <div 
                     className="absolute top-0 left-0 right-0 h-px"
                     style={{
-                      background: `linear-gradient(to right, transparent 10%, ${isDarkMode ? '#374151' : '#e5e7eb'} 30%, ${isDarkMode ? '#374151' : '#e5e7eb'} 70%, transparent 90%)`
+                      background: `linear-gradient(to right, transparent 5%, ${isDarkMode ? '#6b7280' : '#9ca3af'} 15%, ${isDarkMode ? '#6b7280' : '#9ca3af'} 85%, transparent 95%)`
                     }}
                   />
                   <div 
                     className="absolute bottom-0 left-0 right-0 h-px"
                     style={{
-                      background: `linear-gradient(to right, transparent 10%, ${isDarkMode ? '#374151' : '#e5e7eb'} 30%, ${isDarkMode ? '#374151' : '#e5e7eb'} 70%, transparent 90%)`
+                      background: `linear-gradient(to right, transparent 5%, ${isDarkMode ? '#6b7280' : '#9ca3af'} 15%, ${isDarkMode ? '#6b7280' : '#9ca3af'} 85%, transparent 95%)`
                     }}
                   />
                   <div 
                     className="absolute left-0 top-0 bottom-0 w-px"
                     style={{
-                      background: `linear-gradient(to bottom, transparent 10%, ${isDarkMode ? '#374151' : '#e5e7eb'} 30%, ${isDarkMode ? '#374151' : '#e5e7eb'} 70%, transparent 90%)`
+                      background: `linear-gradient(to bottom, transparent 10%, ${isDarkMode ? '#6b7280' : '#9ca3af'} 30%, ${isDarkMode ? '#6b7280' : '#9ca3af'} 70%, transparent 90%)`
                     }}
                   />
                   <div 
                     className="absolute right-0 top-0 bottom-0 w-px"
                     style={{
-                      background: `linear-gradient(to bottom, transparent 10%, ${isDarkMode ? '#374151' : '#e5e7eb'} 30%, ${isDarkMode ? '#374151' : '#e5e7eb'} 70%, transparent 90%)`
+                      background: `linear-gradient(to bottom, transparent 10%, ${isDarkMode ? '#6b7280' : '#9ca3af'} 30%, ${isDarkMode ? '#6b7280' : '#9ca3af'} 70%, transparent 90%)`
                     }}
                   />
                 </div>

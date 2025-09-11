@@ -210,7 +210,7 @@ const FriendsList = ({ isDarkMode, onBack, isGlobalRanking = false, totalPlastic
               
               return (
                 <div key={friend.rank}>
-                  <div className="flex items-center justify-between py-1.5">
+                  <div className="flex items-center justify-between" style={{ paddingTop: '0.425rem', paddingBottom: '0.425rem' }}>
                     <div className="flex items-center">
                       <div className="flex items-center justify-center mr-2" style={{ width: '20px', height: '20px' }}>
                         {friend.rank === 1 ? (

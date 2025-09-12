@@ -121,7 +121,12 @@ const EcostepApp = () => {
     const totalPoints = savedTotal ? parseInt(savedTotal) : 10000;
     return calculateRankFromPoints(totalPoints);
   }); // 실제 사용자 랭킹 (누적 포인트 기반)
-  const [rankTheme, setRankTheme] = useState('bronze'); // 색상 테마 (색상만 변경)
+  const [rankTheme, setRankTheme] = useState(() => {
+    const saved = localStorage.getItem('rankTheme');
+    if (saved) return saved;
+    // 저장된 값이 없으면 기본값은 'basic'
+    return 'basic';
+  }); // 색상 테마 (색상만 변경)
   const [claimedTanks, setClaimedTanks] = useState(() => {
     const saved = localStorage.getItem('claimedTanks');
     return saved ? JSON.parse(saved) : [];

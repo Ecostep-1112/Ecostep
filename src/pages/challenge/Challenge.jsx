@@ -599,7 +599,11 @@ const Challenge = ({
 
   // Helper function to get gradient colors
   const getThemeGradient = () => {
-    if (userRanking === 'basic' || userRanking === 'bronze') {
+    if (userRanking === 'basic') {
+      // 기본 테마는 단색 배경
+      return isDarkMode ? 'linear-gradient(135deg, #e5e7eb 0%, #e5e7eb 100%)' : 'linear-gradient(135deg, #374151 0%, #374151 100%)';
+    }
+    if (userRanking === 'bronze') {
       return 'linear-gradient(135deg, #06b6d4 0%, #3b82f6 50%, #2563eb 100%)';
     }
     if (userRanking === 'silver') {

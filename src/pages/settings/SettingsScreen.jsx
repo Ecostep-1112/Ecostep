@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { FiChevronRight } from 'react-icons/fi';
 
 const SettingsScreen = ({ 
@@ -21,6 +21,17 @@ const SettingsScreen = ({
   const textColor = isDarkMode ? 'text-white' : 'text-gray-900';
   const borderColor = isDarkMode ? 'border-gray-700' : 'border-gray-200';
   const cardBg = isDarkMode ? 'bg-gray-800' : 'bg-white';
+  
+  // 프로필 이미지 상태
+  const [profileImage, setProfileImage] = useState(null);
+  
+  // localStorage에서 프로필 이미지 로드
+  useEffect(() => {
+    const savedImage = localStorage.getItem('profileImage');
+    if (savedImage) {
+      setProfileImage(savedImage);
+    }
+  }, []);
 
   return (
     <div className={`flex-1 ${bgColor} relative flex flex-col`}>
@@ -38,10 +49,14 @@ const SettingsScreen = ({
             onClick={() => setShowProfile(true)}
             className={`w-full ${cardBg} border ${borderColor} rounded-xl p-3 flex items-center`}
           >
-            <div className={`w-10 h-10 ${isDarkMode ? 'bg-gray-700' : 'bg-gray-200'} rounded-full flex items-center justify-center mr-3`}>
-              <span className={`font-medium text-sm ${isDarkMode ? 'text-gray-100' : 'text-gray-700'}`}>
-                {userProfile?.userId?.charAt(0)?.toUpperCase() || userProfile?.name?.charAt(0) || 'E'}
-              </span>
+            <div className={`w-10 h-10 ${isDarkMode ? 'bg-gray-700' : 'bg-gray-200'} rounded-full flex items-center justify-center mr-3 overflow-hidden`}>
+              {profileImage ? (
+                <img src={profileImage} alt="Profile" className="w-full h-full object-cover" />
+              ) : (
+                <span className={`font-medium text-sm ${isDarkMode ? 'text-gray-100' : 'text-gray-700'}`}>
+                  {userProfile?.userId?.charAt(0)?.toUpperCase() || userProfile?.name?.charAt(0) || 'E'}
+                </span>
+              )}
             </div>
             <div className="flex-1 text-left">
               <p className={`text-sm font-medium ${textColor}`}>{userProfile?.userId || userProfile?.name || 'Eco User'}</p>

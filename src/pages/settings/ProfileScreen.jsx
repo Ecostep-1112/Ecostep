@@ -38,8 +38,10 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
     }
   };
   
-  // 프로필 사진 상태 관리
-  const [profileImage, setProfileImage] = useState(null);
+  // 프로필 사진 상태 관리 - localStorage에서 초기값 로드
+  const [profileImage, setProfileImage] = useState(() => {
+    return localStorage.getItem('profileImage') || null;
+  });
 
   // 이미지 업로드 핸들러
   const handleImageUpload = (e) => {
@@ -47,7 +49,10 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setProfileImage(reader.result);
+        const imageDataUrl = reader.result;
+        setProfileImage(imageDataUrl);
+        // localStorage에 저장
+        localStorage.setItem('profileImage', imageDataUrl);
       };
       reader.readAsDataURL(file);
     }

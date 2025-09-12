@@ -65,6 +65,9 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
   
   // 전체 사용자 데이터베이스 (SearchFriends와 동일)
   const getAllUsers = () => {
+    // localStorage에서 프로필 이미지 가져오기
+    const profileImage = localStorage.getItem('profileImage');
+    
     const baseUsers = [
       { id: 'songil_eco', name: '송일', profileImage: null, plasticSaved: 15500 },
       { id: 'wonhee_nature', name: '원희', profileImage: null, plasticSaved: 27000 },
@@ -78,7 +81,7 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
         baseUsers.unshift({ 
           id: currentUserId, 
           name: currentUserName, 
-          profileImage: null, 
+          profileImage: profileImage, 
           plasticSaved: totalPlasticSaved || 15500 
         });
       }

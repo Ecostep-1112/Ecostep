@@ -20,6 +20,9 @@ const SearchFriends = ({ isDarkMode, onBack, userRanking = 'bronze', showToast, 
   // 전체 사용자 데이터베이스 (실제로는 서버에서 관리)
   // 현재 사용자도 포함하여 검색 가능하도록 함
   const getAllUsers = () => {
+    // localStorage에서 프로필 이미지 가져오기
+    const profileImage = localStorage.getItem('profileImage');
+    
     const baseUsers = [
       { id: 'songil_eco', name: '송일', profileImage: null, plasticSaved: 15500 },
       { id: 'wonhee_nature', name: '원희', profileImage: null, plasticSaved: 27000 },
@@ -33,7 +36,7 @@ const SearchFriends = ({ isDarkMode, onBack, userRanking = 'bronze', showToast, 
         baseUsers.unshift({ 
           id: currentUserId, 
           name: currentUserName, 
-          profileImage: null, 
+          profileImage: profileImage, 
           plasticSaved: 15500 
         });
       }

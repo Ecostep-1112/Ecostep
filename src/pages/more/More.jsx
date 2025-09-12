@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FiShare2, FiChevronDown, FiChevronUp, FiBook, FiPhone, FiChevronRight, FiArrowRight } from 'react-icons/fi';
 import { Check } from 'lucide-react';
 import { generateEnvironmentalTip } from '../../services/claudeService';
@@ -74,35 +74,31 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
   const [selectedCategory, setSelectedCategory] = useState('랜덤');
   const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
   const [categoryIndices, setCategoryIndices] = useState({});
-  const mapRef = useRef(null);
-  const [map, setMap] = useState(null);
-  const [markers, setMarkers] = useState([]);
   const [userLocation, setUserLocation] = useState(null);
   const [sortedPlaces, setSortedPlaces] = useState([]);
+  const [selectedPlaceCategory, setSelectedPlaceCategory] = useState('전체');
+  const [showPlaceCategoryDropdown, setShowPlaceCategoryDropdown] = useState(false);
 
   const categories = ['랜덤', '재활용 팁', '생활 습관', '에너지 절약', '제로웨이스트'];
+  const placeCategories = ['전체', '리필샵', '친환경 매장', '재활용/업사이클', '무포장 가게', '비건/친환경 카페'];
 
-  // 컴포넌트 마운트 시 초기 팁 로드 및 지도 초기화
+  // 컴포넌트 마운트 시 초기 팁 로드 및 사용자 위치 가져오기
   useEffect(() => {
     loadInitialTip();
-    // 지도 초기화를 지연시킴
-    const timer = setTimeout(() => {
-      initializeMap();
-    }, 500);
-    return () => clearTimeout(timer);
+    getUserLocation();
   }, []);
 
-  // 마커 추가 effect
+  // 사용자 위치 및 카테고리 기반으로 장소 정렬 및 필터링
   useEffect(() => {
-    if (map && zeroWastePlaces) {
-      addMarkersToMap();
+    let filteredPlaces = zeroWastePlaces;
+    
+    // 카테고리 필터링
+    if (selectedPlaceCategory !== '전체') {
+      filteredPlaces = zeroWastePlaces.filter(place => place.category === selectedPlaceCategory);
     }
-  }, [map]);
-
-  // 사용자 위치 기반으로 장소 정렬
-  useEffect(() => {
+    
     if (userLocation) {
-      const placesWithDistance = zeroWastePlaces.map(place => ({
+      const placesWithDistance = filteredPlaces.map(place => ({
         ...place,
         distance: calculateDistance(userLocation.lat, userLocation.lng, place.lat, place.lng)
       }));
@@ -110,121 +106,27 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
       setSortedPlaces(sorted);
     } else {
       // 위치 정보가 없으면 원래 순서대로
-      setSortedPlaces(zeroWastePlaces.map(place => ({ ...place, distance: null })));
+      setSortedPlaces(filteredPlaces.map(place => ({ ...place, distance: null })));
     }
-  }, [userLocation]);
+  }, [userLocation, selectedPlaceCategory]);
 
-  const initializeMap = () => {
-    // API 로드 확인
-    if (!window.naver || !window.naver.maps) {
-      console.warn('Naver Maps API not loaded. Please check your API key and domain settings.');
-      return;
-    }
-    
-    if (mapRef.current && window.naver && window.naver.maps) {
-      // 현재 위치 가져오기
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            const { latitude, longitude } = position.coords;
-            const mapOptions = {
-              center: new window.naver.maps.LatLng(latitude, longitude),
-              zoom: 13,
-              zoomControl: true,
-              zoomControlOptions: {
-                style: window.naver.maps.ZoomControlStyle.SMALL,
-                position: window.naver.maps.Position.TOP_RIGHT
-              }
-            };
-            const mapInstance = new window.naver.maps.Map(mapRef.current, mapOptions);
-            setMap(mapInstance);
-            setUserLocation({ lat: latitude, lng: longitude });
-
-            // 현재 위치 마커 추가
-            new window.naver.maps.Marker({
-              position: new window.naver.maps.LatLng(latitude, longitude),
-              map: mapInstance,
-              title: '현재 위치',
-              icon: {
-                content: '<div style="cursor:pointer;width:24px;height:24px;line-height:24px;font-size:12px;color:white;text-align:center;background-color:#2563eb;border-radius:50%;box-shadow:0 2px 4px rgba(0,0,0,0.3);">ME</div>',
-                size: new window.naver.maps.Size(24, 24),
-                anchor: new window.naver.maps.Point(12, 12)
-              }
-            });
-          },
-          (error) => {
-            console.error('위치 정보를 가져올 수 없습니다:', error);
-            // 기본 위치 (서울)
-            const mapOptions = {
-              center: new window.naver.maps.LatLng(37.5665, 126.9780),
-              zoom: 11,
-              zoomControl: true,
-              zoomControlOptions: {
-                style: window.naver.maps.ZoomControlStyle.SMALL,
-                position: window.naver.maps.Position.TOP_RIGHT
-              }
-            };
-            const mapInstance = new window.naver.maps.Map(mapRef.current, mapOptions);
-            setMap(mapInstance);
-            // 기본 위치 사용
-            setUserLocation({ lat: 37.5665, lng: 126.9780 });
-          }
-        );
-      } else {
-        // Geolocation을 지원하지 않는 경우 기본 위치
-        const mapOptions = {
-          center: new window.naver.maps.LatLng(37.5665, 126.9780),
-          zoom: 11,
-          zoomControl: true,
-          zoomControlOptions: {
-            style: window.naver.maps.ZoomControlStyle.SMALL,
-            position: window.naver.maps.Position.TOP_RIGHT
-          }
-        };
-        const mapInstance = new window.naver.maps.Map(mapRef.current, mapOptions);
-        setMap(mapInstance);
-        // 기본 위치 사용
-        setUserLocation({ lat: 37.5665, lng: 126.9780 });
-      }
-    }
-  };
-
-  const addMarkersToMap = () => {
-    // 기존 마커 제거
-    markers.forEach(marker => marker.setMap(null));
-    
-    const newMarkers = [];
-    zeroWastePlaces.forEach((place, index) => {
-      const marker = new window.naver.maps.Marker({
-        position: new window.naver.maps.LatLng(place.lat, place.lng),
-        map: map,
-        title: place.name,
-        icon: {
-          content: `<div style="cursor:pointer;width:32px;height:32px;line-height:32px;font-size:14px;color:white;text-align:center;background-color:#10b981;border-radius:50%;box-shadow:0 2px 4px rgba(0,0,0,0.3);">${index + 1}</div>`,
-          size: new window.naver.maps.Size(32, 32),
-          anchor: new window.naver.maps.Point(16, 16)
+  const getUserLocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          setUserLocation({ lat: latitude, lng: longitude });
+        },
+        (error) => {
+          console.error('위치 정보를 가져올 수 없습니다:', error);
+          // 기본 위치 (서울) 사용
+          setUserLocation({ lat: 37.5665, lng: 126.9780 });
         }
-      });
-
-      // 마커 클릭 시 정보창 표시
-      const infoWindow = new window.naver.maps.InfoWindow({
-        content: `
-          <div style="padding:10px;min-width:150px;">
-            <h4 style="margin:0 0 5px 0;font-size:14px;font-weight:bold;">${place.name}</h4>
-            <p style="margin:0 0 3px 0;font-size:12px;color:#666;">${place.description}</p>
-            <p style="margin:0;font-size:11px;color:#999;">${place.address}</p>
-          </div>
-        `
-      });
-
-      window.naver.maps.Event.addListener(marker, 'click', () => {
-        infoWindow.open(map, marker);
-      });
-
-      newMarkers.push(marker);
-    });
-    
-    setMarkers(newMarkers);
+      );
+    } else {
+      // Geolocation을 지원하지 않는 경우 기본 위치
+      setUserLocation({ lat: 37.5665, lng: 126.9780 });
+    }
   };
 
   const loadInitialTip = async () => {
@@ -333,18 +235,18 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
   }, []);
 
   const zeroWastePlaces = [
-    { name: '알맹상점 서울역점', description: '리필 전문 매장', address: '서울시 용산구 한강대로 405', lat: 37.5547, lng: 126.9707 },
-    { name: '더피커 성수', description: '친환경 편집숍', address: '서울시 성동구 왕십리로 115', lat: 37.5447, lng: 127.0557 },
-    { name: '송파 나눔장터', description: '재활용품 거래소', address: '서울시 송파구 올림픽로 240', lat: 37.5145, lng: 127.1065 },
-    { name: '지구샵 홍대점', description: '플라스틱 프리 카페', address: '서울시 마포구 와우산로 29', lat: 37.5563, lng: 126.9220 },
-    { name: '채움소 연남점', description: '세제 리필 스테이션', address: '서울시 마포구 성미산로 190', lat: 37.5665, lng: 126.9251 },
-    { name: '덕분애 제로웨이스트샵', description: '친환경 생활용품', address: '서울시 강남구 선릉로 428', lat: 37.5040, lng: 127.0492 },
-    { name: '허그어웨일', description: '업사이클링 매장', address: '서울시 종로구 윤보선길 35', lat: 37.5773, lng: 126.9681 },
-    { name: '보틀팩토리', description: '텀블러 전문점', address: '서울시 강남구 강남대로 390', lat: 37.4979, lng: 127.0276 },
-    { name: '제로그램', description: '무포장 식료품점', address: '서울시 서대문구 연세로 11길', lat: 37.5585, lng: 126.9388 },
-    { name: '리필리', description: '화장품 리필샵', address: '서울시 중구 을지로 281', lat: 37.5663, lng: 127.0090 },
-    { name: '동네정미소', description: '곡물 리필매장', address: '서울시 은평구 통일로 684', lat: 37.6027, lng: 126.9288 },
-    { name: '얼스어스', description: '비건 제로웨이스트', address: '서울시 용산구 이태원로 228', lat: 37.5340, lng: 126.9948 }
+    { name: '알맹상점 서울역점', description: '리필 전문 매장', address: '서울시 용산구 한강대로 405', lat: 37.5547, lng: 126.9707, category: '리필샵' },
+    { name: '더피커 성수', description: '친환경 편집숍', address: '서울시 성동구 왕십리로 115', lat: 37.5447, lng: 127.0557, category: '친환경 매장' },
+    { name: '송파 나눔장터', description: '재활용품 거래소', address: '서울시 송파구 올림픽로 240', lat: 37.5145, lng: 127.1065, category: '재활용/업사이클' },
+    { name: '지구샵 홍대점', description: '플라스틱 프리 카페', address: '서울시 마포구 와우산로 29', lat: 37.5563, lng: 126.9220, category: '비건/친환경 카페' },
+    { name: '채움소 연남점', description: '세제 리필 스테이션', address: '서울시 마포구 성미산로 190', lat: 37.5665, lng: 126.9251, category: '리필샵' },
+    { name: '덕분애 제로웨이스트샵', description: '친환경 생활용품', address: '서울시 강남구 선릉로 428', lat: 37.5040, lng: 127.0492, category: '친환경 매장' },
+    { name: '허그어웨일', description: '업사이클링 매장', address: '서울시 종로구 윤보선길 35', lat: 37.5773, lng: 126.9681, category: '재활용/업사이클' },
+    { name: '보틀팩토리', description: '텀블러 전문점', address: '서울시 강남구 강남대로 390', lat: 37.4979, lng: 127.0276, category: '친환경 매장' },
+    { name: '제로그램', description: '무포장 식료품점', address: '서울시 서대문구 연세로 11길', lat: 37.5585, lng: 126.9388, category: '무포장 가게' },
+    { name: '리필리', description: '화장품 리필샵', address: '서울시 중구 을지로 281', lat: 37.5663, lng: 127.0090, category: '리필샵' },
+    { name: '동네정미소', description: '곡물 리필매장', address: '서울시 은평구 통일로 684', lat: 37.6027, lng: 126.9288, category: '무포장 가게' },
+    { name: '얼스어스', description: '비건 제로웨이스트', address: '서울시 용산구 이태원로 228', lat: 37.5340, lng: 126.9948, category: '비건/친환경 카페' }
   ];
 
   const openInNaverMap = (place) => {
@@ -501,48 +403,104 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
 
         {/* 제로웨이스트 맵 */}
         <div className={`mx-3 mt-4 ${cardBg} border ${borderColor} rounded-xl p-4`}>
-          <h3 className={`${textColor} text-sm font-medium mb-3`}>제로웨이스트 맵</h3>
-          
-          {/* 네이버 지도 */}
-          <div className="relative w-full h-64 rounded-lg mb-3 overflow-hidden">
-            <div ref={mapRef} className="w-full h-full" />
-            {!map && (
-              <div className="absolute inset-0 flex items-center justify-center bg-gray-100 dark:bg-gray-800">
-                <div className="text-center">
-                  <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">지도를 불러오는 중...</p>
-                  <p className="text-xs text-gray-400 dark:text-gray-500">네이버 지도 API 연결 중</p>
+          <div className="flex justify-between items-center mb-3">
+            <h3 className={`${textColor} text-sm font-medium`}>제로웨이스트 맵</h3>
+            <div className="relative">
+              <button
+                onClick={() => setShowPlaceCategoryDropdown(!showPlaceCategoryDropdown)}
+                className={`flex items-center gap-1 px-2 py-1 text-xs rounded-lg border ${
+                  isDarkMode ? 'border-gray-600 text-gray-300' : 'border-gray-300 text-gray-700'
+                } hover:opacity-80 transition-opacity bg-transparent`}
+              >
+                <span>{selectedPlaceCategory}</span>
+                {showPlaceCategoryDropdown ? (
+                  <FiChevronUp className="w-3 h-3" />
+                ) : (
+                  <FiChevronDown className="w-3 h-3" />
+                )}
+              </button>
+              {showPlaceCategoryDropdown && (
+                <div className={`absolute right-0 mt-1 w-max rounded-lg shadow-lg z-10 ${
+                  isDarkMode ? 'bg-gray-700' : 'bg-white'
+                } border ${isDarkMode ? 'border-gray-600' : 'border-gray-200'}`}>
+                  {placeCategories.map((category) => (
+                    <button
+                      key={category}
+                      onClick={() => {
+                        setSelectedPlaceCategory(category);
+                        setShowPlaceCategoryDropdown(false);
+                      }}
+                      className={`block w-full text-left px-3 py-2 text-xs whitespace-nowrap first:rounded-t-lg last:rounded-b-lg ${
+                        selectedPlaceCategory === category
+                          ? isDarkMode ? 'bg-gray-600 text-white' : 'bg-gray-100 text-gray-900'
+                          : isDarkMode ? 'text-gray-300 hover:bg-gray-600' : 'text-gray-700 hover:bg-gray-50'
+                      } transition-colors`}
+                    >
+                      {category}
+                    </button>
+                  ))}
                 </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
           
-          <div className="space-y-3 max-h-64 overflow-y-auto custom-scrollbar">
-            {sortedPlaces.map((place, index) => (
-              <div key={index} className={`border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-100'} pb-2`}>
-                <div className="flex justify-between items-start">
-                  <div className="flex-1">
+          <div className="space-y-3 max-h-52 overflow-y-auto custom-scrollbar">
+            {sortedPlaces.slice(0, 4).map((place, index) => (
+              <div key={index} className={`border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-100'} pb-3 min-h-[60px]`}>
+                <div className="flex justify-between">
+                  <div className="flex-1 pr-3">
                     <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} mb-1`}>{place.name}</p>
                     <span className={`text-xs ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>{place.description}</span>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="relative min-w-[60px] min-h-[20px]">
+                    <button 
+                      onClick={() => openInNaverMap(place)}
+                      className="absolute top-0 right-0 mb-1 text-sm font-medium bg-gradient-to-r from-cyan-500 via-blue-500 to-blue-600 bg-clip-text text-transparent"
+                    >
+                      이동
+                    </button>
                     {place.distance !== null && (
-                      <span className={`text-xs font-medium ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                      <span className={`absolute bottom-1 right-0 text-xs font-medium ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
                         {place.distance < 1 ? 
                           `${Math.round(place.distance * 1000)}m` : 
                           `${place.distance.toFixed(1)}km`
                         }
                       </span>
                     )}
-                    <button 
-                      onClick={() => openInNaverMap(place)}
-                      className="text-xs font-medium bg-gradient-to-r from-cyan-500 via-blue-500 to-blue-600 bg-clip-text text-transparent"
-                    >
-                      이동 →
-                    </button>
                   </div>
                 </div>
               </div>
             ))}
+            {sortedPlaces.length > 4 && (
+              <div className="pt-2 border-t border-gray-300 dark:border-gray-700">
+                {sortedPlaces.slice(4).map((place, index) => (
+                  <div key={index + 4} className={`border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-100'} pb-3 mb-2 min-h-[60px]`}>
+                    <div className="flex justify-between">
+                      <div className="flex-1 pr-3">
+                        <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} mb-1`}>{place.name}</p>
+                        <span className={`text-xs ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>{place.description}</span>
+                      </div>
+                      <div className="relative min-w-[60px] min-h-[20px]">
+                        <button 
+                          onClick={() => openInNaverMap(place)}
+                          className="absolute top-0 right-0 mb-1 text-sm font-medium bg-gradient-to-r from-cyan-500 via-blue-500 to-blue-600 bg-clip-text text-transparent"
+                        >
+                          이동
+                        </button>
+                        {place.distance !== null && (
+                          <span className={`absolute bottom-1 right-0 text-xs font-medium ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                            {place.distance < 1 ? 
+                              `${Math.round(place.distance * 1000)}m` : 
+                              `${place.distance.toFixed(1)}km`
+                            }
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
 

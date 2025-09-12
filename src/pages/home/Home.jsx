@@ -193,11 +193,7 @@ const Home = ({
                     <span className="text-white text-xs">
                       {tankName}
                     </span>
-                    <span className={`text-xs font-medium ${
-                      waterQuality >= 80 ? 'text-white' : 
-                      waterQuality >= 50 ? 'text-yellow-300' : 
-                      'text-red-300'
-                    }`}>{waterQuality}%</span>
+                    <span className="text-xs font-medium text-white">{waterQuality}%</span>
                   </div>
                   <div className="w-full bg-white/20 rounded-full h-1.5">
                     <div className={`h-1.5 rounded-full transition-all duration-500 ${

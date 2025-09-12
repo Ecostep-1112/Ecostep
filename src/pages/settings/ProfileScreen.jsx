@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FiChevronRight, FiX, FiCamera, FiPlus, FiAlertTriangle } from 'react-icons/fi';
+import { FiChevronRight, FiChevronLeft, FiX, FiCamera, FiPlus, FiAlertTriangle } from 'react-icons/fi';
 import { getUserProfile, updateUserId, deleteAccount } from '../../lib/auth';
 import Toast from '../../components/Toast';
 
@@ -145,7 +145,7 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
         <div className={`absolute inset-0 z-50 ${bgColor}`}>
           <div className={`${bgColor} p-4 flex items-center border-b ${borderColor}`}>
             <button onClick={onClose} className="mr-3">
-              <FiX className={`w-4 h-4 ${textColor}`} />
+              <FiChevronLeft className={`w-4 h-4 ${textColor}`} />
             </button>
             <h2 className={`text-sm font-medium ${textColor}`}>{label}</h2>
           </div>
@@ -201,7 +201,7 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
         <div className={`absolute inset-0 z-50 ${bgColor}`}>
           <div className={`${bgColor} p-4 flex items-center border-b ${borderColor}`}>
             <button onClick={onClose} className="mr-3">
-              <FiX className={`w-4 h-4 ${textColor}`} />
+              <FiChevronLeft className={`w-4 h-4 ${textColor}`} />
             </button>
             <h2 className={`text-sm font-medium ${textColor}`}>{label}</h2>
           </div>
@@ -272,7 +272,7 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
       <div className={`absolute inset-0 z-50 ${bgColor}`}>
         <div className={`${bgColor} p-4 flex items-center border-b ${borderColor}`}>
           <button onClick={onClose} className="mr-3">
-            <FiX className={`w-4 h-4 ${textColor}`} />
+            <FiChevronLeft className={`w-4 h-4 ${textColor}`} />
           </button>
           <h2 className={`text-sm font-medium ${textColor}`}>{label}</h2>
         </div>

@@ -145,15 +145,6 @@ function Login({ onLogin }) {
               </button>
             </div>
 
-            {/* 이메일 로그인 옵션 */}
-            <div className="mt-6 text-center">
-              <button 
-                onClick={() => alert('이메일 로그인은 추후 추가 예정입니다.')}
-                className="text-gray-500 text-xs underline"
-              >
-                이메일로 로그인
-              </button>
-            </div>
             
             <div className="mt-4">
               <button onClick={() => handleLogin('skip')} className="text-gray-400 text-xs">

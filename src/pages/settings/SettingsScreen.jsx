@@ -39,11 +39,11 @@ const SettingsScreen = ({
         >
           <div className={`w-10 h-10 ${isDarkMode ? 'bg-gray-700' : 'bg-gray-200'} rounded-full flex items-center justify-center mr-3`}>
             <span className={`font-medium text-sm ${isDarkMode ? 'text-gray-100' : 'text-gray-700'}`}>
-              {userProfile?.name?.charAt(0) || '송'}
+              {userProfile?.userId?.charAt(0)?.toUpperCase() || userProfile?.name?.charAt(0) || 'E'}
             </span>
           </div>
           <div className="flex-1 text-left">
-            <p className={`text-sm font-medium ${textColor}`}>{userProfile?.name || '송일'}</p>
+            <p className={`text-sm font-medium ${textColor}`}>{userProfile?.userId || userProfile?.name || 'Eco User'}</p>
           </div>
           <div className="flex items-center">
             <span className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} mr-2`}>

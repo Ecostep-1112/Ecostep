@@ -1,7 +1,13 @@
-import React, { useState } from 'react';
-import { FiChevronRight, FiX, FiCamera, FiPlus } from 'react-icons/fi';
+import React, { useState, useEffect } from 'react';
+import { FiChevronRight, FiX, FiCamera, FiPlus, FiAlertTriangle } from 'react-icons/fi';
+import { getUserProfile, updateUserId, deleteAccount } from '../../lib/auth';
+import Toast from '../../components/Toast';
 
 const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData }) => {
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
+  const [toastType, setToastType] = useState('success');
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const bgColor = isDarkMode ? 'bg-gray-900' : 'bg-gray-50';
   const textColor = isDarkMode ? 'text-gray-200' : 'text-gray-700';
   const borderColor = isDarkMode ? 'border-gray-700' : 'border-gray-300';
@@ -11,6 +17,26 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
   
   // 각 필드의 수정 화면 표시 상태
   const [editingField, setEditingField] = useState(null);
+  
+  // 컴포넌트 마운트 시 프로필 데이터 로드
+  useEffect(() => {
+    loadUserProfile();
+  }, []);
+  
+  const loadUserProfile = async () => {
+    const { profile, error } = await getUserProfile();
+    if (profile && !error) {
+      // 데이터베이스에서 가져온 user_id를 userId로 설정 (기존 값이 없을 때만)
+      setProfileData(prev => ({
+        ...prev,
+        userId: prev.userId || profile.user_id || '', // 기존 userId가 있으면 유지
+        name: prev.name || '', // name은 로컬 상태 유지
+        email: profile.email || prev.email || '',
+        birthDate: prev.birthDate || '',
+        phone: prev.phone || ''
+      }));
+    }
+  };
   
   // 프로필 사진 상태 관리
   const [profileImage, setProfileImage] = useState(null);
@@ -54,6 +80,8 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
   // 각 필드별 수정 화면 컴포넌트
   const EditFieldScreen = ({ field, label, value, onSave, onClose }) => {
     const [inputValue, setInputValue] = useState(value || '');
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState('');
     
     // 생년월일 필드용 상태
     const parseBirthDate = (dateStr) => {
@@ -199,6 +227,47 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
       );
     }
     
+    // 아이디 저장 핸들러
+    const handleUserIdSave = async () => {
+      if (!inputValue.trim()) {
+        setError('invalid');
+        return;
+      }
+      
+      // 아이디 유효성 검사 (1~15글자, 영문/숫자/언더스코어만 허용)
+      const idRegex = /^[a-zA-Z0-9_]{1,15}$/;
+      if (!idRegex.test(inputValue)) {
+        setError('invalid');
+        return;
+      }
+      
+      setIsLoading(true);
+      setError('');
+      
+      const { success, error } = await updateUserId(inputValue);
+      
+      setIsLoading(false);
+      
+      if (success) {
+        onSave(inputValue);
+        
+        // localStorage에도 업데이트
+        const savedData = localStorage.getItem('profileData');
+        if (savedData) {
+          const parsed = JSON.parse(savedData);
+          parsed.userId = inputValue;
+          localStorage.setItem('profileData', JSON.stringify(parsed));
+        }
+        
+        onClose();
+        setToastMessage('아이디가 성공적으로 변경되었습니다.');
+        setToastType('success');
+        setShowToast(true);
+      } else {
+        setError('invalid');
+      }
+    };
+    
     return (
       <div className={`absolute inset-0 z-50 ${bgColor}`}>
         <div className={`${bgColor} p-4 flex items-center border-b ${borderColor}`}>
@@ -212,20 +281,37 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
           <input
             type={field === 'email' ? 'email' : 'text'}
             value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
+            onChange={(e) => {
+              setInputValue(e.target.value);
+              setError('');
+            }}
             placeholder={getPlaceholder(field)}
-            className={`w-full px-4 py-2.5 text-sm ${textColor} bg-transparent rounded-lg border ${borderColor} focus:outline-none focus:border-gray-400`}
+            className={`w-full px-4 py-2.5 text-sm ${textColor} bg-transparent rounded-lg border ${error ? 'border-red-500' : borderColor} focus:outline-none focus:border-gray-400`}
             autoFocus
+            disabled={isLoading}
           />
+          
+          {field === 'userId' && (
+            <p className={`text-xs ${secondaryText} mt-2 text-center`}>
+              영문, 숫자, 언더스코어만 사용 가능 (1~15자)
+            </p>
+          )}
           
           <button
             onClick={() => {
-              onSave(inputValue);
-              onClose();
+              if (field === 'userId') {
+                handleUserIdSave();
+              } else {
+                onSave(inputValue);
+                onClose();
+              }
             }}
-            className="w-full mt-4 py-2.5 text-sm text-white rounded-lg font-medium bg-gradient-to-r from-cyan-500 via-blue-500 to-blue-600 hover:opacity-90 transition-opacity"
+            disabled={isLoading}
+            className={`w-full mt-4 py-2.5 text-sm text-white rounded-lg font-medium bg-gradient-to-r from-cyan-500 via-blue-500 to-blue-600 hover:opacity-90 transition-opacity ${
+              isLoading ? 'opacity-50 cursor-not-allowed' : ''
+            }`}
           >
-            저장
+            {isLoading ? '저장 중...' : '저장'}
           </button>
         </div>
       </div>
@@ -396,6 +482,73 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
           value={profileData.email}
           onSave={(value) => setProfileData({...profileData, email: value})}
           onClose={() => setEditingField(null)}
+        />
+      )}
+      
+      {/* 계정 탈퇴 버튼 */}
+      <div className="absolute bottom-8 left-4 right-4">
+        <button
+          onClick={() => setShowDeleteConfirm(true)}
+          className={`w-full py-2.5 text-sm font-medium text-red-500 rounded-lg border border-red-200 ${isDarkMode ? 'bg-gray-800' : 'bg-white'} hover:bg-red-50 transition-colors`}
+        >
+          계정 탈퇴
+        </button>
+      </div>
+      
+      {/* 탈퇴 확인 다이얼로그 */}
+      {showDeleteConfirm && (
+        <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div className={`mx-4 w-full max-w-xs ${isDarkMode ? 'bg-gray-800' : 'bg-white'} rounded-2xl p-5 shadow-xl`}>
+            <h3 className={`text-lg font-semibold text-center mb-3 ${textColor}`}>
+              정말 탈퇴하시겠습니까?
+            </h3>
+            
+            <p className={`text-xs text-center mb-5 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+              계정을 탈퇴하시면 모든 데이터가<br />
+              영구적으로 삭제되며, 복구할 수 없습니다.
+            </p>
+            
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowDeleteConfirm(false)}
+                className={`flex-1 py-2 text-sm font-medium rounded-lg border ${borderColor} ${textColor} hover:bg-gray-50 transition-colors`}
+              >
+                아니요
+              </button>
+              <button
+                onClick={async () => {
+                  try {
+                    // 계정 삭제 실행
+                    const { success, error } = await deleteAccount();
+                    
+                    if (success) {
+                      // 성공 시 페이지 새로고침 (로그인 화면으로 이동)
+                      window.location.reload();
+                    } else {
+                      throw new Error(error);
+                    }
+                  } catch (error) {
+                    console.error('계정 탈퇴 실패:', error);
+                    setToastMessage('계정 탈퇴에 실패했습니다.');
+                    setToastType('error');
+                    setShowToast(true);
+                    setShowDeleteConfirm(false);
+                  }
+                }}
+                className="flex-1 py-2 text-sm font-medium text-white bg-red-500 rounded-lg hover:bg-red-600 transition-colors"
+              >
+                네, 탈퇴합니다
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {showToast && (
+        <Toast
+          message={toastMessage}
+          type={toastType}
+          onClose={() => setShowToast(false)}
         />
       )}
     </div>

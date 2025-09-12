@@ -15,7 +15,7 @@ import { ThemeSettings, RankThemeSettings, LanguageSettings, NotificationSetting
 import Toast from './components/Toast';
 import Login from './components/Login';
 import fishData from './data/fishData.json';
-import { onAuthStateChange, getCurrentUser, signOut } from './lib/auth';
+import { onAuthStateChange, getCurrentUser, signOut, createOrUpdateUserProfile } from './lib/auth';
 
 const EcostepApp = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -223,13 +223,23 @@ const EcostepApp = () => {
           setCurrentUser(user);
           setIsLoggedIn(true);
           
+          // 프로필 생성 또는 업데이트 (아이디가 없을 때만 새로 생성)
+          const { profile } = await createOrUpdateUserProfile(user);
+          console.log('App.jsx - 프로필 생성 결과:', profile);
+          
           // 수파베이스 사용자 정보로 프로필 업데이트
-          setProfileData(prev => ({
-            ...prev,
-            email: user.email || prev.email,
-            name: user.user_metadata?.full_name || user.user_metadata?.name || prev.name,
-            userId: user.id || prev.userId
-          }));
+          setProfileData(prev => {
+            // 이미 userId가 있으면 유지, 없으면 데이터베이스에서 가져온 값 사용
+            const finalUserId = prev.userId || profile?.user_id || '';
+            console.log('App.jsx - finalUserId:', finalUserId, 'prev.userId:', prev.userId, 'profile?.user_id:', profile?.user_id);
+            
+            return {
+              ...prev,
+              email: user.email || prev.email,
+              name: user.user_metadata?.full_name || user.user_metadata?.name || prev.name,
+              userId: finalUserId
+            };
+          });
         }
       } catch (error) {
         console.error('사용자 확인 에러:', error);
@@ -246,17 +256,27 @@ const EcostepApp = () => {
         setCurrentUser(session.user);
         setIsLoggedIn(true);
         
-        // 로그인 시 프로필 업데이트
-        setProfileData(prev => ({
-          ...prev,
-          email: session.user.email || prev.email || '',
-          name: session.user.user_metadata?.full_name || 
-                 session.user.user_metadata?.name || 
-                 session.user.user_metadata?.nickname ||
-                 session.user.user_metadata?.kakao_account?.profile?.nickname ||
-                 prev.name || '사용자',
-          userId: session.user.id || prev.userId
-        }));
+        // 프로필 생성 또는 업데이트를 비동기로 처리
+        createOrUpdateUserProfile(session.user).then(({ profile }) => {
+          // 로그인 시 프로필 업데이트
+          setProfileData(prev => {
+            // 이미 userId가 있으면 유지, 없으면 데이터베이스에서 가져온 값 사용
+            const finalUserId = prev.userId || profile?.user_id || '';
+            
+            return {
+              ...prev,
+              email: session.user.email || prev.email || '',
+              name: session.user.user_metadata?.full_name || 
+                     session.user.user_metadata?.name || 
+                     session.user.user_metadata?.nickname ||
+                     session.user.user_metadata?.kakao_account?.profile?.nickname ||
+                     prev.name || '사용자',
+              userId: finalUserId
+            };
+          });
+        }).catch(error => {
+          console.error('프로필 생성 실패:', error);
+        });
       } else if (event === 'SIGNED_OUT') {
         setCurrentUser(null);
         setIsLoggedIn(false);

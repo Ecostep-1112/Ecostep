@@ -444,33 +444,63 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
             </div>
           </div>
           
-          <div className="space-y-3 max-h-96 overflow-y-auto custom-scrollbar">
-            {sortedPlaces.map((place, index) => (
-              <div key={index} className={`border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-100'} pb-2`}>
-                <div className="flex justify-between items-start">
-                  <div className="flex-1">
+          <div className="space-y-3 max-h-52 overflow-y-auto custom-scrollbar">
+            {sortedPlaces.slice(0, 4).map((place, index) => (
+              <div key={index} className={`border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-100'} pb-3 min-h-[60px]`}>
+                <div className="flex justify-between">
+                  <div className="flex-1 pr-3">
                     <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} mb-1`}>{place.name}</p>
                     <span className={`text-xs ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>{place.description}</span>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="relative min-w-[60px] min-h-[20px]">
+                    <button 
+                      onClick={() => openInNaverMap(place)}
+                      className="absolute top-0 right-0 mb-1 text-sm font-medium bg-gradient-to-r from-cyan-500 via-blue-500 to-blue-600 bg-clip-text text-transparent"
+                    >
+                      이동
+                    </button>
                     {place.distance !== null && (
-                      <span className={`text-xs font-medium ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                      <span className={`absolute bottom-1 right-0 text-xs font-medium ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
                         {place.distance < 1 ? 
                           `${Math.round(place.distance * 1000)}m` : 
                           `${place.distance.toFixed(1)}km`
                         }
                       </span>
                     )}
-                    <button 
-                      onClick={() => openInNaverMap(place)}
-                      className="text-xs font-medium bg-gradient-to-r from-cyan-500 via-blue-500 to-blue-600 bg-clip-text text-transparent"
-                    >
-                      이동
-                    </button>
                   </div>
                 </div>
               </div>
             ))}
+            {sortedPlaces.length > 4 && (
+              <div className="pt-2 border-t border-gray-300 dark:border-gray-700">
+                {sortedPlaces.slice(4).map((place, index) => (
+                  <div key={index + 4} className={`border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-100'} pb-3 mb-2 min-h-[60px]`}>
+                    <div className="flex justify-between">
+                      <div className="flex-1 pr-3">
+                        <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} mb-1`}>{place.name}</p>
+                        <span className={`text-xs ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>{place.description}</span>
+                      </div>
+                      <div className="relative min-w-[60px] min-h-[20px]">
+                        <button 
+                          onClick={() => openInNaverMap(place)}
+                          className="absolute top-0 right-0 mb-1 text-sm font-medium bg-gradient-to-r from-cyan-500 via-blue-500 to-blue-600 bg-clip-text text-transparent"
+                        >
+                          이동
+                        </button>
+                        {place.distance !== null && (
+                          <span className={`absolute bottom-1 right-0 text-xs font-medium ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                            {place.distance < 1 ? 
+                              `${Math.round(place.distance * 1000)}m` : 
+                              `${place.distance.toFixed(1)}km`
+                            }
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
 

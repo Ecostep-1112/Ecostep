@@ -9,6 +9,87 @@ import EarthStructure from './EarthStructure';
 function Login({ onLogin }) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [stars, setStars] = useState([]);
+
+  // 별 생성 - 황금비율 적용 (총 30개)
+  React.useEffect(() => {
+    const generateStars = () => {
+      const newStars = [];
+      const phi = 1.618; // 황금비율
+      
+      // 황금비율로 크기 설정 (각 크기는 이전 크기의 1.618배)
+      const baseStar = 1;
+      const starSizes = [
+        baseStar,                    // 1
+        baseStar * phi,              // 1.618
+        baseStar * phi * phi,        // 2.618
+        baseStar * phi * phi * phi,  // 4.236
+      ];
+      
+      // 황금비율로 개수 분배 (총 30개)
+      // 큰 별:작은 별 = 1:1.618 비율로 감소
+      const starConfig = [
+        { size: starSizes[0], count: 12 },  // 40%
+        { size: starSizes[1], count: 8 },   // 27%
+        { size: starSizes[2], count: 6 },   // 20%
+        { size: starSizes[3], count: 4 },   // 13%
+      ];
+      
+      let id = 0;
+      
+      // 황금 나선 패턴으로 균등 분포
+      starConfig.forEach(config => {
+        for (let i = 0; i < config.count; i++) {
+          let left, top;
+          let attempts = 0;
+          const maxAttempts = 100;
+          
+          // 황금각(137.5도)을 이용한 분포
+          const goldenAngle = 137.5;
+          const angle = (id * goldenAngle) % 360;
+          const radius = (id / 30) * 45; // 중심에서 바깥으로 퍼지는 반경
+          
+          do {
+            // 황금 나선 기반 초기 위치
+            const baseX = 50 + radius * Math.cos(angle * Math.PI / 180);
+            const baseY = 35 + radius * 0.7 * Math.sin(angle * Math.PI / 180);
+            
+            // 약간의 랜덤성 추가로 자연스럽게
+            left = baseX + (Math.random() - 0.5) * 15;
+            top = baseY + (Math.random() - 0.5) * 10;
+            
+            // 경계 조정
+            left = Math.max(5, Math.min(95, left));
+            top = Math.max(3, Math.min(71, top));
+            
+            attempts++;
+            
+            if (attempts >= maxAttempts) {
+              // 실패시 완전 랜덤 위치
+              left = Math.random() * 90 + 5;
+              top = Math.random() * 71;
+              break;
+            }
+          } while (
+            // 지구본 영역 체크 (중앙 35% 위치)
+            (Math.pow(left - 50, 2) + Math.pow((top - 35) * 1.3, 2) < 600)
+          );
+          
+          newStars.push({
+            id: id++,
+            left: left,
+            top: top,
+            size: config.size,
+            animationDelay: Math.random() * 3,
+            animationDuration: Math.random() * 2 + 2
+          });
+        }
+      });
+      
+      setStars(newStars);
+    };
+    generateStars();
+  }, []);
 
   const handleLogin = async (provider) => {
     console.log(`${provider} 로그인 시도`);
@@ -59,8 +140,44 @@ function Login({ onLogin }) {
       <div className="relative w-full max-w-[375px] h-[812px] bg-gray-900 rounded-[2.5rem] p-[3px] shadow-2xl">
         <div className="w-full h-full bg-black rounded-[2.3rem] p-[8px]">
           <div className="w-full h-full bg-gradient-to-br from-cyan-400 via-blue-500 to-blue-600 rounded-[2rem] overflow-hidden flex flex-col items-center px-6 py-8 relative">
+            {/* 별 애니메이션 */}
+            <style jsx>{`
+              @keyframes twinkle {
+                0%, 100% {
+                  opacity: 0;
+                  transform: scale(0.5);
+                }
+                50% {
+                  opacity: 1;
+                  transform: scale(1);
+                }
+              }
+              .star {
+                position: absolute;
+                background: white;
+                border-radius: 50%;
+                animation: twinkle infinite ease-in-out;
+              }
+            `}</style>
+            
+            {/* 별들 렌더링 */}
+            {stars.map((star) => (
+              <div
+                key={star.id}
+                className="star"
+                style={{
+                  left: `${star.left}%`,
+                  top: `${star.top}%`,
+                  width: `${star.size}px`,
+                  height: `${star.size}px`,
+                  animationDelay: `${star.animationDelay}s`,
+                  animationDuration: `${star.animationDuration}s`,
+                }}
+              />
+            ))}
+            
             {/* 지구본 - 상단과 구글 버튼 사이 중앙 */}
-            <div className="absolute top-[35%] left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+            <div className="absolute top-[35%] left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
               <EarthStructure size={180} angle={108} />
             </div>
             
@@ -74,7 +191,7 @@ function Login({ onLogin }) {
               )}
               
               {/* 로그인 버튼들 */}
-              <div className="w-full space-y-4">
+              <div className="w-full space-y-4 relative z-20">
               <button
                 onClick={() => handleLogin('Google')}
                 disabled={isLoading}

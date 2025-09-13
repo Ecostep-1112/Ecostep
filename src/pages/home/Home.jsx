@@ -349,7 +349,7 @@ const Home = ({
                 {/* 나무가 없을 때 메시지 */}
                 {treesEquivalent === 0 && (
                   <p className={`text-center text-xs ${isDarkMode ? 'text-gray-500' : 'text-gray-400'} mt-2`}>
-                    챌린지를 완료하면 나무가 자랍니다 🌱
+                    챌린지를 완료하면 나무가 자랍니다
                   </p>
                 )}
               </div>

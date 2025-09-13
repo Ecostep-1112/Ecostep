@@ -4,6 +4,7 @@ import { FcGoogle } from 'react-icons/fc';
 import { RiKakaoTalkFill } from 'react-icons/ri';
 import { FiChevronRight } from 'react-icons/fi';
 import { signInWithGoogle, signInWithKakao, signInWithApple } from '../lib/auth';
+import EarthStructure from './EarthStructure';
 
 function Login({ onLogin }) {
   const [isLoading, setIsLoading] = useState(false);
@@ -57,49 +58,23 @@ function Login({ onLogin }) {
     <div className="flex items-center justify-center min-h-screen bg-gray-100 p-4">
       <div className="relative w-full max-w-[375px] h-[812px] bg-gray-900 rounded-[2.5rem] p-[3px] shadow-2xl">
         <div className="w-full h-full bg-black rounded-[2.3rem] p-[8px]">
-          <div className="w-full h-full bg-gradient-to-br from-cyan-400 via-blue-500 to-blue-600 rounded-[2rem] overflow-hidden flex flex-col items-center justify-center px-6 py-8 relative">
-            {/* 상단에서 내려오는 구불구불한 선과 박스 */}
-            <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
-              <svg className="w-full h-full" viewBox="0 0 327 812" preserveAspectRatio="xMidYMid meet">
-                {/* 위에서 내려오는 구불구불한 선 - 원과 연결 */}
-                <path 
-                  d="M 163.5 0 Q 158 40, 166 80 T 161 140 Q 168 160, 163.5 180 T 163.5 195" 
-                  stroke="white" 
-                  strokeWidth="0.5" 
-                  fill="none"
-                  opacity="0.8"
-                />
-                
-                {/* 구불구불한 완전 원형 박스 - 화면 중앙 정렬 */}
-                <path 
-                  d="M 163.5 195 Q 143 197, 123 207 T 98 232 Q 93 252, 95 272 T 105 307 Q 118 327, 138 335 T 173 340 Q 193 337, 213 327 T 238 302 Q 243 282, 241 262 T 229 227 Q 216 207, 196 199 T 163 193 Q 165 194, 163.5 195 Z" 
-                  stroke="white" 
-                  strokeWidth="0.5" 
-                  fill="none"
-                  opacity="0.8"
-                />
-                
-                {/* Ecostep 텍스트 - 화면 중앙 정렬 */}
-                <text x="163.5" y="270" 
-                  fontFamily="Brush Script MT, cursive" 
-                  fontSize="48" 
-                  fill="#374151"
-                  textAnchor="middle"
-                  dominantBaseline="middle">
-                  Ecostep
-                </text>
-              </svg>
+          <div className="w-full h-full bg-gradient-to-br from-cyan-400 via-blue-500 to-blue-600 rounded-[2rem] overflow-hidden flex flex-col items-center px-6 py-8 relative">
+            {/* 지구본 - 상단과 구글 버튼 사이 중앙 */}
+            <div className="absolute top-[35%] left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+              <EarthStructure size={180} />
             </div>
             
-            {/* 에러 메시지 */}
-            {error && (
-              <div className="w-full mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg text-sm">
-                {error}
-              </div>
-            )}
-            
-            {/* 로그인 버튼들 */}
-            <div className="w-full space-y-4 mt-auto mb-40">
+            {/* 하단 영역 - 로그인 버튼들 */}
+            <div className="mt-auto w-full">
+              {/* 에러 메시지 */}
+              {error && (
+                <div className="w-full mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg text-sm">
+                  {error}
+                </div>
+              )}
+              
+              {/* 로그인 버튼들 */}
+              <div className="w-full space-y-4">
               <button
                 onClick={() => handleLogin('Google')}
                 disabled={isLoading}
@@ -143,13 +118,15 @@ function Login({ onLogin }) {
                 </div>
                 <FiChevronRight className="text-gray-400 text-lg" />
               </button>
-            </div>
+              </div>
 
-            
-            <div className="mt-4">
-              <button onClick={() => handleLogin('skip')} className="text-gray-400 text-xs">
-                로그인 없이 둘러보기
-              </button>
+              
+              
+              <div className="mt-4 text-center">
+                <button onClick={() => handleLogin('skip')} className="text-gray-400 text-xs">
+                  로그인 없이 둘러보기
+                </button>
+              </div>
             </div>
           </div>
         </div>

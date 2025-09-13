@@ -148,7 +148,7 @@ const SearchFriends = ({ isDarkMode, onBack, userRanking = 'bronze', showToast, 
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               onKeyPress={handleKeyPress}
-              placeholder="아이디 검색" 
+              placeholder="이름 또는 아이디 검색" 
               className={`w-full h-full bg-transparent ${textColor} ${placeholderColor} rounded-xl pl-4 ${searchTerm ? 'pr-10' : 'pr-4'} text-sm focus:outline-none border ${borderColor}`}
             />
             {searchTerm && (

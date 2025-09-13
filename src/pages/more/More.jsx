@@ -455,7 +455,7 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
                   <div className="relative min-w-[60px] min-h-[20px]">
                     <button 
                       onClick={() => openInNaverMap(place)}
-                      className="absolute top-0 right-0 mb-1 text-sm font-medium bg-gradient-to-r from-cyan-500 via-blue-500 to-blue-600 bg-clip-text text-transparent"
+                      className="absolute top-[1px] right-0 mb-1 text-[13px] font-medium bg-gradient-to-r from-cyan-500 via-blue-500 to-blue-600 bg-clip-text text-transparent"
                     >
                       이동
                     </button>

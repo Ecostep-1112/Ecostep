@@ -45,7 +45,9 @@
       "Bash(start http://localhost:5180/)",
       "Bash(npx eslint:*)",
       "Bash(git merge:*)",
-      "Bash(start http://localhost:5175)"
+      "Bash(start http://localhost:5175)",
+      "Bash(git fetch:*)",
+      "Bash(gh api:*)"
     ],
     "deny": [],
     "ask": [],

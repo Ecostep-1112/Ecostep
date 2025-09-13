@@ -61,7 +61,7 @@ function Login({ onLogin }) {
           <div className="w-full h-full bg-gradient-to-br from-cyan-400 via-blue-500 to-blue-600 rounded-[2rem] overflow-hidden flex flex-col items-center px-6 py-8 relative">
             {/* 지구본 - 상단과 구글 버튼 사이 중앙 */}
             <div className="absolute top-[35%] left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-              <EarthStructure size={180} />
+              <EarthStructure size={180} angle={108} />
             </div>
             
             {/* 하단 영역 - 로그인 버튼들 */}

@@ -69,7 +69,7 @@ const EcostepApp = () => {
   const [showProfile, setShowProfile] = useState(false);
   
   // 프로필 데이터 상태 관리 (localStorage에서 불러오기)
-  const [profileData, setProfileData] = useState(() => {
+  const [profileData, setProfileDataState] = useState(() => {
     const saved = localStorage.getItem('profileData');
     if (saved) {
       return JSON.parse(saved);
@@ -82,6 +82,20 @@ const EcostepApp = () => {
       email: ''
     };
   });
+
+  // localStorage에도 저장하는 래퍼 함수
+  const setProfileData = (newData) => {
+    if (typeof newData === 'function') {
+      setProfileDataState(prev => {
+        const updated = newData(prev);
+        localStorage.setItem('profileData', JSON.stringify(updated));
+        return updated;
+      });
+    } else {
+      setProfileDataState(newData);
+      localStorage.setItem('profileData', JSON.stringify(newData));
+    }
+  };
   const [showAquariumSettings, setShowAquariumSettings] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const [notificationsList, setNotificationsList] = useState([]);

@@ -55,10 +55,10 @@ const FriendsList = ({ isDarkMode, onBack, isGlobalRanking = false, totalPlastic
   
   // 전체 랭킹 데이터 생성 (플라스틱 절약량 포함)
   let globalRankingDataRaw = [
-    { name: 'PlasticZero', score: '45.2kg', grams: 45200 },
-    { name: 'EcoMaster', score: '42.1kg', grams: 42100 },
-    { name: 'GreenWarrior', score: '38.9kg', grams: 38900 },
-    { name: '나', score: myScore, grams: totalPlasticSaved },
+    { name: 'PlasticZero', id: 'plastic_zero', score: '45.2kg', grams: 45200 },
+    { name: 'EcoMaster', id: 'eco_master', score: '42.1kg', grams: 42100 },
+    { name: 'GreenWarrior', id: 'green_warrior', score: '38.9kg', grams: 38900 },
+    { name: '나', id: currentUserId, score: myScore, grams: totalPlasticSaved },
   ];
   
   // 더 많은 사용자 추가
@@ -66,6 +66,7 @@ const FriendsList = ({ isDarkMode, onBack, isGlobalRanking = false, totalPlastic
     const grams = Math.max(500, 50000 - i * 200); // 50kg부터 점진적으로 감소
     globalRankingDataRaw.push({
       name: `User${i}`,
+      id: `user_${i}`,
       score: getDisplayScore(grams),
       grams: grams
     });
@@ -89,6 +90,7 @@ const FriendsList = ({ isDarkMode, onBack, isGlobalRanking = false, totalPlastic
     if (friend) {
       friendsRankingDataRaw.push({
         name: friend.name,
+        id: friend.id,
         score: getDisplayScore(friend.plasticSaved),
         grams: friend.plasticSaved
       });
@@ -98,6 +100,7 @@ const FriendsList = ({ isDarkMode, onBack, isGlobalRanking = false, totalPlastic
   // 나 자신 추가
   friendsRankingDataRaw.push({
     name: '나',
+    id: currentUserId,
     score: myScore,
     grams: totalPlasticSaved
   });
@@ -105,10 +108,10 @@ const FriendsList = ({ isDarkMode, onBack, isGlobalRanking = false, totalPlastic
   // 친구가 없거나 적을 경우 기본 친구 데이터 추가
   if (friendsRankingDataRaw.length < 10) {
     const defaultFriends = [
-      { name: '일이', score: '27.0kg', grams: 27000 },
-      { name: '이이', score: '24.0kg', grams: 24000 },
-      { name: '삼이', score: '21.0kg', grams: 21000 },
-      { name: '사이', score: '18.0kg', grams: 18000 },
+      { name: '일이', id: 'eco_friend1', score: '27.0kg', grams: 27000 },
+      { name: '이이', id: 'eco_friend2', score: '24.0kg', grams: 24000 },
+      { name: '삼이', id: 'eco_friend3', score: '21.0kg', grams: 21000 },
+      { name: '사이', id: 'eco_friend4', score: '18.0kg', grams: 18000 },
     ];
     
     defaultFriends.forEach(friend => {
@@ -215,16 +218,20 @@ const FriendsList = ({ isDarkMode, onBack, isGlobalRanking = false, totalPlastic
                 <div key={friend.rank}>
                   <div className="flex items-center justify-between" style={{ paddingTop: '0.425rem', paddingBottom: '0.425rem' }}>
                     <div className="flex items-center">
-                      <div className="flex items-center justify-center mr-2" style={{ width: '20px', height: '20px' }}>
+                      <div className="flex items-center justify-center" style={{ 
+                        width: '28px',
+                        height: friend.rank === 1 ? '28px' : friend.rank === 2 ? '26px' : friend.rank <= 3 ? '24px' : '24px',
+                        marginRight: '8px'
+                      }}>
                         {friend.rank === 1 ? (
-                          <PlatinumIcon size={20} />
+                          <PlatinumIcon size={28} />
                         ) : friend.rank === 2 ? (
-                          <GoldIcon size={20} />
+                          <GoldIcon size={26} />
                         ) : friend.rank === 3 ? (
-                          <SilverIcon size={20} />
+                          <SilverIcon size={24} />
                         ) : (
                           <div 
-                            className={`w-[17.6px] h-[17.6px] rounded-full border flex items-center justify-center text-[11px] font-medium ${
+                            className={`w-[20px] h-[20px] rounded-full border flex items-center justify-center text-[11px] font-medium ${
                               isMe ? (isDarkMode ? 'text-white' : 'text-gray-900') : (isDarkMode ? 'text-gray-300' : 'text-gray-700')
                             }`}
                             style={{ 
@@ -235,9 +242,12 @@ const FriendsList = ({ isDarkMode, onBack, isGlobalRanking = false, totalPlastic
                           </div>
                         )}
                       </div>
-                      <span className={`text-sm ${isMe ? `font-medium ${textColor}` : isDarkMode ? 'text-gray-300' : 'text-gray-700'} relative`} style={{ top: '-1px' }}>{friend.name}</span>
+                      <div className="flex-1 flex flex-col items-start">
+                        <span className={`${friend.rank === 1 ? 'text-sm' : friend.rank === 2 ? 'text-[13px]' : 'text-xs'} ${isMe ? `font-medium ${textColor}` : isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>{friend.name}</span>
+                        {friend.id && <span className={`${friend.rank === 1 ? 'text-[10px]' : friend.rank === 2 ? 'text-[9px]' : 'text-[8px]'} ${isDarkMode ? 'text-gray-500' : 'text-gray-400'} ${friend.rank === 1 ? '-mt-[1.5px]' : friend.rank === 2 ? '-mt-[3px]' : '-mt-[1px]'}`}>@{friend.id}</span>}
+                      </div>
                     </div>
-                    <span className={`text-xs ${isMe ? `font-medium ${textColor}` : isDarkMode ? 'text-gray-300' : 'text-gray-700'} relative`} style={{ top: '-1px' }}>{friend.score}</span>
+                    <span className={`${friend.rank === 1 ? 'text-xs' : friend.rank === 2 ? 'text-[11px]' : 'text-[10px]'} ${isMe ? `font-medium ${textColor}` : isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>{friend.score}</span>
                   </div>
                   {index < filteredFriends.length - 1 && <div className={`border-b ${borderColor}`}></div>}
                 </div>

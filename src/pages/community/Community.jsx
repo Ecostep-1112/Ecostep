@@ -24,10 +24,10 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
   
   // 전체 랭킹 데이터 생성 (FriendsList와 동일한 로직)
   let globalRankingDataRaw = [
-    { name: 'PlasticZero', score: '45.2kg', grams: 45200 },
-    { name: 'EcoMaster', score: '42.1kg', grams: 42100 },
-    { name: 'GreenWarrior', score: '38.9kg', grams: 38900 },
-    { name: '나', score: myScore, grams: totalPlasticSaved },
+    { name: 'PlasticZero', id: 'plastic_zero', score: '45.2kg', grams: 45200 },
+    { name: 'EcoMaster', id: 'eco_master', score: '42.1kg', grams: 42100 },
+    { name: 'GreenWarrior', id: 'green_warrior', score: '38.9kg', grams: 38900 },
+    { name: '나', id: currentUserId, score: myScore, grams: totalPlasticSaved },
   ];
   
   // 더 많은 사용자 추가 (전체 200명)
@@ -35,6 +35,7 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
     const grams = Math.max(500, 50000 - i * 200);
     globalRankingDataRaw.push({
       name: `User${i}`,
+      id: `user_${i}`,
       score: getDisplayScore(grams),
       grams: grams
     });
@@ -101,6 +102,7 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
     if (friend) {
       friendsListRaw.push({
         name: friend.name,
+        id: friend.id,
         score: getDisplayScore(friend.plasticSaved),
         grams: friend.plasticSaved
       });
@@ -110,6 +112,7 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
   // 나 자신 추가
   friendsListRaw.push({
     name: '나',
+    id: currentUserId,
     score: myScore,
     grams: totalPlasticSaved
   });
@@ -117,10 +120,10 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
   // 친구가 없거나 적을 경우 기본 친구 데이터 추가
   if (friendsListRaw.length < 5) {
     const defaultFriends = [
-      { name: '일이', score: '27.0kg', grams: 27000 },
-      { name: '이이', score: '24.0kg', grams: 24000 },
-      { name: '삼이', score: '21.0kg', grams: 21000 },
-      { name: '사이', score: '18.0kg', grams: 18000 },
+      { name: '일이', id: 'eco_friend1', score: '27.0kg', grams: 27000 },
+      { name: '이이', id: 'eco_friend2', score: '24.0kg', grams: 24000 },
+      { name: '삼이', id: 'eco_friend3', score: '21.0kg', grams: 21000 },
+      { name: '사이', id: 'eco_friend4', score: '18.0kg', grams: 18000 },
     ];
     
     defaultFriends.forEach(friend => {
@@ -336,38 +339,44 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
           </div>
           <div>
             {friendsList.slice(0, 3).map((friend, index) => {
-              // 1등: 플래티넘, 2등: 골드, 3등: 실버
-              const displayRank = index + 1; // 화면에 표시할 순위 (1, 2, 3)
-              const rankColor = displayRank === 1 ? '#ec4899' : displayRank === 2 ? '#facc15' : '#06b6d4';
+              // 화면 표시 순위 (1, 2, 3)
+              const displayRank = index + 1;
               const isMe = friend.name === '나';
               
               return (
                 <div key={friend.rank}>
                   <div className="flex items-center justify-between" style={{ paddingTop: '0.425rem', paddingBottom: '0.425rem' }}>
                     <div className="flex items-center">
-                      <div className="flex items-center justify-center mr-2" style={{ width: '20px', height: '20px' }}>
+                      <div className="flex items-center justify-center" style={{ 
+                        width: '28px',
+                        height: displayRank === 1 ? '28px' : displayRank === 2 ? '26px' : '24px',
+                        marginRight: '8px'
+                      }}>
                         {displayRank === 1 ? (
-                          <PlatinumIcon size={20} />
+                          <PlatinumIcon size={28} />
                         ) : displayRank === 2 ? (
-                          <GoldIcon size={20} />
+                          <GoldIcon size={26} />
                         ) : displayRank === 3 ? (
-                          <SilverIcon size={20} />
+                          <SilverIcon size={24} />
                         ) : (
                           <div 
-                            className={`w-[17.6px] h-[17.6px] rounded-full border flex items-center justify-center text-[11px] font-medium ${
+                            className={`w-[20px] h-[20px] rounded-full border flex items-center justify-center text-[11px] font-medium ${
                               isMe ? (isDarkMode ? 'text-white' : 'text-gray-900') : (isDarkMode ? 'text-gray-300' : 'text-gray-700')
                             }`}
                             style={{ 
                               borderColor: isMe ? (isDarkMode ? '#9ca3af' : '#6b7280') : (isDarkMode ? '#4b5563' : '#d1d5db')
                             }}
                           >
-                            {displayRank}
+                            {friend.rank}
                           </div>
                         )}
                       </div>
-                      <span className={`text-sm ${isMe ? `font-medium ${textColor}` : isDarkMode ? 'text-gray-300' : 'text-gray-700'} relative`} style={{ top: '-1px' }}>{friend.name}</span>
+                      <div className="flex-1 flex flex-col items-start">
+                        <span className={`${displayRank === 1 ? 'text-sm' : displayRank === 2 ? 'text-[13px]' : 'text-xs'} ${isMe ? `font-medium ${textColor}` : isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>{friend.name}</span>
+                        {friend.id && <span className={`${displayRank === 1 ? 'text-[10px]' : displayRank === 2 ? 'text-[9px]' : 'text-[8px]'} ${isDarkMode ? 'text-gray-500' : 'text-gray-400'} ${displayRank === 1 ? '-mt-[1.5px]' : displayRank === 2 ? '-mt-[3px]' : '-mt-[1px]'}`}>@{friend.id}</span>}
+                      </div>
                     </div>
-                    <span className={`text-xs ${isMe ? `font-medium ${textColor}` : isDarkMode ? 'text-gray-300' : 'text-gray-700'} relative`} style={{ top: '-1px' }}>{friend.score}</span>
+                    <span className={`${displayRank === 1 ? 'text-xs' : displayRank === 2 ? 'text-[11px]' : 'text-[10px]'} ${isMe ? `font-medium ${textColor}` : isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>{friend.score}</span>
                   </div>
                   {index < 2 && <div className={`border-b ${borderColor}`}></div>}
                 </div>
@@ -378,17 +387,24 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
                 <div className={`border-t ${borderColor}`}></div>
                 <div className="flex items-center justify-between py-1.5">
                   <div className="flex items-center">
-                    <div className="flex items-center justify-center mr-2" style={{ width: '20px', height: '20px' }}>
+                    <div className="flex items-center justify-center" style={{ 
+                      width: '28px',
+                      height: '24px',
+                      marginRight: '8px'
+                    }}>
                       <div 
-                        className={`w-[17.6px] h-[17.6px] rounded-full border flex items-center justify-center text-[11px] font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
+                        className={`w-[20px] h-[20px] rounded-full border flex items-center justify-center text-[11px] font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
                         style={{ borderColor: isDarkMode ? '#9ca3af' : '#6b7280' }}
                       >
                         {myRank}
                       </div>
                     </div>
-                    <span className={`text-sm font-medium ${textColor} relative`} style={{ top: '-1px' }}>나</span>
+                    <div className="flex-1 flex flex-col items-start">
+                      <span className={`text-xs font-medium ${textColor}`}>나</span>
+                      {currentUserId && <span className={`text-[8px] ${isDarkMode ? 'text-gray-500' : 'text-gray-400'} -mt-[1px]`}>@{currentUserId}</span>}
+                    </div>
                   </div>
-                  <span className={`text-xs font-medium ${textColor} relative`} style={{ top: '-1px' }}>{myScore}</span>
+                  <span className={`text-[10px] font-medium ${textColor}`}>{myScore}</span>
                 </div>
               </>
             )}
@@ -410,35 +426,42 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
           <div>
             {globalRankingDataRaw.slice(0, 3).map((user, index) => {
               // 1등: 플래티넘, 2등: 골드, 3등: 실버
-              const displayRank = index + 1;
-              const rankColor = displayRank === 1 ? '#ec4899' : displayRank === 2 ? '#facc15' : '#06b6d4';
+              const actualRank = index + 1; // 실제 순위
+              const rankColor = actualRank === 1 ? '#ec4899' : actualRank === 2 ? '#facc15' : '#06b6d4';
               const isMe = user.name === '나';
               
               return (
-                <div key={user.rank}>
+                <div key={index}>
                   <div className="flex items-center justify-between" style={{ paddingTop: '0.425rem', paddingBottom: '0.425rem' }}>
                     <div className="flex items-center">
-                      <div className="flex items-center justify-center mr-2" style={{ width: '20px', height: '20px' }}>
-                        {displayRank === 1 ? (
-                          <PlatinumIcon size={20} />
-                        ) : displayRank === 2 ? (
-                          <GoldIcon size={20} />
-                        ) : displayRank === 3 ? (
-                          <SilverIcon size={20} />
+                      <div className="flex items-center justify-center" style={{ 
+                        width: '28px',
+                        height: actualRank === 1 ? '28px' : actualRank === 2 ? '26px' : '24px',
+                        marginRight: '8px'
+                      }}>
+                        {actualRank === 1 ? (
+                          <PlatinumIcon size={28} />
+                        ) : actualRank === 2 ? (
+                          <GoldIcon size={26} />
+                        ) : actualRank === 3 ? (
+                          <SilverIcon size={24} />
                         ) : (
                           <div 
-                            className={`w-[17px] h-[17px] rounded-full border flex items-center justify-center text-[10px] font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}
+                            className={`w-[20px] h-[20px] rounded-full border flex items-center justify-center text-[11px] font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}
                             style={{ 
                               borderColor: isDarkMode ? '#4b5563' : '#d1d5db'
                             }}
                           >
-                            {user.rank}
+                            {actualRank}
                           </div>
                         )}
                       </div>
-                      <span className={`text-sm ${isMe ? `font-medium ${textColor}` : isDarkMode ? 'text-gray-300' : 'text-gray-700'} relative`} style={{ top: '-1px' }}>{user.name}</span>
+                      <div className="flex-1 flex flex-col items-start">
+                        <span className={`${actualRank === 1 ? 'text-sm' : actualRank === 2 ? 'text-[13px]' : 'text-xs'} ${isMe ? `font-medium ${textColor}` : isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>{user.name}</span>
+                        {user.id && <span className={`${actualRank === 1 ? 'text-[10px]' : actualRank === 2 ? 'text-[9px]' : 'text-[8px]'} ${isDarkMode ? 'text-gray-500' : 'text-gray-400'} ${actualRank === 1 ? '-mt-[1.5px]' : actualRank === 2 ? '-mt-[3px]' : '-mt-[1px]'}`}>@{user.id}</span>}
+                      </div>
                     </div>
-                    <span className={`text-xs ${isMe ? `font-medium ${textColor}` : isDarkMode ? 'text-gray-300' : 'text-gray-700'} relative`} style={{ top: '-1px' }}>{user.score}</span>
+                    <span className={`${actualRank === 1 ? 'text-xs' : actualRank === 2 ? 'text-[11px]' : 'text-[10px]'} ${isMe ? `font-medium ${textColor}` : isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>{user.score}</span>
                   </div>
                   {index < 2 && <div className={`border-b ${borderColor}`}></div>}
                 </div>
@@ -450,17 +473,24 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
                 <div className={`border-t ${borderColor}`}></div>
                 <div className="flex items-center justify-between py-1.5">
                   <div className="flex items-center">
-                    <div className="flex items-center justify-center mr-2" style={{ width: '20px', height: '20px' }}>
+                    <div className="flex items-center justify-center" style={{ 
+                      width: '28px',
+                      height: '24px',
+                      marginRight: '8px'
+                    }}>
                       <div 
-                        className={`w-[17.6px] h-[17.6px] rounded-full border flex items-center justify-center text-[11px] font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
+                        className={`w-[20px] h-[20px] rounded-full border flex items-center justify-center text-[11px] font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
                         style={{ borderColor: isDarkMode ? '#9ca3af' : '#6b7280' }}
                       >
                         {myGlobalRank <= 99 ? myGlobalRank : '···'}
                       </div>
                     </div>
-                    <span className={`text-sm font-medium ${textColor} relative`} style={{ top: '-1px' }}>나</span>
+                    <div className="flex-1 flex flex-col items-start">
+                      <span className={`text-xs font-medium ${textColor}`}>나</span>
+                      {currentUserId && <span className={`text-[8px] ${isDarkMode ? 'text-gray-500' : 'text-gray-400'} -mt-[1px]`}>@{currentUserId}</span>}
+                    </div>
                   </div>
-                  <span className={`text-xs font-medium ${textColor} relative`} style={{ top: '-1px' }}>
+                  <span className={`text-[10px] font-medium ${textColor}`}>
                     상위 {topPercentage}%
                   </span>
                 </div>

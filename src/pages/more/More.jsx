@@ -396,7 +396,7 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
           <div className="mt-2 pt-2">
             <div className={`h-[1px] mb-2 bg-gradient-to-r from-transparent ${isDarkMode ? 'via-gray-700' : 'via-gray-200'} to-transparent`}></div>
             <p className={`text-xs ${isDarkMode ? 'text-gray-500' : 'text-gray-400'} text-center`}>
-              매일 새로운 환경 팁을 확인하세요 🌱
+              매일 새로운 환경 팁을 확인하세요
             </p>
           </div>
         </div>

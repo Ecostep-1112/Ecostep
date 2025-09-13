@@ -562,7 +562,7 @@ const EcostepApp = () => {
               }}>
                 <IoNotificationsOutline className={`w-[18px] h-[18px] ${
                   notificationsList.some(n => !n.read) 
-                    ? 'text-cyan-500' 
+                    ? 'text-purple-500' 
                     : isDarkMode ? 'text-white' : 'text-gray-700'
                 }`} />
               </button>

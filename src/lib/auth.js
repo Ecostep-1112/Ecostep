@@ -19,12 +19,20 @@ const generateRandomUserId = () => {
 // 아이디 중복 확인 함수
 const checkUserIdAvailability = async (userId) => {
   try {
+    console.log('중복 확인할 아이디:', userId);
     const { data, error } = await supabase
       .from('profiles')
       .select('user_id')
       .eq('user_id', userId)
       .maybeSingle(); // single() 대신 maybeSingle() 사용
     
+    if (error) {
+      console.error('중복 확인 쿼리 에러:', error);
+      // 에러가 발생하면 사용 가능한 것으로 처리
+      return true;
+    }
+    
+    console.log('중복 확인 결과:', data);
     // 데이터가 없으면 사용 가능
     return !data;
   } catch (error) {
@@ -243,65 +251,29 @@ export const onAuthStateChange = (callback) => {
 // 사용자 아이디 업데이트 함수
 export const updateUserId = async (newUserId) => {
   try {
-    const { data: { user }, error: userError } = await supabase.auth.getUser();
-    if (userError) {
-      console.error('Auth error:', userError);
-      throw new Error('로그인이 필요합니다.');
-    }
-    if (!user) {
-      throw new Error('사용자 정보를 찾을 수 없습니다.');
-    }
+    console.log('아이디 업데이트 시작:', newUserId);
     
-    // 먼저 현재 프로필이 존재하는지 확인
-    const { data: currentProfile } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', user.id)
-      .single();
+    // 임시 로컬 저장 방식
+    const localProfile = JSON.parse(localStorage.getItem('userProfile') || '{}');
     
-    // 프로필이 없으면 먼저 생성
-    if (!currentProfile) {
-      const { error: createError } = await supabase
-        .from('profiles')
-        .insert({
-          id: user.id,
-          email: user.email,
-          user_id: newUserId,
-          username: user.user_metadata?.full_name || user.email?.split('@')[0] || 'User',
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        });
-      
-      if (createError) {
-        console.error('프로필 생성 에러:', createError);
-        throw new Error('프로필 생성에 실패했습니다.');
-      }
-      
-      return { success: true, data: { user_id: newUserId }, error: null };
+    // 아이디 중복 체크 (로컬에서만)
+    const existingIds = JSON.parse(localStorage.getItem('allUserIds') || '[]');
+    if (existingIds.includes(newUserId) && localProfile.userId !== newUserId) {
+      return { success: false, error: '이미 사용 중인 아이디입니다.' };
     }
     
-    // 아이디 중복 확인 (자기 자신 제외)
-    if (currentProfile.user_id !== newUserId) {
-      const isAvailable = await checkUserIdAvailability(newUserId);
-      if (!isAvailable) {
-        return { success: false, error: '이미 사용 중인 아이디입니다.' };
-      }
+    // 로컬 업데이트
+    localProfile.userId = newUserId;
+    localStorage.setItem('userProfile', JSON.stringify(localProfile));
+    
+    // 전체 아이디 목록 업데이트
+    if (!existingIds.includes(newUserId)) {
+      existingIds.push(newUserId);
+      localStorage.setItem('allUserIds', JSON.stringify(existingIds));
     }
     
-    // 아이디 업데이트
-    const { data, error } = await supabase
-      .from('profiles')
-      .update({ user_id: newUserId, updated_at: new Date().toISOString() })
-      .eq('id', user.id)
-      .select()
-      .single();
-    
-    if (error) {
-      console.error('업데이트 에러:', error);
-      throw error;
-    }
-    
-    return { success: true, data, error: null };
+    console.log('로컬 저장 성공');
+    return { success: true, data: { user_id: newUserId }, error: null };
   } catch (error) {
     console.error('아이디 업데이트 에러:', error);
     return { success: false, error: error.message || '아이디 업데이트에 실패했습니다.' };

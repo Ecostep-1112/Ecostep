@@ -252,68 +252,88 @@ const FishIcons = {
   ),
 
   // 8위: 람 시클리드 - 날씬하고 우아한 몸에 화려한 지느러미
-  람시클리드: ({ size = 45, color = '#4169E1' }) => (
+  람시클리드: ({ size = 45, color = '#4169E1', isMoving = false }) => (
     <svg width={size * 1.2} height={size * 1} viewBox="0 0 108 90">
       <g>
-        {/* 날씬하고 우아한 몸통 */}
-        <ellipse cx="54" cy="45" rx="20" ry="14" fill={color} />
-        <ellipse cx="54" cy="45" rx="18" ry="12" fill="#6495ED" />
-        <ellipse cx="54" cy="45" rx="16" ry="10" fill="#87CEEB" opacity="0.8" />
-        
-        {/* 노란색 배 부분 - 람시클리드의 매력 포인트 */}
-        <ellipse cx="54" cy="50" rx="14" ry="8" fill="#FFD700" />
-        <ellipse cx="54" cy="51" rx="11" ry="6" fill="#FFA500" opacity="0.9" />
-        <ellipse cx="54" cy="52" rx="8" ry="4" fill="#FFFF00" opacity="0.7" />
-        
-        {/* 화려하고 우아한 등지느러미 - 뒤로 갈수록 높아짐 */}
-        <path d="M 30 38 Q 35 18 40 28 Q 45 10 50 22 Q 54 8 58 22 Q 63 10 68 28 Q 73 18 78 38" 
-              fill="#1E90FF" />
-        <path d="M 32 38 Q 37 20 42 30 Q 47 12 52 24 Q 56 12 61 30 Q 66 20 71 38" 
-              fill="#00BFFF" opacity="0.8" />
-        <path d="M 34 38 Q 39 22 44 32 Q 49 14 54 26 Q 59 14 64 32 Q 69 22 74 38" 
-              fill="#87CEEB" opacity="0.5" />
-        
-        {/* 등지느러미 점 무늬 - 귀여움 추가 */}
-        <circle cx="42" cy="25" r="1.5" fill="#00FFFF" />
-        <circle cx="50" cy="20" r="1.8" fill="#00FFFF" />
-        <circle cx="58" cy="18" r="2" fill="#00FFFF" />
-        <circle cx="66" cy="25" r="1.5" fill="#00FFFF" />
-        
-        {/* 우아한 뒷지느러미 */}
-        <path d="M 30 52 Q 35 68 40 58 Q 45 72 50 62 Q 54 74 58 62 Q 63 72 68 58 Q 73 68 78 52" 
-              fill="#1E90FF" />
-        <path d="M 32 52 Q 37 66 42 56 Q 47 70 52 60 Q 56 70 61 56 Q 66 66 71 52" 
-              fill="#00BFFF" opacity="0.8" />
-        
-        {/* 예쁜 배지느러미 */}
-        <path d="M 42 52 L 38 60 L 43 58 Z" fill="#4169E1" opacity="0.8" />
-        <path d="M 66 52 L 62 60 L 67 58 Z" fill="#4169E1" opacity="0.8" />
-        
-        {/* 뿠족하게 늘어난 꼬리지느러미 */}
-        <path d="M 74 45 L 88 35 L 86 45 L 88 55 L 74 45" fill="#1E90FF" />
-        <path d="M 72 45 L 84 37 L 82 45 L 84 53 L 72 45" fill="#6495ED" opacity="0.8" />
-        <path d="M 85 40 L 92 36 L 90 40" stroke="#00BFFF" strokeWidth="1" fill="none" />
-        <path d="M 85 50 L 92 54 L 90 50" stroke="#00BFFF" strokeWidth="1" fill="none" />
-        
-        {/* 가슴지느러미 */}
-        <ellipse cx="36" cy="47" rx="6" ry="3" fill="#6495ED" opacity="0.8" transform="rotate(-15 36 47)" />
-        
-        {/* 크고 귀여운 눈 */}
-        <circle cx="36" cy="42" r="4" fill="#FF1493" />
-        <circle cx="36" cy="42" r="3.5" fill="black" />
-        <circle cx="36.5" cy="41.5" r="1.5" fill="white" />
-        <circle cx="35.5" cy="43" r="0.5" fill="#666" opacity="0.5" />
-        
-        {/* 검은 세로줄 */}
-        <rect x="52" y="36" width="2.5" height="18" fill="black" opacity="0.6" />
-        
-        {/* 빨간 점 */}
-        <circle cx="46" cy="45" r="2" fill="#FF0000" opacity="0.8" />
-        
-        {/* 파란색 반짝임 */}
-        <circle cx="42" cy="38" r="1.5" fill="#00FFFF" opacity="0.5" />
-        <circle cx="62" cy="40" r="1.5" fill="#00FFFF" opacity="0.5" />
-        <circle cx="58" cy="45" r="1.2" fill="#87CEEB" opacity="0.4" />
+        {/* 몸통 그룹 - 고정 */}
+        <g className="ramcichlid-body">
+          {/* 날씬하고 우아한 몸통 */}
+          <ellipse cx="54" cy="45" rx="20" ry="14" fill={color} />
+          <ellipse cx="54" cy="45" rx="18" ry="12" fill="#6495ED" />
+          <ellipse cx="54" cy="45" rx="16" ry="10" fill="#87CEEB" opacity="0.8" />
+
+          {/* 노란색 배 부분 - 람시클리드의 매력 포인트 */}
+          <ellipse cx="54" cy="50" rx="14" ry="8" fill="#FFD700" />
+          <ellipse cx="54" cy="51" rx="11" ry="6" fill="#FFA500" opacity="0.9" />
+          <ellipse cx="54" cy="52" rx="8" ry="4" fill="#FFFF00" opacity="0.7" />
+
+          {/* 검은 세로줄 */}
+          <rect x="52" y="36" width="2.5" height="18" fill="black" opacity="0.6" />
+
+          {/* 빨간 점 */}
+          <circle cx="46" cy="45" r="2" fill="#FF0000" opacity="0.8" />
+
+          {/* 파란색 반짝임 */}
+          <circle cx="42" cy="38" r="1.5" fill="#00FFFF" opacity="0.5" />
+          <circle cx="62" cy="40" r="1.5" fill="#00FFFF" opacity="0.5" />
+          <circle cx="58" cy="45" r="1.2" fill="#87CEEB" opacity="0.4" />
+        </g>
+
+        {/* 등지느러미 그룹 - 상하 움직임 */}
+        <g className={`ramcichlid-dorsal-fin ${isMoving ? 'animate-ramcichlid-dorsal-fast' : 'animate-ramcichlid-dorsal'}`} style={{ transformOrigin: '54px 28px' }}>
+          {/* 화려하고 우아한 등지느러미 - 뒤로 갈수록 높아짐 */}
+          <path d="M 30 38 Q 35 18 40 28 Q 45 10 50 22 Q 54 8 58 22 Q 63 10 68 28 Q 73 18 78 38"
+                fill="#1E90FF" />
+          <path d="M 32 38 Q 37 20 42 30 Q 47 12 52 24 Q 56 12 61 30 Q 66 20 71 38"
+                fill="#00BFFF" opacity="0.8" />
+          <path d="M 34 38 Q 39 22 44 32 Q 49 14 54 26 Q 59 14 64 32 Q 69 22 74 38"
+                fill="#87CEEB" opacity="0.5" />
+
+          {/* 등지느러미 점 무늬 - 귀여움 추가 */}
+          <circle cx="42" cy="25" r="1.5" fill="#00FFFF" />
+          <circle cx="50" cy="20" r="1.8" fill="#00FFFF" />
+          <circle cx="58" cy="18" r="2" fill="#00FFFF" />
+          <circle cx="66" cy="25" r="1.5" fill="#00FFFF" />
+        </g>
+
+        {/* 뒷지느러미 그룹 - 상하 움직임 */}
+        <g className={`ramcichlid-anal-fin ${isMoving ? 'animate-ramcichlid-anal-fast' : 'animate-ramcichlid-anal'}`} style={{ transformOrigin: '54px 62px' }}>
+          {/* 우아한 뒷지느러미 */}
+          <path d="M 30 52 Q 35 68 40 58 Q 45 72 50 62 Q 54 74 58 62 Q 63 72 68 58 Q 73 68 78 52"
+                fill="#1E90FF" />
+          <path d="M 32 52 Q 37 66 42 56 Q 47 70 52 60 Q 56 70 61 56 Q 66 66 71 52"
+                fill="#00BFFF" opacity="0.8" />
+        </g>
+
+        {/* 배지느러미 그룹 - 살짝 흔들림 */}
+        <g className={`ramcichlid-ventral-fins ${isMoving ? 'animate-ramcichlid-ventral-fast' : 'animate-ramcichlid-ventral'}`} style={{ transformOrigin: '54px 56px' }}>
+          {/* 예쁜 배지느러미 */}
+          <path d="M 42 52 L 38 60 L 43 58 Z" fill="#4169E1" opacity="0.8" />
+          <path d="M 66 52 L 62 60 L 67 58 Z" fill="#4169E1" opacity="0.8" />
+        </g>
+
+        {/* 가슴지느러미 그룹 - 펄럭임 */}
+        <g className={`ramcichlid-pectoral-fin ${isMoving ? 'animate-ramcichlid-pectoral-fast' : 'animate-ramcichlid-pectoral'}`} style={{ transformOrigin: '36px 47px' }}>
+          <ellipse cx="36" cy="47" rx="6" ry="3" fill="#6495ED" opacity="0.8" transform="rotate(-15 36 47)" />
+        </g>
+
+        {/* 꼬리지느러미 그룹 - 좌우 흔들림 */}
+        <g className={`ramcichlid-tail ${isMoving ? 'animate-ramcichlid-tail-fast' : 'animate-ramcichlid-tail'}`} style={{ transformOrigin: '74px 45px' }}>
+          {/* 뿠족하게 늘어난 꼬리지느러미 */}
+          <path d="M 74 45 L 88 35 L 86 45 L 88 55 L 74 45" fill="#1E90FF" />
+          <path d="M 72 45 L 84 37 L 82 45 L 84 53 L 72 45" fill="#6495ED" opacity="0.8" />
+          <path d="M 85 40 L 92 36 L 90 40" stroke="#00BFFF" strokeWidth="1" fill="none" />
+          <path d="M 85 50 L 92 54 L 90 50" stroke="#00BFFF" strokeWidth="1" fill="none" />
+        </g>
+
+        {/* 눈 그룹 */}
+        <g className="ramcichlid-eyes">
+          {/* 크고 귀여운 눈 */}
+          <circle cx="36" cy="42" r="4" fill="#FF1493" />
+          <circle cx="36" cy="42" r="3.5" fill="black" />
+          <circle cx="36.5" cy="41.5" r="1.5" fill="white" />
+          <circle cx="35.5" cy="43" r="0.5" fill="#666" opacity="0.5" />
+        </g>
       </g>
     </svg>
   ),

@@ -588,9 +588,207 @@
 }
 
 .fade-divider-dark {
-  background: linear-gradient(90deg, 
-    rgba(55, 65, 81, 1) 0%, 
-    rgba(55, 65, 81, 0.8) 70%, 
+  background: linear-gradient(90deg,
+    rgba(55, 65, 81, 1) 0%,
+    rgba(55, 65, 81, 0.8) 70%,
     rgba(55, 65, 81, 0) 100%);
   height: 0.5px;
+}
+
+/* 코리도라스 애니메이션 */
+/* 꼬리 좌우 흔들림 */
+@keyframes corydoras-tail {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-8deg);
+  }
+  75% {
+    transform: rotate(8deg);
+  }
+}
+
+@keyframes corydoras-tail-fast {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-12deg);
+  }
+  75% {
+    transform: rotate(12deg);
+  }
+}
+
+/* 등지느러미 상하 움직임 */
+@keyframes corydoras-fin {
+  0%, 100% {
+    transform: scaleY(1) translateY(0);
+  }
+  50% {
+    transform: scaleY(0.9) translateY(2px);
+  }
+}
+
+@keyframes corydoras-fin-fast {
+  0%, 100% {
+    transform: scaleY(1) translateY(0);
+  }
+  50% {
+    transform: scaleY(0.85) translateY(3px);
+  }
+}
+
+/* 수염 개별 움직임 - 부드러운 물결 효과 */
+@keyframes whisker-1 {
+  0%, 100% {
+    transform: rotate(0deg) scaleX(1) skewY(0deg);
+  }
+  25% {
+    transform: rotate(-1deg) scaleX(0.98) skewY(-1deg);
+  }
+  50% {
+    transform: rotate(-1.5deg) scaleX(0.97) skewY(-2deg);
+  }
+  75% {
+    transform: rotate(-0.5deg) scaleX(0.99) skewY(-0.5deg);
+  }
+}
+
+@keyframes whisker-1-fast {
+  0%, 100% {
+    transform: rotate(0deg) scaleX(1) skewY(0deg);
+  }
+  25% {
+    transform: rotate(-2deg) scaleX(0.96) skewY(-2deg);
+  }
+  50% {
+    transform: rotate(-3deg) scaleX(0.95) skewY(-3deg);
+  }
+  75% {
+    transform: rotate(-1deg) scaleX(0.98) skewY(-1deg);
+  }
+}
+
+@keyframes whisker-2 {
+  0%, 100% {
+    transform: rotate(0deg) scaleX(1) skewY(0deg);
+  }
+  20% {
+    transform: rotate(0.5deg) scaleX(0.99) skewY(0.5deg);
+  }
+  40% {
+    transform: rotate(1deg) scaleX(0.98) skewY(1deg);
+  }
+  60% {
+    transform: rotate(-1deg) scaleX(0.98) skewY(-1deg);
+  }
+  80% {
+    transform: rotate(-0.5deg) scaleX(0.99) skewY(-0.5deg);
+  }
+}
+
+@keyframes whisker-2-fast {
+  0%, 100% {
+    transform: rotate(0deg) scaleX(1) skewY(0deg);
+  }
+  20% {
+    transform: rotate(1deg) scaleX(0.97) skewY(1deg);
+  }
+  40% {
+    transform: rotate(2deg) scaleX(0.95) skewY(2deg);
+  }
+  60% {
+    transform: rotate(-2deg) scaleX(0.95) skewY(-2deg);
+  }
+  80% {
+    transform: rotate(-1deg) scaleX(0.97) skewY(-1deg);
+  }
+}
+
+@keyframes whisker-3 {
+  0%, 100% {
+    transform: rotate(0deg) scaleX(1) skewY(0deg);
+  }
+  25% {
+    transform: rotate(1deg) scaleX(0.98) skewY(1deg);
+  }
+  50% {
+    transform: rotate(1.5deg) scaleX(0.97) skewY(2deg);
+  }
+  75% {
+    transform: rotate(0.5deg) scaleX(0.99) skewY(0.5deg);
+  }
+}
+
+@keyframes whisker-3-fast {
+  0%, 100% {
+    transform: rotate(0deg) scaleX(1) skewY(0deg);
+  }
+  25% {
+    transform: rotate(2deg) scaleX(0.96) skewY(2deg);
+  }
+  50% {
+    transform: rotate(3deg) scaleX(0.95) skewY(3deg);
+  }
+  75% {
+    transform: rotate(1deg) scaleX(0.98) skewY(1deg);
+  }
+}
+
+/* 눈 깜빡임 - 눈꺼풀 효과 */
+@keyframes corydoras-blink {
+  0%, 90%, 100% {
+    transform: translateY(-10px);
+  }
+  95% {
+    transform: translateY(0);
+  }
+}
+
+/* 애니메이션 클래스 적용 */
+.animate-corydoras-tail {
+  animation: corydoras-tail 0.8s ease-in-out infinite;
+}
+
+.animate-corydoras-tail-fast {
+  animation: corydoras-tail-fast 0.4s ease-in-out infinite;
+}
+
+.animate-corydoras-fin {
+  animation: corydoras-fin 1.2s ease-in-out infinite;
+}
+
+.animate-corydoras-fin-fast {
+  animation: corydoras-fin-fast 0.6s ease-in-out infinite;
+}
+
+/* 수염 애니메이션 클래스 - 부드러운 타이밍 */
+.animate-whisker-1 {
+  animation: whisker-1 0.8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.animate-whisker-1-fast {
+  animation: whisker-1-fast 0.4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.animate-whisker-2 {
+  animation: whisker-2 1.0s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.animate-whisker-2-fast {
+  animation: whisker-2-fast 0.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.animate-whisker-3 {
+  animation: whisker-3 0.9s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.animate-whisker-3-fast {
+  animation: whisker-3-fast 0.45s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.animate-corydoras-blink {
+  animation: corydoras-blink 4s ease-in-out infinite;
 }

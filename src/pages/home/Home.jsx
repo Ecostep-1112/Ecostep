@@ -158,6 +158,7 @@ const Home = ({
           <div className="absolute inset-0 pointer-events-none z-[4]">
             {fishPositions.map((fish, i) => {
               const FishIcon = FishIcons[fish.name.replace(' ', '')];
+              const isMoving = fish.speed > 0;
               return FishIcon ? (
                 <div
                   key={i}
@@ -165,10 +166,10 @@ const Home = ({
                   style={{
                     left: `${fish.x}%`,
                     top: `${fish.y}%`,
-                    transform: `translateX(-50%) translateY(-50%) scaleX(${fish.direction})`,
+                    transform: `translateX(-50%) translateY(-50%) scaleX(${-fish.direction})`,
                   }}
                 >
-                  <FishIcon size={35} />
+                  <FishIcon size={35} isMoving={isMoving} />
                 </div>
               ) : null;
             })}

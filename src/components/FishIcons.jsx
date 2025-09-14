@@ -3,45 +3,60 @@ import React from 'react';
 // 물고기 SVG 아이콘 컴포넌트
 const FishIcons = {
   // 12위: 코리도라스 - 귀여운 바닥 메기
-  코리도라스: ({ size = 40, color = '#8B7355' }) => (
+  코리도라스: ({ size = 40, color = '#8B7355', isMoving = false }) => (
     <svg width={size * 1.1} height={size * 0.8} viewBox="0 0 88 64">
       <g>
-        {/* 둥글둥글한 귀여운 몸통 */}
-        <ellipse cx="44" cy="35" rx="25" ry="14" fill={color} />
-        <ellipse cx="44" cy="35" rx="23" ry="12" fill="#A0826D" />
-        <ellipse cx="44" cy="37" rx="20" ry="10" fill="#C8B88B" opacity="0.8" />
-        
-        {/* 귀여운 배 부분 */}
-        <ellipse cx="44" cy="40" rx="18" ry="8" fill="#D2B48C" />
-        
-        {/* 간단한 귀여운 수염 3개 */}
-        <path d="M 22 36 Q 16 35 10 34" stroke="#5C4033" strokeWidth="2.5" fill="none" strokeLinecap="round" />
-        <path d="M 22 38 Q 16 38 10 38" stroke="#5C4033" strokeWidth="3" fill="none" strokeLinecap="round" />
-        <path d="M 22 40 Q 16 41 10 42" stroke="#5C4033" strokeWidth="2.5" fill="none" strokeLinecap="round" />
-        
-        {/* 단순한 삼각형 등지느러미 1개 */}
-        <path d="M 38 25 L 44 18 L 50 25" fill={color} />
-        <path d="M 40 25 L 44 20 L 48 25" fill="#6B5D54" opacity="0.7" />
-        
-        {/* 작고 귀여운 부채꼴 꼬리지느러미 */}
-        <path d="M 68 35 Q 78 28 80 35 Q 78 42 68 35" fill={color} />
-        <path d="M 66 35 Q 74 30 76 35 Q 74 40 66 35" fill="#A0826D" opacity="0.8" />
-        
-        {/* 크고 귀여운 눈 */}
-        <circle cx="28" cy="32" r="4.5" fill="black" />
-        <circle cx="28.5" cy="31.5" r="2" fill="white" />
-        <circle cx="27.5" cy="33.5" r="0.8" fill="#666" opacity="0.5" />
-        
-        {/* 귀여운 입 */}
-        <ellipse cx="22" cy="37" rx="2" ry="1.5" fill="#6B5D54" opacity="0.7" />
-        
-        {/* 단순한 점박이 무늬 3개 */}
-        <circle cx="44" cy="33" r="3" fill="#6B5D54" opacity="0.5" />
-        <circle cx="52" cy="35" r="2.5" fill="#6B5D54" opacity="0.5" />
-        <circle cx="36" cy="35" r="2.5" fill="#6B5D54" opacity="0.5" />
-        
-        {/* 부드러운 하이라이트 */}
-        <ellipse cx="44" cy="30" rx="15" ry="8" fill="#FFFFFF" opacity="0.1" />
+        {/* 몸통 그룹 - 고정 */}
+        <g className="corydoras-body">
+          {/* 둥글둥글한 귀여운 몸통 */}
+          <ellipse cx="44" cy="35" rx="25" ry="14" fill={color} />
+          <ellipse cx="44" cy="35" rx="23" ry="12" fill="#A0826D" />
+          <ellipse cx="44" cy="37" rx="20" ry="10" fill="#C8B88B" opacity="0.8" />
+
+          {/* 귀여운 배 부분 */}
+          <ellipse cx="44" cy="40" rx="18" ry="8" fill="#D2B48C" />
+
+          {/* 귀여운 입 */}
+          <ellipse cx="22" cy="37" rx="2" ry="1.5" fill="#6B5D54" opacity="0.7" />
+
+          {/* 단순한 점박이 무늬 3개 */}
+          <circle cx="44" cy="33" r="3" fill="#6B5D54" opacity="0.5" />
+          <circle cx="52" cy="35" r="2.5" fill="#6B5D54" opacity="0.5" />
+          <circle cx="36" cy="35" r="2.5" fill="#6B5D54" opacity="0.5" />
+
+          {/* 부드러운 하이라이트 */}
+          <ellipse cx="44" cy="30" rx="15" ry="8" fill="#FFFFFF" opacity="0.1" />
+        </g>
+
+        {/* 수염 - 개별 움직임 */}
+        <g className={`corydoras-whisker-1 ${isMoving ? 'animate-whisker-1-fast' : 'animate-whisker-1'}`} style={{ transformOrigin: '22px 33px' }}>
+          <path d="M 22 33 Q 14 32 6 31" stroke="#5C4033" strokeWidth="1.5" fill="none" strokeLinecap="round" />
+        </g>
+        <g className={`corydoras-whisker-2 ${isMoving ? 'animate-whisker-2-fast' : 'animate-whisker-2'}`} style={{ transformOrigin: '22px 35px' }}>
+          <path d="M 22 35 Q 14 35 6 35" stroke="#5C4033" strokeWidth="2" fill="none" strokeLinecap="round" />
+        </g>
+        <g className={`corydoras-whisker-3 ${isMoving ? 'animate-whisker-3-fast' : 'animate-whisker-3'}`} style={{ transformOrigin: '22px 37px' }}>
+          <path d="M 22 37 Q 14 38 6 39" stroke="#5C4033" strokeWidth="1.5" fill="none" strokeLinecap="round" />
+        </g>
+
+        {/* 등지느러미 그룹 - 상하 움직임 */}
+        <g className={`corydoras-dorsal-fin ${isMoving ? 'animate-corydoras-fin-fast' : 'animate-corydoras-fin'}`} style={{ transformOrigin: '44px 25px' }}>
+          <path d="M 38 25 L 44 18 L 50 25" fill={color} />
+          <path d="M 40 25 L 44 20 L 48 25" fill="#6B5D54" opacity="0.7" />
+        </g>
+
+        {/* 꼬리지느러미 그룹 - 좌우 흔들림 */}
+        <g className={`corydoras-tail ${isMoving ? 'animate-corydoras-tail-fast' : 'animate-corydoras-tail'}`} style={{ transformOrigin: '68px 35px' }}>
+          <path d="M 68 35 Q 85 27 90 35 Q 85 43 68 35" fill={color} />
+          <path d="M 66 35 Q 82 29 86 35 Q 82 41 66 35" fill="#A0826D" opacity="0.8" />
+        </g>
+
+        {/* 눈 그룹 */}
+        <g className="corydoras-eyes">
+          <circle cx="28" cy="32" r="4.5" fill="black" />
+          <circle cx="28.5" cy="31.5" r="2" fill="white" />
+          <circle cx="27.5" cy="33.5" r="0.8" fill="#666" opacity="0.5" />
+        </g>
       </g>
     </svg>
   ),

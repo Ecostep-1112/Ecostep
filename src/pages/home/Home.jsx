@@ -81,15 +81,44 @@ const Home = ({
     }
   }, [isRandomDecorations, selectedDecorations, purchasedDecorations, decorationsData]);
   
-  // 물고기 위치 업데이트 (정적 위치)
+  // 물고기 위치 초기화 및 애니메이션
   useEffect(() => {
-    const positions = displayFish.map((fishName, i) => ({
+    // 초기 위치 설정
+    const initialPositions = displayFish.map((fishName, i) => ({
       name: fishName,
       x: 25 + i * 25,  // 균등하게 배치
       y: fishName === '코리도라스' ? 65 : 45,  // 코리도라스는 바닥, 나머지는 중간
-      direction: 1
+      direction: Math.random() > 0.5 ? 1 : -1,  // 랜덤 방향
+      speed: fishName === '코리도라스' ? 0.3 : 0  // 코리도라스만 움직임
     }));
-    setFishPositions(positions);
+    setFishPositions(initialPositions);
+
+    // 코리도라스 애니메이션
+    const interval = setInterval(() => {
+      setFishPositions(prevPositions => {
+        return prevPositions.map(fish => {
+          if (fish.name === '코리도라스') {
+            let newX = fish.x + (fish.speed * fish.direction);
+            let newDirection = fish.direction;
+
+            // 벽에 닿으면 방향 전환
+            if (newX <= 3 || newX >= 97) {
+              newDirection = -newDirection;
+              newX = newX <= 3 ? 3 : 97;
+            }
+
+            return {
+              ...fish,
+              x: newX,
+              direction: newDirection
+            };
+          }
+          return fish;
+        });
+      });
+    }, 50);  // 50ms마다 업데이트
+
+    return () => clearInterval(interval);
   }, [displayFish]);
 
   return (
@@ -125,18 +154,18 @@ const Home = ({
           {/* 기포 시스템 */}
           <BubbleSystem fishPositions={fishPositions} />
             
-          {/* 물고기 표시 (정적) */}
+          {/* 물고기 표시 (애니메이션) */}
           <div className="absolute inset-0 pointer-events-none z-[4]">
             {fishPositions.map((fish, i) => {
               const FishIcon = FishIcons[fish.name.replace(' ', '')];
               return FishIcon ? (
-                <div 
-                  key={i} 
-                  className="absolute"
+                <div
+                  key={i}
+                  className="absolute transition-all duration-50 ease-linear"
                   style={{
                     left: `${fish.x}%`,
                     top: `${fish.y}%`,
-                    transform: `translateX(-50%) translateY(-50%)`,
+                    transform: `translateX(-50%) translateY(-50%) scaleX(${fish.direction})`,
                   }}
                 >
                   <FishIcon size={35} />

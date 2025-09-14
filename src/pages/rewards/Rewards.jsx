@@ -2,6 +2,7 @@ import React from 'react';
 import { FiLock } from 'react-icons/fi';
 import FishIcons from '../../components/FishIcons';
 import DecorationIcons from '../../components/DecorationIcons';
+import { memo } from 'react';
 import SilverTank from '../../components/tanks/SilverTank';
 import GoldTank from '../../components/tanks/GoldTank';
 import PlatinumTank from '../../components/tanks/PlatinumTank';
@@ -142,29 +143,31 @@ const Rewards = ({
           {/* 랭크 표시 직사각형 */}
           <div className="relative mb-4">
             <div className={`w-full h-20 ${getRankGradient(userRanking)} rounded-2xl flex items-center justify-center shadow-lg relative overflow-hidden`}>
-              {/* 별 효과 - 반짝이는 애니메이션 */}
+              {/* 별 효과 - 반짝이는 애니메이션 (최적화) */}
               <div className="absolute inset-0">
+                {/* 애니메이션 별들 - 5개만 */}
                 <div className="absolute top-3 left-5 w-0.5 h-0.5 bg-white rounded-full animate-pulse"></div>
-                <div className="absolute top-8 left-12 w-0.5 h-0.5 bg-white rounded-full animate-ping" style={{animationDuration: '2s'}}></div>
                 <div className="absolute top-5 right-8 w-1 h-1 bg-white rounded-full animate-pulse" style={{animationDelay: '0.5s'}}></div>
-                <div className="absolute bottom-4 left-8 w-0.5 h-0.5 bg-white rounded-full animate-ping" style={{animationDuration: '2.5s'}}></div>
-                <div className="absolute top-12 left-1/4 w-0.5 h-0.5 bg-white rounded-full animate-pulse" style={{animationDelay: '1s'}}></div>
-                <div className="absolute bottom-6 right-12 w-0.5 h-0.5 bg-white rounded-full animate-ping" style={{animationDuration: '1.8s'}}></div>
                 <div className="absolute top-6 left-1/3 w-0.5 h-0.5 bg-white rounded-full animate-pulse" style={{animationDelay: '0.3s'}}></div>
-                <div className="absolute bottom-8 left-1/2 w-0.5 h-0.5 bg-white rounded-full animate-ping" style={{animationDuration: '2.2s'}}></div>
-                <div className="absolute top-10 right-1/4 w-0.5 h-0.5 bg-white rounded-full animate-pulse" style={{animationDelay: '0.7s'}}></div>
                 <div className="absolute bottom-3 right-6 w-1 h-1 bg-white rounded-full animate-pulse" style={{animationDelay: '0.2s'}}></div>
-                <div className="absolute top-14 right-1/3 w-0.5 h-0.5 bg-white rounded-full animate-ping" style={{animationDuration: '1.5s'}}></div>
                 <div className="absolute top-4 left-2/3 w-0.5 h-0.5 bg-white rounded-full animate-pulse" style={{animationDelay: '0.8s'}}></div>
-                <div className="absolute bottom-10 right-1/2 w-0.5 h-0.5 bg-white rounded-full animate-ping" style={{animationDuration: '2.8s'}}></div>
-                <div className="absolute top-7 right-16 w-0.5 h-0.5 bg-white rounded-full animate-pulse" style={{animationDelay: '0.4s'}}></div>
-                <div className="absolute bottom-5 left-16 w-0.5 h-0.5 bg-white rounded-full animate-ping" style={{animationDuration: '2.3s'}}></div>
-                {/* 추가 별들 */}
-                <div className="absolute top-2 left-1/2 w-0.5 h-0.5 bg-white rounded-full animate-pulse" style={{animationDelay: '0.6s'}}></div>
-                <div className="absolute bottom-7 left-1/3 w-0.5 h-0.5 bg-white rounded-full animate-ping" style={{animationDuration: '1.7s'}}></div>
-                <div className="absolute top-9 right-10 w-0.5 h-0.5 bg-white rounded-full animate-pulse" style={{animationDelay: '0.9s'}}></div>
-                <div className="absolute top-15 left-20 w-0.5 h-0.5 bg-white rounded-full animate-ping" style={{animationDuration: '2.1s'}}></div>
-                <div className="absolute bottom-2 left-2/3 w-0.5 h-0.5 bg-white rounded-full animate-pulse" style={{animationDelay: '0.1s'}}></div>
+
+                {/* 정적 별들 - 나머지 */}
+                <div className="absolute top-8 left-12 w-0.5 h-0.5 bg-white rounded-full opacity-50"></div>
+                <div className="absolute bottom-4 left-8 w-0.5 h-0.5 bg-white rounded-full opacity-40"></div>
+                <div className="absolute top-12 left-1/4 w-0.5 h-0.5 bg-white rounded-full opacity-60"></div>
+                <div className="absolute bottom-6 right-12 w-0.5 h-0.5 bg-white rounded-full opacity-50"></div>
+                <div className="absolute bottom-8 left-1/2 w-0.5 h-0.5 bg-white rounded-full opacity-70"></div>
+                <div className="absolute top-10 right-1/4 w-0.5 h-0.5 bg-white rounded-full opacity-60"></div>
+                <div className="absolute top-14 right-1/3 w-0.5 h-0.5 bg-white rounded-full opacity-40"></div>
+                <div className="absolute bottom-10 right-1/2 w-0.5 h-0.5 bg-white rounded-full opacity-50"></div>
+                <div className="absolute top-7 right-16 w-0.5 h-0.5 bg-white rounded-full opacity-70"></div>
+                <div className="absolute bottom-5 left-16 w-0.5 h-0.5 bg-white rounded-full opacity-60"></div>
+                <div className="absolute top-2 left-1/2 w-0.5 h-0.5 bg-white rounded-full opacity-40"></div>
+                <div className="absolute bottom-7 left-1/3 w-0.5 h-0.5 bg-white rounded-full opacity-50"></div>
+                <div className="absolute top-9 right-10 w-0.5 h-0.5 bg-white rounded-full opacity-60"></div>
+                <div className="absolute top-15 left-20 w-0.5 h-0.5 bg-white rounded-full opacity-40"></div>
+                <div className="absolute bottom-2 left-2/3 w-0.5 h-0.5 bg-white rounded-full opacity-70"></div>
               </div>
               <span className="text-white font-bold text-xl relative z-10">{rankNames[userRanking]}</span>
               
@@ -517,7 +520,7 @@ const Rewards = ({
                     >
                       {/* 물고기 SVG 아이콘 - 더 크게, 중앙 정렬 */}
                       <div className={`h-[42px] w-full flex items-center justify-center ${isLocked ? 'blur-sm' : ''}`}>
-                        {(() => {
+                        {!isLocked && (() => {
                           const FishIcon = FishIcons[fish.name.replace(' ', '')];
                           // 특정 물고기는 더 크게 표시
                           const iconSize = ['네온테트라', '아피스토그라마', '킬리피쉬'].includes(fish.name) ? 48 : 36;
@@ -631,7 +634,7 @@ const Rewards = ({
                         {/* 아이콘 - 고정 높이 영역 */}
                         <div className="h-[42px] w-full flex items-center justify-center">
                           <div className="w-9 h-9">
-                            {DecorationIcons[deco.name] && React.createElement(DecorationIcons[deco.name])}
+                            {!isLocked && DecorationIcons[deco.name] && React.createElement(DecorationIcons[deco.name])}
                           </div>
                         </div>
                         
@@ -788,4 +791,4 @@ const Rewards = ({
   );
 };
 
-export default Rewards;
+export default memo(Rewards);

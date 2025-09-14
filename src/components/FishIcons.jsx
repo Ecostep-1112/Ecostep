@@ -837,63 +837,72 @@ const FishIcons = {
   ),
 
   // 1위: 플라티넘 아로와나 - 용의 왕
-  아로와나: ({ size = 60, color = '#C0C0C0' }) => (
+  아로와나: ({ size = 60, color = '#C0C0C0', isMoving = false }) => (
     <svg width={size * 1.8} height={size * 0.6} viewBox="0 0 216 72">
       <g>
-        {/* 매우 긴 용 같은 몸통 - 더 날씬하고 길게 */}
-        <ellipse cx="108" cy="36" rx="75" ry="16" fill={color} />
-        <ellipse cx="108" cy="36" rx="73" ry="14" fill="#E5E5E5" />
-        {/* 플라티넘 메탈릭 광택 */}
-        <ellipse cx="90" cy="30" rx="35" ry="10" fill="#F8F8FF" opacity="0.7" />
-        <ellipse cx="120" cy="32" rx="30" ry="8" fill="#F8F8FF" opacity="0.5" />
-        <ellipse cx="145" cy="34" rx="25" ry="6" fill="#F8F8FF" opacity="0.4" />
-        
-        {/* 큰 입 - 아로와나의 특징 */}
-        <path d="M 28 36 Q 25 32 28 28 L 38 30 L 38 42 L 28 44 Q 25 40 28 36" fill="#D3D3D3" />
-        <path d="M 30 36 L 36 36" stroke="#A9A9A9" strokeWidth="1.5" />
-        <path d="M 28 32 Q 32 34 36 32" fill="none" stroke="#808080" strokeWidth="1" />
-        {/* 큰 비늘 패턴 - 다이아몬드 (긴 몸에 맞게 더 많이) */}
-        <path d="M 50 36 L 53 33 L 56 36 L 53 39 Z" fill="none" stroke="#A9A9A9" strokeWidth="1.5" />
-        <path d="M 60 34 L 63 31 L 66 34 L 63 37 Z" fill="none" stroke="#A9A9A9" strokeWidth="1.5" />
-        <path d="M 70 36 L 73 33 L 76 36 L 73 39 Z" fill="none" stroke="#A9A9A9" strokeWidth="1.5" />
-        <path d="M 80 34 L 83 31 L 86 34 L 83 37 Z" fill="none" stroke="#A9A9A9" strokeWidth="1.5" />
-        <path d="M 90 36 L 93 33 L 96 36 L 93 39 Z" fill="none" stroke="#A9A9A9" strokeWidth="1.5" />
-        <path d="M 100 34 L 103 31 L 106 34 L 103 37 Z" fill="none" stroke="#A9A9A9" strokeWidth="1.5" />
-        <path d="M 110 36 L 113 33 L 116 36 L 113 39 Z" fill="none" stroke="#A9A9A9" strokeWidth="1.5" />
-        <path d="M 120 34 L 123 31 L 126 34 L 123 37 Z" fill="none" stroke="#A9A9A9" strokeWidth="1.5" />
-        <path d="M 130 36 L 133 33 L 136 36 L 133 39 Z" fill="none" stroke="#A9A9A9" strokeWidth="1.5" />
-        <path d="M 140 34 L 143 31 L 146 34 L 143 37 Z" fill="none" stroke="#A9A9A9" strokeWidth="1.5" />
-        <path d="M 150 36 L 153 33 L 156 36 L 153 39 Z" fill="none" stroke="#A9A9A9" strokeWidth="1.5" />
-        <path d="M 160 34 L 163 31 L 166 34 L 163 37 Z" fill="none" stroke="#A9A9A9" strokeWidth="1.5" />
-        
-        {/* 수염 - 2개 (큰 입 아래) */}
-        <path d="M 35 40 Q 27 42 22 44" stroke="#808080" strokeWidth="2.5" fill="none" />
-        <path d="M 35 40 Q 27 38 22 36" stroke="#808080" strokeWidth="2.5" fill="none" />
-        
-        {/* 등지느러미 - 더 길고 낮음 */}
-        <path d="M 55 24 Q 108 18 160 24" fill="#D3D3D3" />
-        <circle cx="80" cy="22" r="1" fill="#C0C0C0" />
-        <circle cx="108" cy="20" r="1" fill="#C0C0C0" />
-        <circle cx="135" cy="22" r="1" fill="#C0C0C0" />
-        
-        {/* 뒷지느러미 - 더 길고 낮음 */}
-        <path d="M 65 48 Q 108 54 150 48" fill="#D3D3D3" />
-        
-        {/* 배지느러미 */}
-        <ellipse cx="85" cy="44" rx="5" ry="3" fill="#D3D3D3" />
-        <ellipse cx="130" cy="44" rx="5" ry="3" fill="#D3D3D3" />
-        
-        {/* 가슴지느러미 - 크고 강력 */}
-        <ellipse cx="55" cy="40" rx="15" ry="7" fill="#D3D3D3" transform="rotate(-20 55 40)" />
-        
-        {/* 꼬리지느러미 - 강력한 추진력 */}
-        <path d="M 183 36 L 206 20 L 200 36 L 206 52 L 183 36" fill="#D3D3D3" />
-        <path d="M 181 36 L 201 22 L 195 36 L 201 50 L 181 36" fill="#C0C0C0" opacity="0.7" />
-        
-        {/* 눈 - 위를 향함 */}
-        <circle cx="42" cy="32" r="4.5" fill="black" />
-        <circle cx="42.5" cy="31.5" r="2" fill="white" />
-        
+        {/* 몸통 그룹 - 고정 */}
+        <g className="arowana-body">
+          {/* 매우 긴 용 같은 몸통 - 더 날씬하고 길게 */}
+          <ellipse cx="108" cy="36" rx="75" ry="16" fill={color} />
+          <ellipse cx="108" cy="36" rx="73" ry="14" fill="#E5E5E5" />
+          {/* 플라티넘 메탈릭 광택 */}
+          <ellipse cx="90" cy="30" rx="35" ry="10" fill="#F8F8FF" opacity="0.7" />
+          <ellipse cx="120" cy="32" rx="30" ry="8" fill="#F8F8FF" opacity="0.5" />
+          <ellipse cx="145" cy="34" rx="25" ry="6" fill="#F8F8FF" opacity="0.4" />
+
+          {/* 큰 입 - 아로와나의 특징 */}
+          <path d="M 28 36 Q 25 32 28 28 L 38 30 L 38 42 L 28 44 Q 25 40 28 36" fill="#D3D3D3" />
+          <path d="M 30 36 L 36 36" stroke="#A9A9A9" strokeWidth="1.5" />
+          <path d="M 28 32 Q 32 34 36 32" fill="none" stroke="#808080" strokeWidth="1" />
+
+          {/* 큰 비늘 패턴 - 다이아몬드 (긴 몸에 맞게 더 많이) */}
+          <path d="M 50 36 L 53 33 L 56 36 L 53 39 Z" fill="none" stroke="#A9A9A9" strokeWidth="1.5" />
+          <path d="M 60 34 L 63 31 L 66 34 L 63 37 Z" fill="none" stroke="#A9A9A9" strokeWidth="1.5" />
+          <path d="M 70 36 L 73 33 L 76 36 L 73 39 Z" fill="none" stroke="#A9A9A9" strokeWidth="1.5" />
+          <path d="M 80 34 L 83 31 L 86 34 L 83 37 Z" fill="none" stroke="#A9A9A9" strokeWidth="1.5" />
+          <path d="M 90 36 L 93 33 L 96 36 L 93 39 Z" fill="none" stroke="#A9A9A9" strokeWidth="1.5" />
+          <path d="M 100 34 L 103 31 L 106 34 L 103 37 Z" fill="none" stroke="#A9A9A9" strokeWidth="1.5" />
+          <path d="M 110 36 L 113 33 L 116 36 L 113 39 Z" fill="none" stroke="#A9A9A9" strokeWidth="1.5" />
+          <path d="M 120 34 L 123 31 L 126 34 L 123 37 Z" fill="none" stroke="#A9A9A9" strokeWidth="1.5" />
+          <path d="M 130 36 L 133 33 L 136 36 L 133 39 Z" fill="none" stroke="#A9A9A9" strokeWidth="1.5" />
+          <path d="M 140 34 L 143 31 L 146 34 L 143 37 Z" fill="none" stroke="#A9A9A9" strokeWidth="1.5" />
+          <path d="M 150 36 L 153 33 L 156 36 L 153 39 Z" fill="none" stroke="#A9A9A9" strokeWidth="1.5" />
+          <path d="M 160 34 L 163 31 L 166 34 L 163 37 Z" fill="none" stroke="#A9A9A9" strokeWidth="1.5" />
+        </g>
+
+
+        {/* 등지느러미 그룹 - 상하 움직임 */}
+        <g className={`arowana-dorsal ${isMoving ? 'animate-arowana-dorsal-fast' : 'animate-arowana-dorsal'}`} style={{ transformOrigin: '108px 21px' }}>
+          <path d="M 55 24 Q 108 18 160 24" fill="#D3D3D3" />
+          <circle cx="80" cy="22" r="1" fill="#C0C0C0" />
+          <circle cx="108" cy="20" r="1" fill="#C0C0C0" />
+          <circle cx="135" cy="22" r="1" fill="#C0C0C0" />
+        </g>
+
+        {/* 뒷지느러미 그룹 - 상하 움직임 */}
+        <g className={`arowana-anal ${isMoving ? 'animate-arowana-anal-fast' : 'animate-arowana-anal'}`} style={{ transformOrigin: '108px 51px' }}>
+          <path d="M 65 48 Q 108 54 150 48" fill="#D3D3D3" />
+        </g>
+
+        {/* 배지느러미 그룹 - 살짝 흔들림 */}
+        <g className={`arowana-ventral ${isMoving ? 'animate-arowana-ventral-fast' : 'animate-arowana-ventral'}`} style={{ transformOrigin: '108px 44px' }}>
+          <ellipse cx="85" cy="44" rx="5" ry="3" fill="#D3D3D3" />
+          <ellipse cx="130" cy="44" rx="5" ry="3" fill="#D3D3D3" />
+        </g>
+
+
+        {/* 꼬리지느러미 그룹 - 좌우 흔들림 */}
+        <g className={`arowana-tail ${isMoving ? 'animate-arowana-tail-fast' : 'animate-arowana-tail'}`} style={{ transformOrigin: '183px 36px' }}>
+          <path d="M 183 36 L 206 20 L 200 36 L 206 52 L 183 36" fill="#D3D3D3" />
+          <path d="M 181 36 L 201 22 L 195 36 L 201 50 L 181 36" fill="#C0C0C0" opacity="0.7" />
+        </g>
+
+        {/* 눈 그룹 */}
+        <g className="arowana-eyes">
+          <circle cx="42" cy="32" r="4.5" fill="black" />
+          <circle cx="42.5" cy="31.5" r="2" fill="white" />
+        </g>
+
         {/* 금색 광채 */}
         <circle cx="108" cy="36" r="3.5" fill="#FFD700" opacity="0.3" />
         <circle cx="85" cy="34" r="2.5" fill="#FFD700" opacity="0.3" />

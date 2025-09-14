@@ -28,15 +28,15 @@ const FishIcons = {
           <ellipse cx="44" cy="30" rx="15" ry="8" fill="#FFFFFF" opacity="0.1" />
         </g>
 
-        {/* 수염 - 개별 움직임 */}
-        <g className={`corydoras-whisker-1 ${isMoving ? 'animate-whisker-1-fast' : 'animate-whisker-1'}`} style={{ transformOrigin: '22px 33px' }}>
-          <path d="M 22 33 Q 14 32 6 31" stroke="#5C4033" strokeWidth="1.5" fill="none" strokeLinecap="round" />
+        {/* 수염 - 개별 움직임, 한 점에서 시작 */}
+        <g className={`corydoras-whisker-1 ${isMoving ? 'animate-whisker-1-fast' : 'animate-whisker-1'}`} style={{ transformOrigin: '20px 34px' }}>
+          <path d="M 20 34 Q 16 33 12 32" stroke="#5C4033" strokeWidth="1.5" fill="none" strokeLinecap="round" />
         </g>
-        <g className={`corydoras-whisker-2 ${isMoving ? 'animate-whisker-2-fast' : 'animate-whisker-2'}`} style={{ transformOrigin: '22px 35px' }}>
-          <path d="M 22 35 Q 14 35 6 35" stroke="#5C4033" strokeWidth="1.5" fill="none" strokeLinecap="round" />
+        <g className={`corydoras-whisker-2 ${isMoving ? 'animate-whisker-2-fast' : 'animate-whisker-2'}`} style={{ transformOrigin: '20px 34px' }}>
+          <path d="M 20 34 Q 16 34 12 34" stroke="#5C4033" strokeWidth="1.5" fill="none" strokeLinecap="round" />
         </g>
-        <g className={`corydoras-whisker-3 ${isMoving ? 'animate-whisker-3-fast' : 'animate-whisker-3'}`} style={{ transformOrigin: '22px 37px' }}>
-          <path d="M 22 37 Q 14 38 6 39" stroke="#5C4033" strokeWidth="1.5" fill="none" strokeLinecap="round" />
+        <g className={`corydoras-whisker-3 ${isMoving ? 'animate-whisker-3-fast' : 'animate-whisker-3'}`} style={{ transformOrigin: '20px 34px' }}>
+          <path d="M 20 34 Q 16 35 12 36" stroke="#5C4033" strokeWidth="1.5" fill="none" strokeLinecap="round" />
         </g>
 
         {/* 등지느러미 그룹 - 상하 움직임 */}
@@ -200,31 +200,53 @@ const FishIcons = {
   ),
 
   // 9위: 아피스토그라마 - 화려한 시클리드 (더 작고 압축된 체형)
-  아피스토그라마: ({ size = 40, color = '#FFD700' }) => (
+  아피스토그라마: ({ size = 40, color = '#FFD700', isMoving = false }) => (
     <svg width={size} height={size * 0.5} viewBox="0 0 80 40">
       <g>
-        {/* 몸통 - 매우 작고 납작하게 압축 */}
-        <ellipse cx="40" cy="20" rx="18" ry="8" fill={color} />
-        <ellipse cx="40" cy="20" rx="16" ry="7" fill="#FFA500" />
-        {/* 배 부분 - 노란색 */}
-        <ellipse cx="40" cy="22" rx="12" ry="4" fill="#FFFF00" opacity="0.8" />
-        {/* 짧은 등지느러미 */}
-        <path d="M 26 14 Q 30 10 34 14 T 42 10 T 50 14 T 54 14" fill="#FF8C00" />
-        {/* 짧은 뒷지느러미 */}
-        <path d="M 26 26 Q 30 30 34 26 T 42 30 T 50 26 T 54 26" fill="#FF8C00" />
-        {/* 배지느러미 - 작게 */}
-        <path d="M 34 24 L 33 28 L 35 27 Z" fill="#FFA500" />
-        <path d="M 46 24 L 45 28 L 47 27 Z" fill="#FFA500" />
-        {/* 작은 꼬리지느러미 */}
-        <path d="M 58 20 L 65 16 L 64 20 L 65 24 L 58 20" fill="#FF4500" />
-        {/* 가슴지느러미 */}
-        <ellipse cx="28" cy="21" rx="4" ry="2" fill="#FFB300" opacity="0.8" transform="rotate(-20 28 21)" />
-        {/* 눈 */}
-        <circle cx="26" cy="18" r="2" fill="black" />
-        <circle cx="26.5" cy="17.5" r="0.7" fill="white" />
-        {/* 체측 무늬 */}
-        <circle cx="40" cy="20" r="2" fill="#FF6347" opacity="0.7" />
-        <ellipse cx="46" cy="19" rx="1.5" ry="2" fill="#FF4500" opacity="0.6" />
+        {/* 몸통 그룹 - 고정 */}
+        <g className="apistogramma-body">
+          {/* 몸통 - 매우 작고 납작하게 압축 */}
+          <ellipse cx="40" cy="20" rx="18" ry="8" fill={color} />
+          <ellipse cx="40" cy="20" rx="16" ry="7" fill="#FFA500" />
+          {/* 배 부분 - 노란색 */}
+          <ellipse cx="40" cy="22" rx="12" ry="4" fill="#FFFF00" opacity="0.8" />
+
+          {/* 체측 무늬 */}
+          <circle cx="40" cy="20" r="2" fill="#FF6347" opacity="0.7" />
+          <ellipse cx="46" cy="19" rx="1.5" ry="2" fill="#FF4500" opacity="0.6" />
+        </g>
+
+        {/* 등지느러미 그룹 - 상하 움직임 */}
+        <g className={`apistogramma-dorsal-fin ${isMoving ? 'animate-apistogramma-dorsal-fast' : 'animate-apistogramma-dorsal'}`} style={{ transformOrigin: '40px 14px' }}>
+          <path d="M 26 14 Q 30 10 34 14 T 42 10 T 50 14 T 54 14" fill="#FF8C00" />
+        </g>
+
+        {/* 뒷지느러미 그룹 - 상하 움직임 */}
+        <g className={`apistogramma-anal-fin ${isMoving ? 'animate-apistogramma-anal-fast' : 'animate-apistogramma-anal'}`} style={{ transformOrigin: '40px 26px' }}>
+          <path d="M 26 26 Q 30 30 34 26 T 42 30 T 50 26 T 54 26" fill="#FF8C00" />
+        </g>
+
+        {/* 배지느러미 그룹 - 살짝 흔들림 */}
+        <g className={`apistogramma-ventral-fins ${isMoving ? 'animate-apistogramma-ventral-fast' : 'animate-apistogramma-ventral'}`} style={{ transformOrigin: '40px 26px' }}>
+          <path d="M 34 24 L 33 28 L 35 27 Z" fill="#FFA500" />
+          <path d="M 46 24 L 45 28 L 47 27 Z" fill="#FFA500" />
+        </g>
+
+        {/* 가슴지느러미 그룹 - 펄럭임 */}
+        <g className={`apistogramma-pectoral-fin ${isMoving ? 'animate-apistogramma-pectoral-fast' : 'animate-apistogramma-pectoral'}`} style={{ transformOrigin: '28px 21px' }}>
+          <ellipse cx="28" cy="21" rx="4" ry="2" fill="#FFB300" opacity="0.8" transform="rotate(-20 28 21)" />
+        </g>
+
+        {/* 꼬리지느러미 그룹 - 좌우 흔들림 */}
+        <g className={`apistogramma-tail ${isMoving ? 'animate-apistogramma-tail-fast' : 'animate-apistogramma-tail'}`} style={{ transformOrigin: '58px 20px' }}>
+          <path d="M 58 20 L 65 16 L 64 20 L 65 24 L 58 20" fill="#FF4500" />
+        </g>
+
+        {/* 눈 그룹 */}
+        <g className="apistogramma-eyes">
+          <circle cx="26" cy="18" r="2" fill="black" />
+          <circle cx="26.5" cy="17.5" r="0.7" fill="white" />
+        </g>
       </g>
     </svg>
   ),

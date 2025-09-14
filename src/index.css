@@ -1130,3 +1130,146 @@
 .animate-neon-aura-fast {
   animation: neon-aura-fast 1.5s ease-in-out infinite;
 }
+
+/* 아피스토그라마 애니메이션 시작 */
+/* 꼬리지느러미 좌우 흔들림 */
+@keyframes apistogramma-tail {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-10deg);
+  }
+  75% {
+    transform: rotate(10deg);
+  }
+}
+
+@keyframes apistogramma-tail-fast {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-15deg);
+  }
+  75% {
+    transform: rotate(15deg);
+  }
+}
+
+/* 등지느러미 상하 움직임 */
+@keyframes apistogramma-dorsal {
+  0%, 100% {
+    transform: scaleY(1) translateY(0);
+  }
+  50% {
+    transform: scaleY(0.92) translateY(1px);
+  }
+}
+
+@keyframes apistogramma-dorsal-fast {
+  0%, 100% {
+    transform: scaleY(1) translateY(0);
+  }
+  50% {
+    transform: scaleY(0.88) translateY(2px);
+  }
+}
+
+/* 뒷지느러미 상하 움직임 */
+@keyframes apistogramma-anal {
+  0%, 100% {
+    transform: scaleY(1) translateY(0);
+  }
+  50% {
+    transform: scaleY(0.93) translateY(-1px);
+  }
+}
+
+@keyframes apistogramma-anal-fast {
+  0%, 100% {
+    transform: scaleY(1) translateY(0);
+  }
+  50% {
+    transform: scaleY(0.88) translateY(-2px);
+  }
+}
+
+/* 배지느러미 살짝 흔들림 */
+@keyframes apistogramma-ventral {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(3deg);
+  }
+}
+
+@keyframes apistogramma-ventral-fast {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(5deg);
+  }
+}
+
+/* 가슴지느러미 펄럭임 */
+@keyframes apistogramma-pectoral {
+  0%, 100% {
+    transform: rotate(-20deg) scaleX(1);
+  }
+  50% {
+    transform: rotate(-25deg) scaleX(0.9);
+  }
+}
+
+@keyframes apistogramma-pectoral-fast {
+  0%, 100% {
+    transform: rotate(-20deg) scaleX(1);
+  }
+  50% {
+    transform: rotate(-30deg) scaleX(0.85);
+  }
+}
+
+/* 애니메이션 클래스 적용 */
+.animate-apistogramma-tail {
+  animation: apistogramma-tail 1.5s ease-in-out infinite;
+}
+
+.animate-apistogramma-tail-fast {
+  animation: apistogramma-tail-fast 0.8s ease-in-out infinite;
+}
+
+.animate-apistogramma-dorsal {
+  animation: apistogramma-dorsal 2s ease-in-out infinite;
+}
+
+.animate-apistogramma-dorsal-fast {
+  animation: apistogramma-dorsal-fast 1s ease-in-out infinite;
+}
+
+.animate-apistogramma-anal {
+  animation: apistogramma-anal 2.2s ease-in-out infinite;
+}
+
+.animate-apistogramma-anal-fast {
+  animation: apistogramma-anal-fast 1.1s ease-in-out infinite;
+}
+
+.animate-apistogramma-ventral {
+  animation: apistogramma-ventral 2.5s ease-in-out infinite;
+}
+
+.animate-apistogramma-ventral-fast {
+  animation: apistogramma-ventral-fast 1.2s ease-in-out infinite;
+}
+
+.animate-apistogramma-pectoral {
+  animation: apistogramma-pectoral 1s ease-in-out infinite;
+}
+
+.animate-apistogramma-pectoral-fast {
+  animation: apistogramma-pectoral-fast 0.5s ease-in-out infinite;
+}

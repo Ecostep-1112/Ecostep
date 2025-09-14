@@ -83,11 +83,16 @@ const Home = ({
   
   // 물고기 위치 초기화 및 애니메이션
   useEffect(() => {
-    // 초기 위치 설정
+    // 초기 위치 설정 - 물고기 수에 따라 동적으로 배치
+    const fishCount = displayFish.length;
+    const maxX = 70; // 최대 X 위치 (오른쪽 경계에서 안전한 거리)
+    const minX = 30; // 최소 X 위치 (왼쪽 경계에서 안전한 거리)
+    const spacing = fishCount > 1 ? (maxX - minX) / (fishCount - 1) : 0;
+
     const initialPositions = displayFish.map((fishName, i) => ({
       name: fishName,
-      x: 25 + i * 25,  // 균등하게 배치
-      y: fishName === '코리도라스' ? 65 : 45,  // 코리도라스는 바닥, 나머지는 중간
+      x: fishCount === 1 ? 50 : minX + (i * spacing),  // 하나일 때는 중앙, 여러 개일 때는 균등 배치
+      y: fishName === '코리도라스' ? 65 : 35 + (i % 3) * 10,  // 코리도라스는 바닥, 나머지는 높이 변화
       direction: Math.random() > 0.5 ? 1 : -1,  // 랜덤 방향
       speed: fishName === '코리도라스' ? 0.3 : 0  // 코리도라스만 움직임
     }));
@@ -101,10 +106,10 @@ const Home = ({
             let newX = fish.x + (fish.speed * fish.direction);
             let newDirection = fish.direction;
 
-            // 벽에 닿으면 방향 전환
-            if (newX <= 3 || newX >= 97) {
+            // 벽에 닿으면 방향 전환 (물고기 크기를 고려한 여유 공간)
+            if (newX <= 10 || newX >= 90) {
               newDirection = -newDirection;
-              newX = newX <= 3 ? 3 : 97;
+              newX = newX <= 10 ? 10 : 90;
             }
 
             return {
@@ -155,17 +160,20 @@ const Home = ({
           <BubbleSystem fishPositions={fishPositions} />
             
           {/* 물고기 표시 (애니메이션) */}
-          <div className="absolute inset-0 pointer-events-none z-[4]">
+          <div className="absolute inset-0 pointer-events-none z-[4] overflow-hidden">
             {fishPositions.map((fish, i) => {
               const FishIcon = FishIcons[fish.name.replace(' ', '')];
               const isMoving = fish.speed > 0;
+              // 물고기가 어항 경계를 벗어나지 않도록 추가 제한
+              const clampedX = Math.max(10, Math.min(90, fish.x));
+              const clampedY = Math.max(10, Math.min(75, fish.y));
               return FishIcon ? (
                 <div
                   key={i}
                   className="absolute transition-all duration-50 ease-linear"
                   style={{
-                    left: `${fish.x}%`,
-                    top: `${fish.y}%`,
+                    left: `${clampedX}%`,
+                    top: `${clampedY}%`,
                     transform: `translateX(-50%) translateY(-50%) scaleX(${-fish.direction})`,
                   }}
                 >

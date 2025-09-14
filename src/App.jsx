@@ -650,9 +650,9 @@ const EcostepApp = () => {
             />
           ) : (
             <>
-              {activeTab === 'home' && <HomePage 
-                isDarkMode={isDarkMode} 
-                setShowAquariumSettings={setShowAquariumSettings} 
+              {activeTab === 'home' && <HomePage
+                isDarkMode={isDarkMode}
+                setShowAquariumSettings={setShowAquariumSettings}
                 purchasedFish={purchasedFish}
                 currentTank={currentTank}
                 tankName={tankName}
@@ -670,6 +670,7 @@ const EcostepApp = () => {
                 totalPlasticSaved={totalPlasticSaved}
                 testPlasticSaved={testPlasticSaved}
                 setTestPlasticSaved={setTestPlasticSaved}
+                isActive={activeTab === 'home'}
               />}
               {activeTab === 'challenge' && <ChallengePage 
                 isDarkMode={isDarkMode}
@@ -702,9 +703,9 @@ const EcostepApp = () => {
                 setTestDate={setTestDate}
                 setNotificationsList={setNotificationsList}
               />}
-              {activeTab === 'reward' && <RewardsPage 
-                isDarkMode={isDarkMode} 
-                purchasedFish={purchasedFish} 
+              {activeTab === 'reward' && <RewardsPage
+                isDarkMode={isDarkMode}
+                purchasedFish={purchasedFish}
                 setPurchasedFish={setPurchasedFish}
                 fishData={fishData}
                 userRanking={userRanking}
@@ -722,6 +723,7 @@ const EcostepApp = () => {
                 totalEarnedPoints={totalEarnedPoints}
                 setTotalEarnedPoints={setTotalEarnedPoints}
                 spendPoints={spendPoints}
+                isActive={activeTab === 'reward'}
               />}
               {activeTab === 'community' && !showFriendsList && !showGlobalList && <CommunityPage isDarkMode={isDarkMode} onShowFriendsList={() => setShowFriendsList(true)} onShowGlobalList={() => setShowGlobalList(true)} showToast={showToast} userRanking={rankTheme} totalPlasticSaved={testPlasticSaved > 0 ? testPlasticSaved : totalPlasticSaved} currentUserId={profileData.userId} currentUserName={profileData.name} />}
               {activeTab === 'community' && showFriendsList && <FriendsList isDarkMode={isDarkMode} onBack={() => setShowFriendsList(false)} isGlobalRanking={false} totalPlasticSaved={testPlasticSaved > 0 ? testPlasticSaved : totalPlasticSaved} />}

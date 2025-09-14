@@ -5,9 +5,9 @@ import DecorationIcons from '../../components/DecorationIcons';
 import WaterSurface from '../../components/WaterSurface';
 import BubbleSystem from '../../components/BubbleSystem';
 
-const Home = ({ 
-  isDarkMode, 
-  setShowAquariumSettings, 
+const Home = ({
+  isDarkMode,
+  setShowAquariumSettings,
   purchasedFish,
   currentTank = 'basic',
   tankName = '수질',
@@ -24,7 +24,8 @@ const Home = ({
   consecutiveDays = 0,
   totalPlasticSaved = 0,
   testPlasticSaved = 0,
-  setTestPlasticSaved
+  setTestPlasticSaved,
+  isActive = true
 }) => {
   const bgColor = isDarkMode ? 'bg-gray-900' : 'bg-white';
   const textColor = isDarkMode ? 'text-white' : 'text-gray-900';
@@ -102,32 +103,37 @@ const Home = ({
     setFishPositions(initialPositions);
 
     // 코리도라스, 체리바브, 네온테트라, 아피스토그라마 애니메이션
-    const interval = setInterval(() => {
-      setFishPositions(prevPositions => {
-        return prevPositions.map(fish => {
-          if (fish.name === '코리도라스' || fish.name === '체리바브' || fish.name === '네온테트라' || fish.name === '아피스토그라마') {
-            let newX = fish.x + (fish.speed * fish.direction);
-            let newDirection = fish.direction;
+    let interval;
+    if (isActive) {
+      interval = setInterval(() => {
+        setFishPositions(prevPositions => {
+          return prevPositions.map(fish => {
+            if (fish.name === '코리도라스' || fish.name === '체리바브' || fish.name === '네온테트라' || fish.name === '아피스토그라마') {
+              let newX = fish.x + (fish.speed * fish.direction);
+              let newDirection = fish.direction;
 
-            // 벽에 닿으면 방향 전환 (물고기 크기를 고려한 여유 공간)
-            if (newX <= 3 || newX >= 97) {
-              newDirection = -newDirection;
-              newX = newX <= 3 ? 3 : 97;
+              // 벽에 닿으면 방향 전환 (물고기 크기를 고려한 여유 공간)
+              if (newX <= 3 || newX >= 97) {
+                newDirection = -newDirection;
+                newX = newX <= 3 ? 3 : 97;
+              }
+
+              return {
+                ...fish,
+                x: newX,
+                direction: newDirection
+              };
             }
-
-            return {
-              ...fish,
-              x: newX,
-              direction: newDirection
-            };
-          }
-          return fish;
+            return fish;
+          });
         });
-      });
-    }, 50);  // 50ms마다 업데이트
+      }, 50);  // 50ms마다 업데이트
+    }
 
-    return () => clearInterval(interval);
-  }, [displayFish]);
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [displayFish, isActive]);
 
   return (
     <div className={`flex-1 overflow-y-auto custom-scrollbar scrollbar-hide-idle pb-20 ${bgColor}`}>

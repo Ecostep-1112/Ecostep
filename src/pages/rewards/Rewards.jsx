@@ -8,8 +8,8 @@ import GoldTank from '../../components/tanks/GoldTank';
 import PlatinumTank from '../../components/tanks/PlatinumTank';
 import { BronzeIcon, SilverIcon, GoldIcon, PlatinumIcon } from '../../components/RankIcons';
 
-const Rewards = ({ 
-  isDarkMode, 
+const Rewards = ({
+  isDarkMode,
   purchasedFish,
   setPurchasedFish,
   userRanking = 'gold',
@@ -26,7 +26,8 @@ const Rewards = ({
   calculateRankFromPoints,
   totalEarnedPoints,
   setTotalEarnedPoints,
-  spendPoints
+  spendPoints,
+  isActive = true
 }) => {
   const bgColor = isDarkMode ? 'bg-gray-900' : 'bg-white';
   const textColor = isDarkMode ? 'text-white' : 'text-gray-900';
@@ -145,12 +146,12 @@ const Rewards = ({
             <div className={`w-full h-20 ${getRankGradient(userRanking)} rounded-2xl flex items-center justify-center shadow-lg relative overflow-hidden`}>
               {/* 별 효과 - 반짝이는 애니메이션 (최적화) */}
               <div className="absolute inset-0">
-                {/* 애니메이션 별들 - 5개만 */}
-                <div className="absolute top-3 left-5 w-0.5 h-0.5 bg-white rounded-full animate-pulse"></div>
-                <div className="absolute top-5 right-8 w-1 h-1 bg-white rounded-full animate-pulse" style={{animationDelay: '0.5s'}}></div>
-                <div className="absolute top-6 left-1/3 w-0.5 h-0.5 bg-white rounded-full animate-pulse" style={{animationDelay: '0.3s'}}></div>
-                <div className="absolute bottom-3 right-6 w-1 h-1 bg-white rounded-full animate-pulse" style={{animationDelay: '0.2s'}}></div>
-                <div className="absolute top-4 left-2/3 w-0.5 h-0.5 bg-white rounded-full animate-pulse" style={{animationDelay: '0.8s'}}></div>
+                {/* 애니메이션 별들 - 5개만 - isActive일 때만 애니메이션 */}
+                <div className={`absolute top-3 left-5 w-0.5 h-0.5 bg-white rounded-full ${isActive ? 'animate-pulse' : ''}`}></div>
+                <div className={`absolute top-5 right-8 w-1 h-1 bg-white rounded-full ${isActive ? 'animate-pulse' : ''}`} style={{animationDelay: isActive ? '0.5s' : '0s'}}></div>
+                <div className={`absolute top-6 left-1/3 w-0.5 h-0.5 bg-white rounded-full ${isActive ? 'animate-pulse' : ''}`} style={{animationDelay: isActive ? '0.3s' : '0s'}}></div>
+                <div className={`absolute bottom-3 right-6 w-1 h-1 bg-white rounded-full ${isActive ? 'animate-pulse' : ''}`} style={{animationDelay: isActive ? '0.2s' : '0s'}}></div>
+                <div className={`absolute top-4 left-2/3 w-0.5 h-0.5 bg-white rounded-full ${isActive ? 'animate-pulse' : ''}`} style={{animationDelay: isActive ? '0.8s' : '0s'}}></div>
 
                 {/* 정적 별들 - 나머지 */}
                 <div className="absolute top-8 left-12 w-0.5 h-0.5 bg-white rounded-full opacity-50"></div>
@@ -524,7 +525,7 @@ const Rewards = ({
                           const FishIcon = FishIcons[fish.name.replace(' ', '')];
                           // 특정 물고기는 더 크게 표시
                           const iconSize = ['네온테트라', '아피스토그라마', '킬리피쉬'].includes(fish.name) ? 48 : 36;
-                          return FishIcon ? <FishIcon size={iconSize} /> : null;
+                          return FishIcon ? <FishIcon size={iconSize} isMoving={false} /> : null;
                         })()}
                       </div>
                       

@@ -457,12 +457,14 @@ const FishIcons = {
   ),
 
   // 5위: 킬리피쉬 - 길쭉한 몸에 위쪽에 위치한 입
-  킬리피쉬: ({ size = 45, color = '#FF4500' }) => (
+  킬리피쉬: ({ size = 45, color = '#FF4500', isMoving = false }) => (
     <svg width={size * 1.2} height={size * 0.7} viewBox="0 0 108 63">
       <g>
-        {/* 길쭉한 몸통 - 킬리피쉬의 특징 */}
-        <ellipse cx="54" cy="31" rx="32" ry="13" fill={color} />
-        <ellipse cx="54" cy="31" rx="30" ry="11" fill="#FF6347" />
+        {/* 몸통 그룹 - 고정 */}
+        <g className="killifish-body">
+          {/* 길쭉한 몸통 - 킬리피쉬의 특징 */}
+          <ellipse cx="54" cy="31" rx="32" ry="13" fill={color} />
+          <ellipse cx="54" cy="31" rx="30" ry="11" fill="#FF6347" />
         
         {/* 위쪽에 위치한 입 - 킬리피쉬의 핵심 특징 */}
         <ellipse cx="22" cy="28" rx="3" ry="2" fill="#8B4513" />
@@ -478,30 +480,41 @@ const FishIcons = {
         <circle cx="65" cy="30" r="2" fill="#FFD700" />
         <circle cx="75" cy="31" r="1.8" fill="#FFD700" />
         
-        {/* 빨간 점 무늬 */}
-        <circle cx="40" cy="34" r="2" fill="#FF0000" opacity="0.8" />
-        <circle cx="50" cy="34" r="2" fill="#FF0000" opacity="0.8" />
-        <circle cx="60" cy="34" r="2" fill="#FF0000" opacity="0.8" />
-        <circle cx="70" cy="34" r="1.8" fill="#FF0000" opacity="0.8" />
+          {/* 빨간 점 무늬 */}
+          <circle cx="40" cy="34" r="2" fill="#FF0000" opacity="0.8" />
+          <circle cx="50" cy="34" r="2" fill="#FF0000" opacity="0.8" />
+          <circle cx="60" cy="34" r="2" fill="#FF0000" opacity="0.8" />
+          <circle cx="70" cy="34" r="1.8" fill="#FF0000" opacity="0.8" />
+        </g>
         
-        {/* 등지느러미 - 매우 뒤쪽 (4/5 지점) */}
-        <path d="M 76 22 Q 80 15 84 22" fill="#FF8C00" />
-        <circle cx="80" cy="18" r="1.2" fill="#FFD700" opacity="0.7" />
+        {/* 등지느러미 그룹 - 상하 움직임 */}
+        <g className={`killifish-dorsal-fin ${isMoving ? 'animate-killifish-fin-fast' : 'animate-killifish-fin'}`} style={{ transformOrigin: '80px 19px' }}>
+          <path d="M 76 22 Q 80 15 84 22" fill="#FF8C00" />
+          <circle cx="80" cy="18" r="1.2" fill="#FFD700" opacity="0.7" />
+        </g>
         
-        {/* 뒷지느러미 - 매우 뒤쪽 */}
-        <path d="M 76 40 Q 80 47 84 40" fill="#FF8C00" />
-        <circle cx="80" cy="44" r="1.2" fill="#FFD700" opacity="0.7" />
+        {/* 뒷지느러미 그룹 - 상하 움직임 */}
+        <g className={`killifish-anal-fin ${isMoving ? 'animate-killifish-fin-fast' : 'animate-killifish-fin'}`} style={{ transformOrigin: '80px 43px' }}>
+          <path d="M 76 40 Q 80 47 84 40" fill="#FF8C00" />
+          <circle cx="80" cy="44" r="1.2" fill="#FFD700" opacity="0.7" />
+        </g>
         
-        {/* 가슴지느러미 */}
-        <ellipse cx="32" cy="35" rx="6" ry="3.5" fill="#FF6347" transform="rotate(-20 32 35)" />
+        {/* 가슴지느러미 그룹 - 펄럭임 */}
+        <g className={`killifish-pectoral-fin ${isMoving ? 'animate-killifish-pectoral-fast' : 'animate-killifish-pectoral'}`} style={{ transformOrigin: '32px 35px' }}>
+          <ellipse cx="32" cy="35" rx="6" ry="3.5" fill="#FF6347" transform="rotate(-20 32 35)" />
+        </g>
         
-        {/* 꼬리지느러미 */}
-        <path d="M 86 31 L 98 21 L 96 31 L 98 41 L 86 31" fill="#FF8C00" />
-        <circle cx="92" cy="31" r="1.8" fill="#FFD700" />
+        {/* 꼬리지느러미 그룹 - 좌우 흔들림 */}
+        <g className={`killifish-tail ${isMoving ? 'animate-killifish-tail-fast' : 'animate-killifish-tail'}`} style={{ transformOrigin: '86px 31px' }}>
+          <path d="M 86 31 L 98 21 L 96 31 L 98 41 L 86 31" fill="#FF8C00" />
+          <circle cx="92" cy="31" r="1.8" fill="#FFD700" />
+        </g>
         
-        {/* 눈 */}
-        <circle cx="26" cy="29" r="3" fill="black" />
-        <circle cx="26.5" cy="28.5" r="1.2" fill="white" />
+        {/* 눈 그룹 */}
+        <g className="killifish-eyes">
+          <circle cx="26" cy="29" r="3" fill="black" />
+          <circle cx="26.5" cy="28.5" r="1.2" fill="white" />
+        </g>
         
         {/* 청록색 라인 */}
         <path d="M 30 28 Q 50 27 70 28" stroke="#00CED1" strokeWidth="1.5" fill="none" opacity="0.7" />

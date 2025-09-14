@@ -1274,6 +1274,91 @@
   animation: apistogramma-pectoral-fast 0.5s ease-in-out infinite;
 }
 
+/* 킬리피쉬 애니메이션 */
+@keyframes killifish-tail {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-12deg);
+  }
+  75% {
+    transform: rotate(12deg);
+  }
+}
+
+@keyframes killifish-tail-fast {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-18deg);
+  }
+  75% {
+    transform: rotate(18deg);
+  }
+}
+
+@keyframes killifish-fin {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+}
+
+@keyframes killifish-fin-fast {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
+@keyframes killifish-pectoral {
+  0%, 100% {
+    transform: rotate(-20deg) scale(1);
+  }
+  50% {
+    transform: rotate(-25deg) scale(1.05);
+  }
+}
+
+@keyframes killifish-pectoral-fast {
+  0%, 100% {
+    transform: rotate(-20deg) scale(1);
+  }
+  50% {
+    transform: rotate(-30deg) scale(1.1);
+  }
+}
+
+.animate-killifish-tail {
+  animation: killifish-tail 1s ease-in-out infinite;
+}
+
+.animate-killifish-tail-fast {
+  animation: killifish-tail-fast 0.5s ease-in-out infinite;
+}
+
+.animate-killifish-fin {
+  animation: killifish-fin 1.6s ease-in-out infinite;
+}
+
+.animate-killifish-fin-fast {
+  animation: killifish-fin-fast 0.8s ease-in-out infinite;
+}
+
+.animate-killifish-pectoral {
+  animation: killifish-pectoral 1.4s ease-in-out infinite;
+}
+
+.animate-killifish-pectoral-fast {
+  animation: killifish-pectoral-fast 0.7s ease-in-out infinite;
+}
+
 /* 람시클리드 애니메이션 키프레임 */
 /* 꼬리지느러미 좌우 움직임 */
 @keyframes ramcichlid-tail {

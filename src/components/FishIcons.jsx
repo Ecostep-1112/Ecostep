@@ -642,13 +642,9 @@ const FishIcons = {
   ),
 
   // 3위: 디스커스 - 플래티넘 랭크의 살아있는 보석
-  디스커스: ({ size = 55, color = '#FF8C00' }) => (
+  디스커스: ({ size = 55, color = '#FF8C00', isMoving = false }) => (
     <svg width={size * 1.2} height={size * 1.1} viewBox="0 0 132 121">
       <g>
-        {/* 하트형에 가까운 원반 몸통 - 위쪽이 살짝 볼록 */}
-        <path d="M 66 25 Q 35 25 20 45 Q 15 66 20 87 Q 35 107 66 107 Q 97 107 112 87 Q 117 66 112 45 Q 97 25 66 25" 
-              fill="url(#discusGradient)" />
-        
         {/* 화려한 그라데이션 정의 */}
         <defs>
           <radialGradient id="discusGradient" cx="50%" cy="45%">
@@ -664,61 +660,80 @@ const FishIcons = {
             <stop offset="100%" stopColor="#FF1493" opacity="0.5" />
           </linearGradient>
         </defs>
-        
-        {/* 몸을 감싸는 우아한 등지느러미 */}
-        <path d="M 66 18 Q 30 22 15 42 Q 10 66 15 90 Q 30 110 66 114 Q 102 110 117 90 Q 122 66 117 42 Q 102 22 66 18" 
-              fill="url(#finGradient)" opacity="0.8" />
-        
-        {/* 등지느러미 물결 디테일 */}
-        <path d="M 66 20 Q 50 22 35 30 M 66 20 Q 82 22 97 30 M 66 20 Q 45 24 25 35 M 66 20 Q 87 24 107 35" 
-              stroke="#FFD700" strokeWidth="1" opacity="0.4" />
-        
-        {/* 뒷지느러미 물결 디테일 */}
-        <path d="M 66 112 Q 50 110 35 102 M 66 112 Q 82 110 97 102 M 66 112 Q 45 108 25 97 M 66 112 Q 87 108 107 97" 
-              stroke="#FFD700" strokeWidth="1" opacity="0.4" />
-        
-        {/* 삼각형 꼬리지느러미 - 디스커스의 필수 요소 */}
-        <path d="M 112 66 L 128 48 L 125 66 L 128 84 L 112 66" fill="url(#finGradient)" />
-        <path d="M 110 66 L 124 50 L 121 66 L 124 82 L 110 66" fill="#FF6347" opacity="0.7" />
-        <path d="M 108 66 L 120 52 L 117 66 L 120 80 L 108 66" fill="#FFD700" opacity="0.5" />
-        
-        {/* 은은한 줄무늬 패턴 */}
-        <path d="M 45 40 Q 45 66 45 92" stroke="#8B0000" strokeWidth="2" opacity="0.3" />
-        <path d="M 55 35 Q 55 66 55 97" stroke="#8B0000" strokeWidth="2.5" opacity="0.3" />
-        <path d="M 66 30 Q 66 66 66 102" stroke="#8B0000" strokeWidth="3" opacity="0.3" />
-        <path d="M 77 35 Q 77 66 77 97" stroke="#8B0000" strokeWidth="2.5" opacity="0.3" />
-        <path d="M 87 40 Q 87 66 87 92" stroke="#8B0000" strokeWidth="2" opacity="0.3" />
-        
-        {/* 화려한 점무늬 */}
-        <circle cx="50" cy="50" r="3" fill="#00CED1" opacity="0.7" />
-        <circle cx="70" cy="55" r="3.5" fill="#00BFFF" opacity="0.7" />
-        <circle cx="55" cy="70" r="3" fill="#1E90FF" opacity="0.7" />
-        <circle cx="75" cy="75" r="2.5" fill="#00CED1" opacity="0.6" />
-        <circle cx="60" cy="45" r="2.5" fill="#4169E1" opacity="0.6" />
-        <circle cx="80" cy="60" r="2" fill="#00BFFF" opacity="0.5" />
-        
-        {/* 우아한 가슴지느러미 */}
-        <ellipse cx="30" cy="70" rx="15" ry="8" fill="url(#finGradient)" opacity="0.8" transform="rotate(-25 30 70)" />
-        <path d="M 25 70 Q 22 75 25 73 Q 22 78 28 75" fill="#FF6347" opacity="0.5" />
-        
-        {/* 초대형 귀여운 눈 - 1.5배 크게 */}
-        <circle cx="40" cy="55" r="9" fill="#8B0000" />
-        <circle cx="40" cy="55" r="8.5" fill="black" />
-        <circle cx="41" cy="54" r="4" fill="white" />
-        <circle cx="39" cy="57" r="1.5" fill="#888" opacity="0.5" />
-        <circle cx="42" cy="53" r="1" fill="#FFF" opacity="0.8" />
-        
-        {/* 작고 귀여운 입 */}
-        <ellipse cx="32" cy="62" rx="2.5" ry="2" fill="#8B4513" opacity="0.7" />
-        
+
+        {/* 몸통 그룹 - 고정 */}
+        <g className="discus-body">
+          {/* 하트형에 가까운 원반 몸통 - 위쪽이 살짝 볼록 */}
+          <path d="M 66 25 Q 35 25 20 45 Q 15 66 20 87 Q 35 107 66 107 Q 97 107 112 87 Q 117 66 112 45 Q 97 25 66 25"
+                fill="url(#discusGradient)" />
+
+          {/* 은은한 줄무늬 패턴 */}
+          <path d="M 45 40 Q 45 66 45 92" stroke="#8B0000" strokeWidth="2" opacity="0.3" />
+          <path d="M 55 35 Q 55 66 55 97" stroke="#8B0000" strokeWidth="2.5" opacity="0.3" />
+          <path d="M 66 30 Q 66 66 66 102" stroke="#8B0000" strokeWidth="3" opacity="0.3" />
+          <path d="M 77 35 Q 77 66 77 97" stroke="#8B0000" strokeWidth="2.5" opacity="0.3" />
+          <path d="M 87 40 Q 87 66 87 92" stroke="#8B0000" strokeWidth="2" opacity="0.3" />
+
+          {/* 화려한 점무늬 */}
+          <circle cx="50" cy="50" r="3" fill="#00CED1" opacity="0.7" />
+          <circle cx="70" cy="55" r="3.5" fill="#00BFFF" opacity="0.7" />
+          <circle cx="55" cy="70" r="3" fill="#1E90FF" opacity="0.7" />
+          <circle cx="75" cy="75" r="2.5" fill="#00CED1" opacity="0.6" />
+          <circle cx="60" cy="45" r="2.5" fill="#4169E1" opacity="0.6" />
+          <circle cx="80" cy="60" r="2" fill="#00BFFF" opacity="0.5" />
+        </g>
+
+        {/* 등지느러미 그룹 - 상하 움직임 */}
+        <g className={`discus-dorsal-fin ${isMoving ? 'animate-discus-fin-fast' : 'animate-discus-fin'}`} style={{ transformOrigin: '66px 18px' }}>
+          {/* 몸을 감싸는 우아한 등지느러미 */}
+          <path d="M 66 18 Q 30 22 15 42 Q 10 66 15 90 Q 30 110 66 114 Q 102 110 117 90 Q 122 66 117 42 Q 102 22 66 18"
+                fill="url(#finGradient)" opacity="0.8" />
+
+          {/* 등지느러미 물결 디테일 */}
+          <path d="M 66 20 Q 50 22 35 30 M 66 20 Q 82 22 97 30 M 66 20 Q 45 24 25 35 M 66 20 Q 87 24 107 35"
+                stroke="#FFD700" strokeWidth="1" opacity="0.4" />
+
+          {/* 뒷지느러미 물결 디테일 */}
+          <path d="M 66 112 Q 50 110 35 102 M 66 112 Q 82 110 97 102 M 66 112 Q 45 108 25 97 M 66 112 Q 87 108 107 97"
+                stroke="#FFD700" strokeWidth="1" opacity="0.4" />
+        </g>
+
+        {/* 꼬리지느러미 그룹 - 좌우 흔들림 */}
+        <g className={`discus-tail ${isMoving ? 'animate-discus-tail-fast' : 'animate-discus-tail'}`} style={{ transformOrigin: '112px 66px' }}>
+          {/* 삼각형 꼬리지느러미 - 디스커스의 필수 요소 */}
+          <path d="M 112 66 L 128 48 L 125 66 L 128 84 L 112 66" fill="url(#finGradient)" />
+          <path d="M 110 66 L 124 50 L 121 66 L 124 82 L 110 66" fill="#FF6347" opacity="0.7" />
+          <path d="M 108 66 L 120 52 L 117 66 L 120 80 L 108 66" fill="#FFD700" opacity="0.5" />
+        </g>
+
+        {/* 가슴지느러미 그룹 - 펄럭임 */}
+        <g className={`discus-pectoral ${isMoving ? 'animate-discus-pectoral-fast' : 'animate-discus-pectoral'}`} style={{ transformOrigin: '30px 70px' }}>
+          {/* 우아한 가슴지느러미 */}
+          <ellipse cx="30" cy="70" rx="15" ry="8" fill="url(#finGradient)" opacity="0.8" transform="rotate(-25 30 70)" />
+          <path d="M 25 70 Q 22 75 25 73 Q 22 78 28 75" fill="#FF6347" opacity="0.5" />
+        </g>
+
+        {/* 눈 그룹 */}
+        <g className="discus-eyes">
+          {/* 초대형 귀여운 눈 - 1.5배 크게 */}
+          <circle cx="40" cy="55" r="9" fill="#8B0000" />
+          <circle cx="40" cy="55" r="8.5" fill="black" />
+          <circle cx="41" cy="54" r="4" fill="white" />
+          <circle cx="39" cy="57" r="1.5" fill="#888" opacity="0.5" />
+          <circle cx="42" cy="53" r="1" fill="#FFF" opacity="0.8" />
+
+          {/* 작고 귀여운 입 */}
+          <ellipse cx="32" cy="62" rx="2.5" ry="2" fill="#8B4513" opacity="0.7" />
+        </g>
+
         {/* 플래티넘 반짝임 효과 */}
         <ellipse cx="66" cy="60" rx="35" ry="30" fill="none" stroke="#FFFFFF" strokeWidth="1" opacity="0.4" />
         <ellipse cx="66" cy="60" rx="30" ry="25" fill="none" stroke="#FFD700" strokeWidth="0.5" opacity="0.3" />
-        
+
         {/* 미세한 하이라이트 */}
         <ellipse cx="55" cy="45" rx="15" ry="20" fill="#FFFFFF" opacity="0.15" />
         <ellipse cx="75" cy="50" rx="12" ry="15" fill="#FFD700" opacity="0.1" />
-        
+
         {/* 고급스러운 광택 */}
         <circle cx="50" cy="40" r="2" fill="#FFFFFF" opacity="0.6" />
         <circle cx="70" cy="45" r="1.5" fill="#FFFFFF" opacity="0.5" />

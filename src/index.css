@@ -2067,6 +2067,91 @@
   animation: angelfish-tail-fast 1.2s ease-in-out infinite;
 }
 
+/* 디스커스 애니메이션 */
+@keyframes discus-tail {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-12deg);
+  }
+  75% {
+    transform: rotate(12deg);
+  }
+}
+
+@keyframes discus-tail-fast {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-18deg);
+  }
+  75% {
+    transform: rotate(18deg);
+  }
+}
+
+@keyframes discus-fin {
+  0%, 100% {
+    transform: scale(1) translateY(0);
+  }
+  50% {
+    transform: scale(0.95) translateY(-2px);
+  }
+}
+
+@keyframes discus-fin-fast {
+  0%, 100% {
+    transform: scale(1) translateY(0);
+  }
+  50% {
+    transform: scale(0.9) translateY(-3px);
+  }
+}
+
+@keyframes discus-pectoral {
+  0%, 100% {
+    transform: rotate(-25deg) scale(1);
+  }
+  50% {
+    transform: rotate(-30deg) scale(1.05);
+  }
+}
+
+@keyframes discus-pectoral-fast {
+  0%, 100% {
+    transform: rotate(-25deg) scale(1);
+  }
+  50% {
+    transform: rotate(-35deg) scale(1.1);
+  }
+}
+
+.animate-discus-tail {
+  animation: discus-tail 1.2s ease-in-out infinite;
+}
+
+.animate-discus-tail-fast {
+  animation: discus-tail-fast 0.6s ease-in-out infinite;
+}
+
+.animate-discus-fin {
+  animation: discus-fin 1.5s ease-in-out infinite;
+}
+
+.animate-discus-fin-fast {
+  animation: discus-fin-fast 0.75s ease-in-out infinite;
+}
+
+.animate-discus-pectoral {
+  animation: discus-pectoral 1.3s ease-in-out infinite;
+}
+
+.animate-discus-pectoral-fast {
+  animation: discus-pectoral-fast 0.65s ease-in-out infinite;
+}
+
 .animate-angelfish-dorsal {
   animation: angelfish-dorsal 3s ease-in-out infinite;
 }

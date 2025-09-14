@@ -101,9 +101,10 @@ const Home = ({
          fishName === '구피' ? 38 + (i % 2) * 6 :
          fishName === '엔젤피쉬' ? 45 + (i % 2) * 5 :
          fishName === '킬리피쉬' ? 43 + (i % 2) * 7 :
-         fishName === '베타' ? 40 + (i % 2) * 7 : 35 + (i % 3) * 10,  // 코리도라스는 바닥, 베타는 중간층, 나머지는 높이 변화
+         fishName === '베타' ? 40 + (i % 2) * 7 :
+         fishName === '디스커스' ? 48 + (i % 2) * 6 : 35 + (i % 3) * 10,  // 코리도라스는 바닥, 베타는 중간층, 디스커스는 중상층, 나머지는 높이 변화
       direction: Math.random() > 0.5 ? 1 : -1,  // 랜덤 방향
-      speed: (fishName === '코리도라스' || fishName === '체리바브' || fishName === '네온테트라' || fishName === '아피스토그라마' || fishName === '람시클리드' || fishName === '구피' || fishName === '엔젤피쉬' || fishName === '킬리피쉬' || fishName === '베타') ? 0.3 : 0  // 물고기 움직임 속도
+      speed: (fishName === '코리도라스' || fishName === '체리바브' || fishName === '네온테트라' || fishName === '아피스토그라마' || fishName === '람시클리드' || fishName === '구피' || fishName === '엔젤피쉬' || fishName === '킬리피쉬' || fishName === '베타' || fishName === '디스커스') ? 0.3 : 0  // 물고기 움직임 속도
     }));
     setFishPositions(initialPositions);
 
@@ -113,7 +114,7 @@ const Home = ({
       interval = setInterval(() => {
         setFishPositions(prevPositions => {
           return prevPositions.map(fish => {
-            if (fish.name === '코리도라스' || fish.name === '체리바브' || fish.name === '네온테트라' || fish.name === '아피스토그라마' || fish.name === '람시클리드' || fish.name === '구피' || fish.name === '엔젤피쉬' || fish.name === '킬리피쉬' || fish.name === '베타') {
+            if (fish.name === '코리도라스' || fish.name === '체리바브' || fish.name === '네온테트라' || fish.name === '아피스토그라마' || fish.name === '람시클리드' || fish.name === '구피' || fish.name === '엔젤피쉬' || fish.name === '킬리피쉬' || fish.name === '베타' || fish.name === '디스커스') {
               let newX = fish.x + (fish.speed * fish.direction);
               let newDirection = fish.direction;
 

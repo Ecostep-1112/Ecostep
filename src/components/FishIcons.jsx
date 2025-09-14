@@ -397,40 +397,61 @@ const FishIcons = {
   ),
 
   // 6위: 엔젤피쉬 - 균형잡힌 삼각형 실루엣
-  엔젤피쉬: ({ size = 50, color = '#C0C0C0' }) => (
+  엔젤피쉬: ({ size = 50, color = '#C0C0C0', isMoving = false }) => (
     <svg width={size * 1.15} height={size * 1.05} viewBox="0 0 115 105">
       <g>
-        {/* 균형잡힌 삼각형 실루엣 - 더 자연스러운 비율 */}
-        <path d="M 57 18 L 28 52 L 57 87 L 86 52 Z" fill={color} />
-        <path d="M 57 22 L 32 52 L 57 83 L 82 52 Z" fill="#E5E5E5" />
-        
-        {/* 높고 우아한 등지느러미 */}
-        <path d="M 57 12 Q 40 5 50 15 L 57 22 L 64 15 Q 74 5 57 12" fill="#A9A9A9" />
-        <path d="M 50 25 L 45 8 L 48 20 M 64 25 L 69 8 L 66 20" stroke="#808080" strokeWidth="1.5" fill="none" />
-        
-        {/* 우아한 뒷지느러미 */}
-        <path d="M 57 93 Q 40 103 50 90 L 57 83 L 64 90 Q 74 103 57 93" fill="#A9A9A9" />
-        <path d="M 50 80 L 45 97 L 48 85 M 64 80 L 69 97 L 66 85" stroke="#808080" strokeWidth="1.5" fill="none" />
-        
-        {/* 실처럼 길게 늘어진 배지느러미 - 엔젤피쉬의 특징 */}
-        <path d="M 42 62 L 39 85 L 41 80" stroke="#A9A9A9" strokeWidth="3" fill="none" strokeLinecap="round" />
-        <path d="M 72 62 L 75 85 L 73 80" stroke="#A9A9A9" strokeWidth="3" fill="none" strokeLinecap="round" />
-        
-        {/* 가슴지느러미 */}
-        <ellipse cx="38" cy="52" rx="14" ry="5" fill="#A9A9A9" opacity="0.8" transform="rotate(-25 38 52)" />
-        
-        {/* 꼬리지느러미 */}
-        <path d="M 86 52 L 103 38 L 98 52 L 103 66 L 86 52" fill="#A9A9A9" />
-        
-        {/* 검은 세로 줄무늬 - 엔젤피쉬 특유의 패턴 */}
-        <rect x="40" y="42" width="4" height="22" fill="black" opacity="0.8" />
-        <rect x="55" y="38" width="5" height="28" fill="black" opacity="0.8" />
-        <rect x="70" y="42" width="4" height="22" fill="black" opacity="0.8" />
-        <rect x="82" y="47" width="3" height="12" fill="black" opacity="0.6" />
-        
-        {/* 큰 눈 */}
-        <circle cx="35" cy="48" r="3.5" fill="black" />
-        <circle cx="35.5" cy="47.5" r="1.5" fill="white" />
+        {/* 몸통 그룹 - 고정 */}
+        <g className="angelfish-body">
+          {/* 균형잡힌 삼각형 실루엣 - 더 자연스러운 비율 */}
+          <path d="M 57 18 L 28 52 L 57 87 L 86 52 Z" fill={color} />
+          <path d="M 57 22 L 32 52 L 57 83 L 82 52 Z" fill="#E5E5E5" />
+
+          {/* 검은 세로 줄무늬 - 엔젤피쉬 특유의 패턴 */}
+          <rect x="40" y="42" width="4" height="22" fill="black" opacity="0.8" />
+          <rect x="55" y="38" width="5" height="28" fill="black" opacity="0.8" />
+          <rect x="70" y="42" width="4" height="22" fill="black" opacity="0.8" />
+          <rect x="82" y="47" width="3" height="12" fill="black" opacity="0.6" />
+        </g>
+
+        {/* 등지느러미 그룹 - 상하 움직임 */}
+        <g className={`angelfish-dorsal ${isMoving ? 'animate-angelfish-dorsal-fast' : 'animate-angelfish-dorsal'}`} style={{ transformOrigin: '57px 12px' }}>
+          {/* 높고 우아한 등지느러미 */}
+          <path d="M 57 12 Q 40 5 50 15 L 57 22 L 64 15 Q 74 5 57 12" fill="#A9A9A9" />
+          <path d="M 50 25 L 45 8 L 48 20 M 64 25 L 69 8 L 66 20" stroke="#808080" strokeWidth="1.5" fill="none" />
+        </g>
+
+        {/* 뒷지느러미 그룹 - 상하 움직임 */}
+        <g className={`angelfish-anal ${isMoving ? 'animate-angelfish-anal-fast' : 'animate-angelfish-anal'}`} style={{ transformOrigin: '57px 93px' }}>
+          {/* 우아한 뒷지느러미 */}
+          <path d="M 57 93 Q 40 103 50 90 L 57 83 L 64 90 Q 74 103 57 93" fill="#A9A9A9" />
+          <path d="M 50 80 L 45 97 L 48 85 M 64 80 L 69 97 L 66 85" stroke="#808080" strokeWidth="1.5" fill="none" />
+        </g>
+
+        {/* 배지느러미 그룹 - 실처럼 늘어진 움직임 */}
+        <g className={`angelfish-ventral-left ${isMoving ? 'animate-angelfish-ventral-fast' : 'animate-angelfish-ventral'}`} style={{ transformOrigin: '40px 62px' }}>
+          {/* 왼쪽 실처럼 길게 늘어진 배지느러미 */}
+          <path d="M 42 62 L 39 85 L 41 80" stroke="#A9A9A9" strokeWidth="3" fill="none" strokeLinecap="round" />
+        </g>
+        <g className={`angelfish-ventral-right ${isMoving ? 'animate-angelfish-ventral-fast' : 'animate-angelfish-ventral'}`} style={{ transformOrigin: '74px 62px', animationDelay: '0.3s' }}>
+          {/* 오른쪽 실처럼 길게 늘어진 배지느러미 */}
+          <path d="M 72 62 L 75 85 L 73 80" stroke="#A9A9A9" strokeWidth="3" fill="none" strokeLinecap="round" />
+        </g>
+
+        {/* 가슴지느러미 그룹 - 펄럭임 */}
+        <g className={`angelfish-pectoral ${isMoving ? 'animate-angelfish-pectoral-fast' : 'animate-angelfish-pectoral'}`} style={{ transformOrigin: '38px 52px' }}>
+          <ellipse cx="38" cy="52" rx="14" ry="5" fill="#A9A9A9" opacity="0.8" transform="rotate(-25 38 52)" />
+        </g>
+
+        {/* 꼬리지느러미 그룹 - 좌우 흔들림 */}
+        <g className={`angelfish-tail ${isMoving ? 'animate-angelfish-tail-fast' : 'animate-angelfish-tail'}`} style={{ transformOrigin: '86px 52px' }}>
+          <path d="M 86 52 L 103 38 L 98 52 L 103 66 L 86 52" fill="#A9A9A9" />
+        </g>
+
+        {/* 눈 그룹 */}
+        <g className="angelfish-eyes">
+          <circle cx="35" cy="48" r="3.5" fill="black" />
+          <circle cx="35.5" cy="47.5" r="1.5" fill="white" />
+        </g>
       </g>
     </svg>
   ),

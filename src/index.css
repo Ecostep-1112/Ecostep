@@ -1505,3 +1505,158 @@
 .animate-guppy-ventral-fast {
   animation: guppy-ventral-fast 1.3s ease-in-out infinite;
 }
+
+/* 엔젤피쉬 애니메이션 시작 */
+/* 꼬리 좌우 흔들림 - 우아하고 느린 움직임 */
+@keyframes angelfish-tail {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-6deg);
+  }
+  75% {
+    transform: rotate(6deg);
+  }
+}
+
+@keyframes angelfish-tail-fast {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-10deg);
+  }
+  75% {
+    transform: rotate(10deg);
+  }
+}
+
+/* 등지느러미 상하 움직임 - 우아한 흔들림 */
+@keyframes angelfish-dorsal {
+  0%, 100% {
+    transform: scaleY(1) translateY(0);
+  }
+  50% {
+    transform: scaleY(0.97) translateY(1px);
+  }
+}
+
+@keyframes angelfish-dorsal-fast {
+  0%, 100% {
+    transform: scaleY(1) translateY(0);
+  }
+  50% {
+    transform: scaleY(0.94) translateY(2px);
+  }
+}
+
+/* 뒷지느러미 상하 움직임 */
+@keyframes angelfish-anal {
+  0%, 100% {
+    transform: scaleY(1) translateY(0);
+  }
+  50% {
+    transform: scaleY(0.97) translateY(-1px);
+  }
+}
+
+@keyframes angelfish-anal-fast {
+  0%, 100% {
+    transform: scaleY(1) translateY(0);
+  }
+  50% {
+    transform: scaleY(0.94) translateY(-2px);
+  }
+}
+
+/* 배지느러미 실처럼 흔들리는 움직임 - 엔젤피쉬의 특징 */
+@keyframes angelfish-ventral {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(4deg);
+  }
+  50% {
+    transform: rotate(0deg);
+  }
+  75% {
+    transform: rotate(-4deg);
+  }
+}
+
+@keyframes angelfish-ventral-fast {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(7deg);
+  }
+  50% {
+    transform: rotate(0deg);
+  }
+  75% {
+    transform: rotate(-7deg);
+  }
+}
+
+/* 가슴지느러미 펄럭임 */
+@keyframes angelfish-pectoral {
+  0%, 100% {
+    transform: rotate(-25deg) scaleX(1);
+  }
+  50% {
+    transform: rotate(-30deg) scaleX(0.95);
+  }
+}
+
+@keyframes angelfish-pectoral-fast {
+  0%, 100% {
+    transform: rotate(-25deg) scaleX(1);
+  }
+  50% {
+    transform: rotate(-35deg) scaleX(0.9);
+  }
+}
+
+/* 엔젤피쉬 애니메이션 클래스 적용 */
+.animate-angelfish-tail {
+  animation: angelfish-tail 2.5s ease-in-out infinite;
+}
+
+.animate-angelfish-tail-fast {
+  animation: angelfish-tail-fast 1.2s ease-in-out infinite;
+}
+
+.animate-angelfish-dorsal {
+  animation: angelfish-dorsal 3s ease-in-out infinite;
+}
+
+.animate-angelfish-dorsal-fast {
+  animation: angelfish-dorsal-fast 1.5s ease-in-out infinite;
+}
+
+.animate-angelfish-anal {
+  animation: angelfish-anal 3.2s ease-in-out infinite;
+}
+
+.animate-angelfish-anal-fast {
+  animation: angelfish-anal-fast 1.6s ease-in-out infinite;
+}
+
+.animate-angelfish-ventral {
+  animation: angelfish-ventral 2s ease-in-out infinite;
+}
+
+.animate-angelfish-ventral-fast {
+  animation: angelfish-ventral-fast 0.8s ease-in-out infinite;
+}
+
+.animate-angelfish-pectoral {
+  animation: angelfish-pectoral 1s ease-in-out infinite;
+}
+
+.animate-angelfish-pectoral-fast {
+  animation: angelfish-pectoral-fast 0.5s ease-in-out infinite;
+}

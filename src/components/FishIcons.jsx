@@ -338,46 +338,60 @@ const FishIcons = {
     </svg>
   ),
 
-  // 7위: 구피 - 작은 몸 거대한 꼬리 (몸통:꼬리 = 1:3.5)
-  구피: ({ size = 45, color = '#FF69B4' }) => (
-    <svg width={size * 1.6} height={size * 1.1} viewBox="0 0 144 99">
+  // 7위: 구피 - 작은 몸 큰 꼬리 (몸통:꼬리 = 1:2.5)
+  구피: ({ size = 45, color = '#FF69B4', isMoving = false }) => (
+    <svg width={size * 1.45} height={size * 1} viewBox="0 0 117 81">
       <g transform="translate(22, 0)">
-        {/* 아주 작은 몸통 */}
-        <ellipse cx="20" cy="49" rx="9" ry="6" fill="#87CEEB" />
-        <ellipse cx="20" cy="49" rx="7" ry="4.5" fill="#ADD8E6" />
-        
-        {/* 초거대 화려한 꼬리 - 몸통의 3.5배, 훨씬 더 화려하게 */}
-        <path d="M 29 49 Q 80 -5 95 49 Q 80 103 29 49" fill={color} />
-        <path d="M 31 49 Q 78 0 90 49 Q 78 98 31 49" fill="#FF1493" opacity="0.9" />
-        <path d="M 33 49 Q 75 8 85 49 Q 75 90 33 49" fill="#FFB6C1" opacity="0.7" />
-        <path d="M 35 49 Q 72 15 80 49 Q 72 83 35 49" fill="#FFC0CB" opacity="0.5" />
-        
-        {/* 꼬리 끝의 화려한 장식 */}
-        <path d="M 85 49 Q 95 20 100 49 Q 95 78 85 49" fill="#FF00FF" opacity="0.6" />
-        <path d="M 80 49 Q 90 10 95 49 Q 90 88 80 49" fill="#8B008B" opacity="0.4" />
-        
-        {/* 더 많고 화려한 꼬리 무늬 */}
-        <circle cx="50" cy="35" r="4" fill="#00CED1" />
-        <circle cx="65" cy="49" r="5" fill="#00CED1" />
-        <circle cx="50" cy="63" r="4" fill="#00CED1" />
-        <circle cx="58" cy="20" r="3.5" fill="#FFD700" opacity="0.8" />
-        <circle cx="58" cy="78" r="3.5" fill="#FFD700" opacity="0.8" />
-        <circle cx="75" cy="30" r="3" fill="#FF00FF" opacity="0.6" />
-        <circle cx="75" cy="68" r="3" fill="#FF00FF" opacity="0.6" />
-        <circle cx="45" cy="49" r="2.5" fill="#00FF00" opacity="0.5" />
-        <circle cx="70" cy="49" r="2.5" fill="#FFA500" opacity="0.5" />
-        
-        {/* 꼬리의 방사형 선 패턴 */}
-        <path d="M 35 49 L 85 35 M 35 49 L 85 49 M 35 49 L 85 63" stroke="#FFFFFF" strokeWidth="0.8" opacity="0.4" />
-        <path d="M 35 49 L 80 25 M 35 49 L 80 73" stroke="#FFD700" strokeWidth="0.6" opacity="0.3" />
-        
-        {/* 작은 지느러미 */}
-        <path d="M 16 45 Q 20 42 24 45" fill="#FF69B4" />
-        <ellipse cx="18" cy="52" rx="2" ry="1.5" fill="#FF69B4" />
-        
-        {/* 큰 눈 */}
-        <circle cx="14" cy="47" r="2.2" fill="black" />
-        <circle cx="14.5" cy="46.5" r="0.9" fill="white" />
+        {/* 몸통 그룹 - 고정 */}
+        <g className="guppy-body">
+          {/* 작은 몸통 */}
+          <ellipse cx="20" cy="40" rx="9" ry="6" fill="#87CEEB" />
+          <ellipse cx="20" cy="40" rx="7" ry="4.5" fill="#ADD8E6" />
+        </g>
+
+        {/* 꼬리 그룹 - 좌우 흔들림 (우아한 움직임) */}
+        <g className={`guppy-tail ${isMoving ? 'animate-guppy-tail-fast' : 'animate-guppy-tail'}`} style={{ transformOrigin: '29px 40px' }}>
+          {/* 화려한 꼬리 - 몸통의 2.5배 */}
+          <path d="M 29 40 Q 60 10 70 40 Q 60 70 29 40" fill={color} />
+          <path d="M 31 40 Q 58 13 67 40 Q 58 67 31 40" fill="#FF1493" opacity="0.9" />
+          <path d="M 33 40 Q 55 17 63 40 Q 55 63 33 40" fill="#FFB6C1" opacity="0.7" />
+          <path d="M 35 40 Q 52 20 60 40 Q 52 60 35 40" fill="#FFC0CB" opacity="0.5" />
+
+          {/* 꼬리 끝의 화려한 장식 */}
+          <path d="M 63 40 Q 68 25 70 40 Q 68 55 63 40" fill="#FF00FF" opacity="0.6" />
+          <path d="M 60 40 Q 65 20 67 40 Q 65 60 60 40" fill="#8B008B" opacity="0.4" />
+
+          {/* 화려한 꼬리 무늬 */}
+          <circle cx="42" cy="32" r="3" fill="#00CED1" />
+          <circle cx="50" cy="40" r="3.5" fill="#00CED1" />
+          <circle cx="42" cy="48" r="3" fill="#00CED1" />
+          <circle cx="48" cy="22" r="2.5" fill="#FFD700" opacity="0.8" />
+          <circle cx="48" cy="58" r="2.5" fill="#FFD700" opacity="0.8" />
+          <circle cx="55" cy="30" r="2" fill="#FF00FF" opacity="0.6" />
+          <circle cx="55" cy="50" r="2" fill="#FF00FF" opacity="0.6" />
+          <circle cx="38" cy="40" r="2" fill="#00FF00" opacity="0.5" />
+          <circle cx="52" cy="40" r="2" fill="#FFA500" opacity="0.5" />
+
+          {/* 꼬리의 방사형 선 패턴 */}
+          <path d="M 35 40 L 60 32 M 35 40 L 60 40 M 35 40 L 60 48" stroke="#FFFFFF" strokeWidth="0.8" opacity="0.4" />
+          <path d="M 35 40 L 58 25 M 35 40 L 58 55" stroke="#FFD700" strokeWidth="0.6" opacity="0.3" />
+        </g>
+
+        {/* 등지느러미 그룹 - 상하 움직임 */}
+        <g className={`guppy-dorsal-fin ${isMoving ? 'animate-guppy-fin-fast' : 'animate-guppy-fin'}`} style={{ transformOrigin: '20px 36px' }}>
+          <path d="M 16 36 Q 20 33 24 36" fill="#FF69B4" />
+        </g>
+
+        {/* 배지느러미 그룹 - 살짝 흔들림 */}
+        <g className={`guppy-ventral-fin ${isMoving ? 'animate-guppy-ventral-fast' : 'animate-guppy-ventral'}`} style={{ transformOrigin: '18px 43px' }}>
+          <ellipse cx="18" cy="43" rx="2" ry="1.5" fill="#FF69B4" />
+        </g>
+
+        {/* 눈 그룹 */}
+        <g className="guppy-eyes">
+          <circle cx="14" cy="38" r="2.2" fill="black" />
+          <circle cx="14.5" cy="37.5" r="0.9" fill="white" />
+        </g>
       </g>
     </svg>
   ),

@@ -33,7 +33,7 @@ const FishIcons = {
           <path d="M 22 33 Q 14 32 6 31" stroke="#5C4033" strokeWidth="1.5" fill="none" strokeLinecap="round" />
         </g>
         <g className={`corydoras-whisker-2 ${isMoving ? 'animate-whisker-2-fast' : 'animate-whisker-2'}`} style={{ transformOrigin: '22px 35px' }}>
-          <path d="M 22 35 Q 14 35 6 35" stroke="#5C4033" strokeWidth="2" fill="none" strokeLinecap="round" />
+          <path d="M 22 35 Q 14 35 6 35" stroke="#5C4033" strokeWidth="1.5" fill="none" strokeLinecap="round" />
         </g>
         <g className={`corydoras-whisker-3 ${isMoving ? 'animate-whisker-3-fast' : 'animate-whisker-3'}`} style={{ transformOrigin: '22px 37px' }}>
           <path d="M 22 37 Q 14 38 6 39" stroke="#5C4033" strokeWidth="1.5" fill="none" strokeLinecap="round" />
@@ -47,8 +47,8 @@ const FishIcons = {
 
         {/* 꼬리지느러미 그룹 - 좌우 흔들림 */}
         <g className={`corydoras-tail ${isMoving ? 'animate-corydoras-tail-fast' : 'animate-corydoras-tail'}`} style={{ transformOrigin: '68px 35px' }}>
-          <path d="M 68 35 Q 85 27 90 35 Q 85 43 68 35" fill={color} />
-          <path d="M 66 35 Q 82 29 86 35 Q 82 41 66 35" fill="#A0826D" opacity="0.8" />
+          <path d="M 68 35 Q 82 28 85 35 Q 82 42 68 35" fill={color} />
+          <path d="M 66 35 Q 79 30 82 35 Q 79 40 66 35" fill="#A0826D" opacity="0.8" />
         </g>
 
         {/* 눈 그룹 */}
@@ -62,58 +62,76 @@ const FishIcons = {
   ),
 
   // 11위: 체리바브 - 통통하고 귀여운 몸에 갈라진 꼬리
-  체리바브: ({ size = 40, color = '#DC143C' }) => (
+  체리바브: ({ size = 40, color = '#DC143C', isMoving = false }) => (
     <svg width={size * 1.1} height={size * 0.9} viewBox="0 0 88 72">
       <g>
-        {/* 통통하고 귀여운 몸통 */}
-        <ellipse cx="44" cy="36" rx="23" ry="19" fill={color} />
-        <ellipse cx="44" cy="36" rx="21" ry="17" fill="#FF6B6B" />
-        <ellipse cx="44" cy="36" rx="19" ry="15" fill="#FF8A8A" opacity="0.8" />
-        
-        {/* 귀여운 볼록한 배 부분 */}
-        <ellipse cx="44" cy="40" rx="17" ry="13" fill="#FFB6C1" />
-        <ellipse cx="44" cy="41" rx="14" ry="10" fill="#FFC0CB" opacity="0.8" />
-        
-        {/* 귀여운 짧은 수염 2개 */}
-        <path d="M 24 38 Q 20 39 17 40" stroke="#8B0000" strokeWidth="1.3" fill="none" strokeLinecap="round" />
-        <path d="M 24 38 Q 20 37 17 36" stroke="#8B0000" strokeWidth="1.3" fill="none" strokeLinecap="round" />
-        
-        {/* 귀여운 등지느러미 */}
-        <path d="M 32 22 Q 44 15 56 22" fill="#FF1744" />
-        <path d="M 34 22 Q 44 17 54 22" fill="#FF4569" opacity="0.8" />
-        <circle cx="40" cy="19" r="1" fill="#FF6B6B" opacity="0.6" />
-        <circle cx="48" cy="19" r="1" fill="#FF6B6B" opacity="0.6" />
-        
-        {/* 귀여운 배지느러미 */}
-        <path d="M 32 50 Q 44 57 56 50" fill="#FF1744" />
-        <path d="M 34 50 Q 44 55 54 50" fill="#FF4569" opacity="0.8" />
-        
-        {/* 가슴지느러미 */}
-        <ellipse cx="28" cy="38" rx="6.5" ry="4" fill="#FF1744" transform="rotate(-20 28 38)" />
-        <circle cx="29" cy="37" r="0.8" fill="#FF6B6B" opacity="0.5" />
-        
-        {/* 살짝 갈라진 꼬리지느러미 - 체리바브의 특징 */}
-        <path d="M 66 36 L 79 25 L 76 36 L 79 47 L 66 36" fill="#FF1744" />
-        <path d="M 64 36 L 75 27 L 73 36 L 75 45 L 64 36" fill="#DC143C" opacity="0.8" />
-        <path d="M 62 36 L 71 29 L 69 36 L 71 43 L 62 36" fill="#FF6B6B" opacity="0.5" />
-        
-        {/* 꼬리 갈라진 부분 강조 - V자 모양 */}
-        <path d="M 74 36 L 79 32 L 77 36" stroke="#FF1744" strokeWidth="1.8" fill="none" strokeLinecap="round" />
-        <path d="M 74 36 L 79 40 L 77 36" stroke="#FF1744" strokeWidth="1.8" fill="none" strokeLinecap="round" />
-        
-        {/* 크고 귀여운 눈 */}
-        <circle cx="26" cy="34" r="3.5" fill="black" />
-        <circle cx="26.5" cy="33.5" r="1.5" fill="white" />
-        <circle cx="25.5" cy="35" r="0.5" fill="#666" opacity="0.5" />
-        
-        {/* 귀여운 입 */}
-        <ellipse cx="22" cy="37" rx="1.5" ry="1" fill="#8B4513" opacity="0.6" />
-        
-        {/* 비늘 반짝임 */}
-        <ellipse cx="44" cy="34" rx="6" ry="8" fill="#FF8A80" opacity="0.4" />
-        <ellipse cx="52" cy="36" rx="5" ry="7" fill="#FF8A80" opacity="0.4" />
-        <circle cx="38" cy="36" r="2" fill="#FFC0CB" opacity="0.5" />
-        <circle cx="50" cy="33" r="1.5" fill="#FFC0CB" opacity="0.5" />
+        {/* 몸통 그룹 - 고정 */}
+        <g className="cherry-barb-body">
+          {/* 통통하고 귀여운 몸통 */}
+          <ellipse cx="44" cy="36" rx="23" ry="19" fill={color} />
+          <ellipse cx="44" cy="36" rx="21" ry="17" fill="#FF6B6B" />
+          <ellipse cx="44" cy="36" rx="19" ry="15" fill="#FF8A8A" opacity="0.8" />
+
+          {/* 귀여운 볼록한 배 부분 */}
+          <ellipse cx="44" cy="40" rx="17" ry="13" fill="#FFB6C1" />
+          <ellipse cx="44" cy="41" rx="14" ry="10" fill="#FFC0CB" opacity="0.8" />
+
+          {/* 귀여운 입 */}
+          <ellipse cx="22" cy="37" rx="1.5" ry="1" fill="#8B4513" opacity="0.6" />
+
+          {/* 비늘 반짝임 */}
+          <ellipse cx="44" cy="34" rx="6" ry="8" fill="#FF8A80" opacity="0.4" />
+          <ellipse cx="52" cy="36" rx="5" ry="7" fill="#FF8A80" opacity="0.4" />
+          <circle cx="38" cy="36" r="2" fill="#FFC0CB" opacity="0.5" />
+          <circle cx="50" cy="33" r="1.5" fill="#FFC0CB" opacity="0.5" />
+        </g>
+
+        {/* 수염 그룹 - 개별 움직임 */}
+        <g className={`cherry-barb-whisker-1 ${isMoving ? 'animate-cherry-whisker-1-fast' : 'animate-cherry-whisker-1'}`} style={{ transformOrigin: '24px 38px' }}>
+          <path d="M 24 38 Q 20 39 17 40" stroke="#8B0000" strokeWidth="1.3" fill="none" strokeLinecap="round" />
+        </g>
+        <g className={`cherry-barb-whisker-2 ${isMoving ? 'animate-cherry-whisker-2-fast' : 'animate-cherry-whisker-2'}`} style={{ transformOrigin: '24px 38px' }}>
+          <path d="M 24 38 Q 20 37 17 36" stroke="#8B0000" strokeWidth="1.3" fill="none" strokeLinecap="round" />
+        </g>
+
+        {/* 등지느러미 그룹 - 상하 움직임 */}
+        <g className={`cherry-barb-dorsal-fin ${isMoving ? 'animate-cherry-fin-fast' : 'animate-cherry-fin'}`} style={{ transformOrigin: '44px 22px' }}>
+          <path d="M 32 22 Q 44 15 56 22" fill="#FF1744" />
+          <path d="M 34 22 Q 44 17 54 22" fill="#FF4569" opacity="0.8" />
+          <circle cx="40" cy="19" r="1" fill="#FF6B6B" opacity="0.6" />
+          <circle cx="48" cy="19" r="1" fill="#FF6B6B" opacity="0.6" />
+        </g>
+
+        {/* 배지느러미 그룹 - 살짝 흔들림 */}
+        <g className={`cherry-barb-ventral-fin ${isMoving ? 'animate-cherry-ventral-fast' : 'animate-cherry-ventral'}`} style={{ transformOrigin: '44px 50px' }}>
+          <path d="M 32 50 Q 44 57 56 50" fill="#FF1744" />
+          <path d="M 34 50 Q 44 55 54 50" fill="#FF4569" opacity="0.8" />
+        </g>
+
+        {/* 가슴지느러미 그룹 - 펄럭임 */}
+        <g className={`cherry-barb-pectoral-fin ${isMoving ? 'animate-cherry-pectoral-fast' : 'animate-cherry-pectoral'}`} style={{ transformOrigin: '28px 38px' }}>
+          <ellipse cx="28" cy="38" rx="6.5" ry="4" fill="#FF1744" transform="rotate(-20 28 38)" />
+          <circle cx="29" cy="37" r="0.8" fill="#FF6B6B" opacity="0.5" />
+        </g>
+
+        {/* 꼬리지느러미 그룹 - 좌우 흔들림 */}
+        <g className={`cherry-barb-tail ${isMoving ? 'animate-cherry-tail-fast' : 'animate-cherry-tail'}`} style={{ transformOrigin: '66px 36px' }}>
+          {/* 살짝 갈라진 꼬리지느러미 - 체리바브의 특징 */}
+          <path d="M 66 36 L 79 25 L 76 36 L 79 47 L 66 36" fill="#FF1744" />
+          <path d="M 64 36 L 75 27 L 73 36 L 75 45 L 64 36" fill="#DC143C" opacity="0.8" />
+          <path d="M 62 36 L 71 29 L 69 36 L 71 43 L 62 36" fill="#FF6B6B" opacity="0.5" />
+
+          {/* 꼬리 갈라진 부분 강조 - V자 모양 */}
+          <path d="M 74 36 L 79 32 L 77 36" stroke="#FF1744" strokeWidth="1.8" fill="none" strokeLinecap="round" />
+          <path d="M 74 36 L 79 40 L 77 36" stroke="#FF1744" strokeWidth="1.8" fill="none" strokeLinecap="round" />
+        </g>
+
+        {/* 눈 그룹 */}
+        <g className="cherry-barb-eyes">
+          <circle cx="26" cy="34" r="3.5" fill="black" />
+          <circle cx="26.5" cy="33.5" r="1.5" fill="white" />
+          <circle cx="25.5" cy="35" r="0.5" fill="#666" opacity="0.5" />
+        </g>
       </g>
     </svg>
   ),

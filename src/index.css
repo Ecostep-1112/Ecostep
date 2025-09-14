@@ -792,3 +792,184 @@
 .animate-corydoras-blink {
   animation: corydoras-blink 4s ease-in-out infinite;
 }
+
+/* 체리바브 애니메이션 */
+/* 꼬리 좌우 흔들림 - 갈라진 꼬리의 역동적인 움직임 */
+@keyframes cherry-tail {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-10deg);
+  }
+  75% {
+    transform: rotate(10deg);
+  }
+}
+
+@keyframes cherry-tail-fast {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-15deg);
+  }
+  75% {
+    transform: rotate(15deg);
+  }
+}
+
+/* 등지느러미 상하 움직임 */
+@keyframes cherry-fin {
+  0%, 100% {
+    transform: scaleY(1) translateY(0);
+  }
+  50% {
+    transform: scaleY(0.85) translateY(1px);
+  }
+}
+
+@keyframes cherry-fin-fast {
+  0%, 100% {
+    transform: scaleY(1) translateY(0);
+  }
+  50% {
+    transform: scaleY(0.8) translateY(2px);
+  }
+}
+
+/* 배지느러미 살짝 흔들림 */
+@keyframes cherry-ventral {
+  0%, 100% {
+    transform: scaleY(1) translateY(0);
+  }
+  50% {
+    transform: scaleY(0.95) translateY(-0.5px);
+  }
+}
+
+@keyframes cherry-ventral-fast {
+  0%, 100% {
+    transform: scaleY(1) translateY(0);
+  }
+  50% {
+    transform: scaleY(0.9) translateY(-1px);
+  }
+}
+
+/* 가슴지느러미 펄럭임 */
+@keyframes cherry-pectoral {
+  0%, 100% {
+    transform: rotate(-20deg) scaleX(1);
+  }
+  50% {
+    transform: rotate(-25deg) scaleX(0.9);
+  }
+}
+
+@keyframes cherry-pectoral-fast {
+  0%, 100% {
+    transform: rotate(-20deg) scaleX(1);
+  }
+  50% {
+    transform: rotate(-30deg) scaleX(0.85);
+  }
+}
+
+/* 수염 개별 움직임 - 체리바브의 짧은 수염 */
+@keyframes cherry-whisker-1 {
+  0%, 100% {
+    transform: rotate(0deg) scaleX(1);
+  }
+  33% {
+    transform: rotate(-2deg) scaleX(0.95);
+  }
+  66% {
+    transform: rotate(1deg) scaleX(0.98);
+  }
+}
+
+@keyframes cherry-whisker-1-fast {
+  0%, 100% {
+    transform: rotate(0deg) scaleX(1);
+  }
+  33% {
+    transform: rotate(-4deg) scaleX(0.9);
+  }
+  66% {
+    transform: rotate(2deg) scaleX(0.95);
+  }
+}
+
+@keyframes cherry-whisker-2 {
+  0%, 100% {
+    transform: rotate(0deg) scaleX(1);
+  }
+  40% {
+    transform: rotate(2deg) scaleX(0.95);
+  }
+  80% {
+    transform: rotate(-1deg) scaleX(0.98);
+  }
+}
+
+@keyframes cherry-whisker-2-fast {
+  0%, 100% {
+    transform: rotate(0deg) scaleX(1);
+  }
+  40% {
+    transform: rotate(4deg) scaleX(0.9);
+  }
+  80% {
+    transform: rotate(-2deg) scaleX(0.95);
+  }
+}
+
+/* 애니메이션 클래스 적용 */
+.animate-cherry-tail {
+  animation: cherry-tail 1s ease-in-out infinite;
+}
+
+.animate-cherry-tail-fast {
+  animation: cherry-tail-fast 0.5s ease-in-out infinite;
+}
+
+.animate-cherry-fin {
+  animation: cherry-fin 1.4s ease-in-out infinite;
+}
+
+.animate-cherry-fin-fast {
+  animation: cherry-fin-fast 0.7s ease-in-out infinite;
+}
+
+.animate-cherry-ventral {
+  animation: cherry-ventral 1.6s ease-in-out infinite;
+}
+
+.animate-cherry-ventral-fast {
+  animation: cherry-ventral-fast 0.8s ease-in-out infinite;
+}
+
+.animate-cherry-pectoral {
+  animation: cherry-pectoral 1.2s ease-in-out infinite;
+}
+
+.animate-cherry-pectoral-fast {
+  animation: cherry-pectoral-fast 0.6s ease-in-out infinite;
+}
+
+.animate-cherry-whisker-1 {
+  animation: cherry-whisker-1 0.6s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.animate-cherry-whisker-1-fast {
+  animation: cherry-whisker-1-fast 0.3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.animate-cherry-whisker-2 {
+  animation: cherry-whisker-2 0.7s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.animate-cherry-whisker-2-fast {
+  animation: cherry-whisker-2-fast 0.35s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}

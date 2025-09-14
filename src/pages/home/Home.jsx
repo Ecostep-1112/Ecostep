@@ -92,17 +92,18 @@ const Home = ({
     const initialPositions = displayFish.map((fishName, i) => ({
       name: fishName,
       x: fishCount === 1 ? 50 : minX + (i * spacing),  // 하나일 때는 중앙, 여러 개일 때는 균등 배치
-      y: fishName === '코리도라스' ? 65 : 35 + (i % 3) * 10,  // 코리도라스는 바닥, 나머지는 높이 변화
+      y: fishName === '코리도라스' ? 65 :
+         fishName === '체리바브' ? 45 + (i % 2) * 10 : 35 + (i % 3) * 10,  // 코리도라스는 바닥, 체리바브는 중간, 나머지는 높이 변화
       direction: Math.random() > 0.5 ? 1 : -1,  // 랜덤 방향
-      speed: fishName === '코리도라스' ? 0.3 : 0  // 코리도라스만 움직임
+      speed: (fishName === '코리도라스' || fishName === '체리바브') ? 0.3 : 0  // 코리도라스와 체리바브만 움직임
     }));
     setFishPositions(initialPositions);
 
-    // 코리도라스 애니메이션
+    // 코리도라스와 체리바브 애니메이션
     const interval = setInterval(() => {
       setFishPositions(prevPositions => {
         return prevPositions.map(fish => {
-          if (fish.name === '코리도라스') {
+          if (fish.name === '코리도라스' || fish.name === '체리바브') {
             let newX = fish.x + (fish.speed * fish.direction);
             let newDirection = fish.direction;
 

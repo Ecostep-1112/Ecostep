@@ -137,47 +137,64 @@ const FishIcons = {
   ),
 
   // 10위: 네온테트라 - 귀여운 작은 물고기와 빛나는 네온 라인
-  네온테트라: ({ size = 35, color = '#00CED1' }) => (
+  네온테트라: ({ size = 35, color = '#00CED1', isMoving = false }) => (
     <svg width={size * 1.2} height={size * 0.8} viewBox="0 0 84 56">
       <g>
-        {/* 작고 날씬한 유선형 몸통 - 귀여운 느낌 */}
-        <ellipse cx="42" cy="28" rx="18" ry="9" fill="#E8E8E8" />
-        <ellipse cx="42" cy="28" rx="16" ry="7.5" fill="#F5F5F5" />
-        <ellipse cx="42" cy="29" rx="14" ry="6" fill="#FFFFFF" opacity="0.8" />
+        {/* 몸통 그룹 - 고정 */}
+        <g className="neon-tetra-body">
+          {/* 작고 날씬한 유선형 몸통 - 귀여운 느낌 */}
+          <ellipse cx="42" cy="28" rx="18" ry="9" fill="#E8E8E8" />
+          <ellipse cx="42" cy="28" rx="16" ry="7.5" fill="#F5F5F5" />
+          <ellipse cx="42" cy="29" rx="14" ry="6" fill="#FFFFFF" opacity="0.8" />
         
-        {/* 네온 블루 라인 - 반짝이는 효과 강화 */}
-        <path d="M 24 25 Q 33 24 42 24 Q 51 24 60 25" stroke={color} strokeWidth="3.5" fill="none" />
-        <path d="M 24 25 Q 33 24 42 24 Q 51 24 60 25" stroke="#00FFFF" strokeWidth="2" fill="none" opacity="0.9" />
-        <path d="M 24 25 Q 33 24 42 24 Q 51 24 60 25" stroke="#FFFFFF" strokeWidth="1" fill="none" opacity="0.7" />
+          {/* 귀여운 입 */}
+          <ellipse cx="22" cy="28" rx="1.5" ry="1" fill="#FF69B4" opacity="0.6" />
+        </g>
+
+        {/* 네온 블루 라인 그룹 - 반짝임 효과 */}
+        <g className={`neon-tetra-glow ${isMoving ? 'animate-neon-glow-fast' : 'animate-neon-glow'}`}>
+          <path d="M 24 25 Q 33 24 42 24 Q 51 24 60 25" stroke={color} strokeWidth="3.5" fill="none" />
+          <path d="M 24 25 Q 33 24 42 24 Q 51 24 60 25" stroke="#00FFFF" strokeWidth="2" fill="none" opacity="0.9" />
+          <path d="M 24 25 Q 33 24 42 24 Q 51 24 60 25" stroke="#FFFFFF" strokeWidth="1" fill="none" opacity="0.7" />
+
+          {/* 빨간 라인 - 더 선명하게 */}
+          <path d="M 44 31 Q 50 31 60 31" stroke="#FF1493" strokeWidth="3" fill="none" />
+          <path d="M 44 31 Q 50 31 60 31" stroke="#FF69B4" strokeWidth="1.5" fill="none" opacity="0.8" />
+        </g>
         
-        {/* 빨간 라인 - 더 선명하게 */}
-        <path d="M 44 31 Q 50 31 60 31" stroke="#FF1493" strokeWidth="3" fill="none" />
-        <path d="M 44 31 Q 50 31 60 31" stroke="#FF69B4" strokeWidth="1.5" fill="none" opacity="0.8" />
+        {/* 등지느러미 그룹 - 상하 움직임 */}
+        <g className={`neon-tetra-dorsal-fin ${isMoving ? 'animate-neon-fin-fast' : 'animate-neon-fin'}`} style={{ transformOrigin: '42px 20px' }}>
+          <path d="M 36 20 Q 42 16 48 20" fill="rgba(0,206,209,0.3)" stroke="rgba(0,206,209,0.5)" strokeWidth="0.5" />
+        </g>
+
+        {/* 배지느러미 그룹 */}
+        <g className={`neon-tetra-ventral-fin ${isMoving ? 'animate-neon-fin-fast' : 'animate-neon-fin'}`} style={{ transformOrigin: '42px 36px' }}>
+          <path d="M 36 36 Q 42 40 48 36" fill="rgba(0,206,209,0.3)" stroke="rgba(0,206,209,0.5)" strokeWidth="0.5" />
+        </g>
+
+        {/* 가슴지느러미 그룹 - 펄럭임 */}
+        <g className={`neon-tetra-pectoral-fin ${isMoving ? 'animate-neon-pectoral-fast' : 'animate-neon-pectoral'}`} style={{ transformOrigin: '28px 30px' }}>
+          <ellipse cx="28" cy="30" rx="4" ry="2.5" fill="rgba(0,206,209,0.3)" stroke="rgba(0,206,209,0.5)" strokeWidth="0.5" transform="rotate(-20 28 30)" />
+        </g>
         
-        {/* 귀여운 투명한 지느러미들 */}
-        {/* 등지느러미 */}
-        <path d="M 36 20 Q 42 16 48 20" fill="rgba(0,206,209,0.3)" stroke="rgba(0,206,209,0.5)" strokeWidth="0.5" />
-        {/* 배지느러미 */}
-        <path d="M 36 36 Q 42 40 48 36" fill="rgba(0,206,209,0.3)" stroke="rgba(0,206,209,0.5)" strokeWidth="0.5" />
-        {/* 가슴지느러미 양쪽 */}
-        <ellipse cx="28" cy="30" rx="4" ry="2.5" fill="rgba(0,206,209,0.3)" stroke="rgba(0,206,209,0.5)" strokeWidth="0.5" transform="rotate(-20 28 30)" />
-        <ellipse cx="56" cy="30" rx="4" ry="2.5" fill="rgba(0,206,209,0.3)" stroke="rgba(0,206,209,0.5)" strokeWidth="0.5" transform="rotate(20 56 30)" />
+        {/* 꼬리지느러미 그룹 - 좌우 흔들림 */}
+        <g className={`neon-tetra-tail ${isMoving ? 'animate-neon-tail-fast' : 'animate-neon-tail'}`} style={{ transformOrigin: '60px 28px' }}>
+          <path d="M 60 28 L 70 22 L 68 28 L 70 34 L 60 28" fill="rgba(0,206,209,0.4)" stroke="rgba(0,206,209,0.6)" strokeWidth="0.5" />
+          <path d="M 58 28 L 66 24 L 65 28 L 66 32 L 58 28" fill="rgba(255,255,255,0.6)" />
+        </g>
         
-        {/* 귀여운 꼬리지느러미 */}
-        <path d="M 60 28 L 70 22 L 68 28 L 70 34 L 60 28" fill="rgba(0,206,209,0.4)" stroke="rgba(0,206,209,0.6)" strokeWidth="0.5" />
-        <path d="M 58 28 L 66 24 L 65 28 L 66 32 L 58 28" fill="rgba(255,255,255,0.6)" />
-        
-        {/* 크고 귀여운 눈 */}
-        <circle cx="26" cy="26" r="3.5" fill="black" />
-        <circle cx="26.5" cy="25.5" r="1.5" fill="white" />
-        <circle cx="25.5" cy="27" r="0.5" fill="#666" opacity="0.5" />
-        
+        {/* 눈 그룹 */}
+        <g className="neon-tetra-eyes">
+          <circle cx="26" cy="26" r="3.5" fill="black" />
+          <circle cx="26.5" cy="25.5" r="1.5" fill="white" />
+          <circle cx="25.5" cy="27" r="0.5" fill="#666" opacity="0.5" />
+        </g>
+
         {/* 네온 발광 효과 */}
-        <ellipse cx="42" cy="25" rx="12" ry="2" fill={color} opacity="0.2" />
-        <ellipse cx="42" cy="28" rx="16" ry="7.5" fill="none" stroke="#00FFFF" strokeWidth="0.8" opacity="0.4" />
-        
-        {/* 귀여운 입 */}
-        <ellipse cx="22" cy="28" rx="1.5" ry="1" fill="#FF69B4" opacity="0.6" />
+        <g className={`neon-tetra-aura ${isMoving ? 'animate-neon-aura-fast' : 'animate-neon-aura'}`}>
+          <ellipse cx="42" cy="25" rx="12" ry="2" fill={color} opacity="0.2" />
+          <ellipse cx="42" cy="28" rx="16" ry="7.5" fill="none" stroke="#00FFFF" strokeWidth="0.8" opacity="0.4" />
+        </g>
       </g>
     </svg>
   ),

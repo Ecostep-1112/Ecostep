@@ -743,74 +743,95 @@ const FishIcons = {
   ),
 
   // 2위: 만다린피쉬 - 통통하고 둥근 귀여운 몸과 초대형 눈
-  만다린피쉬: ({ size = 50, color = '#FF4500' }) => (
+  만다린피쉬: ({ size = 50, color = '#FF4500', isMoving = false }) => (
     <svg width={size * 1.1} height={size * 1} viewBox="0 0 110 100">
       <g>
-        {/* 매우 통통하고 둥근 몸통 - 거의 원형에 가깝게 */}
-        <ellipse cx="55" cy="50" rx="30" ry="28" fill="#FF8C00" />
-        <ellipse cx="55" cy="50" rx="28" ry="26" fill="#FF7F50" />
-        <ellipse cx="55" cy="50" rx="25" ry="23" fill="#FFA07A" opacity="0.8" />
-        <ellipse cx="55" cy="50" rx="20" ry="18" fill="#FFCBA4" opacity="0.6" />
-        
-        {/* 복잡한 미로 무늬 - 파란색 라인 (통통한 몸에 맞게 조정) */}
-        <path d="M 32 48 Q 38 43 44 48 T 55 48 T 66 48 T 78 48" 
-              fill="none" stroke="#00CED1" strokeWidth="3.5" />
-        <path d="M 32 52 Q 38 57 44 52 T 55 52 T 66 52 T 78 52" 
-              fill="none" stroke="#1E90FF" strokeWidth="3.5" />
-        <path d="M 35 45 Q 41 40 47 45 T 57 45 T 67 45 T 75 45" 
-              fill="none" stroke="#00BFFF" strokeWidth="2.5" />
-        <path d="M 35 55 Q 41 60 47 55 T 57 55 T 67 55 T 75 55" 
-              fill="none" stroke="#4169E1" strokeWidth="2.5" />
-        
-        {/* 초록색 무늬 */}
-        <circle cx="42" cy="48" r="3.5" fill="#00FF00" opacity="0.6" />
-        <circle cx="55" cy="45" r="3.5" fill="#00FF00" opacity="0.6" />
-        <circle cx="68" cy="48" r="3.5" fill="#00FF00" opacity="0.6" />
-        
-        {/* 주황색 점 */}
-        <circle cx="47" cy="50" r="3" fill="#FF4500" />
-        <circle cx="55" cy="48" r="3.5" fill="#FF4500" />
-        <circle cx="63" cy="50" r="3" fill="#FF6347" />
-        <circle cx="51" cy="53" r="2.5" fill="#FF6347" />
-        <circle cx="59" cy="53" r="2.5" fill="#FF6347" />
-        
-        {/* 보라색 테두리 */}
-        <ellipse cx="55" cy="50" rx="27" ry="25" fill="none" stroke="#8A2BE2" strokeWidth="2" opacity="0.7" />
-        
-        {/* 통통한 둥근 등지느러미 */}
-        <path d="M 38 32 Q 55 22 72 32" fill="#FF8C00" />
-        <path d="M 40 32 Q 55 24 70 32" fill="#FF7F50" opacity="0.8" />
-        <circle cx="47" cy="28" r="2" fill="#00CED1" />
-        <circle cx="55" cy="25" r="2.5" fill="#00CED1" />
-        <circle cx="63" cy="28" r="2" fill="#00CED1" />
-        
-        {/* 통통한 둥근 뒷지느러미 */}
-        <path d="M 38 68 Q 55 78 72 68" fill="#FF8C00" />
-        <path d="M 40 68 Q 55 76 70 68" fill="#FF7F50" opacity="0.8" />
-        
-        {/* 통통한 둥근 가슴지느러미 양쪽 */}
-        <ellipse cx="35" cy="53" rx="8" ry="5" fill="#FFA500" opacity="0.8" transform="rotate(-20 35 53)" />
-        <ellipse cx="75" cy="53" rx="8" ry="5" fill="#FFA500" opacity="0.8" transform="rotate(20 75 53)" />
-        
-        {/* 통통한 둥근 꼬리지느러미 */}
-        <path d="M 85 50 Q 98 37 96 50 Q 98 63 85 50" fill="#FF8C00" />
-        <path d="M 83 50 Q 94 39 92 50 Q 94 61 83 50" fill="#FF7F50" opacity="0.8" />
-        <circle cx="89" cy="50" r="2.5" fill="#00CED1" />
-        <circle cx="87" cy="46" r="2" fill="#00BFFF" opacity="0.7" />
-        <circle cx="87" cy="54" r="2" fill="#00BFFF" opacity="0.7" />
-        
-        {/* 초대형 크고 귀여운 눈 - 통통한 몸에 더 크게 */}
-        <circle cx="35" cy="46" r="7.5" fill="black" />
-        <circle cx="35" cy="46" r="7" fill="#1a1a1a" />
-        <circle cx="35.5" cy="45" r="3.5" fill="white" />
-        <circle cx="34" cy="48" r="1.5" fill="#888" opacity="0.5" />
-        
-        {/* 귀여운 작은 입 */}
-        <ellipse cx="28" cy="51" rx="3" ry="2.5" fill="#8B4513" opacity="0.7" />
-        
-        {/* 형광 효과 */}
-        <ellipse cx="55" cy="48" rx="22" ry="15" fill="#00FFFF" opacity="0.15" />
-        <ellipse cx="50" cy="45" rx="21" ry="18" fill="none" stroke="#00FFFF" strokeWidth="0.5" opacity="0.3" />
+        {/* 몸통 그룹 - 고정 */}
+        <g className="mandarin-body">
+          {/* 매우 통통하고 둥근 몸통 - 거의 원형에 가깝게 */}
+          <ellipse cx="55" cy="50" rx="30" ry="28" fill="#FF8C00" />
+          <ellipse cx="55" cy="50" rx="28" ry="26" fill="#FF7F50" />
+          <ellipse cx="55" cy="50" rx="25" ry="23" fill="#FFA07A" opacity="0.8" />
+          <ellipse cx="55" cy="50" rx="20" ry="18" fill="#FFCBA4" opacity="0.6" />
+
+          {/* 복잡한 미로 무늬 - 파란색 라인 (통통한 몸에 맞게 조정) */}
+          <path d="M 32 48 Q 38 43 44 48 T 55 48 T 66 48 T 78 48"
+                fill="none" stroke="#00CED1" strokeWidth="3.5" />
+          <path d="M 32 52 Q 38 57 44 52 T 55 52 T 66 52 T 78 52"
+                fill="none" stroke="#1E90FF" strokeWidth="3.5" />
+          <path d="M 35 45 Q 41 40 47 45 T 57 45 T 67 45 T 75 45"
+                fill="none" stroke="#00BFFF" strokeWidth="2.5" />
+          <path d="M 35 55 Q 41 60 47 55 T 57 55 T 67 55 T 75 55"
+                fill="none" stroke="#4169E1" strokeWidth="2.5" />
+
+          {/* 초록색 무늬 */}
+          <circle cx="42" cy="48" r="3.5" fill="#00FF00" opacity="0.6" />
+          <circle cx="55" cy="45" r="3.5" fill="#00FF00" opacity="0.6" />
+          <circle cx="68" cy="48" r="3.5" fill="#00FF00" opacity="0.6" />
+
+          {/* 주황색 점 */}
+          <circle cx="47" cy="50" r="3" fill="#FF4500" />
+          <circle cx="55" cy="48" r="3.5" fill="#FF4500" />
+          <circle cx="63" cy="50" r="3" fill="#FF6347" />
+          <circle cx="51" cy="53" r="2.5" fill="#FF6347" />
+          <circle cx="59" cy="53" r="2.5" fill="#FF6347" />
+
+          {/* 보라색 테두리 */}
+          <ellipse cx="55" cy="50" rx="27" ry="25" fill="none" stroke="#8A2BE2" strokeWidth="2" opacity="0.7" />
+
+          {/* 귀여운 작은 입 */}
+          <ellipse cx="28" cy="51" rx="3" ry="2.5" fill="#8B4513" opacity="0.7" />
+
+          {/* 형광 효과 */}
+          <ellipse cx="55" cy="48" rx="22" ry="15" fill="#00FFFF" opacity="0.15" />
+          <ellipse cx="50" cy="45" rx="21" ry="18" fill="none" stroke="#00FFFF" strokeWidth="0.5" opacity="0.3" />
+        </g>
+
+        {/* 등지느러미 그룹 - 상하 움직임 */}
+        <g className={`mandarin-dorsal ${isMoving ? 'animate-mandarin-dorsal-fast' : 'animate-mandarin-dorsal'}`} style={{ transformOrigin: '55px 27px' }}>
+          {/* 통통한 둥근 등지느러미 */}
+          <path d="M 38 32 Q 55 22 72 32" fill="#FF8C00" />
+          <path d="M 40 32 Q 55 24 70 32" fill="#FF7F50" opacity="0.8" />
+          <circle cx="47" cy="28" r="2" fill="#00CED1" />
+          <circle cx="55" cy="25" r="2.5" fill="#00CED1" />
+          <circle cx="63" cy="28" r="2" fill="#00CED1" />
+        </g>
+
+        {/* 뒷지느러미 그룹 - 상하 움직임 */}
+        <g className={`mandarin-anal ${isMoving ? 'animate-mandarin-anal-fast' : 'animate-mandarin-anal'}`} style={{ transformOrigin: '55px 73px' }}>
+          {/* 통통한 둥근 뒷지느러미 */}
+          <path d="M 38 68 Q 55 78 72 68" fill="#FF8C00" />
+          <path d="M 40 68 Q 55 76 70 68" fill="#FF7F50" opacity="0.8" />
+        </g>
+
+        {/* 왼쪽 가슴지느러미 그룹 - 펄럭임 */}
+        <g className={`mandarin-pectoral-left ${isMoving ? 'animate-mandarin-pectoral-left-fast' : 'animate-mandarin-pectoral-left'}`} style={{ transformOrigin: '35px 53px' }}>
+          <ellipse cx="35" cy="53" rx="8" ry="5" fill="#FFA500" opacity="0.8" transform="rotate(-20 35 53)" />
+        </g>
+
+        {/* 오른쪽 가슴지느러미 그룹 - 펄럭임 */}
+        <g className={`mandarin-pectoral-right ${isMoving ? 'animate-mandarin-pectoral-right-fast' : 'animate-mandarin-pectoral-right'}`} style={{ transformOrigin: '75px 53px' }}>
+          <ellipse cx="75" cy="53" rx="8" ry="5" fill="#FFA500" opacity="0.8" transform="rotate(20 75 53)" />
+        </g>
+
+        {/* 꼬리지느러미 그룹 - 좌우 흔들림 */}
+        <g className={`mandarin-tail ${isMoving ? 'animate-mandarin-tail-fast' : 'animate-mandarin-tail'}`} style={{ transformOrigin: '85px 50px' }}>
+          {/* 통통한 둥근 꼬리지느러미 */}
+          <path d="M 85 50 Q 98 37 96 50 Q 98 63 85 50" fill="#FF8C00" />
+          <path d="M 83 50 Q 94 39 92 50 Q 94 61 83 50" fill="#FF7F50" opacity="0.8" />
+          <circle cx="89" cy="50" r="2.5" fill="#00CED1" />
+          <circle cx="87" cy="46" r="2" fill="#00BFFF" opacity="0.7" />
+          <circle cx="87" cy="54" r="2" fill="#00BFFF" opacity="0.7" />
+        </g>
+
+        {/* 눈 그룹 */}
+        <g className="mandarin-eyes">
+          {/* 초대형 크고 귀여운 눈 - 통통한 몸에 더 크게 */}
+          <circle cx="35" cy="46" r="7.5" fill="black" />
+          <circle cx="35" cy="46" r="7" fill="#1a1a1a" />
+          <circle cx="35.5" cy="45" r="3.5" fill="white" />
+          <circle cx="34" cy="48" r="1.5" fill="#888" opacity="0.5" />
+        </g>
       </g>
     </svg>
   ),

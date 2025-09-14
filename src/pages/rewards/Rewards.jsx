@@ -525,7 +525,7 @@ const Rewards = ({
                           const FishIcon = FishIcons[fish.name.replace(' ', '')];
                           // 특정 물고기는 더 크게 표시
                           const iconSize = ['네온테트라', '아피스토그라마', '킬리피쉬'].includes(fish.name) ? 48 : 36;
-                          return FishIcon ? <FishIcon size={iconSize} isMoving={false} /> : null;
+                          return FishIcon ? <FishIcon size={iconSize} isMoving={true} /> : null;
                         })()}
                       </div>
                       

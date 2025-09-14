@@ -1591,6 +1591,359 @@
   animation: guppy-ventral-fast 1.3s ease-in-out infinite;
 }
 
+/* 베타 애니메이션 시작 */
+/* 꼬리의 화려하고 우아한 좌우 흔들림 - 부채꼴 움직임 */
+@keyframes beta-tail {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-5deg);
+  }
+  75% {
+    transform: rotate(5deg);
+  }
+}
+
+@keyframes beta-tail-fast {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-8deg);
+  }
+  75% {
+    transform: rotate(8deg);
+  }
+}
+
+/* 등지느러미 물결치는 움직임 - 베타의 특징 */
+@keyframes beta-dorsal {
+  0%, 100% {
+    transform: scaleY(1) translateY(0);
+  }
+  50% {
+    transform: scaleY(0.95) translateY(1px);
+  }
+}
+
+@keyframes beta-dorsal-fast {
+  0%, 100% {
+    transform: scaleY(1) translateY(0);
+  }
+  50% {
+    transform: scaleY(0.9) translateY(2px);
+  }
+}
+
+/* 뒷지느러미 물결치는 움직임 */
+@keyframes beta-anal {
+  0%, 100% {
+    transform: scaleY(1) translateY(0);
+  }
+  50% {
+    transform: scaleY(0.95) translateY(-1px);
+  }
+}
+
+@keyframes beta-anal-fast {
+  0%, 100% {
+    transform: scaleY(1) translateY(0);
+  }
+  50% {
+    transform: scaleY(0.9) translateY(-2px);
+  }
+}
+
+/* 가슴지느러미 우아한 펄럭임 */
+@keyframes beta-pectoral {
+  0%, 100% {
+    transform: rotate(-25deg) scaleX(1);
+  }
+  50% {
+    transform: rotate(-35deg) scaleX(0.85);
+  }
+}
+
+@keyframes beta-pectoral-fast {
+  0%, 100% {
+    transform: rotate(-25deg) scaleX(1);
+  }
+  50% {
+    transform: rotate(-40deg) scaleX(0.75);
+  }
+}
+
+/* 양쪽 배지느러미 우아한 흔들림 - 베타 특유의 실 같은 움직임 (3등분) */
+/* 왼쪽 첫 번째 */
+@keyframes beta-ventral-left-1 {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-6deg);
+  }
+  50% {
+    transform: rotate(0deg);
+  }
+  75% {
+    transform: rotate(6deg);
+  }
+}
+
+@keyframes beta-ventral-left-1-fast {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-10deg);
+  }
+  50% {
+    transform: rotate(0deg);
+  }
+  75% {
+    transform: rotate(10deg);
+  }
+}
+
+/* 왼쪽 두 번째 (중앙) */
+@keyframes beta-ventral-left-2 {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-6deg);
+  }
+  50% {
+    transform: rotate(0deg);
+  }
+  75% {
+    transform: rotate(6deg);
+  }
+}
+
+@keyframes beta-ventral-left-2-fast {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-10deg);
+  }
+  50% {
+    transform: rotate(0deg);
+  }
+  75% {
+    transform: rotate(10deg);
+  }
+}
+
+/* 왼쪽 세 번째 */
+@keyframes beta-ventral-left-3 {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-6deg);
+  }
+  50% {
+    transform: rotate(0deg);
+  }
+  75% {
+    transform: rotate(6deg);
+  }
+}
+
+@keyframes beta-ventral-left-3-fast {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-10deg);
+  }
+  50% {
+    transform: rotate(0deg);
+  }
+  75% {
+    transform: rotate(10deg);
+  }
+}
+
+/* 오른쪽 첫 번째 */
+@keyframes beta-ventral-right-1 {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-6deg);
+  }
+  50% {
+    transform: rotate(0deg);
+  }
+  75% {
+    transform: rotate(6deg);
+  }
+}
+
+@keyframes beta-ventral-right-1-fast {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-10deg);
+  }
+  50% {
+    transform: rotate(0deg);
+  }
+  75% {
+    transform: rotate(10deg);
+  }
+}
+
+/* 오른쪽 두 번째 (중앙) */
+@keyframes beta-ventral-right-2 {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-6deg);
+  }
+  50% {
+    transform: rotate(0deg);
+  }
+  75% {
+    transform: rotate(6deg);
+  }
+}
+
+@keyframes beta-ventral-right-2-fast {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-10deg);
+  }
+  50% {
+    transform: rotate(0deg);
+  }
+  75% {
+    transform: rotate(10deg);
+  }
+}
+
+/* 오른쪽 세 번째 */
+@keyframes beta-ventral-right-3 {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-6deg);
+  }
+  50% {
+    transform: rotate(0deg);
+  }
+  75% {
+    transform: rotate(6deg);
+  }
+}
+
+@keyframes beta-ventral-right-3-fast {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-10deg);
+  }
+  50% {
+    transform: rotate(0deg);
+  }
+  75% {
+    transform: rotate(10deg);
+  }
+}
+
+/* 베타 애니메이션 클래스 적용 */
+.animate-beta-tail {
+  animation: beta-tail 2.5s ease-in-out infinite;
+}
+
+.animate-beta-tail-fast {
+  animation: beta-tail-fast 1.3s ease-in-out infinite;
+}
+
+.animate-beta-dorsal {
+  animation: beta-dorsal 2s ease-in-out infinite;
+}
+
+.animate-beta-dorsal-fast {
+  animation: beta-dorsal-fast 1s ease-in-out infinite;
+}
+
+.animate-beta-anal {
+  animation: beta-anal 2.2s ease-in-out infinite;
+}
+
+.animate-beta-anal-fast {
+  animation: beta-anal-fast 1.1s ease-in-out infinite;
+}
+
+.animate-beta-pectoral {
+  animation: beta-pectoral 1.8s ease-in-out infinite;
+}
+
+.animate-beta-pectoral-fast {
+  animation: beta-pectoral-fast 0.9s ease-in-out infinite;
+}
+
+/* 왼쪽 배지느러미 애니메이션 클래스 */
+.animate-beta-ventral-left-1 {
+  animation: beta-ventral-left-1 4s ease-in-out infinite;
+}
+
+.animate-beta-ventral-left-1-fast {
+  animation: beta-ventral-left-1-fast 2.5s ease-in-out infinite;
+}
+
+.animate-beta-ventral-left-2 {
+  animation: beta-ventral-left-2 4s ease-in-out infinite;
+}
+
+.animate-beta-ventral-left-2-fast {
+  animation: beta-ventral-left-2-fast 2.5s ease-in-out infinite;
+}
+
+.animate-beta-ventral-left-3 {
+  animation: beta-ventral-left-3 4s ease-in-out infinite;
+}
+
+.animate-beta-ventral-left-3-fast {
+  animation: beta-ventral-left-3-fast 2.5s ease-in-out infinite;
+}
+
+/* 오른쪽 배지느러미 애니메이션 클래스 */
+.animate-beta-ventral-right-1 {
+  animation: beta-ventral-right-1 4s ease-in-out infinite;
+}
+
+.animate-beta-ventral-right-1-fast {
+  animation: beta-ventral-right-1-fast 2.5s ease-in-out infinite;
+}
+
+.animate-beta-ventral-right-2 {
+  animation: beta-ventral-right-2 4s ease-in-out infinite;
+}
+
+.animate-beta-ventral-right-2-fast {
+  animation: beta-ventral-right-2-fast 2.5s ease-in-out infinite;
+}
+
+.animate-beta-ventral-right-3 {
+  animation: beta-ventral-right-3 4s ease-in-out infinite;
+}
+
+.animate-beta-ventral-right-3-fast {
+  animation: beta-ventral-right-3-fast 2.5s ease-in-out infinite;
+}
+
 /* 엔젤피쉬 애니메이션 시작 */
 /* 꼬리 좌우 흔들림 - 우아하고 느린 움직임 */
 @keyframes angelfish-tail {

@@ -52,25 +52,29 @@ const Home = ({
   // 랜덤 선택 로직
   useEffect(() => {
     if (isRandomFish && purchasedFish.length > 0) {
-      // 랜덤으로 물고기 선택
-      const shuffled = [...purchasedFish].sort(() => Math.random() - 0.5);
-      const count = Math.min(fishCount || 3, purchasedFish.length);
-      setDisplayFish(shuffled.slice(0, count));
+      // 랜덤으로 물고기 선택 - fishCount가 0이면 빈 배열
+      if (fishCount === 0) {
+        setDisplayFish([]);
+      } else {
+        const shuffled = [...purchasedFish].sort(() => Math.random() - 0.5);
+        const count = Math.min(fishCount, purchasedFish.length);
+        setDisplayFish(shuffled.slice(0, count));
+      }
     } else if (selectedFish.length > 0) {
       // 선택된 물고기 표시
       setDisplayFish(selectedFish.map(index => purchasedFish[index]).filter(Boolean));
     } else {
-      // 기본값: 처음 3마리
-      setDisplayFish(purchasedFish.slice(0, 3));
+      // 선택된 물고기가 없으면 빈 배열
+      setDisplayFish([]);
     }
-  }, [isRandomFish, purchasedFish, selectedFish, fishCount]);
+  }, [isRandomFish, purchasedFish, selectedFish, fishCount, isActive]); // isActive 추가로 홈 탭 클릭 시 리렌더링
   
   // 랜덤 장식품 선택 로직
   useEffect(() => {
     const availableDecorations = Object.values(decorationsData).flat()
       .filter(deco => purchasedDecorations.includes(deco.name))
       .map(deco => deco.name);
-      
+
     if (isRandomDecorations && availableDecorations.length > 0) {
       // 랜덤으로 장식품 선택
       const shuffled = [...availableDecorations].sort(() => Math.random() - 0.5);
@@ -80,7 +84,7 @@ const Home = ({
       // 선택된 장식품 표시
       setDisplayDecorations(selectedDecorations);
     }
-  }, [isRandomDecorations, selectedDecorations, purchasedDecorations, decorationsData]);
+  }, [isRandomDecorations, selectedDecorations, purchasedDecorations, decorationsData, isActive]); // isActive 추가로 홈 탭 클릭 시 리렌더링
   
   // 물고기 위치 초기화 및 애니메이션
   useEffect(() => {
@@ -267,7 +271,7 @@ const Home = ({
             
           {/* 물고기 표시 (애니메이션) */}
           <div className="absolute inset-0 pointer-events-none z-[4] overflow-hidden">
-            {fishPositions.map((fish, i) => {
+            {displayFish.length > 0 && fishPositions.map((fish, i) => {
               const FishIcon = FishIcons[fish.name.replace(' ', '')];
               const isMoving = fish.speed > 0;
               // 물고기가 어항 경계를 벗어나지 않도록 추가 제한
@@ -290,7 +294,7 @@ const Home = ({
           </div>
           
           {/* 사용자가 선택한 장식품 표시 - 어항 안쪽 */}
-            {displayDecorations.map((decoName, i) => {
+            {displayDecorations.length > 0 && displayDecorations.map((decoName, i) => {
               const positions = [
                 { bottom: '18%', left: '20%' },
                 { bottom: '18%', right: '20%' },

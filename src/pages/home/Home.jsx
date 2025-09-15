@@ -124,8 +124,26 @@ const Home = ({
       }
     };
 
+    // 두 위치 간의 거리 계산 함수
+    const getDistance = (pos1, pos2) => {
+      const dx = pos1.x - pos2.x;
+      const dy = pos1.y - pos2.y;
+      return Math.sqrt(dx * dx + dy * dy);
+    };
+
+    // 위치가 다른 물고기들과 충돌하는지 확인
+    const isPositionValid = (x, y, existingPositions, minDistance = 15) => {
+      for (const pos of existingPositions) {
+        if (getDistance({ x, y }, pos) < minDistance) {
+          return false;
+        }
+      }
+      return true;
+    };
+
     // 이미 사용된 구역 추적
     const usedZones = new Set();
+    const finalPositions = [];
 
     const initialPositions = displayFish.map((fishName, i) => {
       // Y축 구역 선택
@@ -140,22 +158,39 @@ const Home = ({
         attempts++;
       } while (usedZones.has(`${xZoneIndex}-${yZoneIndex}`) && attempts < 10);
 
-      // 선택된 구역 내에서 랜덤 위치
+      // 선택된 구역 내에서 랜덤 위치 (충돌 방지)
       const xZone = xZones[xZoneIndex];
-      const x = xZone.min + Math.random() * (xZone.max - xZone.min);
-      const y = yZone.min + Math.random() * (yZone.max - yZone.min);
+      let x, y;
+      let positionAttempts = 0;
+      const maxPositionAttempts = 50;
+
+      do {
+        x = xZone.min + Math.random() * (xZone.max - xZone.min);
+        y = yZone.min + Math.random() * (yZone.max - yZone.min);
+        positionAttempts++;
+
+        // 너무 많은 시도 시 최소 거리를 줄여가며 재시도
+        const adjustedMinDistance = positionAttempts > 30 ? 10 : 15;
+
+        if (isPositionValid(x, y, finalPositions, adjustedMinDistance)) {
+          break;
+        }
+      } while (positionAttempts < maxPositionAttempts);
 
       // 사용된 구역 기록
       const zoneKey = `${xZoneIndex}-${yZoneIndex}`;
       usedZones.add(zoneKey);
 
-      return {
+      const position = {
         name: fishName,
         x: x,
         y: y,
         direction: Math.random() > 0.5 ? 1 : -1,  // 랜덤 방향
         speed: (fishName === '코리도라스' || fishName === '체리바브' || fishName === '네온테트라' || fishName === '아피스토그라마' || fishName === '람시클리드' || fishName === '구피' || fishName === '엔젤피쉬' || fishName === '킬리피쉬' || fishName === '베타' || fishName === '디스커스' || fishName === '만다린피쉬' || fishName === '아로와나') ? 0.3 : 0  // 물고기 움직임 속도
       };
+
+      finalPositions.push(position);
+      return position;
     });
 
     setFishPositions(initialPositions);

@@ -47,7 +47,7 @@ function Login({ onLogin }) {
           // 황금각(137.5도)을 이용한 분포
           const goldenAngle = 137.5;
           const angle = (id * goldenAngle) % 360;
-          const radius = (id / 30) * 45; // 중심에서 바깥으로 퍼지는 반경
+          const radius = (id / 30) * 50; // 중심에서 바깥으로 퍼지는 반경
           
           do {
             // 황금 나선 기반 초기 위치
@@ -60,14 +60,14 @@ function Login({ onLogin }) {
             
             // 경계 조정
             left = Math.max(5, Math.min(95, left));
-            top = Math.max(3, Math.min(71, top));
+            top = Math.max(3, Math.min(80, top));
             
             attempts++;
             
             if (attempts >= maxAttempts) {
               // 실패시 완전 랜덤 위치
               left = Math.random() * 90 + 5;
-              top = Math.random() * 71;
+              top = Math.random() * 80;
               break;
             }
           } while (
@@ -195,27 +195,31 @@ function Login({ onLogin }) {
               <button
                 onClick={() => handleLogin('Google')}
                 disabled={isLoading}
-                className="w-[237px] flex items-center bg-white/90 border border-gray-200 rounded-xl py-2 pl-[15px] pr-3 hover:bg-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-[237px] flex items-center justify-between bg-white/90 border border-gray-200 rounded-xl py-2 pl-[15px] pr-3 hover:bg-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <FcGoogle className="text-[17.5px] w-5" />
-                <span className="text-sm font-medium text-gray-600 ml-2 flex items-center">
-                  <span className="inline-block w-12 text-left tracking-tight -ml-[0.5px]">G<span className="text-[13px]">oo</span>gle</span>
-                  <span className="ml-1">{isLoading ? '로그인 중...' : '계정으로 로그인'}</span>
-                </span>
-                <FiChevronRight className="text-gray-400 text-lg ml-2" />
+                <div className="flex items-center">
+                  <FcGoogle className="text-[18px] flex-shrink-0" />
+                  <span className="text-sm font-medium text-gray-600 ml-3">
+                    <span className="inline-block w-12 text-left tracking-tight">G<span className="text-[13px]">oo</span>gle</span>
+                    <span className="ml-1">{isLoading ? '로그인 중...' : '계정으로 로그인'}</span>
+                  </span>
+                </div>
+                <FiChevronRight className="text-gray-400 text-lg flex-shrink-0" />
               </button>
 
               <button
                 onClick={() => handleLogin('Kakao')}
                 disabled={isLoading}
-                className="w-[237px] flex items-center bg-[#FEE500] rounded-xl py-2 pl-[15px] pr-3 hover:bg-[#FDD835] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-[237px] flex items-center justify-between bg-[#FEE500] rounded-xl py-2 pl-[15px] pr-3 hover:bg-[#FDD835] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <RiKakaoTalkFill className="text-[17px] text-gray-800 w-5" />
-                <span className="text-sm font-medium text-gray-600 ml-2 flex items-center">
-                  <span className="inline-block w-12 text-left tracking-[0.07em]">Kakao</span>
-                  <span className="ml-[4.5px]">{isLoading ? '로그인 중...' : '계정으로 로그인'}</span>
-                </span>
-                <FiChevronRight className="text-gray-400 text-lg ml-2" />
+                <div className="flex items-center">
+                  <RiKakaoTalkFill className="text-[18px] text-gray-800 flex-shrink-0" />
+                  <span className="text-sm font-medium text-gray-600 ml-3">
+                    <span className="inline-block w-12 text-left tracking-[0.07em]">Kakao</span>
+                    <span className="ml-[4.5px]">{isLoading ? '로그인 중...' : '계정으로 로그인'}</span>
+                  </span>
+                </div>
+                <FiChevronRight className="text-gray-400 text-lg flex-shrink-0" />
               </button>
 
               <button
@@ -223,14 +227,16 @@ function Login({ onLogin }) {
                   alert('Apple 로그인은 Apple Developer 계정이 필요합니다.\n구글 또는 카카오 로그인을 이용해주세요.');
                 }}
                 disabled={true}
-                className="w-[237px] flex items-center bg-gray-500 rounded-xl py-2 pl-[15px] pr-3 cursor-not-allowed opacity-50"
+                className="w-[237px] flex items-center justify-between bg-gray-500 rounded-xl py-2 pl-[15px] pr-3 cursor-not-allowed opacity-50"
               >
-                <FaApple className="text-[19px] text-white w-5" />
-                <span className="text-sm font-medium text-gray-100 ml-2 flex items-center">
-                  <span className="inline-block w-12 text-left tracking-[0.08em]">Apple</span>
-                  <span className="ml-1">계정으로 로그인</span>
-                </span>
-                <FiChevronRight className="text-gray-400 text-lg ml-2" />
+                <div className="flex items-center">
+                  <FaApple className="text-[18px] text-white flex-shrink-0" />
+                  <span className="text-sm font-medium text-gray-100 ml-3">
+                    <span className="inline-block w-12 text-left tracking-[0.08em]">Apple</span>
+                    <span className="ml-1">계정으로 로그인</span>
+                  </span>
+                </div>
+                <FiChevronRight className="text-gray-400 text-lg flex-shrink-0" />
               </button>
               </div>
 

@@ -205,10 +205,14 @@ const Home = ({
               let newX = fish.x + (fish.speed * fish.direction);
               let newDirection = fish.direction;
 
+              // 아로와나는 더 큰 여유 공간 필요 (width가 size * 1.8이므로 더 넓음)
+              const marginLeft = fish.name === '아로와나' ? 8 : 4;
+              const marginRight = fish.name === '아로와나' ? 92 : 96;
+
               // 벽에 닿으면 방향 전환 (물고기 크기를 고려한 여유 공간)
-              if (newX <= 4 || newX >= 96) {
+              if (newX <= marginLeft || newX >= marginRight) {
                 newDirection = -newDirection;
-                newX = newX <= 4 ? 4 : 96;
+                newX = newX <= marginLeft ? marginLeft : marginRight;
               }
 
               return {

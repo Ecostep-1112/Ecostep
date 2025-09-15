@@ -1568,11 +1568,11 @@
 
 /* 구피 애니메이션 클래스 적용 */
 .animate-guppy-tail {
-  animation: guppy-tail 2.5s ease-in-out infinite;
+  animation: guppy-tail 1.5s ease-in-out infinite;
 }
 
 .animate-guppy-tail-fast {
-  animation: guppy-tail-fast 1.25s ease-in-out infinite;
+  animation: guppy-tail-fast 0.75s ease-in-out infinite;
 }
 
 .animate-guppy-fin {
@@ -1863,11 +1863,11 @@
 
 /* 베타 애니메이션 클래스 적용 */
 .animate-beta-tail {
-  animation: beta-tail 2.0s ease-in-out infinite;
+  animation: beta-tail 1.5s ease-in-out infinite;
 }
 
 .animate-beta-tail-fast {
-  animation: beta-tail-fast 1.0s ease-in-out infinite;
+  animation: beta-tail-fast 0.75s ease-in-out infinite;
 }
 
 .animate-beta-dorsal {
@@ -2129,11 +2129,11 @@
 }
 
 .animate-discus-tail {
-  animation: discus-tail 1.2s ease-in-out infinite;
+  animation: discus-tail 0.7s ease-in-out infinite;
 }
 
 .animate-discus-tail-fast {
-  animation: discus-tail-fast 0.6s ease-in-out infinite;
+  animation: discus-tail-fast 0.3s ease-in-out infinite;
 }
 
 .animate-discus-fin {

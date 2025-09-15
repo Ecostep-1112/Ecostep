@@ -252,28 +252,48 @@ export const onAuthStateChange = (callback) => {
 export const updateUserId = async (newUserId) => {
   try {
     console.log('아이디 업데이트 시작:', newUserId);
-    
-    // 임시 로컬 저장 방식
-    const localProfile = JSON.parse(localStorage.getItem('userProfile') || '{}');
-    
+
+    // 입력값 검증
+    if (!newUserId || newUserId.trim() === '') {
+      return { success: false, error: '아이디를 입력해주세요.' };
+    }
+
+    const trimmedUserId = newUserId.trim();
+
+    // profileData에서 현재 프로필 정보 가져오기
+    const profileData = JSON.parse(localStorage.getItem('profileData') || '{}');
+    const userProfile = JSON.parse(localStorage.getItem('userProfile') || '{}');
+
     // 아이디 중복 체크 (로컬에서만)
     const existingIds = JSON.parse(localStorage.getItem('allUserIds') || '[]');
-    if (existingIds.includes(newUserId) && localProfile.userId !== newUserId) {
+
+    // 현재 사용자의 이전 아이디는 목록에서 제거
+    const filteredIds = existingIds.filter(id => id !== profileData.userId && id !== userProfile.userId);
+
+    // 새 아이디가 이미 사용 중인지 확인
+    if (filteredIds.includes(trimmedUserId)) {
+      console.log('중복된 아이디:', trimmedUserId);
       return { success: false, error: '이미 사용 중인 아이디입니다.' };
     }
-    
-    // 로컬 업데이트
-    localProfile.userId = newUserId;
-    localStorage.setItem('userProfile', JSON.stringify(localProfile));
-    
+
+    // userProfile 업데이트
+    userProfile.userId = trimmedUserId;
+    localStorage.setItem('userProfile', JSON.stringify(userProfile));
+
+    // profileData 업데이트
+    profileData.userId = trimmedUserId;
+    localStorage.setItem('profileData', JSON.stringify(profileData));
+
     // 전체 아이디 목록 업데이트
-    if (!existingIds.includes(newUserId)) {
-      existingIds.push(newUserId);
-      localStorage.setItem('allUserIds', JSON.stringify(existingIds));
-    }
-    
-    console.log('로컬 저장 성공');
-    return { success: true, data: { user_id: newUserId }, error: null };
+    filteredIds.push(trimmedUserId);
+    localStorage.setItem('allUserIds', JSON.stringify(filteredIds));
+
+    console.log('로컬 저장 성공:', {
+      userId: trimmedUserId,
+      allUserIds: filteredIds
+    });
+
+    return { success: true, data: { user_id: trimmedUserId }, error: null };
   } catch (error) {
     console.error('아이디 업데이트 에러:', error);
     return { success: false, error: error.message || '아이디 업데이트에 실패했습니다.' };

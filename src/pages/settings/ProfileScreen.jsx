@@ -17,24 +17,38 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
   
   // 각 필드의 수정 화면 표시 상태
   const [editingField, setEditingField] = useState(null);
-  
+  const [isUpdating, setIsUpdating] = useState(false);
+
   // 컴포넌트 마운트 시 프로필 데이터 로드
   useEffect(() => {
     loadUserProfile();
   }, []);
   
   const loadUserProfile = async () => {
-    const { profile, error } = await getUserProfile();
-    if (profile && !error) {
-      // 데이터베이스에서 가져온 user_id를 userId로 설정 (기존 값이 없을 때만)
-      setProfileData(prev => ({
-        ...prev,
-        userId: prev.userId || profile.user_id || '', // 기존 userId가 있으면 유지
-        name: prev.name || '', // name은 로컬 상태 유지
-        email: profile.email || prev.email || '',
-        birthDate: prev.birthDate || '',
-        phone: prev.phone || ''
-      }));
+    try {
+      const { profile, error } = await getUserProfile();
+      if (profile && !error) {
+        // localStorage에서 현재 값 확인
+        const savedData = localStorage.getItem('profileData');
+        const parsedData = savedData ? JSON.parse(savedData) : {};
+
+        // 데이터베이스에서 가져온 user_id를 userId로 설정
+        setProfileData(prev => {
+          const newData = {
+            ...prev,
+            userId: parsedData.userId || prev.userId || profile.user_id || '',
+            name: parsedData.name || prev.name || '',
+            email: profile.email || prev.email || '',
+            birthDate: parsedData.birthDate || prev.birthDate || '',
+            phone: parsedData.phone || prev.phone || ''
+          };
+          // localStorage에 저장
+          localStorage.setItem('profileData', JSON.stringify(newData));
+          return newData;
+        });
+      }
+    } catch (err) {
+      console.error('프로필 로드 에러:', err);
     }
   };
   
@@ -87,6 +101,7 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
     const [inputValue, setInputValue] = useState(value || '');
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
+    const [saveTimer, setSaveTimer] = useState(null);
     
     // 생년월일 필드용 상태
     const parseBirthDate = (dateStr) => {
@@ -365,66 +380,113 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
       return emailRegex.test(email);
     };
     
+    // 컴포넌트 언마운트 시 타이머 정리
+    useEffect(() => {
+      return () => {
+        if (saveTimer) {
+          clearTimeout(saveTimer);
+        }
+      };
+    }, [saveTimer]);
+
     // 아이디 저장 핸들러
     const handleUserIdSave = async () => {
+      // 이미 처리 중이면 무시
+      if (isLoading) {
+        console.log('이미 저장 처리 중');
+        return;
+      }
+
       console.log('=== 아이디 저장 시작 ===');
       console.log('입력값:', inputValue);
-      
+
       const trimmedValue = inputValue.trim();
       console.log('trim된 값:', trimmedValue);
-      
+
+      // 유효성 검사
       if (!trimmedValue) {
         console.log('빈 값으로 인한 에러');
         setError('invalid');
+        if (showToast) {
+          showToast('아이디를 입력해주세요.', 'error');
+        }
         return;
       }
-      
+
       // 아이디는 이미 입력 시점에 필터링되므로 길이만 체크
       if (trimmedValue.length < 1 || trimmedValue.length > 15) {
         console.log('길이 조건 미충족:', trimmedValue.length);
         setError('invalid');
+        if (showToast) {
+          showToast('아이디는 1~15자여야 합니다.', 'error');
+        }
         return;
       }
-      
+
+      // 현재 값과 동일한지 체크
+      if (trimmedValue === value) {
+        console.log('기존 값과 동일함');
+        onClose();
+        return;
+      }
+
       console.log('유효성 검사 통과, 저장 시도');
       setIsLoading(true);
       setError('');
-      
+
       try {
-        // 임시로 Supabase 없이 테스트
-        console.log('Supabase 업데이트 시작');
-        const { success, error: updateError } = await updateUserId(trimmedValue);
+        // 아이디 업데이트
+        console.log('아이디 업데이트 시작');
+        const { success, error: updateError, data } = await updateUserId(trimmedValue);
         console.log('업데이트 결과:', { success, error: updateError });
-        
-        setIsLoading(false);
-        
+
         if (success) {
           console.log('저장 성공');
+
+          // 상태 업데이트
           onSave(trimmedValue);
-          
-          // localStorage에도 업데이트
+
+          // localStorage 업데이트
           const savedData = localStorage.getItem('profileData');
           if (savedData) {
             const parsed = JSON.parse(savedData);
             parsed.userId = trimmedValue;
             localStorage.setItem('profileData', JSON.stringify(parsed));
+            console.log('localStorage 업데이트 완료');
           }
-          
-          onClose();
+
+          // 토스트 메시지 표시
           if (showToast) {
             showToast('아이디가 성공적으로 변경되었습니다.', 'success');
           }
+
+          // 약간의 딜레이 후 화면 닫기
+          setTimeout(() => {
+            setIsLoading(false);
+            onClose();
+          }, 300);
         } else {
           console.error('아이디 업데이트 실패:', updateError);
+          setIsLoading(false);
           setError('invalid');
-          if (showToast && updateError === '이미 사용 중인 아이디입니다.') {
-            showToast('이미 사용 중인 아이디입니다.', 'error');
+
+          if (updateError === '이미 사용 중인 아이디입니다.') {
+            if (showToast) {
+              showToast('이미 사용 중인 아이디입니다.', 'error');
+            }
+          } else {
+            if (showToast) {
+              showToast('아이디 저장에 실패했습니다.', 'error');
+            }
           }
         }
       } catch (err) {
         console.error('아이디 저장 중 오류:', err);
         setIsLoading(false);
         setError('invalid');
+        if (showToast) {
+          showToast('아이디 저장 중 오류가 발생했습니다.', 'error');
+        }
       }
     };
     
@@ -443,13 +505,19 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
             value={inputValue}
             onChange={(e) => {
               const value = e.target.value;
-              
+
               // 아이디 필드
               if (field === 'userId') {
                 // 영문, 숫자, 언더스코어만 허용
                 const filtered = value.replace(/[^a-zA-Z0-9_]/g, '');
-                setInputValue(filtered.slice(0, 15));
+                const finalValue = filtered.slice(0, 15);
+                setInputValue(finalValue);
                 setError('');
+
+                // 기존 타이머 취소
+                if (saveTimer) {
+                  clearTimeout(saveTimer);
+                }
                 return;
               }
               
@@ -481,6 +549,9 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
           
           <button
             onClick={async () => {
+              // 버튼 중복 클릭 방지
+              if (isLoading) return;
+
               if (field === 'userId') {
                 await handleUserIdSave();
               } else if (field === 'email') {
@@ -651,7 +722,13 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
           field="userId"
           label="아이디"
           value={profileData.userId}
-          onSave={(value) => setProfileData({...profileData, userId: value})}
+          onSave={(value) => {
+            setProfileData(prev => {
+              const newData = {...prev, userId: value};
+              localStorage.setItem('profileData', JSON.stringify(newData));
+              return newData;
+            });
+          }}
           onClose={() => setEditingField(null)}
           showToast={(message, type) => {
             setToastMessage(message);

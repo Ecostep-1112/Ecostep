@@ -749,11 +749,11 @@
 
 /* 애니메이션 클래스 적용 */
 .animate-corydoras-tail {
-  animation: corydoras-tail 0.8s ease-in-out infinite;
+  animation: corydoras-tail 1.0s ease-in-out infinite;
 }
 
 .animate-corydoras-tail-fast {
-  animation: corydoras-tail-fast 0.4s ease-in-out infinite;
+  animation: corydoras-tail-fast 0.5s ease-in-out infinite;
 }
 
 .animate-corydoras-fin {
@@ -927,7 +927,7 @@
 
 /* 애니메이션 클래스 적용 */
 .animate-cherry-tail {
-  animation: cherry-tail 1s ease-in-out infinite;
+  animation: cherry-tail 1.0s ease-in-out infinite;
 }
 
 .animate-cherry-tail-fast {
@@ -1092,11 +1092,11 @@
 }
 
 .animate-neon-tail {
-  animation: neon-tail 0.8s ease-in-out infinite;
+  animation: neon-tail 0.9s ease-in-out infinite;
 }
 
 .animate-neon-tail-fast {
-  animation: neon-tail-fast 0.4s ease-in-out infinite;
+  animation: neon-tail-fast 0.45s ease-in-out infinite;
 }
 
 .animate-neon-fin {
@@ -1235,11 +1235,11 @@
 
 /* 애니메이션 클래스 적용 */
 .animate-apistogramma-tail {
-  animation: apistogramma-tail 1.5s ease-in-out infinite;
+  animation: apistogramma-tail 0.35s ease-in-out infinite;
 }
 
 .animate-apistogramma-tail-fast {
-  animation: apistogramma-tail-fast 0.8s ease-in-out infinite;
+  animation: apistogramma-tail-fast 0.175s ease-in-out infinite;
 }
 
 .animate-apistogramma-dorsal {
@@ -1336,11 +1336,11 @@
 }
 
 .animate-killifish-tail {
-  animation: killifish-tail 1s ease-in-out infinite;
+  animation: killifish-tail 0.6s ease-in-out infinite;
 }
 
 .animate-killifish-tail-fast {
-  animation: killifish-tail-fast 0.5s ease-in-out infinite;
+  animation: killifish-tail-fast 0.3s ease-in-out infinite;
 }
 
 .animate-killifish-fin {
@@ -1463,11 +1463,11 @@
 
 /* 람시클리드 애니메이션 클래스 적용 */
 .animate-ramcichlid-tail {
-  animation: ramcichlid-tail 1.8s ease-in-out infinite;
+  animation: ramcichlid-tail 1.0s ease-in-out infinite;
 }
 
 .animate-ramcichlid-tail-fast {
-  animation: ramcichlid-tail-fast 0.9s ease-in-out infinite;
+  animation: ramcichlid-tail-fast 0.5s ease-in-out infinite;
 }
 
 .animate-ramcichlid-dorsal {
@@ -1572,7 +1572,7 @@
 }
 
 .animate-guppy-tail-fast {
-  animation: guppy-tail-fast 1.3s ease-in-out infinite;
+  animation: guppy-tail-fast 1.25s ease-in-out infinite;
 }
 
 .animate-guppy-fin {
@@ -1863,11 +1863,11 @@
 
 /* 베타 애니메이션 클래스 적용 */
 .animate-beta-tail {
-  animation: beta-tail 2.5s ease-in-out infinite;
+  animation: beta-tail 2.0s ease-in-out infinite;
 }
 
 .animate-beta-tail-fast {
-  animation: beta-tail-fast 1.3s ease-in-out infinite;
+  animation: beta-tail-fast 1.0s ease-in-out infinite;
 }
 
 .animate-beta-dorsal {
@@ -2060,11 +2060,11 @@
 
 /* 엔젤피쉬 애니메이션 클래스 적용 */
 .animate-angelfish-tail {
-  animation: angelfish-tail 2.5s ease-in-out infinite;
+  animation: angelfish-tail 0.6s ease-in-out infinite;
 }
 
 .animate-angelfish-tail-fast {
-  animation: angelfish-tail-fast 1.2s ease-in-out infinite;
+  animation: angelfish-tail-fast 0.3s ease-in-out infinite;
 }
 
 /* 디스커스 애니메이션 */
@@ -2288,11 +2288,11 @@
 
 /* 만다린피쉬 애니메이션 클래스 적용 */
 .animate-mandarin-tail {
-  animation: mandarin-tail 0.9s ease-in-out infinite;
+  animation: mandarin-tail 0.35s ease-in-out infinite;
 }
 
 .animate-mandarin-tail-fast {
-  animation: mandarin-tail-fast 0.45s ease-in-out infinite;
+  animation: mandarin-tail-fast 0.18s ease-in-out infinite;
 }
 
 .animate-mandarin-dorsal {
@@ -2482,11 +2482,11 @@
 
 /* 아로와나 애니메이션 클래스 적용 */
 .animate-arowana-tail {
-  animation: arowana-tail 1.2s ease-in-out infinite;
+  animation: arowana-tail 0.5s ease-in-out infinite;
 }
 
 .animate-arowana-tail-fast {
-  animation: arowana-tail-fast 0.6s ease-in-out infinite;
+  animation: arowana-tail-fast 0.25s ease-in-out infinite;
 }
 
 .animate-arowana-dorsal {

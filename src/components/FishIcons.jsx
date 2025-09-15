@@ -5,7 +5,19 @@ const FishIcons = {
   // 12위: 코리도라스 - 귀여운 바닥 메기
   코리도라스: ({ size = 40, color = '#8B7355', isMoving = false }) => (
     <svg width={size * 1.1} height={size * 0.8} viewBox="0 0 88 64">
-      <g>
+      <defs>
+        <filter id="corydoras-shadow" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur in="SourceAlpha" stdDeviation="1.5"/>
+          <feOffset dx="2" dy="2" result="offsetblur"/>
+          <feFlood floodColor="#000000" floodOpacity="0.3"/>
+          <feComposite in2="offsetblur" operator="in"/>
+          <feMerge>
+            <feMergeNode/>
+            <feMergeNode in="SourceGraphic"/>
+          </feMerge>
+        </filter>
+      </defs>
+      <g filter="url(#corydoras-shadow)">
         {/* 몸통 그룹 - 고정 */}
         <g className="corydoras-body">
           {/* 둥글둥글한 귀여운 몸통 */}
@@ -64,7 +76,19 @@ const FishIcons = {
   // 11위: 체리바브 - 통통하고 귀여운 몸에 갈라진 꼬리
   체리바브: ({ size = 40, color = '#DC143C', isMoving = false }) => (
     <svg width={size * 1.1} height={size * 0.9} viewBox="0 0 88 72">
-      <g>
+      <defs>
+        <filter id="cherry-shadow" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur in="SourceAlpha" stdDeviation="1.5"/>
+          <feOffset dx="2" dy="2" result="offsetblur"/>
+          <feFlood floodColor="#000000" floodOpacity="0.3"/>
+          <feComposite in2="offsetblur" operator="in"/>
+          <feMerge>
+            <feMergeNode/>
+            <feMergeNode in="SourceGraphic"/>
+          </feMerge>
+        </filter>
+      </defs>
+      <g filter="url(#cherry-shadow)">
         {/* 몸통 그룹 - 고정 */}
         <g className="cherry-barb-body">
           {/* 통통하고 귀여운 몸통 */}
@@ -139,7 +163,19 @@ const FishIcons = {
   // 10위: 네온테트라 - 귀여운 작은 물고기와 빛나는 네온 라인
   네온테트라: ({ size = 35, color = '#00CED1', isMoving = false }) => (
     <svg width={size * 1.2} height={size * 0.8} viewBox="0 0 84 56">
-      <g>
+      <defs>
+        <filter id="neon-shadow" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur in="SourceAlpha" stdDeviation="1.2"/>
+          <feOffset dx="1.5" dy="1.5" result="offsetblur"/>
+          <feFlood floodColor="#000000" floodOpacity="0.25"/>
+          <feComposite in2="offsetblur" operator="in"/>
+          <feMerge>
+            <feMergeNode/>
+            <feMergeNode in="SourceGraphic"/>
+          </feMerge>
+        </filter>
+      </defs>
+      <g filter="url(#neon-shadow)">
         {/* 몸통 그룹 - 고정 */}
         <g className="neon-tetra-body">
           {/* 작고 날씬한 유선형 몸통 - 귀여운 느낌 */}
@@ -202,7 +238,19 @@ const FishIcons = {
   // 9위: 아피스토그라마 - 화려한 시클리드 (더 작고 압축된 체형)
   아피스토그라마: ({ size = 40, color = '#FFD700', isMoving = false }) => (
     <svg width={size} height={size * 0.5} viewBox="0 0 80 40">
-      <g>
+      <defs>
+        <filter id="apisto-shadow" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur in="SourceAlpha" stdDeviation="1.3"/>
+          <feOffset dx="2" dy="2" result="offsetblur"/>
+          <feFlood floodColor="#000000" floodOpacity="0.28"/>
+          <feComposite in2="offsetblur" operator="in"/>
+          <feMerge>
+            <feMergeNode/>
+            <feMergeNode in="SourceGraphic"/>
+          </feMerge>
+        </filter>
+      </defs>
+      <g filter="url(#apisto-shadow)">
         {/* 몸통 그룹 - 고정 */}
         <g className="apistogramma-body">
           {/* 몸통 - 매우 작고 납작하게 압축 */}
@@ -254,7 +302,19 @@ const FishIcons = {
   // 8위: 람 시클리드 - 날씬하고 우아한 몸에 화려한 지느러미
   람시클리드: ({ size = 45, color = '#4169E1', isMoving = false }) => (
     <svg width={size * 1.2} height={size * 1} viewBox="0 0 108 90">
-      <g>
+      <defs>
+        <filter id="ram-shadow" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur in="SourceAlpha" stdDeviation="1.8"/>
+          <feOffset dx="2.5" dy="2.5" result="offsetblur"/>
+          <feFlood floodColor="#000000" floodOpacity="0.32"/>
+          <feComposite in2="offsetblur" operator="in"/>
+          <feMerge>
+            <feMergeNode/>
+            <feMergeNode in="SourceGraphic"/>
+          </feMerge>
+        </filter>
+      </defs>
+      <g filter="url(#ram-shadow)">
         {/* 몸통 그룹 - 고정 */}
         <g className="ramcichlid-body">
           {/* 날씬하고 우아한 몸통 */}
@@ -341,7 +401,19 @@ const FishIcons = {
   // 7위: 구피 - 작은 몸 큰 꼬리 (몸통:꼬리 = 1:2.5)
   구피: ({ size = 45, color = '#FF69B4', isMoving = false }) => (
     <svg width={size * 1.45} height={size * 1} viewBox="0 0 117 81">
-      <g transform="translate(22, 0)">
+      <defs>
+        <filter id="guppy-shadow" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur in="SourceAlpha" stdDeviation="2"/>
+          <feOffset dx="2.5" dy="3" result="offsetblur"/>
+          <feFlood floodColor="#000000" floodOpacity="0.35"/>
+          <feComposite in2="offsetblur" operator="in"/>
+          <feMerge>
+            <feMergeNode/>
+            <feMergeNode in="SourceGraphic"/>
+          </feMerge>
+        </filter>
+      </defs>
+      <g transform="translate(22, 0)" filter="url(#guppy-shadow)">
         {/* 몸통 그룹 - 고정 */}
         <g className="guppy-body">
           {/* 작은 몸통 */}
@@ -399,7 +471,19 @@ const FishIcons = {
   // 6위: 엔젤피쉬 - 균형잡힌 삼각형 실루엣
   엔젤피쉬: ({ size = 50, color = '#C0C0C0', isMoving = false }) => (
     <svg width={size * 1.15} height={size * 1.05} viewBox="0 0 115 105">
-      <g>
+      <defs>
+        <filter id="angel-shadow" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur in="SourceAlpha" stdDeviation="2"/>
+          <feOffset dx="2.5" dy="3" result="offsetblur"/>
+          <feFlood floodColor="#000000" floodOpacity="0.35"/>
+          <feComposite in2="offsetblur" operator="in"/>
+          <feMerge>
+            <feMergeNode/>
+            <feMergeNode in="SourceGraphic"/>
+          </feMerge>
+        </filter>
+      </defs>
+      <g filter="url(#angel-shadow)">
         {/* 몸통 그룹 - 고정 */}
         <g className="angelfish-body">
           {/* 균형잡힌 삼각형 실루엣 - 더 자연스러운 비율 */}
@@ -459,7 +543,19 @@ const FishIcons = {
   // 5위: 킬리피쉬 - 길쭉한 몸에 위쪽에 위치한 입
   킬리피쉬: ({ size = 45, color = '#FF4500', isMoving = false }) => (
     <svg width={size * 1.2} height={size * 0.7} viewBox="0 0 108 63">
-      <g>
+      <defs>
+        <filter id="killi-shadow" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur in="SourceAlpha" stdDeviation="1.8"/>
+          <feOffset dx="2.5" dy="2.5" result="offsetblur"/>
+          <feFlood floodColor="#000000" floodOpacity="0.32"/>
+          <feComposite in2="offsetblur" operator="in"/>
+          <feMerge>
+            <feMergeNode/>
+            <feMergeNode in="SourceGraphic"/>
+          </feMerge>
+        </filter>
+      </defs>
+      <g filter="url(#killi-shadow)">
         {/* 몸통 그룹 - 고정 */}
         <g className="killifish-body">
           {/* 길쭉한 몸통 - 킬리피쉬의 특징 */}
@@ -529,7 +625,19 @@ const FishIcons = {
   // 4위: 베타 - 길고 흐르는 지느러미와 부채꼴 꼬리
   베타: ({ size = 50, color = '#8B008B', isMoving = false }) => (
     <svg width={size * 1.3} height={size * 1.2} viewBox="0 0 130 120">
-      <g transform="translate(25, 0)">
+      <defs>
+        <filter id="beta-shadow" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur in="SourceAlpha" stdDeviation="2.2"/>
+          <feOffset dx="3" dy="3.5" result="offsetblur"/>
+          <feFlood floodColor="#000000" floodOpacity="0.38"/>
+          <feComposite in2="offsetblur" operator="in"/>
+          <feMerge>
+            <feMergeNode/>
+            <feMergeNode in="SourceGraphic"/>
+          </feMerge>
+        </filter>
+      </defs>
+      <g transform="translate(25, 0)" filter="url(#beta-shadow)">
         {/* 작은 몸통 - 지느러미가 더 부각되도록 */}
         <ellipse cx="40" cy="60" rx="15" ry="12" fill={color} />
         <ellipse cx="40" cy="60" rx="13" ry="10" fill="#9370DB" />
@@ -644,9 +752,20 @@ const FishIcons = {
   // 3위: 디스커스 - 플래티넘 랭크의 살아있는 보석
   디스커스: ({ size = 55, color = '#FF8C00', isMoving = false }) => (
     <svg width={size * 1.2} height={size * 1.1} viewBox="0 0 132 121">
-      <g>
+      <defs>
+        <filter id="discus-shadow" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur in="SourceAlpha" stdDeviation="2.5"/>
+          <feOffset dx="3" dy="4" result="offsetblur"/>
+          <feFlood floodColor="#000000" floodOpacity="0.4"/>
+          <feComposite in2="offsetblur" operator="in"/>
+          <feMerge>
+            <feMergeNode/>
+            <feMergeNode in="SourceGraphic"/>
+          </feMerge>
+        </filter>
+      </defs>
+      <g filter="url(#discus-shadow)">
         {/* 화려한 그라데이션 정의 */}
-        <defs>
           <radialGradient id="discusGradient" cx="50%" cy="45%">
             <stop offset="0%" stopColor="#FFD700" />
             <stop offset="30%" stopColor="#FF6347" />
@@ -659,7 +778,6 @@ const FishIcons = {
             <stop offset="50%" stopColor="#FF6347" opacity="0.7" />
             <stop offset="100%" stopColor="#FF1493" opacity="0.5" />
           </linearGradient>
-        </defs>
 
         {/* 몸통 그룹 - 고정 */}
         <g className="discus-body">
@@ -745,7 +863,19 @@ const FishIcons = {
   // 2위: 만다린피쉬 - 통통하고 둥근 귀여운 몸과 초대형 눈
   만다린피쉬: ({ size = 50, color = '#FF4500', isMoving = false }) => (
     <svg width={size * 1.1} height={size * 1} viewBox="0 0 110 100">
-      <g>
+      <defs>
+        <filter id="mandarin-shadow" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur in="SourceAlpha" stdDeviation="2.5"/>
+          <feOffset dx="3" dy="4" result="offsetblur"/>
+          <feFlood floodColor="#000000" floodOpacity="0.4"/>
+          <feComposite in2="offsetblur" operator="in"/>
+          <feMerge>
+            <feMergeNode/>
+            <feMergeNode in="SourceGraphic"/>
+          </feMerge>
+        </filter>
+      </defs>
+      <g filter="url(#mandarin-shadow)">
         {/* 몸통 그룹 - 고정 */}
         <g className="mandarin-body">
           {/* 매우 통통하고 둥근 몸통 - 거의 원형에 가깝게 */}
@@ -839,7 +969,19 @@ const FishIcons = {
   // 1위: 플라티넘 아로와나 - 용의 왕
   아로와나: ({ size = 60, color = '#C0C0C0', isMoving = false }) => (
     <svg width={size * 1.8} height={size * 0.6} viewBox="0 0 216 72">
-      <g>
+      <defs>
+        <filter id="arowana-shadow" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur in="SourceAlpha" stdDeviation="3"/>
+          <feOffset dx="3.5" dy="4.5" result="offsetblur"/>
+          <feFlood floodColor="#000000" floodOpacity="0.45"/>
+          <feComposite in2="offsetblur" operator="in"/>
+          <feMerge>
+            <feMergeNode/>
+            <feMergeNode in="SourceGraphic"/>
+          </feMerge>
+        </filter>
+      </defs>
+      <g filter="url(#arowana-shadow)">
         {/* 몸통 그룹 - 고정 */}
         <g className="arowana-body">
           {/* 매우 긴 용 같은 몸통 - 더 날씬하고 길게 */}

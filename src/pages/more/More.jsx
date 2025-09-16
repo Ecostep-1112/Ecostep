@@ -472,7 +472,7 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
               </div>
             ))}
             {sortedPlaces.length > 4 && (
-              <div className="pt-2 border-t border-gray-300 dark:border-gray-700">
+              <div className="pt-2">
                 {sortedPlaces.slice(4).map((place, index) => (
                   <div key={index + 4} className={`border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-100'} pb-3 mb-2 min-h-[60px]`}>
                     <div className="flex justify-between">

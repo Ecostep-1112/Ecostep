@@ -1896,52 +1896,52 @@
 
 /* 왼쪽 배지느러미 애니메이션 클래스 */
 .animate-beta-ventral-left-1 {
-  animation: beta-ventral-left-1 4s ease-in-out infinite;
+  animation: beta-ventral-left-1 1.2s ease-in-out infinite;
 }
 
 .animate-beta-ventral-left-1-fast {
-  animation: beta-ventral-left-1-fast 2.5s ease-in-out infinite;
+  animation: beta-ventral-left-1-fast 0.4s ease-in-out infinite;
 }
 
 .animate-beta-ventral-left-2 {
-  animation: beta-ventral-left-2 4s ease-in-out infinite;
+  animation: beta-ventral-left-2 1.2s ease-in-out infinite;
 }
 
 .animate-beta-ventral-left-2-fast {
-  animation: beta-ventral-left-2-fast 2.5s ease-in-out infinite;
+  animation: beta-ventral-left-2-fast 0.4s ease-in-out infinite;
 }
 
 .animate-beta-ventral-left-3 {
-  animation: beta-ventral-left-3 4s ease-in-out infinite;
+  animation: beta-ventral-left-3 1.2s ease-in-out infinite;
 }
 
 .animate-beta-ventral-left-3-fast {
-  animation: beta-ventral-left-3-fast 2.5s ease-in-out infinite;
+  animation: beta-ventral-left-3-fast 0.4s ease-in-out infinite;
 }
 
 /* 오른쪽 배지느러미 애니메이션 클래스 */
 .animate-beta-ventral-right-1 {
-  animation: beta-ventral-right-1 4s ease-in-out infinite;
+  animation: beta-ventral-right-1 1.2s ease-in-out infinite;
 }
 
 .animate-beta-ventral-right-1-fast {
-  animation: beta-ventral-right-1-fast 2.5s ease-in-out infinite;
+  animation: beta-ventral-right-1-fast 0.4s ease-in-out infinite;
 }
 
 .animate-beta-ventral-right-2 {
-  animation: beta-ventral-right-2 4s ease-in-out infinite;
+  animation: beta-ventral-right-2 1.2s ease-in-out infinite;
 }
 
 .animate-beta-ventral-right-2-fast {
-  animation: beta-ventral-right-2-fast 2.5s ease-in-out infinite;
+  animation: beta-ventral-right-2-fast 0.4s ease-in-out infinite;
 }
 
 .animate-beta-ventral-right-3 {
-  animation: beta-ventral-right-3 4s ease-in-out infinite;
+  animation: beta-ventral-right-3 1.2s ease-in-out infinite;
 }
 
 .animate-beta-ventral-right-3-fast {
-  animation: beta-ventral-right-3-fast 2.5s ease-in-out infinite;
+  animation: beta-ventral-right-3-fast 0.4s ease-in-out infinite;
 }
 
 /* 엔젤피쉬 애니메이션 시작 */

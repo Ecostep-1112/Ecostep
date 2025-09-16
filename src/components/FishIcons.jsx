@@ -645,9 +645,9 @@ const FishIcons = {
 
         {/* 매우 크고 긴 등지느러미 - 흐르는 듯한 형태 (원래 디자인) */}
         <g className={`beta-dorsal-fin ${isMoving ? 'animate-beta-dorsal-fast' : 'animate-beta-dorsal'}`} style={{ transformOrigin: '40px 30px' }}>
-          <path d="M 25 48 Q 20 20 25 30 Q 30 15 35 25 Q 40 10 45 25 Q 50 15 55 30 Q 60 20 55 48"
+          <path d="M 25 50 Q 20 20 25 30 Q 30 15 35 25 Q 40 10 45 25 Q 50 15 55 30 Q 60 20 55 50"
                 fill="#8A2BE2" opacity="0.8" />
-          <path d="M 27 48 Q 22 25 28 35 Q 35 18 40 30 Q 45 18 52 35 Q 58 25 53 48"
+          <path d="M 27 50 Q 22 25 28 35 Q 35 18 40 30 Q 45 18 52 35 Q 58 25 53 50"
                 fill="#9400D3" opacity="0.6" />
           {/* 등지느러미 레이스 효과 */}
           <path d="M 30 35 L 28 20 L 32 28 M 35 30 L 33 15 L 37 25 M 40 28 L 38 12 L 42 25 M 45 30 L 43 15 L 47 25 M 50 35 L 48 20 L 52 28"
@@ -656,23 +656,23 @@ const FishIcons = {
 
         {/* 매우 크고 긴 뒷지느러미 - 우아하게 흘러내림 (원래 디자인) */}
         <g className={`beta-anal-fin ${isMoving ? 'animate-beta-anal-fast' : 'animate-beta-anal'}`} style={{ transformOrigin: '40px 90px' }}>
-          <path d="M 25 72 Q 20 100 25 90 Q 30 105 35 95 Q 40 110 45 95 Q 50 105 55 90 Q 60 100 55 72"
+          <path d="M 25 70 Q 20 100 25 90 Q 30 105 35 95 Q 40 110 45 95 Q 50 105 55 90 Q 60 100 55 70"
                 fill="#8A2BE2" opacity="0.8" />
-          <path d="M 27 72 Q 22 95 28 85 Q 35 102 40 90 Q 45 102 52 85 Q 58 95 53 72"
+          <path d="M 27 70 Q 22 95 28 85 Q 35 102 40 90 Q 45 102 52 85 Q 58 95 53 70"
                 fill="#9400D3" opacity="0.6" />
           {/* 뒷지느러미 레이스 효과 */}
           <path d="M 30 85 L 28 100 L 32 92 M 35 90 L 33 105 L 37 95 M 40 92 L 38 108 L 42 95 M 45 90 L 43 105 L 47 95 M 50 85 L 48 100 L 52 92"
                 stroke="#8B008B" strokeWidth="1" fill="none" opacity="0.5" />
         </g>
 
-        {/* 거대한 부채꼴 꼬리 - 베타의 상징 */}
+        {/* 거대한 부채꼴 꼬리 - 베타의 상징 (세로 폭 축소) */}
         <g className={`beta-tail ${isMoving ? 'animate-beta-tail-fast' : 'animate-beta-tail'}`} style={{ transformOrigin: '55px 60px' }}>
-          <path d="M 55 60 Q 90 20 85 60 Q 90 100 55 60" fill="#9400D3" opacity="0.8" />
-          <path d="M 53 60 Q 85 25 80 60 Q 85 95 53 60" fill="#8B008B" opacity="0.7" />
-          <path d="M 51 60 Q 80 30 75 60 Q 80 90 51 60" fill="#BA55D3" opacity="0.5" />
+          <path d="M 55 60 Q 90 30 85 60 Q 90 90 55 60" fill="#9400D3" opacity="0.8" />
+          <path d="M 53 60 Q 85 33 80 60 Q 85 87 53 60" fill="#8B008B" opacity="0.7" />
+          <path d="M 51 60 Q 80 36 75 60 Q 80 84 51 60" fill="#BA55D3" opacity="0.5" />
           {/* 꼬리 레이스 패턴 */}
-          <path d="M 60 60 Q 70 40 68 60 Q 70 80 60 60" fill="none" stroke="#E6E6FA" strokeWidth="1" opacity="0.5" />
-          <path d="M 65 60 Q 75 35 73 60 Q 75 85 65 60" fill="none" stroke="#E6E6FA" strokeWidth="1" opacity="0.5" />
+          <path d="M 60 60 Q 70 45 68 60 Q 70 75 60 60" fill="none" stroke="#E6E6FA" strokeWidth="1" opacity="0.5" />
+          <path d="M 65 60 Q 75 42 73 60 Q 75 78 65 60" fill="none" stroke="#E6E6FA" strokeWidth="1" opacity="0.5" />
         </g>
 
         {/* 길고 우아한 가슴지느러미 */}

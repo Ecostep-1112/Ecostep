@@ -484,26 +484,38 @@ export const AquariumSettings = ({
           <h3 className={`text-sm font-medium mb-3 ${textColor}`}>물고기</h3>
           <div className={`${inputBg} rounded-lg p-3 mb-3`}>
             <div className="flex items-center justify-between mb-3">
-              <span className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>물고기: {selectedFish.length}마리</span>
+              <span className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>물고기: {isRandomFish ? fishCount : selectedFish.length}마리</span>
               <div className="flex items-center gap-2">
-                <button 
+                <button
                   onClick={() => {
-                    if (selectedFish.length > 0) {
-                      setSelectedFish(selectedFish.slice(0, -1));
-                      setFishCount(Math.max(1, selectedFish.length - 1));
+                    if (isRandomFish) {
+                      if (fishCount > 0) {
+                        setFishCount(fishCount - 1);
+                      }
+                    } else {
+                      if (selectedFish.length > 0) {
+                        setSelectedFish(selectedFish.slice(0, -1));
+                        setFishCount(Math.max(0, selectedFish.length - 1));
+                      }
                     }
                   }}
                   className={`w-8 h-8 ${cardBg} border ${borderColor} rounded flex items-center justify-center ${textColor}`}
                 >-</button>
-                <span className={`text-sm font-medium px-3 ${textColor}`}>{selectedFish.length}</span>
-                <button 
+                <span className={`text-sm font-medium px-3 ${textColor}`}>{isRandomFish ? fishCount : selectedFish.length}</span>
+                <button
                   onClick={() => {
-                    if (selectedFish.length < purchasedFish.length) {
-                      // 구매한 물고기 중 선택되지 않은 첫 번째 물고기 자동 추가
-                      const nextFishIndex = purchasedFish.findIndex((fish, index) => !selectedFish.includes(index));
-                      if (nextFishIndex !== -1) {
-                        setSelectedFish([...selectedFish, nextFishIndex]);
-                        setFishCount(selectedFish.length + 1);
+                    if (isRandomFish) {
+                      if (fishCount < purchasedFish.length) {
+                        setFishCount(fishCount + 1);
+                      }
+                    } else {
+                      if (selectedFish.length < purchasedFish.length) {
+                        // 구매한 물고기 중 선택되지 않은 첫 번째 물고기 자동 추가
+                        const nextFishIndex = purchasedFish.findIndex((fish, index) => !selectedFish.includes(index));
+                        if (nextFishIndex !== -1) {
+                          setSelectedFish([...selectedFish, nextFishIndex]);
+                          setFishCount(selectedFish.length + 1);
+                        }
                       }
                     }
                   }}
@@ -514,7 +526,23 @@ export const AquariumSettings = ({
             
             <div className="flex items-center justify-end">
               <button
-                onClick={() => setIsRandomFish(!isRandomFish)}
+                onClick={() => {
+                  const newIsRandomFish = !isRandomFish;
+                  setIsRandomFish(newIsRandomFish);
+
+                  // 랜덤 선택 해제 시 코리도라스만 선택
+                  if (!newIsRandomFish) {
+                    const coridorasIndex = purchasedFish.indexOf('코리도라스');
+                    if (coridorasIndex !== -1) {
+                      setSelectedFish([coridorasIndex]);
+                      setFishCount(1);
+                    } else if (purchasedFish.length > 0) {
+                      // 코리도라스가 없으면 첫 번째 물고기 선택
+                      setSelectedFish([0]);
+                      setFishCount(1);
+                    }
+                  }
+                }}
                 className={`flex items-center border ${isDarkMode ? 'border-gray-600' : 'border-gray-300'} rounded-lg px-3 py-1.5 ${isDarkMode ? 'hover:bg-gray-800' : 'hover:bg-gray-50'} transition-colors`}
               >
                 <div className={`w-4 h-4 mr-2 border ${isDarkMode ? 'border-gray-600' : 'border-gray-300'} rounded flex items-center justify-center`}>
@@ -592,7 +620,7 @@ export const AquariumSettings = ({
             <div className="flex items-center justify-between mb-3">
               <span className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>장식품: {selectedDecorations.length}개</span>
               <div className="flex items-center gap-2">
-                <button 
+                <button
                   onClick={() => {
                     if (selectedDecorations.length > 0) {
                       setSelectedDecorations(selectedDecorations.slice(0, -1));

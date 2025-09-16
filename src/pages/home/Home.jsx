@@ -190,7 +190,7 @@ const Home = ({
         x: x,
         y: y,
         direction: Math.random() > 0.5 ? 1 : -1,  // 랜덤 방향
-        speed: (fishName === '코리도라스' || fishName === '체리바브' || fishName === '네온테트라' || fishName === '아피스토그라마' || fishName === '람시클리드' || fishName === '구피' || fishName === '엔젤피쉬' || fishName === '킬리피쉬' || fishName === '베타' || fishName === '디스커스' || fishName === '만다린피쉬' || fishName === '아로와나') ? 0.3 : 0  // 물고기 움직임 속도
+        speed: fishName === '아피스토그라마' ? 0.5 : (fishName === '네온테트라' || fishName === '킬리피쉬') ? 0.4 : (fishName === '체리바브' || fishName === '람시클리드' || fishName === '만다린피쉬') ? 0.35 : fishName === '디스커스' ? 0.2 : (fishName === '코리도라스' || fishName === '구피' || fishName === '엔젤피쉬' || fishName === '베타' || fishName === '아로와나') ? 0.3 : 0  // 물고기 움직임 속도
       };
 
       finalPositions.push(position);

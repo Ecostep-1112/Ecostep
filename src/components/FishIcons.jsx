@@ -399,7 +399,7 @@ const FishIcons = {
   ),
 
   // 7위: 구피 - 작은 몸 큰 꼬리 (몸통:꼬리 = 1:2.5)
-  구피: ({ size = 45, color = '#FF69B4', isMoving = false }) => (
+  구피: ({ size = 55, color = '#FF69B4', isMoving = false }) => (
     <svg width={size * 1.45} height={size * 1} viewBox="0 0 117 81">
       <defs>
         <filter id="guppy-shadow" x="-50%" y="-50%" width="200%" height="200%">

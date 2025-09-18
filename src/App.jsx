@@ -99,9 +99,9 @@ const EcostepApp = () => {
   const [locationSharing, setLocationSharing] = useState(false);
   const [fishCount, setFishCount] = useState(5);
   const [isRandomFish, setIsRandomFish] = useState(true);
-  const [isRandomDecorations, setIsRandomDecorations] = useState(true);
+  const [isRandomDecorations, setIsRandomDecorations] = useState(false);
   const [selectedFish, setSelectedFish] = useState([]);
-  const [selectedDecorations, setSelectedDecorations] = useState([]);
+  const [selectedDecorations, setSelectedDecorations] = useState(['해초']);
   const [purchasedFish, setPurchasedFish] = useState(() => {
     const saved = localStorage.getItem('purchasedFish');
     return saved ? JSON.parse(saved) : [];
@@ -138,6 +138,7 @@ const EcostepApp = () => {
   const [showGlobalList, setShowGlobalList] = useState(false);
   const [purchasedDecorations, setPurchasedDecorations] = useState(() => {
     const saved = localStorage.getItem('purchasedDecorations');
+    // 장식품이 없으면 테스트용으로 몇 개 추가
     return saved ? JSON.parse(saved) : [];
   });
   const [waterQuality, setWaterQuality] = useState(85);
@@ -650,9 +651,9 @@ const EcostepApp = () => {
             />
           ) : (
             <>
-              {activeTab === 'home' && <HomePage 
-                isDarkMode={isDarkMode} 
-                setShowAquariumSettings={setShowAquariumSettings} 
+              {activeTab === 'home' && <HomePage
+                isDarkMode={isDarkMode}
+                setShowAquariumSettings={setShowAquariumSettings}
                 purchasedFish={purchasedFish}
                 currentTank={currentTank}
                 tankName={tankName}
@@ -670,6 +671,7 @@ const EcostepApp = () => {
                 totalPlasticSaved={totalPlasticSaved}
                 testPlasticSaved={testPlasticSaved}
                 setTestPlasticSaved={setTestPlasticSaved}
+                showToast={showToast}
               />}
               {activeTab === 'challenge' && <ChallengePage 
                 isDarkMode={isDarkMode}

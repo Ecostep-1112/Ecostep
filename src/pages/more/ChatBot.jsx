@@ -2,9 +2,29 @@ import React, { useState, useRef, useEffect } from 'react';
 import { FiChevronRight } from 'react-icons/fi';
 import { HiOutlineRefresh } from 'react-icons/hi';
 import { IoArrowUp } from 'react-icons/io5';
-import './ChatBot.css';
 
 const ChatBot = ({ isDarkMode, onBack }) => {
+  // CSS 스타일을 컴포넌트 내부에 추가
+  useEffect(() => {
+    const style = document.createElement('style');
+    style.textContent = `
+      /* Hide scrollbar for Chrome, Safari and Opera */
+      .scrollbar-hide::-webkit-scrollbar {
+        display: none;
+      }
+      
+      /* Hide scrollbar for IE, Edge and Firefox */
+      .scrollbar-hide {
+        -ms-overflow-style: none;  /* IE and Edge */
+        scrollbar-width: none;  /* Firefox */
+      }
+    `;
+    document.head.appendChild(style);
+    
+    return () => {
+      document.head.removeChild(style);
+    };
+  }, []);
   // Load saved messages from localStorage
   const loadMessages = () => {
     const saved = localStorage.getItem('chatbot_messages');

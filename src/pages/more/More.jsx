@@ -6,6 +6,13 @@ import { generateEnvironmentalTip } from '../../services/claudeService';
 const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, showToast, onShowChatBot }) => {
   const [expandedTip, setExpandedTip] = useState(null);
   
+  // 카카오톡 API 초기화
+  useEffect(() => {
+    if (!window.Kakao.isInitialized() && import.meta.env.VITE_KAKAO_API_KEY) {
+      window.Kakao.init(import.meta.env.VITE_KAKAO_API_KEY);
+    }
+  }, []);
+  
   // 테마 색상 가져오기
   const getThemeColor = () => {
     if (rankTheme === 'basic') {
@@ -214,6 +221,73 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
       }
     }
   };
+
+  const handleShareTip = () => {
+    if (!environmentalTip) return;
+
+    console.log('공유 버튼 클릭됨');
+    console.log('Kakao 객체:', window.Kakao);
+    console.log('Kakao.Share:', window.Kakao?.Share);
+
+    if (window.Kakao && window.Kakao.Share) {
+      try {
+        console.log('카카오톡 공유 시도');
+        window.Kakao.Share.sendDefault({
+          objectType: 'feed',
+          content: {
+            title: '🌱 EcoStep - ' + environmentalTip.title,
+            description: environmentalTip.content,
+            imageUrl: 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=500',
+            link: {
+              mobileWebUrl: window.location.origin,
+              webUrl: window.location.origin,
+            },
+          },
+        });
+      } catch (error) {
+        console.error('카카오톡 공유 에러:', error);
+        fallbackShare();
+      }
+    } else {
+      console.log('카카오톡 사용 불가, 대체 방법 사용');
+      fallbackShare();
+    }
+  };
+
+  const fallbackShare = () => {
+    const shareText = `🌱 ${environmentalTip.title}\n\n${environmentalTip.content}\n\n- EcoStep에서`;
+    
+    if (navigator.share) {
+      navigator.share({
+        title: '🌱 EcoStep - ' + environmentalTip.title,
+        text: shareText,
+      }).catch(err => {
+        console.log('Web Share API 실패:', err);
+        copyToClipboard(shareText);
+      });
+    } else if (navigator.clipboard) {
+      copyToClipboard(shareText);
+    } else {
+      console.log('공유 기능을 사용할 수 없습니다');
+      if (showToast) {
+        showToast('공유 기능을 사용할 수 없습니다', 'error');
+      }
+    }
+  };
+
+  const copyToClipboard = (text) => {
+    navigator.clipboard.writeText(text).then(() => {
+      console.log('클립보드 복사 성공');
+      if (showToast) {
+        showToast('클립보드에 복사되었습니다!', 'success');
+      }
+    }).catch(err => {
+      console.error('클립보드 복사 실패:', err);
+      if (showToast) {
+        showToast('복사에 실패했습니다', 'error');
+      }
+    });
+  };
   
   // 매일 자정에 리셋되도록 체크
   useEffect(() => {
@@ -357,6 +431,7 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
                     </p>
                     <div className={`flex items-center justify-between mt-3 pt-3 border-t ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
                       <button 
+                        onClick={handleShareTip}
                         className="px-3 py-1.5 rounded-lg text-xs font-medium flex items-center transition-all bg-gradient-to-r from-cyan-500 via-blue-500 to-blue-600 text-white hover:opacity-90"
                       >
                         <FiShare2 className="w-3 h-3 mr-1" />

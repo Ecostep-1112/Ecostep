@@ -2,8 +2,8 @@ import React from 'react';
 
 const DecorationIcons = {
   // 브론즈 랭크 장식품
-  해초: () => (
-    <svg viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+  해초: ({ size = 25 }) => (
+    <svg width={size} height={size} viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
       {/* 왼쪽 해초 */}
       <path 
         d="M18 50 C18 45, 16 40, 17 35 C18 30, 16 25, 17 20 C18 15, 16 10, 18 5"
@@ -88,8 +88,8 @@ const DecorationIcons = {
     </svg>
   ),
   
-  용암석: () => (
-    <svg viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+  용암석: ({ size = 25 }) => (
+    <svg width={size} height={size} viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
       {/* 메인 돌 모양 - 울퉁불퉁한 화산석 */}
       <path 
         d="M12 40 C11 35, 12 30, 15 25 C18 20, 22 17, 28 16 C34 15, 39 17, 43 21 C47 25, 48 30, 47 35 C46 40, 44 43, 40 45 C36 47, 31 47, 26 46 C21 45, 17 43, 15 40 C13 37, 12 40, 12 40"
@@ -147,8 +147,8 @@ const DecorationIcons = {
     </svg>
   ),
   
-  '작은 동굴': () => (
-    <svg viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+  '작은 동굴': ({ size = 25 }) => (
+    <svg width={size} height={size} viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
       {/* 동굴 외형 - 더 입체적으로 */}
       <path 
         d="M10 45 C10 38, 11 31, 15 26 C19 21, 24 18, 30 18 C36 18, 41 21, 45 26 C49 31, 50 38, 50 45 L10 45"
@@ -197,8 +197,8 @@ const DecorationIcons = {
   ),
   
   // 실버 랭크 장식품
-  산호: () => (
-    <svg viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+  산호: ({ size = 25 }) => (
+    <svg width={size} height={size} viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
       {/* 메인 줄기 */}
       <path 
         d="M30 50 L30 35 M30 35 L25 25 M30 35 L35 25"
@@ -284,8 +284,8 @@ const DecorationIcons = {
     </svg>
   ),
   
-  '드리프트 우드': () => (
-    <svg viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+  '드리프트 우드': ({ size = 25 }) => (
+    <svg width={size} height={size} viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
       {/* 메인 나무 줄기 - 자연스러운 유목 형태 */}
       <path 
         d="M8 35 C10 33, 15 32, 22 31 C28 30, 35 30, 40 28 C45 26, 48 23, 49 20 C50 17, 48 14, 44 12 C40 10, 34 9, 28 10 C22 11, 16 13, 12 17 C8 21, 7 26, 8 30 C9 34, 8 35, 8 35"
@@ -352,8 +352,8 @@ const DecorationIcons = {
     </svg>
   ),
   
-  '조개 껍질': () => (
-    <svg viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+  '조개 껍질': ({ size = 25 }) => (
+    <svg width={size} height={size} viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
       {/* 소라 껍질 메인 - 더 나선형으로 */}
       <path 
         d="M30 48 C40 48, 46 42, 46 34 C46 26, 42 20, 36 17 C30 14, 24 15, 20 19 C16 23, 15 28, 17 33 C19 38, 22 41, 26 42 C30 43, 33 41, 34 38 C35 35, 34 32, 32 30 C30 28, 28 27, 27 27"
@@ -424,8 +424,8 @@ const DecorationIcons = {
   ),
   
   // 골드 랭크 장식품
-  '그리스 신전': () => (
-    <svg viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+  '그리스 신전': ({ size = 25 }) => (
+    <svg width={size} height={size} viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
       {/* 지붕 */}
       <path 
         d="M8 20 L30 8 L52 20 L52 23 L8 23 Z"
@@ -512,8 +512,8 @@ const DecorationIcons = {
     </svg>
   ),
   
-  '보물 상자': () => (
-    <svg viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+  '보물 상자': ({ size = 25 }) => (
+    <svg width={size} height={size} viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
       {/* 상자 뚜껑 (열린 상태) */}
       <g transform="rotate(-20 30 25)">
         <path 
@@ -618,8 +618,8 @@ const DecorationIcons = {
     </svg>
   ),
   
-  해적선: () => (
-    <svg viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+  해적선: ({ size = 25 }) => (
+    <svg width={size} height={size} viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
       {/* 배 본체 - 더 디테일하게 */}
       <path 
         d="M8 36 C8 40, 12 42, 20 43 L40 43 C48 42, 52 40, 52 36 L50 32 L48 28 L12 28 L10 32 Z"
@@ -702,8 +702,8 @@ const DecorationIcons = {
   ),
   
   // 플래티넘 랭크 장식품 (블러 완전 제거, 100% 선명)
-  '크리스탈 동굴': () => (
-    <svg viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+  '크리스탈 동굴': ({ size = 25 }) => (
+    <svg width={size} height={size} viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
       {/* 동굴 외형 */}
       <path 
         d="M8 45 C8 36, 10 27, 16 22 C22 17, 28 15, 30 15 C32 15, 38 17, 44 22 C50 27, 52 36, 52 45 L8 45"
@@ -787,8 +787,8 @@ const DecorationIcons = {
     </svg>
   ),
   
-  'LED 해파리': () => (
-    <svg viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+  'LED 해파리': ({ size = 25 }) => (
+    <svg width={size} height={size} viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
       {/* 해파리 머리 - 선명하게 */}
       <ellipse cx="30" cy="25" rx="16" ry="13" fill="url(#jellyHead)"/>
       
@@ -928,8 +928,8 @@ const DecorationIcons = {
     </svg>
   ),
   
-  '아틀란티스 유적': () => (
-    <svg viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+  '아틀란티스 유적': ({ size = 25 }) => (
+    <svg width={size} height={size} viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
       {/* 메인 건물 - 더 웅장하게 */}
       <path 
         d="M18 45 L18 28 L22 24 L26 21 L30 20 L34 21 L38 24 L42 28 L42 45 Z"

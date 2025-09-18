@@ -2,6 +2,18 @@
 @tailwind components;
 @tailwind utilities;
 
+/* 슬라이드 업 애니메이션 */
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
 /* Gradient border styles */
 .gradient-border {
   position: relative;

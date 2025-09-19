@@ -223,11 +223,9 @@ function Login({ onLogin }) {
               </button>
 
               <button
-                onClick={() => {
-                  alert('Apple 로그인은 Apple Developer 계정이 필요합니다.\n구글 또는 카카오 로그인을 이용해주세요.');
-                }}
-                disabled={true}
-                className="w-[237px] flex items-center justify-between bg-gray-500 rounded-xl py-2 pl-[15px] pr-3 cursor-not-allowed opacity-50"
+                onClick={() => handleLogin('Apple')}
+                disabled={isLoading}
+                className="w-[237px] flex items-center justify-between bg-black rounded-xl py-2 pl-[15px] pr-3 hover:bg-gray-900 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <div className="flex items-center">
                   <FaApple className="text-[18px] text-white flex-shrink-0" />

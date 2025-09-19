@@ -25,7 +25,8 @@ const Home = ({
   totalPlasticSaved = 0,
   testPlasticSaved = 0,
   setTestPlasticSaved,
-  showToast
+  showToast,
+  isActive = true
 }) => {
   const bgColor = isDarkMode ? 'bg-gray-900' : 'bg-white';
   const textColor = isDarkMode ? 'text-white' : 'text-gray-900';
@@ -64,18 +65,22 @@ const Home = ({
   // 랜덤 선택 로직
   useEffect(() => {
     if (isRandomFish && purchasedFish.length > 0) {
-      // 랜덤으로 물고기 선택
-      const shuffled = [...purchasedFish].sort(() => Math.random() - 0.5);
-      const count = Math.min(fishCount || 3, purchasedFish.length);
-      setDisplayFish(shuffled.slice(0, count));
+      // 랜덤으로 물고기 선택 - fishCount가 0이면 빈 배열
+      if (fishCount === 0) {
+        setDisplayFish([]);
+      } else {
+        const shuffled = [...purchasedFish].sort(() => Math.random() - 0.5);
+        const count = Math.min(fishCount, purchasedFish.length);
+        setDisplayFish(shuffled.slice(0, count));
+      }
     } else if (selectedFish.length > 0) {
       // 선택된 물고기 표시
       setDisplayFish(selectedFish.map(index => purchasedFish[index]).filter(Boolean));
     } else {
-      // 기본값: 처음 3마리
-      setDisplayFish(purchasedFish.slice(0, 3));
+      // 선택된 물고기가 없으면 빈 배열
+      setDisplayFish([]);
     }
-  }, [isRandomFish, purchasedFish, selectedFish, fishCount]);
+  }, [isRandomFish, purchasedFish, selectedFish, fishCount, isActive]); // isActive 추가로 홈 탭 클릭 시 리렌더링
   
   // 랜덤 장식품 선택 로직
   useEffect(() => {
@@ -92,7 +97,7 @@ const Home = ({
       // 선택된 장식품 표시
       setDisplayDecorations(selectedDecorations);
     }
-  }, [isRandomDecorations, selectedDecorations, purchasedDecorations, decorationsData]);
+  }, [isRandomDecorations, selectedDecorations, purchasedDecorations, decorationsData, isActive]); // isActive 추가로 홈 탭 클릭 시 리렌더링
 
   // 장식품 위치 초기화 (저장된 위치가 없는 경우에만)
   useEffect(() => {
@@ -126,16 +131,155 @@ const Home = ({
     }
   }, [displayDecorations]);
   
-  // 물고기 위치 업데이트 (정적 위치)
+  // 물고기 위치 초기화 및 애니메이션
   useEffect(() => {
-    const positions = displayFish.map((fishName, i) => ({
-      name: fishName,
-      x: 25 + i * 25,  // 균등하게 배치
-      y: fishName === '코리도라스' ? 65 : 45,  // 코리도라스는 바닥, 나머지는 중간
-      direction: 1
-    }));
-    setFishPositions(positions);
-  }, [displayFish]);
+    // 구역 정의 (3x3 그리드)
+    const yZones = [
+      { min: 7, max: 25 },   // 상층
+      { min: 30, max: 60 },  // 중층
+      { min: 65, max: 75 }   // 하층
+    ];
+
+    const xZones = [
+      { min: 10, max: 35 },  // 좌측
+      { min: 38, max: 62 },  // 중앙
+      { min: 65, max: 90 }   // 우측
+    ];
+
+    // 물고기별 Y축 선호도 정의
+    const getPreferredYZone = (fishName) => {
+      const rand = Math.random();
+
+      if (fishName === '코리도라스') {
+        // 코리도라스: 하층 선호 (60% 하층, 35% 중층, 5% 상층)
+        if (rand < 0.6) return 2;  // 하층
+        else if (rand < 0.95) return 1;  // 중층
+        else return 0;  // 상층
+      } else if (fishName === '네온테트라' || fishName === '구피') {
+        // 중층 선호로 변경 (15% 상층, 70% 중층, 15% 하층)
+        if (rand < 0.15) return 0;  // 상층
+        else if (rand < 0.85) return 1;  // 중층
+        else return 2;  // 하층
+      } else if (fishName === '베타' || fishName === '디스커스' || fishName === '만다린피쉬') {
+        // 중층 선호 강화 (10% 상층, 80% 중층, 10% 하층)
+        if (rand < 0.1) return 0;  // 상층
+        else if (rand < 0.9) return 1;  // 중층
+        else return 2;  // 하층
+      } else {
+        // 나머지: 중층 중심 (15% 상층, 70% 중층, 15% 하층)
+        if (rand < 0.15) return 0;  // 상층
+        else if (rand < 0.85) return 1;  // 중층
+        else return 2;  // 하층
+      }
+    };
+
+    // 두 위치 간의 거리 계산 함수
+    const getDistance = (pos1, pos2) => {
+      const dx = pos1.x - pos2.x;
+      const dy = pos1.y - pos2.y;
+      return Math.sqrt(dx * dx + dy * dy);
+    };
+
+    // 위치가 다른 물고기들과 충돌하는지 확인
+    const isPositionValid = (x, y, existingPositions, minDistance = 15) => {
+      for (const pos of existingPositions) {
+        if (getDistance({ x, y }, pos) < minDistance) {
+          return false;
+        }
+      }
+      return true;
+    };
+
+    // 이미 사용된 구역 추적
+    const usedZones = new Set();
+    const finalPositions = [];
+
+    const initialPositions = displayFish.map((fishName, i) => {
+      // Y축 구역 선택
+      const yZoneIndex = getPreferredYZone(fishName);
+      const yZone = yZones[yZoneIndex];
+
+      // X축 구역을 랜덤하게 선택하되, 같은 구역에 3마리 이상 배치 방지
+      let xZoneIndex;
+      let attempts = 0;
+      do {
+        xZoneIndex = Math.floor(Math.random() * 3);
+        attempts++;
+      } while (usedZones.has(`${xZoneIndex}-${yZoneIndex}`) && attempts < 10);
+
+      // 선택된 구역 내에서 랜덤 위치 (충돌 방지)
+      const xZone = xZones[xZoneIndex];
+      let x, y;
+      let positionAttempts = 0;
+      const maxPositionAttempts = 50;
+
+      do {
+        x = xZone.min + Math.random() * (xZone.max - xZone.min);
+        y = yZone.min + Math.random() * (yZone.max - yZone.min);
+        positionAttempts++;
+
+        // 너무 많은 시도 시 최소 거리를 줄여가며 재시도
+        const adjustedMinDistance = positionAttempts > 30 ? 10 : 15;
+
+        if (isPositionValid(x, y, finalPositions, adjustedMinDistance)) {
+          break;
+        }
+      } while (positionAttempts < maxPositionAttempts);
+
+      // 사용된 구역 기록
+      const zoneKey = `${xZoneIndex}-${yZoneIndex}`;
+      usedZones.add(zoneKey);
+
+      const position = {
+        name: fishName,
+        x: x,
+        y: y,
+        direction: Math.random() > 0.5 ? 1 : -1,  // 랜덤 방향
+        speed: fishName === '아피스토그라마' ? 0.5 : (fishName === '네온테트라' || fishName === '킬리피쉬') ? 0.4 : (fishName === '체리바브' || fishName === '람시클리드' || fishName === '만다린피쉬') ? 0.35 : fishName === '디스커스' ? 0.2 : (fishName === '코리도라스' || fishName === '구피' || fishName === '엔젤피쉬' || fishName === '베타' || fishName === '아로와나') ? 0.3 : 0  // 물고기 움직임 속도
+      };
+
+      finalPositions.push(position);
+      return position;
+    });
+
+    setFishPositions(initialPositions);
+
+    // 물고기 애니메이션
+    let interval;
+    if (isActive) {
+      interval = setInterval(() => {
+        setFishPositions(prevPositions => {
+          return prevPositions.map(fish => {
+            if (fish.name === '코리도라스' || fish.name === '체리바브' || fish.name === '네온테트라' || fish.name === '아피스토그라마' || fish.name === '람시클리드' || fish.name === '구피' || fish.name === '엔젤피쉬' || fish.name === '킬리피쉬' || fish.name === '베타' || fish.name === '디스커스' || fish.name === '만다린피쉬' || fish.name === '아로와나') {
+              let newX = fish.x + (fish.speed * fish.direction);
+              let newDirection = fish.direction;
+
+              // 아로와나는 더 큰 여유 공간 필요 (width가 size * 1.8이므로 더 넓음)
+              const marginLeft = fish.name === '아로와나' ? 8 : 4;
+              const marginRight = fish.name === '아로와나' ? 92 : 96;
+
+              // 벽에 닿으면 방향 전환 (물고기 크기를 고려한 여유 공간)
+              if (newX <= marginLeft || newX >= marginRight) {
+                newDirection = -newDirection;
+                newX = newX <= marginLeft ? marginLeft : marginRight;
+              }
+
+              return {
+                ...fish,
+                x: newX,
+                direction: newDirection
+              };
+            }
+            return fish;
+          });
+        });
+      }, 50);  // 50ms마다 업데이트
+    }
+
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [displayFish, isActive]);
 
   // 장식품 위치를 localStorage에 저장
   useEffect(() => {
@@ -370,28 +514,32 @@ const Home = ({
           {/* 기포 시스템 */}
           <BubbleSystem fishPositions={fishPositions} />
             
-          {/* 물고기 표시 (정적) */}
-          <div className="absolute inset-0 pointer-events-none z-[4]">
-            {fishPositions.map((fish, i) => {
+          {/* 물고기 표시 (애니메이션) */}
+          <div className="absolute inset-0 pointer-events-none z-[4] overflow-hidden">
+            {displayFish.length > 0 && fishPositions.map((fish, i) => {
               const FishIcon = FishIcons[fish.name.replace(' ', '')];
+              const isMoving = fish.speed > 0;
+              // 물고기가 어항 경계를 벗어나지 않도록 추가 제한
+              const clampedX = Math.max(4, Math.min(96, fish.x));
+              const clampedY = Math.max(5, Math.min(95, fish.y));
               return FishIcon ? (
-                <div 
-                  key={i} 
-                  className="absolute"
+                <div
+                  key={i}
+                  className="absolute transition-all duration-50 ease-linear"
                   style={{
-                    left: `${fish.x}%`,
-                    top: `${fish.y}%`,
-                    transform: `translateX(-50%) translateY(-50%)`,
+                    left: `${clampedX}%`,
+                    top: `${clampedY}%`,
+                    transform: `translateX(-50%) translateY(-50%) scaleX(${-fish.direction})`,
                   }}
                 >
-                  <FishIcon size={35} />
+                  <FishIcon size={35} isMoving={isMoving} />
                 </div>
               ) : null;
             })}
           </div>
           
           {/* 사용자가 선택한 장식품 표시 - 어항 안쪽 */}
-          {displayDecorations.map((decoName, i) => {
+          {displayDecorations.length > 0 && displayDecorations.map((decoName, i) => {
             const position = decorationPositions[decoName] || { bottom: '18%', left: '20%' };
             const settings = decorationSettings[decoName] || { size: 100, rotation: 0 };
             const DecoIcon = DecorationIcons[decoName];
@@ -404,14 +552,16 @@ const Home = ({
             return DecoIcon ? (
               <div
                 key={i}
-                className={`absolute z-[3] ${isCurrentlyDragging ? 'cursor-move scale-110 opacity-80' : 'cursor-pointer'} ${isSelected ? 'ring-2 ring-yellow-400 ring-opacity-70' : ''} transition-all duration-200`}
+                className={`absolute z-[2] ${isCurrentlyDragging ? 'cursor-move scale-110 opacity-80' : 'cursor-pointer animate-sway'} ${isSelected ? 'ring-2 ring-yellow-400 ring-opacity-70' : ''} transition-all duration-200`}
                 style={{
                   ...position,
                   userSelect: 'none',
                   WebkitUserSelect: 'none',
                   pointerEvents: isDragging && isDragging !== decoName ? 'none' : 'auto',
                   transform: `${position.transform || ''} rotate(${settings.rotation}deg)`,
-                  transformOrigin: 'center'
+                  transformOrigin: 'center',
+                  animationDuration: !isDragging ? `${3 + i * 0.5}s` : undefined,
+                  animationDelay: !isDragging ? `${i * 0.3}s` : undefined
                 }}
                 onMouseDown={(e) => handleMouseDown(e, decoName)}
                 onTouchStart={(e) => handleTouchStart(e, decoName)}
@@ -599,7 +749,7 @@ const Home = ({
                 {/* 나무가 없을 때 메시지 */}
                 {treesEquivalent === 0 && (
                   <p className={`text-center text-xs ${isDarkMode ? 'text-gray-500' : 'text-gray-400'} mt-2`}>
-                    챌린지를 완료하면 나무가 자랍니다 🌱
+                    챌린지를 완료하면 나무가 자랍니다
                   </p>
                 )}
               </div>

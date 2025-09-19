@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { FiSettings, FiHome, FiTarget, FiGift, FiUsers, FiMoreHorizontal } from 'react-icons/fi';
 import { IoNotificationsOutline } from 'react-icons/io5';
 import HomePage from './pages/home/Home';
@@ -69,19 +69,42 @@ const EcostepApp = () => {
   const [showProfile, setShowProfile] = useState(false);
   
   // 프로필 데이터 상태 관리 (localStorage에서 불러오기)
-  const [profileData, setProfileData] = useState(() => {
+  const [profileData, setProfileDataState] = useState(() => {
     const saved = localStorage.getItem('profileData');
     if (saved) {
-      return JSON.parse(saved);
+      try {
+        return JSON.parse(saved);
+      } catch (err) {
+        console.error('프로필 데이터 파싱 에러:', err);
+      }
     }
     return {
       name: '',
-      userId: '',  
+      userId: '',
       birthDate: '',
       phone: '',
       email: ''
     };
   });
+
+  // 상태 업데이트 중복 방지를 위한 ref
+  const isUpdatingProfile = useRef(false);
+
+  // localStorage에도 저장하는 래퍼 함수
+  const setProfileData = useCallback((newData) => {
+    if (typeof newData === 'function') {
+      setProfileDataState(prev => {
+        const updated = newData(prev);
+        // localStorage에 즉시 저장
+        localStorage.setItem('profileData', JSON.stringify(updated));
+        return updated;
+      });
+    } else {
+      setProfileDataState(newData);
+      // localStorage에 즉시 저장
+      localStorage.setItem('profileData', JSON.stringify(newData));
+    }
+  }, []);
   const [showAquariumSettings, setShowAquariumSettings] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const [notificationsList, setNotificationsList] = useState([]);
@@ -229,16 +252,22 @@ const EcostepApp = () => {
           console.log('App.jsx - 프로필 생성 결과:', profile);
           
           // 수파베이스 사용자 정보로 프로필 업데이트
+          // localStorage에서 최신 데이터 확인
+          const savedData = localStorage.getItem('profileData');
+          const currentData = savedData ? JSON.parse(savedData) : {};
+
           setProfileData(prev => {
-            // 이미 userId가 있으면 유지, 없으면 데이터베이스에서 가져온 값 사용
-            const finalUserId = prev.userId || profile?.user_id || '';
-            console.log('App.jsx - finalUserId:', finalUserId, 'prev.userId:', prev.userId, 'profile?.user_id:', profile?.user_id);
-            
+            // localStorage의 userId를 우선적으로 사용
+            const finalUserId = currentData.userId || prev.userId || profile?.user_id || '';
+            console.log('App.jsx - finalUserId:', finalUserId, 'currentData.userId:', currentData.userId, 'prev.userId:', prev.userId, 'profile?.user_id:', profile?.user_id);
+
             return {
               ...prev,
               email: user.email || prev.email,
-              name: user.user_metadata?.full_name || user.user_metadata?.name || prev.name,
-              userId: finalUserId
+              name: user.user_metadata?.full_name || user.user_metadata?.name || currentData.name || prev.name,
+              userId: finalUserId,
+              birthDate: currentData.birthDate || prev.birthDate || '',
+              phone: currentData.phone || prev.phone || ''
             };
           });
         }
@@ -260,19 +289,25 @@ const EcostepApp = () => {
         // 프로필 생성 또는 업데이트를 비동기로 처리
         createOrUpdateUserProfile(session.user).then(({ profile }) => {
           // 로그인 시 프로필 업데이트
+          // localStorage에서 최신 데이터 확인
+          const savedData = localStorage.getItem('profileData');
+          const currentData = savedData ? JSON.parse(savedData) : {};
+
           setProfileData(prev => {
-            // 이미 userId가 있으면 유지, 없으면 데이터베이스에서 가져온 값 사용
-            const finalUserId = prev.userId || profile?.user_id || '';
-            
+            // localStorage의 userId를 우선적으로 사용
+            const finalUserId = currentData.userId || prev.userId || profile?.user_id || '';
+
             return {
               ...prev,
               email: session.user.email || prev.email || '',
-              name: session.user.user_metadata?.full_name || 
-                     session.user.user_metadata?.name || 
+              name: currentData.name || session.user.user_metadata?.full_name ||
+                     session.user.user_metadata?.name ||
                      session.user.user_metadata?.nickname ||
                      session.user.user_metadata?.kakao_account?.profile?.nickname ||
                      prev.name || '사용자',
-              userId: finalUserId
+              userId: finalUserId,
+              birthDate: currentData.birthDate || prev.birthDate || '',
+              phone: currentData.phone || prev.phone || ''
             };
           });
         }).catch(error => {
@@ -376,9 +411,9 @@ const EcostepApp = () => {
     localStorage.setItem('purchasedFish', JSON.stringify(purchasedFish));
   }, [purchasedFish]);
 
-  // 프로필 데이터 저장
+  // 프로필 데이터 변경 감지 (디버깅용)
   useEffect(() => {
-    localStorage.setItem('profileData', JSON.stringify(profileData));
+    console.log('profileData 업데이트됨:', profileData);
   }, [profileData]);
 
   useEffect(() => {
@@ -563,7 +598,7 @@ const EcostepApp = () => {
               }}>
                 <IoNotificationsOutline className={`w-[18px] h-[18px] ${
                   notificationsList.some(n => !n.read) 
-                    ? 'text-cyan-500' 
+                    ? 'text-purple-500' 
                     : isDarkMode ? 'text-white' : 'text-gray-700'
                 }`} />
               </button>
@@ -672,6 +707,7 @@ const EcostepApp = () => {
                 testPlasticSaved={testPlasticSaved}
                 setTestPlasticSaved={setTestPlasticSaved}
                 showToast={showToast}
+                isActive={activeTab === 'home'}
               />}
               {activeTab === 'challenge' && <ChallengePage 
                 isDarkMode={isDarkMode}
@@ -704,9 +740,9 @@ const EcostepApp = () => {
                 setTestDate={setTestDate}
                 setNotificationsList={setNotificationsList}
               />}
-              {activeTab === 'reward' && <RewardsPage 
-                isDarkMode={isDarkMode} 
-                purchasedFish={purchasedFish} 
+              {activeTab === 'reward' && <RewardsPage
+                isDarkMode={isDarkMode}
+                purchasedFish={purchasedFish}
                 setPurchasedFish={setPurchasedFish}
                 fishData={fishData}
                 userRanking={userRanking}
@@ -724,6 +760,7 @@ const EcostepApp = () => {
                 totalEarnedPoints={totalEarnedPoints}
                 setTotalEarnedPoints={setTotalEarnedPoints}
                 spendPoints={spendPoints}
+                isActive={activeTab === 'reward'}
               />}
               {activeTab === 'community' && !showFriendsList && !showGlobalList && <CommunityPage isDarkMode={isDarkMode} onShowFriendsList={() => setShowFriendsList(true)} onShowGlobalList={() => setShowGlobalList(true)} showToast={showToast} userRanking={rankTheme} totalPlasticSaved={testPlasticSaved > 0 ? testPlasticSaved : totalPlasticSaved} currentUserId={profileData.userId} currentUserName={profileData.name} />}
               {activeTab === 'community' && showFriendsList && <FriendsList isDarkMode={isDarkMode} onBack={() => setShowFriendsList(false)} isGlobalRanking={false} totalPlasticSaved={testPlasticSaved > 0 ? testPlasticSaved : totalPlasticSaved} />}

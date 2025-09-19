@@ -471,7 +471,7 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
           <div className="mt-2 pt-2">
             <div className={`h-[1px] mb-2 bg-gradient-to-r from-transparent ${isDarkMode ? 'via-gray-700' : 'via-gray-200'} to-transparent`}></div>
             <p className={`text-xs ${isDarkMode ? 'text-gray-500' : 'text-gray-400'} text-center`}>
-              매일 새로운 환경 팁을 확인하세요 🌱
+              매일 새로운 환경 팁을 확인하세요
             </p>
           </div>
         </div>
@@ -530,7 +530,7 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
                   <div className="relative min-w-[60px] min-h-[20px]">
                     <button 
                       onClick={() => openInNaverMap(place)}
-                      className="absolute top-0 right-0 mb-1 text-sm font-medium bg-gradient-to-r from-cyan-500 via-blue-500 to-blue-600 bg-clip-text text-transparent"
+                      className="absolute top-[1px] right-0 mb-1 text-[13px] font-medium bg-gradient-to-r from-cyan-500 via-blue-500 to-blue-600 bg-clip-text text-transparent"
                     >
                       이동
                     </button>
@@ -547,7 +547,7 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
               </div>
             ))}
             {sortedPlaces.length > 4 && (
-              <div className="pt-2 border-t border-gray-300 dark:border-gray-700">
+              <div className="pt-2">
                 {sortedPlaces.slice(4).map((place, index) => (
                   <div key={index + 4} className={`border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-100'} pb-3 mb-2 min-h-[60px]`}>
                     <div className="flex justify-between">

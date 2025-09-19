@@ -18,26 +18,12 @@ const Toast = ({ message, type = 'success', isVisible, onClose, isDarkMode, rank
 
   if (!isVisible) return null;
 
-  const getRankColors = () => {
-    switch(rankTheme) {
-      case 'bronze':
-        return 'bg-gradient-to-r from-cyan-500 to-blue-500';
-      case 'silver':
-        return 'bg-gradient-to-r from-slate-300 via-cyan-500 to-teal-500';
-      case 'gold':
-        return 'bg-gradient-to-r from-amber-300 to-yellow-400';
-      case 'platinum':
-        return 'bg-gradient-to-r from-purple-400 to-pink-500';
-      default:
-        return 'bg-gradient-to-r from-cyan-500 to-blue-500';
-    }
-  };
-
   const getBgColor = () => {
     if (type === 'error') {
       return 'bg-gradient-to-r from-red-500 to-red-600';
     }
-    return getRankColors();
+    // 항상 청록색 그라데이션 적용
+    return 'bg-gradient-to-r from-cyan-500 to-blue-500';
   };
   
   const bgColor = getBgColor();

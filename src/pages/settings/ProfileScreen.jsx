@@ -17,24 +17,38 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
   
   // 각 필드의 수정 화면 표시 상태
   const [editingField, setEditingField] = useState(null);
-  
+  const [isUpdating, setIsUpdating] = useState(false);
+
   // 컴포넌트 마운트 시 프로필 데이터 로드
   useEffect(() => {
     loadUserProfile();
   }, []);
   
   const loadUserProfile = async () => {
-    const { profile, error } = await getUserProfile();
-    if (profile && !error) {
-      // 데이터베이스에서 가져온 user_id를 userId로 설정 (기존 값이 없을 때만)
-      setProfileData(prev => ({
-        ...prev,
-        userId: prev.userId || profile.user_id || '', // 기존 userId가 있으면 유지
-        name: prev.name || '', // name은 로컬 상태 유지
-        email: profile.email || prev.email || '',
-        birthDate: prev.birthDate || '',
-        phone: prev.phone || ''
-      }));
+    try {
+      const { profile, error } = await getUserProfile();
+      if (profile && !error) {
+        // localStorage에서 현재 값 확인
+        const savedData = localStorage.getItem('profileData');
+        const parsedData = savedData ? JSON.parse(savedData) : {};
+
+        // 데이터베이스에서 가져온 user_id를 userId로 설정
+        setProfileData(prev => {
+          const newData = {
+            ...prev,
+            userId: parsedData.userId || prev.userId || profile.user_id || '',
+            name: parsedData.name || prev.name || '',
+            email: profile.email || prev.email || '',
+            birthDate: parsedData.birthDate || prev.birthDate || '',
+            phone: parsedData.phone || prev.phone || ''
+          };
+          // localStorage에 저장
+          localStorage.setItem('profileData', JSON.stringify(newData));
+          return newData;
+        });
+      }
+    } catch (err) {
+      console.error('프로필 로드 에러:', err);
     }
   };
   
@@ -83,10 +97,11 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
   };
 
   // 각 필드별 수정 화면 컴포넌트
-  const EditFieldScreen = ({ field, label, value, onSave, onClose }) => {
+  const EditFieldScreen = ({ field, label, value, onSave, onClose, showToast }) => {
     const [inputValue, setInputValue] = useState(value || '');
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
+    const [saveTimer, setSaveTimer] = useState(null);
     
     // 생년월일 필드용 상태
     const parseBirthDate = (dateStr) => {
@@ -100,6 +115,7 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
     };
     
     const [birthDateParts, setBirthDateParts] = useState(parseBirthDate(value));
+    const [birthDateErrors, setBirthDateErrors] = useState({ year: false, month: false, day: false });
     
     // 연도 자동 변환 함수
     const convertYear = (year) => {
@@ -116,7 +132,94 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
       return year;
     };
     
+    // 생년월일 유효성 검사 (개별 필드)
+    const validateBirthDate = () => {
+      const errors = { year: false, month: false, day: false };
+      let hasError = false;
+      
+      // 모두 비어있으면 OK
+      if (!birthDateParts.year && !birthDateParts.month && !birthDateParts.day) {
+        setBirthDateErrors(errors);
+        return true;
+      }
+      
+      const today = new Date();
+      const currentYear = today.getFullYear();
+      const currentMonth = today.getMonth() + 1; // getMonth()는 0부터 시작
+      const currentDay = today.getDate();
+      
+      // 연도 검사
+      if (birthDateParts.year) {
+        const year = parseInt(convertYear(birthDateParts.year));
+        if (isNaN(year) || year < 1900 || year > currentYear) {
+          errors.year = true;
+          hasError = true;
+        }
+      }
+      
+      // 월 검사
+      if (birthDateParts.month) {
+        const month = parseInt(birthDateParts.month);
+        const year = parseInt(convertYear(birthDateParts.year)) || currentYear;
+        
+        if (isNaN(month) || month < 1 || month > 12) {
+          errors.month = true;
+          hasError = true;
+        } else if (year === currentYear && month > currentMonth) {
+          // 현재 년도인 경우, 현재 월보다 미래 월은 불가
+          errors.month = true;
+          hasError = true;
+        }
+      }
+      
+      // 일 검사
+      if (birthDateParts.day) {
+        const day = parseInt(birthDateParts.day);
+        const month = parseInt(birthDateParts.month) || 1;
+        const year = parseInt(convertYear(birthDateParts.year)) || currentYear;
+        const daysInMonth = new Date(year, month, 0).getDate();
+        
+        if (isNaN(day) || day < 1 || day > daysInMonth) {
+          errors.day = true;
+          hasError = true;
+        } else if (year === currentYear && month === currentMonth && day > currentDay) {
+          // 현재 년월인 경우, 오늘보다 미래 일은 불가
+          errors.day = true;
+          hasError = true;
+        }
+      }
+      
+      // 전체 날짜가 오늘보다 미래인지 최종 확인
+      if (birthDateParts.year && birthDateParts.month && birthDateParts.day && !hasError) {
+        const inputDate = new Date(
+          parseInt(convertYear(birthDateParts.year)),
+          parseInt(birthDateParts.month) - 1,
+          parseInt(birthDateParts.day)
+        );
+        
+        if (inputDate > today) {
+          // 입력 날짜가 오늘보다 미래인 경우
+          if (parseInt(convertYear(birthDateParts.year)) > currentYear) {
+            errors.year = true;
+          } else if (parseInt(birthDateParts.month) > currentMonth) {
+            errors.month = true;
+          } else {
+            errors.day = true;
+          }
+          hasError = true;
+        }
+      }
+      
+      setBirthDateErrors(errors);
+      return !hasError;
+    };
+    
     const handleBirthDateSave = () => {
+      // 유효성 검사
+      if (!validateBirthDate()) {
+        return;
+      }
+      
       // 모든 필드가 입력되었는지 확인
       if (!birthDateParts.year || !birthDateParts.month || !birthDateParts.day) {
         onSave(''); // 빈 값으로 저장
@@ -128,16 +231,33 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
       onClose();
     };
     
+    // 휴대폰 번호 유효성 검사
+    const validatePhoneNumber = (phone) => {
+      const numbers = phone.replace(/[^0-9]/g, '');
+      // 빈 값이거나 10~11자리 숫자
+      return numbers === '' || (numbers.length >= 10 && numbers.length <= 11);
+    };
+    
     const handlePhoneSave = () => {
+      if (!validatePhoneNumber(inputValue)) {
+        setError('invalid');
+        return;
+      }
       const formatted = formatPhoneNumber(inputValue);
       onSave(formatted);
       onClose();
     };
     
+    // 이름 유효성 검사
+    const validateName = (name) => {
+      if (!name || name.trim() === '') return false; // 빈 값은 허용 안 함
+      return name.length <= 10;
+    };
+    
     // 맞춤법에 맞는 placeholder 설정
     const getPlaceholder = (field) => {
       switch(field) {
-        case 'name': return '이름을 입력하세요';
+        case 'name': return '이름을 입력하세요 (1~10자)';
         case 'userId': return '아이디를 입력하세요';
         case 'email': return '이메일 주소를 입력하세요';
         case 'phone': return '휴대폰 번호를 입력하세요';
@@ -160,32 +280,47 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
               <div className="flex-1">
                 <input
                   type="text"
+                  inputMode="numeric"
                   value={birthDateParts.year}
-                  onChange={(e) => setBirthDateParts({...birthDateParts, year: e.target.value})}
+                  onChange={(e) => {
+                    const value = e.target.value.replace(/[^0-9]/g, '');
+                    setBirthDateParts({...birthDateParts, year: value});
+                    setBirthDateErrors({...birthDateErrors, year: false});
+                  }}
                   placeholder="년도"
                   maxLength="4"
-                  className={`w-full px-3 py-2 text-sm text-center ${textColor} bg-transparent rounded-lg border ${borderColor} focus:outline-none focus:border-gray-400 placeholder:text-gray-400`}
+                  className={`w-full px-3 py-2 text-sm text-center ${textColor} bg-transparent rounded-lg border ${birthDateErrors.year ? 'border-red-500' : borderColor} focus:outline-none ${birthDateErrors.year ? 'focus:border-red-500' : 'focus:border-gray-400'} placeholder:text-gray-400`}
                   autoFocus
                 />
               </div>
               <div className="flex-1">
                 <input
                   type="text"
+                  inputMode="numeric"
                   value={birthDateParts.month}
-                  onChange={(e) => setBirthDateParts({...birthDateParts, month: e.target.value})}
+                  onChange={(e) => {
+                    const value = e.target.value.replace(/[^0-9]/g, '');
+                    setBirthDateParts({...birthDateParts, month: value});
+                    setBirthDateErrors({...birthDateErrors, month: false});
+                  }}
                   placeholder="월"
                   maxLength="2"
-                  className={`w-full px-3 py-2 text-sm text-center ${textColor} bg-transparent rounded-lg border ${borderColor} focus:outline-none focus:border-gray-400 placeholder:text-gray-400`}
+                  className={`w-full px-3 py-2 text-sm text-center ${textColor} bg-transparent rounded-lg border ${birthDateErrors.month ? 'border-red-500' : borderColor} focus:outline-none ${birthDateErrors.month ? 'focus:border-red-500' : 'focus:border-gray-400'} placeholder:text-gray-400`}
                 />
               </div>
               <div className="flex-1">
                 <input
                   type="text"
+                  inputMode="numeric"
                   value={birthDateParts.day}
-                  onChange={(e) => setBirthDateParts({...birthDateParts, day: e.target.value})}
+                  onChange={(e) => {
+                    const value = e.target.value.replace(/[^0-9]/g, '');
+                    setBirthDateParts({...birthDateParts, day: value});
+                    setBirthDateErrors({...birthDateErrors, day: false});
+                  }}
                   placeholder="일"
                   maxLength="2"
-                  className={`w-full px-3 py-2 text-sm text-center ${textColor} bg-transparent rounded-lg border ${borderColor} focus:outline-none focus:border-gray-400 placeholder:text-gray-400`}
+                  className={`w-full px-3 py-2 text-sm text-center ${textColor} bg-transparent rounded-lg border ${birthDateErrors.day ? 'border-red-500' : borderColor} focus:outline-none ${birthDateErrors.day ? 'focus:border-red-500' : 'focus:border-gray-400'} placeholder:text-gray-400`}
                 />
               </div>
             </div>
@@ -214,10 +349,15 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
           <div className="p-4 max-w-md mx-auto">
             <input
               type="tel"
+              inputMode="numeric"
               value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
+              onChange={(e) => {
+                const value = e.target.value.replace(/[^0-9-]/g, '');
+                setInputValue(value);
+                setError('');
+              }}
               placeholder="휴대폰 번호를 입력하세요"
-              className={`w-full px-4 py-2.5 text-sm ${textColor} bg-transparent rounded-lg border ${borderColor} focus:outline-none focus:border-gray-400`}
+              className={`w-full px-4 py-2.5 text-sm ${textColor} bg-transparent rounded-lg border ${error ? 'border-red-500' : borderColor} focus:outline-none ${error ? 'focus:border-red-500' : 'focus:border-gray-400'}`}
               autoFocus
             />
             
@@ -232,44 +372,121 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
       );
     }
     
+    // 이메일 유효성 검사
+    const validateEmail = (email) => {
+      if (!email) return true; // 빈 값은 OK
+      // 이메일 정규식: 기본적인 이메일 형식 검사
+      const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+      return emailRegex.test(email);
+    };
+    
+    // 컴포넌트 언마운트 시 타이머 정리
+    useEffect(() => {
+      return () => {
+        if (saveTimer) {
+          clearTimeout(saveTimer);
+        }
+      };
+    }, [saveTimer]);
+
     // 아이디 저장 핸들러
     const handleUserIdSave = async () => {
-      if (!inputValue.trim()) {
-        setError('invalid');
+      // 이미 처리 중이면 무시
+      if (isLoading) {
+        console.log('이미 저장 처리 중');
         return;
       }
-      
-      // 아이디 유효성 검사 (1~15글자, 영문/숫자/언더스코어만 허용)
-      const idRegex = /^[a-zA-Z0-9_]{1,15}$/;
-      if (!idRegex.test(inputValue)) {
+
+      console.log('=== 아이디 저장 시작 ===');
+      console.log('입력값:', inputValue);
+
+      const trimmedValue = inputValue.trim();
+      console.log('trim된 값:', trimmedValue);
+
+      // 유효성 검사
+      if (!trimmedValue) {
+        console.log('빈 값으로 인한 에러');
         setError('invalid');
+        if (showToast) {
+          showToast('아이디를 입력해주세요.', 'error');
+        }
         return;
       }
-      
+
+      // 아이디는 이미 입력 시점에 필터링되므로 길이만 체크
+      if (trimmedValue.length < 1 || trimmedValue.length > 15) {
+        console.log('길이 조건 미충족:', trimmedValue.length);
+        setError('invalid');
+        if (showToast) {
+          showToast('아이디는 1~15자여야 합니다.', 'error');
+        }
+        return;
+      }
+
+      // 현재 값과 동일한지 체크
+      if (trimmedValue === value) {
+        console.log('기존 값과 동일함');
+        onClose();
+        return;
+      }
+
+      console.log('유효성 검사 통과, 저장 시도');
       setIsLoading(true);
       setError('');
-      
-      const { success, error } = await updateUserId(inputValue);
-      
-      setIsLoading(false);
-      
-      if (success) {
-        onSave(inputValue);
-        
-        // localStorage에도 업데이트
-        const savedData = localStorage.getItem('profileData');
-        if (savedData) {
-          const parsed = JSON.parse(savedData);
-          parsed.userId = inputValue;
-          localStorage.setItem('profileData', JSON.stringify(parsed));
+
+      try {
+        // 아이디 업데이트
+        console.log('아이디 업데이트 시작');
+        const { success, error: updateError, data } = await updateUserId(trimmedValue);
+        console.log('업데이트 결과:', { success, error: updateError });
+
+        if (success) {
+          console.log('저장 성공');
+
+          // 상태 업데이트
+          onSave(trimmedValue);
+
+          // localStorage 업데이트
+          const savedData = localStorage.getItem('profileData');
+          if (savedData) {
+            const parsed = JSON.parse(savedData);
+            parsed.userId = trimmedValue;
+            localStorage.setItem('profileData', JSON.stringify(parsed));
+            console.log('localStorage 업데이트 완료');
+          }
+
+          // 토스트 메시지 표시
+          if (showToast) {
+            showToast('아이디가 성공적으로 변경되었습니다.', 'success');
+          }
+
+          // 약간의 딜레이 후 화면 닫기
+          setTimeout(() => {
+            setIsLoading(false);
+            onClose();
+          }, 300);
+        } else {
+          console.error('아이디 업데이트 실패:', updateError);
+          setIsLoading(false);
+          setError('invalid');
+
+          if (updateError === '이미 사용 중인 아이디입니다.') {
+            if (showToast) {
+              showToast('이미 사용 중인 아이디입니다.', 'error');
+            }
+          } else {
+            if (showToast) {
+              showToast('아이디 저장에 실패했습니다.', 'error');
+            }
+          }
         }
-        
-        onClose();
-        setToastMessage('아이디가 성공적으로 변경되었습니다.');
-        setToastType('success');
-        setShowToast(true);
-      } else {
+      } catch (err) {
+        console.error('아이디 저장 중 오류:', err);
+        setIsLoading(false);
         setError('invalid');
+        if (showToast) {
+          showToast('아이디 저장 중 오류가 발생했습니다.', 'error');
+        }
       }
     };
     
@@ -287,13 +504,41 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
             type={field === 'email' ? 'email' : 'text'}
             value={inputValue}
             onChange={(e) => {
-              setInputValue(e.target.value);
+              const value = e.target.value;
+
+              // 아이디 필드
+              if (field === 'userId') {
+                // 영문, 숫자, 언더스코어만 허용
+                const filtered = value.replace(/[^a-zA-Z0-9_]/g, '');
+                const finalValue = filtered.slice(0, 15);
+                setInputValue(finalValue);
+                setError('');
+
+                // 기존 타이머 취소
+                if (saveTimer) {
+                  clearTimeout(saveTimer);
+                }
+                return;
+              }
+              
+              // 이름 필드 - 10자 제한
+              if (field === 'name') {
+                if (value.length <= 10) {
+                  setInputValue(value);
+                  setError('');
+                }
+                return;
+              }
+              
+              // 기타 필드
+              setInputValue(value);
               setError('');
             }}
             placeholder={getPlaceholder(field)}
-            className={`w-full px-4 py-2.5 text-sm ${textColor} bg-transparent rounded-lg border ${error ? 'border-red-500' : borderColor} focus:outline-none focus:border-gray-400`}
+            className={`w-full px-4 py-2.5 text-sm ${textColor} bg-transparent rounded-lg border ${error ? 'border-red-500' : borderColor} focus:outline-none ${error ? 'focus:border-red-500' : 'focus:border-gray-400'}`}
             autoFocus
             disabled={isLoading}
+            maxLength={field === 'name' ? 10 : field === 'userId' ? 15 : undefined}
           />
           
           {field === 'userId' && (
@@ -303,9 +548,26 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
           )}
           
           <button
-            onClick={() => {
+            onClick={async () => {
+              // 버튼 중복 클릭 방지
+              if (isLoading) return;
+
               if (field === 'userId') {
-                handleUserIdSave();
+                await handleUserIdSave();
+              } else if (field === 'email') {
+                if (!validateEmail(inputValue)) {
+                  setError('invalid');
+                  return;
+                }
+                onSave(inputValue);
+                onClose();
+              } else if (field === 'name') {
+                if (!validateName(inputValue)) {
+                  setError('invalid');
+                  return;
+                }
+                onSave(inputValue);
+                onClose();
               } else {
                 onSave(inputValue);
                 onClose();
@@ -447,6 +709,11 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
           value={profileData.name}
           onSave={(value) => setProfileData({...profileData, name: value})}
           onClose={() => setEditingField(null)}
+          showToast={(message, type) => {
+            setToastMessage(message);
+            setToastType(type);
+            setShowToast(true);
+          }}
         />
       )}
       
@@ -455,8 +722,19 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
           field="userId"
           label="아이디"
           value={profileData.userId}
-          onSave={(value) => setProfileData({...profileData, userId: value})}
+          onSave={(value) => {
+            setProfileData(prev => {
+              const newData = {...prev, userId: value};
+              localStorage.setItem('profileData', JSON.stringify(newData));
+              return newData;
+            });
+          }}
           onClose={() => setEditingField(null)}
+          showToast={(message, type) => {
+            setToastMessage(message);
+            setToastType(type);
+            setShowToast(true);
+          }}
         />
       )}
       
@@ -467,6 +745,11 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
           value={profileData.birthDate}
           onSave={(value) => setProfileData({...profileData, birthDate: value})}
           onClose={() => setEditingField(null)}
+          showToast={(message, type) => {
+            setToastMessage(message);
+            setToastType(type);
+            setShowToast(true);
+          }}
         />
       )}
       
@@ -477,6 +760,11 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
           value={profileData.phone}
           onSave={(value) => setProfileData({...profileData, phone: value})}
           onClose={() => setEditingField(null)}
+          showToast={(message, type) => {
+            setToastMessage(message);
+            setToastType(type);
+            setShowToast(true);
+          }}
         />
       )}
       
@@ -487,6 +775,11 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
           value={profileData.email}
           onSave={(value) => setProfileData({...profileData, email: value})}
           onClose={() => setEditingField(null)}
+          showToast={(message, type) => {
+            setToastMessage(message);
+            setToastType(type);
+            setShowToast(true);
+          }}
         />
       )}
       

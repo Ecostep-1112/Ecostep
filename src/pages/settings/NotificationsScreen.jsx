@@ -166,19 +166,7 @@ const NotificationsScreen = ({ isDarkMode, setShowNotifications, notifications, 
                                       )
                                     );
                                   }}
-                                  className={`mt-2 px-3 py-1.5 text-xs font-medium rounded-lg ${
-                                    rankTheme === 'basic' 
-                                      ? isDarkMode ? 'bg-gray-300 hover:bg-gray-400 text-black' : 'bg-gray-800 hover:bg-gray-900 text-white'
-                                      : rankTheme === 'bronze' 
-                                      ? 'bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white'
-                                      : rankTheme === 'silver' 
-                                      ? 'bg-gradient-to-r from-slate-300 via-cyan-500 to-teal-500 hover:from-slate-400 hover:via-cyan-600 hover:to-teal-600 text-white'
-                                      : rankTheme === 'gold' 
-                                      ? 'bg-gradient-to-r from-amber-400 to-yellow-400 hover:from-amber-500 hover:to-yellow-500 text-gray-800'
-                                      : rankTheme === 'platinum' 
-                                      ? 'bg-gradient-to-r from-purple-400 to-pink-500 hover:from-purple-500 hover:to-pink-600 text-white'
-                                      : 'bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white'
-                                  } transition-all shadow-lg hover:shadow-xl`}
+                                  className="mt-2 px-3 py-1.5 text-xs font-medium rounded-lg bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white transition-all shadow-lg hover:shadow-xl"
                                 >
                                   {notification.pointsAmount}P 수령하기
                                 </button>

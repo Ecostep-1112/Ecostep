@@ -59,7 +59,10 @@ const SettingsScreen = ({
               )}
             </div>
             <div className="flex-1 text-left">
-              <p className={`text-sm font-medium ${textColor}`}>{userProfile?.userId || userProfile?.name || 'Eco User'}</p>
+              <p className={`text-sm font-medium ${textColor}`}>{userProfile?.name || 'Eco User'}</p>
+              {userProfile?.userId && (
+                <p className={`text-[11px] ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>@{userProfile.userId}</p>
+              )}
             </div>
             <div className="flex items-center">
               <span className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} mr-2`}>

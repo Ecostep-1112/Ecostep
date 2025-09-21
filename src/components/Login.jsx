@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { FaApple } from 'react-icons/fa';
 import { FcGoogle } from 'react-icons/fc';
 import { RiKakaoTalkFill } from 'react-icons/ri';
-import { FiChevronRight } from 'react-icons/fi';
+import { ChevronRight } from 'lucide-react';
 import { signInWithGoogle, signInWithKakao, signInWithApple } from '../lib/auth';
 import EarthStructure from './EarthStructure';
 
@@ -204,7 +204,7 @@ function Login({ onLogin }) {
                     <span className="ml-1">{isLoading ? '로그인 중...' : '계정으로 로그인'}</span>
                   </span>
                 </div>
-                <FiChevronRight className="text-gray-400 text-lg flex-shrink-0" />
+                <ChevronRight className="text-gray-400 text-lg flex-shrink-0" />
               </button>
 
               <button
@@ -219,7 +219,7 @@ function Login({ onLogin }) {
                     <span className="ml-[4.5px]">{isLoading ? '로그인 중...' : '계정으로 로그인'}</span>
                   </span>
                 </div>
-                <FiChevronRight className="text-gray-400 text-lg flex-shrink-0" />
+                <ChevronRight className="text-gray-400 text-lg flex-shrink-0" />
               </button>
 
               <button
@@ -236,7 +236,7 @@ function Login({ onLogin }) {
                     <span className="ml-1">계정으로 로그인</span>
                   </span>
                 </div>
-                <FiChevronRight className="text-gray-400 text-lg flex-shrink-0" />
+                <ChevronRight className="text-gray-400 text-lg flex-shrink-0" />
               </button>
               </div>
 

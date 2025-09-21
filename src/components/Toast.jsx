@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { FiX } from 'react-icons/fi';
+import { X } from 'lucide-react';
 
 const Toast = ({ message, type = 'success', isVisible, onClose, isDarkMode, rankTheme }) => {
   useEffect(() => {
@@ -37,7 +37,7 @@ const Toast = ({ message, type = 'success', isVisible, onClose, isDarkMode, rank
           onClick={onClose}
           className="hover:bg-white/20 rounded-full p-0.5 transition-colors ml-2 flex items-center justify-center"
         >
-          <FiX className="w-3 h-3" />
+          <X className="w-3 h-3" />
         </button>
       </div>
     </div>

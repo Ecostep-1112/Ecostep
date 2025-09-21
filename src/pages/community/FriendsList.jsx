@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FiChevronRight, FiSearch } from 'react-icons/fi';
+import { ChevronRight, Search } from 'lucide-react';
 import { BronzeIcon, SilverIcon, GoldIcon, PlatinumIcon } from '../../components/RankIcons';
 
 const FriendsList = ({ isDarkMode, onBack, isGlobalRanking = false, totalPlasticSaved = 0 }) => {
@@ -174,7 +174,7 @@ const FriendsList = ({ isDarkMode, onBack, isGlobalRanking = false, totalPlastic
       {/* Header */}
       <div className={`flex items-center p-4 border-b ${borderColor}`}>
         <button onClick={onBack} className="mr-3">
-          <FiChevronRight className={`w-5 h-5 rotate-180 ${textColor}`} />
+          <ChevronRight className={`w-5 h-5 rotate-180 ${textColor}`} />
         </button>
         <h2 className={`text-base font-medium ${textColor}`}>{isGlobalRanking ? '전체' : '친구'}</h2>
       </div>
@@ -182,7 +182,7 @@ const FriendsList = ({ isDarkMode, onBack, isGlobalRanking = false, totalPlastic
       {/* Search Bar */}
       <div className={`px-4 py-3 relative`}>
         <div className={`relative`}>
-          <FiSearch className={`absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`} />
+          <Search className={`absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`} />
           <input
             type="text"
             placeholder={isGlobalRanking ? "검색" : "친구 검색"}

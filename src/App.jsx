@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { FiSettings, FiHome, FiTarget, FiGift, FiUsers, FiMoreHorizontal } from 'react-icons/fi';
-import { IoNotificationsOutline } from 'react-icons/io5';
+import { Settings, Home, Target, Gift, Users, MoreHorizontal, Bell } from 'lucide-react';
 import HomePage from './pages/home/Home';
 import ChallengePage from './pages/challenge/Challenge';
 import RewardsPage from './pages/rewards/Rewards';
@@ -596,7 +595,7 @@ const EcostepApp = () => {
                 setShowNotifications(true);
                 setNotificationsList(prev => prev.map(n => ({ ...n, read: true })));
               }}>
-                <IoNotificationsOutline className={`w-[18px] h-[18px] ${
+                <Bell className={`w-[18px] h-[18px] ${
                   notificationsList.some(n => !n.read) 
                     ? 'text-purple-500' 
                     : isDarkMode ? 'text-white' : 'text-gray-700'
@@ -615,7 +614,7 @@ const EcostepApp = () => {
                 setShowLocationSettings(false);
                 setShowSettings(true);
               }}>
-                <FiSettings className={`w-4 h-4 ${isDarkMode ? 'text-white' : 'text-gray-700'}`} />
+                <Settings className={`w-4 h-4 ${isDarkMode ? 'text-white' : 'text-gray-700'}`} />
               </button>
             </div>
             {/* 그라데이션 테두리 */}
@@ -781,11 +780,11 @@ const EcostepApp = () => {
             }}>
               <div className="flex justify-around py-2">
                 {[
-                  { id: 'home', icon: FiHome, label: '홈' },
-                  { id: 'challenge', icon: FiTarget, label: '챌린지' },
-                  { id: 'reward', icon: FiGift, label: '보상' },
-                  { id: 'community', icon: FiUsers, label: '커뮤니티' },
-                  { id: 'more', icon: FiMoreHorizontal, label: '기타' }
+                  { id: 'home', icon: Home, label: '홈' },
+                  { id: 'challenge', icon: Target, label: '챌린지' },
+                  { id: 'reward', icon: Gift, label: '보상' },
+                  { id: 'community', icon: Users, label: '커뮤니티' },
+                  { id: 'more', icon: MoreHorizontal, label: '기타' }
                 ].map((tab) => {
                   const Icon = tab.icon;
                   return (

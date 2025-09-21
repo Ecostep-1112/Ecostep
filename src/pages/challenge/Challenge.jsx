@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FiCheck, FiX, FiChevronDown } from 'react-icons/fi';
+import { Check, X, ChevronDown } from 'lucide-react';
 import { BronzeIcon, SilverIcon, GoldIcon, PlatinumIcon } from '../../components/RankIcons';
 import { challengeSavings, isPlasticRelated, estimateSavings } from '../../data/challengeData';
 import { validatePlasticChallenge, fallbackValidation } from '../../api/validatePlastic';
@@ -896,7 +896,7 @@ const Challenge = ({
                   <span className={`text-sm flex-1 text-center ${selectedChallenge ? (isDarkMode ? 'text-gray-300' : 'text-gray-700') : (isDarkMode ? 'text-gray-500' : 'text-gray-400')}`}>
                     {selectedChallenge || '챌린지를 선택해 주세요'}
                   </span>
-                  <FiChevronDown className={`w-4 h-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
+                  <ChevronDown className={`w-4 h-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
                 </button>
               ) : (
                 <>
@@ -970,7 +970,7 @@ const Challenge = ({
                       }}
                       className={`absolute right-2 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-${isDarkMode ? '700' : '200'} rounded transition-colors`}
                     >
-                      <FiChevronDown className={`w-4 h-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
+                      <ChevronDown className={`w-4 h-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
                     </button>
                   </div>
                   <button
@@ -1072,7 +1072,7 @@ const Challenge = ({
                               'hover:bg-gray-100'
                             }`}
                           >
-                            <FiX className="w-4 h-4" style={{
+                            <X className="w-4 h-4" style={{
                               color: getThemeColor()
                             }} />
                           </button>
@@ -1163,9 +1163,9 @@ const Challenge = ({
                           } : {}}
                         >
                         {dayStatus === true ? (
-                          <FiCheck className={`w-3.5 h-3.5 ${getIconColor()}`} />
+                          <Check className={`w-3.5 h-3.5 ${getIconColor()}`} />
                         ) : dayStatus === false ? (
-                          <FiX className={`w-3.5 h-3.5 ${isDarkMode ? 'text-white' : 'text-gray-600'}`} />
+                          <X className={`w-3.5 h-3.5 ${isDarkMode ? 'text-white' : 'text-gray-600'}`} />
                         ) : (
                           <div className={`w-1 h-1 rounded-full ${isDarkMode ? 'bg-gray-500' : 'bg-gray-400'}`} />
                         )}
@@ -1355,7 +1355,7 @@ const Challenge = ({
                     <span className={tempPlasticGoal ? (isDarkMode ? 'text-gray-300' : 'text-gray-700') : (isDarkMode ? 'text-gray-500' : 'text-gray-400')}>
                       {tempPlasticGoal ? formatWeight(tempPlasticGoal) : '플라스틱 사용 한도를 설정해 주세요'}
                     </span>
-                    <FiChevronDown className={`transition-transform ${showGoalDropdown ? 'rotate-180' : ''} ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
+                    <ChevronDown className={`transition-transform ${showGoalDropdown ? 'rotate-180' : ''} ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
                   </button>
                 
                 {/* 드롭다운 리스트 */}
@@ -1440,7 +1440,7 @@ const Challenge = ({
                                         isDarkMode ? 'text-gray-400 hover:text-red-400' : 'text-gray-500 hover:text-red-500'
                                       }`}
                                     >
-                                      <FiX className="w-3 h-3" />
+                                      <X className="w-3 h-3" />
                                     </button>
                                   )}
                                 </div>
@@ -1530,7 +1530,7 @@ const Challenge = ({
                         <span className={`text-sm flex-1 text-center ${selectedPlasticItem ? (isDarkMode ? 'text-gray-300' : 'text-gray-700') : (isDarkMode ? 'text-gray-500' : 'text-gray-400')}`}>
                           {selectedPlasticItem || '아이템을 선택해 주세요'}
                         </span>
-                        <FiChevronDown className={`w-4 h-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
+                        <ChevronDown className={`w-4 h-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
                       </button>
                     </div>
                   ) : (
@@ -1600,7 +1600,7 @@ const Challenge = ({
                             }}
                             className={`absolute right-2 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-${isDarkMode ? '700' : '200'} rounded transition-colors`}
                           >
-                            <FiChevronDown className={`w-4 h-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
+                            <ChevronDown className={`w-4 h-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
                           </button>
                         </div>
                       </div>
@@ -1785,7 +1785,7 @@ const Challenge = ({
                                         'hover:bg-gray-100'
                                       }`}
                                     >
-                                      <FiX className="w-4 h-4" style={{
+                                      <X className="w-4 h-4" style={{
                                         color: getThemeColor()
                                       }} />
                                     </button>
@@ -2260,7 +2260,7 @@ const Challenge = ({
                     } rounded transition-colors`}
                   >
                     <span>{usagePeriod || '기간'}</span>
-                    <FiChevronDown className={`w-3 h-3 transition-transform ${showUsagePeriodDropdown ? 'rotate-180' : ''}`} />
+                    <ChevronDown className={`w-3 h-3 transition-transform ${showUsagePeriodDropdown ? 'rotate-180' : ''}`} />
                   </button>
                   
                   {showUsagePeriodDropdown && (

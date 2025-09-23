@@ -3,32 +3,14 @@
 
 export async function validatePlasticChallenge(description) {
   try {
-    // Claude API 호출 (예시 - 실제 구현 시 백엔드 필요)
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
+    // 백엔드 서버를 통해 Claude API 호출
+    const response = await fetch('http://localhost:5176/api/validate-plastic-challenge', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': process.env.REACT_APP_CLAUDE_API_KEY || '',
-        'anthropic-version': '2023-06-01'
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        model: 'claude-3-haiku-20240307',
-        max_tokens: 200,
-        messages: [{
-          role: 'user',
-          content: `다음 활동이 플라스틱 절약과 관련이 있는지 판단하고, 관련이 있다면 하루에 절약할 수 있는 플라스틱 무게(g)를 추정해주세요.
-          
-활동: "${description}"
-
-응답 형식 (JSON):
-{
-  "isPlasticRelated": true/false,
-  "estimatedSaving": 숫자 (1-100 사이),
-  "reason": "간단한 설명"
-}
-
-플라스틱과 관련 없는 활동이면 estimatedSaving은 0으로 설정하세요.`
-        }]
+        challenge: description
       })
     });
 

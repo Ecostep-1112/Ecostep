@@ -10,7 +10,7 @@ const ChatBot = ({ isDarkMode, onBack }) => {
       .scrollbar-hide::-webkit-scrollbar {
         display: none;
       }
-      
+
       /* Hide scrollbar for IE, Edge and Firefox */
       .scrollbar-hide {
         -ms-overflow-style: none;  /* IE and Edge */
@@ -18,9 +18,18 @@ const ChatBot = ({ isDarkMode, onBack }) => {
       }
     `;
     document.head.appendChild(style);
-    
+
     return () => {
       document.head.removeChild(style);
+    };
+  }, []);
+
+  // 컴포넌트 언마운트 시 대화 세션 리셋
+  useEffect(() => {
+    return () => {
+      // 컴포넌트가 언마운트될 때 localStorage 초기화
+      const initialMessage = [{ id: 1, text: '안녕하세요. 에코스텝 고객센터입니다. 앱 사용에 대해 무엇이든 물어보세요.', sender: 'bot', timestamp: new Date() }];
+      localStorage.setItem('chatbot_messages', JSON.stringify(initialMessage));
     };
   }, []);
   // Load saved messages from localStorage

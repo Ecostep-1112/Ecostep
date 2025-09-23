@@ -2,9 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { Check, X, ChevronDown } from 'lucide-react';
 import { BronzeIcon, SilverIcon, GoldIcon, PlatinumIcon } from '../../components/RankIcons';
 import { challengeSavings, isPlasticRelated, estimateSavings } from '../../data/challengeData';
-import { validatePlasticChallenge, fallbackValidation } from '../../api/validatePlastic';
-import { validatePlasticItem, fallbackEstimation } from '../../api/validatePlasticItem';
+import { validatePlasticChallenge, fallbackValidation } from '../../utils/validatePlastic';
+import { validatePlasticItem, fallbackEstimation } from '../../utils/validatePlasticItem';
 import { formatWeight } from '../../utils/formatters';
+import {
+  customChallengeStorage,
+  customPlasticItemStorage,
+  selectedChallengeStorage
+} from '../../utils/localStorage';
 
 const Challenge = ({ 
   isDarkMode,
@@ -46,8 +51,7 @@ const Challenge = ({
   const [previousPlasticItem, setPreviousPlasticItem] = useState(''); // 이전 플라스틱 항목 저장
   const [isLoadingWeight, setIsLoadingWeight] = useState(false);
   const [customPlasticItems2, setCustomPlasticItems2] = useState(() => {
-    const saved = localStorage.getItem('customPlasticItems2');
-    return saved ? JSON.parse(saved) : [];
+    return customPlasticItemStorage.get();
   });
   const [showAllPastChallenges, setShowAllPastChallenges] = useState(false);
   const [selectedPlasticItem, setSelectedPlasticItem] = useState(null);
@@ -933,6 +937,7 @@ const Challenge = ({
                           const validation = fallbackValidation(customChallenge);
                           
                           // 챌린지 추가
+                          customChallengeStorage.add(customChallenge);
                           setCustomChallenges([...customChallenges, customChallenge]);
                           const newSavings = {...customChallengeSavings, [customChallenge]: validation.savings};
                           setCustomChallengeSavings(newSavings);
@@ -1626,8 +1631,9 @@ const Challenge = ({
                                 }
                                 
                                 const newItem = { name: customPlasticItem, weight: parseInt(customPlasticWeight), desc: `추천 ${customPlasticWeight}g` };
-                                setCustomPlasticItems2([...customPlasticItems2, newItem]);
-                                localStorage.setItem('customPlasticItems2', JSON.stringify([...customPlasticItems2, newItem]));
+                                const updatedItems = [...customPlasticItems2, newItem];
+                                setCustomPlasticItems2(updatedItems);
+                                customPlasticItemStorage.set(updatedItems);
                                 setSelectedPlasticItem(customPlasticItem);
                                 setCustomPlasticItem('');
                                 setCustomPlasticWeight(10);
@@ -1766,7 +1772,7 @@ const Challenge = ({
                                         if (customPlasticItems2.find(c => c.name === item.name)) {
                                           const updatedItems2 = customPlasticItems2.filter(c => c.name !== item.name);
                                           setCustomPlasticItems2(updatedItems2);
-                                          localStorage.setItem('customPlasticItems2', JSON.stringify(updatedItems2));
+                                          customPlasticItemStorage.set(updatedItems2);
                                         } else {
                                           // 기존 customPlasticItems에서 삭제
                                           const updatedItems = customPlasticItems.filter(c => c.name !== item.name);

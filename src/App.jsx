@@ -12,9 +12,17 @@ import ChatBot from './pages/more/ChatBot';
 import NotificationsScreen from './pages/settings/NotificationsScreen';
 import { ThemeSettings, RankThemeSettings, LanguageSettings, NotificationSettings, LocationSettings, AquariumSettings } from './pages/settings/Settings';
 import Toast from './components/Toast';
-import Login from './components/Login';
+import Login from './pages/auth/Login';
 import fishData from './data/fishData.json';
 import { onAuthStateChange, getCurrentUser, signOut, createOrUpdateUserProfile } from './lib/auth';
+import {
+  appSettingsStorage,
+  aquariumSettingsStorage,
+  selectedChallengeStorage,
+  customChallengeStorage,
+  getLocalStorage,
+  setLocalStorage
+} from './utils/localStorage';
 
 const EcostepApp = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -109,25 +117,50 @@ const EcostepApp = () => {
   const [notificationsList, setNotificationsList] = useState([]);
   const [selectedChallenge, setSelectedChallenge] = useState(null);
   const [showChallengeSelect, setShowChallengeSelect] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  // 앱 설정들을 로컬 스토리지에서 초기화
+  const [appSettings, setAppSettings] = useState(() => appSettingsStorage.get());
+  const [isDarkMode, setIsDarkMode] = useState(appSettings.isDarkMode);
+  const [language, setLanguage] = useState(appSettings.language);
+  const [notificationEnabled, setNotificationEnabled] = useState(appSettings.notifications);
+  const [locationSharing, setLocationSharing] = useState(appSettings.location !== null);
+
   const [showChatBot, setShowChatBot] = useState(false);
   const [showThemeSettings, setShowThemeSettings] = useState(false);
   const [showRankThemeSettings, setShowRankThemeSettings] = useState(false);
   const [showLanguageSettings, setShowLanguageSettings] = useState(false);
   const [showNotificationSettings, setShowNotificationSettings] = useState(false);
   const [showLocationSettings, setShowLocationSettings] = useState(false);
-  const [language, setLanguage] = useState('ko');
-  const [notificationEnabled, setNotificationEnabled] = useState(true);
-  const [locationSharing, setLocationSharing] = useState(false);
-  const [fishCount, setFishCount] = useState(5);
-  const [isRandomFish, setIsRandomFish] = useState(true);
+  // 어항 설정들을 로컬 스토리지에서 초기화
+  const [aquariumSettings, setAquariumSettings] = useState(() => aquariumSettingsStorage.get());
+  const [fishCount, setFishCount] = useState(aquariumSettings.fishCount);
+  const [isRandomFish, setIsRandomFish] = useState(aquariumSettings.isRandomFish);
   const [isRandomDecorations, setIsRandomDecorations] = useState(false);
-  const [selectedFish, setSelectedFish] = useState([]);
-  const [selectedDecorations, setSelectedDecorations] = useState(['해초']);
+  const [selectedFish, setSelectedFish] = useState(aquariumSettings.selectedFish);
+  const [selectedDecorations, setSelectedDecorations] = useState(aquariumSettings.selectedDecorations.length > 0 ? aquariumSettings.selectedDecorations : ['해초']);
   const [purchasedFish, setPurchasedFish] = useState(() => {
     const saved = localStorage.getItem('purchasedFish');
     return saved ? JSON.parse(saved) : [];
   });
+
+  // 앱 설정 변경 시 로컬 스토리지에 저장
+  useEffect(() => {
+    appSettingsStorage.update({
+      isDarkMode,
+      language,
+      notifications: notificationEnabled,
+      location: locationSharing ? 'enabled' : null
+    });
+  }, [isDarkMode, language, notificationEnabled, locationSharing]);
+
+  // 어항 설정 변경 시 로컬 스토리지에 저장
+  useEffect(() => {
+    aquariumSettingsStorage.update({
+      fishCount,
+      isRandomFish,
+      selectedFish,
+      selectedDecorations
+    });
+  }, [fishCount, isRandomFish, selectedFish, selectedDecorations]);
   const [customChallenges, setCustomChallenges] = useState(() => {
     const saved = localStorage.getItem('customChallenges');
     return saved ? JSON.parse(saved) : [];

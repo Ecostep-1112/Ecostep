@@ -5,6 +5,9 @@ import DecorationIcons from '../../components/DecorationIcons';
 import WaterSurface from '../../components/WaterSurface';
 import BubbleSystem from '../../components/BubbleSystem';
 
+// 장식품 최소 간격 상수
+const DECORATION_MIN_SPACING = 12; // 장식품 간 최소 간격 (%)
+
 const Home = ({
   isDarkMode,
   setShowAquariumSettings,
@@ -100,96 +103,72 @@ const Home = ({
     }
   }, [isRandomDecorations, selectedDecorations, purchasedDecorations, decorationsData, isActive]); // isActive 추가로 홈 탭 클릭 시 리렌더링
 
-  // 장식품 위치 초기화 (저장된 설정 또는 랭크별 고정 위치)
+  // 장식품 위치 초기화 (저장된 설정 또는 랜덤 배치)
   useEffect(() => {
     // 저장된 설정 불러오기
     const savedConfigs = JSON.parse(localStorage.getItem('savedDecorationConfigs') || '{}');
 
-    // 장식품별 랭크 정의
-    const decorationRanks = {
-      // 브론즈 장식품
-      '해초': { rank: 'bronze', order: 0 },
-      '용암석': { rank: 'bronze', order: 1 },
-      '작은 동굴': { rank: 'bronze', order: 2 },
-      // 실버 장식품
-      '산호': { rank: 'silver', order: 0 },
-      '드리프트 우드': { rank: 'silver', order: 1 },
-      '조개 껍질': { rank: 'silver', order: 2 },
-      // 골드 장식품
-      '그리스 신전': { rank: 'gold', order: 0 },
-      '보물 상자': { rank: 'gold', order: 1 },
-      '해적선': { rank: 'gold', order: 2 },
-      // 플래티넘 장식품
-      '크리스탈 동굴': { rank: 'platinum', order: 0 },
-      'LED 해파리': { rank: 'platinum', order: 1 },
-      '아틀란티스 유적': { rank: 'platinum', order: 2 }
-    };
+    // 랜덤 위치 생성 함수 (겹치지 않게)
+    const generateRandomPosition = (existingPositions, index) => {
+      let attempts = 0;
+      let position;
+      const maxAttempts = 50;
 
-    // 랭크별 고정 위치 (어항 하단에서 15% 위, 균등 간격)
-    const getRankPosition = (decoName) => {
-      const info = decorationRanks[decoName];
-      if (!info) return { bottom: '15%', left: '50%', transform: 'translateX(-50%)' };
+      do {
+        // 랜덤 위치 생성 (어항 내부에서)
+        const left = 10 + Math.random() * 80; // 10% ~ 90%
+        const bottom = 15 + Math.random() * 10; // 15% ~ 25% (바닥 근처)
+        position = { bottom: `${bottom}%`, left: `${left}%` };
 
-      const baseBottom = '15%'; // 수질바 위로 위치 조정
-      let position = { bottom: baseBottom };
-
-      // 각 장식품별 구체적인 위치 설정 (7%~85% 균등 배치)
-      const positions = {
-        // 브론즈 (왼쪽)
-        '해초': { left: '7%' },           // 가장 왼쪽 (5% → 7%)
-        '용암석': { left: '14.09%' },
-        '작은 동굴': { left: '21.18%' },
-        // 실버 (왼쪽-중앙)
-        '산호': { left: '28.27%' },
-        '드리프트 우드': { left: '35.36%' },
-        '조개 껍질': { left: '42.45%' },
-        // 골드 (오른쪽-중앙)
-        '그리스 신전': { left: '49.55%' },
-        '보물 상자': { left: '56.64%' },
-        '해적선': { left: '63.73%' },
-        // 플래티넘 (오른쪽)
-        '크리스탈 동굴': { left: '70.82%' },
-        'LED 해파리': { left: '77.91%' },
-        '아틀란티스 유적': { left: '85%' }  // 오른쪽
-      };
-
-      if (positions[decoName]) {
-        // 각 장식품의 위치 적용 (bottom 값이 있으면 그것도 적용)
-        if (positions[decoName].bottom) {
-          position.bottom = positions[decoName].bottom;
+        // 다른 장식품과 겹치는지 확인
+        let overlapping = false;
+        for (const pos of existingPositions) {
+          const leftDiff = Math.abs(parseFloat(pos.left) - left);
+          if (leftDiff < DECORATION_MIN_SPACING) {
+            overlapping = true;
+            break;
+          }
         }
-        position.left = positions[decoName].left;
-      } else {
-        position.left = '50%';
-        position.transform = 'translateX(-50%)';
-      }
+
+        if (!overlapping) break;
+        attempts++;
+
+        // 시도 횟수 초과 시 단순 배치
+        if (attempts >= maxAttempts) {
+          position = {
+            bottom: '15%',
+            left: `${20 + (index * 15)}%` // 최소 간격으로 배치
+          };
+          break;
+        }
+      } while (attempts < maxAttempts);
 
       return position;
     };
 
-    // 장식품 선택이 변경될 때마다 위치 및 설정 초기화
+    // 장식품 위치 및 설정 초기화
     const newPositions = {};
     const newSettings = {};
+    const existingPositions = [];
 
-    displayDecorations.forEach((decoName) => {
-      // 저장된 설정이 있으면 사용
+    displayDecorations.forEach((decoName, index) => {
       if (savedConfigs[decoName]) {
+        // 저장된 설정이 있으면 사용
         newPositions[decoName] = savedConfigs[decoName].position;
         newSettings[decoName] = savedConfigs[decoName].settings;
+        existingPositions.push(savedConfigs[decoName].position);
       } else {
-        // 저장된 설정이 없으면 기본 위치 사용
-        const fixedPosition = getRankPosition(decoName);
-        newPositions[decoName] = fixedPosition;
+        // 저장된 설정이 없으면 랜덤 배치
+        const randomPosition = generateRandomPosition(existingPositions, index);
+        newPositions[decoName] = randomPosition;
         newSettings[decoName] = { size: 100, rotation: 0 };
+        existingPositions.push(randomPosition);
       }
     });
 
-    // 새 위치와 설정 적용
+    // 상태 업데이트
     setDecorationPositions(newPositions);
-    setDecorationSettings(prev => ({
-      ...prev,
-      ...newSettings
-    }));
+    setDecorationSettings(prev => ({ ...prev, ...newSettings }));
   }, [displayDecorations]);
   
   // 물고기 위치 초기화 및 애니메이션
@@ -342,19 +321,19 @@ const Home = ({
     };
   }, [displayFish, isActive]);
 
-  // 장식품 위치를 localStorage에 저장
+  // 장식품 위치와 설정을 localStorage에 저장 (디바운싱으로 성능 최적화)
   useEffect(() => {
-    if (Object.keys(decorationPositions).length > 0) {
-      localStorage.setItem('decorationPositions', JSON.stringify(decorationPositions));
-    }
-  }, [decorationPositions]);
+    const timer = setTimeout(() => {
+      if (Object.keys(decorationPositions).length > 0) {
+        localStorage.setItem('decorationPositions', JSON.stringify(decorationPositions));
+      }
+      if (Object.keys(decorationSettings).length > 0) {
+        localStorage.setItem('decorationSettings', JSON.stringify(decorationSettings));
+      }
+    }, 500); // 500ms 디바운싱
 
-  // 장식품 설정을 localStorage에 저장
-  useEffect(() => {
-    if (Object.keys(decorationSettings).length > 0) {
-      localStorage.setItem('decorationSettings', JSON.stringify(decorationSettings));
-    }
-  }, [decorationSettings]);
+    return () => clearTimeout(timer);
+  }, [decorationPositions, decorationSettings]);
 
   // 어항 클릭 시 드래그 모드 해제
   const handleAquariumClick = (e) => {
@@ -366,28 +345,32 @@ const Home = ({
     }
   };
 
+  // 드래그 위치 계산 함수 (재사용성 향상)
+  const calculateDragPosition = (clientX, clientY, container) => {
+    const rect = container.getBoundingClientRect();
+    const x = ((clientX - rect.left) / rect.width) * 100;
+    const y = ((rect.bottom - clientY) / rect.height) * 100;
+
+    // 경계 체크 (어항 영역 내에서만 이동 가능)
+    return {
+      x: Math.max(8, Math.min(92, x)),
+      y: Math.max(15, Math.min(85, y))
+    };
+  };
+
   const handleMouseMove = (e) => {
     if (!isDragging) return;
 
-    // 더 정확한 컨테이너 참조
     const container = document.querySelector('[style*="aspectRatio"]') || e.currentTarget;
-    const rect = container.getBoundingClientRect();
-
-    const x = ((e.clientX - rect.left) / rect.width) * 100;
-    const y = ((rect.bottom - e.clientY) / rect.height) * 100;
-
-    // 경계 체크 (어항 영역 내에서만 이동 가능)
-    // translateX(-50%) 때문에 장식품 중앙이 기준이므로 양쪽에 여유 필요
-    const clampedX = Math.max(8, Math.min(92, x));
-    const clampedY = Math.max(15, Math.min(85, y)); // 수질바 영역 제외
+    const position = calculateDragPosition(e.clientX, e.clientY, container);
 
     // requestAnimationFrame을 사용하여 부드러운 애니메이션
     requestAnimationFrame(() => {
       setDecorationPositions(prev => ({
         ...prev,
         [isDragging]: {
-          bottom: `${clampedY}%`,
-          left: `${clampedX}%`
+          bottom: `${position.y}%`,
+          left: `${position.x}%`
         }
       }));
     });
@@ -439,22 +422,15 @@ const Home = ({
 
     const touch = e.touches[0];
     const container = document.querySelector('[style*="aspectRatio"]') || e.currentTarget;
-    const rect = container.getBoundingClientRect();
-
-    const x = ((touch.clientX - rect.left) / rect.width) * 100;
-    const y = ((rect.bottom - touch.clientY) / rect.height) * 100;
-
-    // translateX(-50%) 때문에 장식품 중앙이 기준이므로 양쪽에 여유 필요
-    const clampedX = Math.max(8, Math.min(92, x));
-    const clampedY = Math.max(15, Math.min(85, y));
+    const position = calculateDragPosition(touch.clientX, touch.clientY, container);
 
     // requestAnimationFrame을 사용하여 부드러운 애니메이션
     requestAnimationFrame(() => {
       setDecorationPositions(prev => ({
         ...prev,
         [isDragging]: {
-          bottom: `${clampedY}%`,
-          left: `${clampedX}%`
+          bottom: `${position.y}%`,
+          left: `${position.x}%`
         }
       }));
     });
@@ -1055,27 +1031,10 @@ const Home = ({
                       rotation: 0
                     }
                   }));
-                  // 위치도 초기화
-                  const decorationRanks = {
-                    '해초': { left: '7%' },
-                    '용암석': { left: '14.09%' },
-                    '작은 동굴': { left: '21.18%' },
-                    '산호': { left: '28.27%' },
-                    '드리프트 우드': { left: '35.36%' },
-                    '조개 껍질': { left: '42.45%' },
-                    '그리스 신전': { left: '49.55%' },
-                    '보물 상자': { left: '56.64%' },
-                    '해적선': { left: '63.73%' },
-                    '크리스탈 동굴': { left: '70.82%' },
-                    'LED 해파리': { left: '77.91%' },
-                    '아틀란티스 유적': { left: '85%' }
-                  };
+                  // 위치도 초기화 (중앙 배치)
                   setDecorationPositions(prev => ({
                     ...prev,
-                    [selectedDecoration]: {
-                      bottom: '15%',
-                      left: decorationRanks[selectedDecoration]?.left || '50%'
-                    }
+                    [selectedDecoration]: { bottom: '15%', left: '50%' }
                   }));
                 }}
                 className={`flex-1 py-2 text-xs font-medium rounded-lg transition-colors ${isDarkMode ? 'bg-gray-700 text-gray-300 hover:bg-gray-600' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}

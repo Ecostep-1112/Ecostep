@@ -42,7 +42,6 @@ const Home = ({
     return saved ? JSON.parse(saved) : {};
   });
   const [isDragging, setIsDragging] = useState(null);
-  const [holdTimeout, setHoldTimeout] = useState(null);
   const [selectedDecoration, setSelectedDecoration] = useState(null);
   const [showSettingsPanel, setShowSettingsPanel] = useState(false);
   
@@ -99,35 +98,105 @@ const Home = ({
     }
   }, [isRandomDecorations, selectedDecorations, purchasedDecorations, decorationsData, isActive]); // isActive 추가로 홈 탭 클릭 시 리렌더링
 
-  // 장식품 위치 초기화 (저장된 위치가 없는 경우에만)
+  // 장식품 위치 초기화 (랭크별 고정 위치)
   useEffect(() => {
-    const defaultPositions = [
-      { bottom: '18%', left: '20%' },
-      { bottom: '18%', right: '20%' },
-      { bottom: '18%', left: '50%', transform: 'translateX(-50%)' },
-      { bottom: '18%', left: '35%' },
-      { bottom: '18%', right: '35%' },
-      { bottom: '25%', left: '25%' },
-      { bottom: '25%', right: '25%' },
-      { bottom: '25%', left: '50%', transform: 'translateX(-50%)' },
-      { bottom: '32%', left: '30%' },
-      { bottom: '32%', right: '30%' },
-      { bottom: '32%', left: '50%', transform: 'translateX(-50%)' },
-      { bottom: '39%', left: '35%' },
-      { bottom: '39%', right: '35%' }
-    ];
+    // localStorage 초기화 (임시 - 한번만 실행)
+    if (localStorage.getItem('decorationPositionsReset') !== 'v12') {
+      localStorage.removeItem('decorationPositions');
+      localStorage.setItem('decorationPositionsReset', 'v12');
+      setDecorationPositions({}); // 상태도 초기화
+    }
 
+    // 장식품별 랭크 정의
+    const decorationRanks = {
+      // 브론즈 장식품
+      '해초': { rank: 'bronze', order: 0 },
+      '용암석': { rank: 'bronze', order: 1 },
+      '작은 동굴': { rank: 'bronze', order: 2 },
+      // 실버 장식품
+      '산호': { rank: 'silver', order: 0 },
+      '드리프트 우드': { rank: 'silver', order: 1 },
+      '조개 껍질': { rank: 'silver', order: 2 },
+      // 골드 장식품
+      '그리스 신전': { rank: 'gold', order: 0 },
+      '보물 상자': { rank: 'gold', order: 1 },
+      '해적선': { rank: 'gold', order: 2 },
+      // 플래티넘 장식품
+      '크리스탈 동굴': { rank: 'platinum', order: 0 },
+      'LED 해파리': { rank: 'platinum', order: 1 },
+      '아틀란티스 유적': { rank: 'platinum', order: 2 }
+    };
+
+    // 랭크별 고정 위치 (어항 하단에서 15% 위, 균등 간격)
+    const getRankPosition = (decoName) => {
+      const info = decorationRanks[decoName];
+      if (!info) return { bottom: '15%', left: '50%', transform: 'translateX(-50%)' };
+
+      const baseBottom = '15%'; // 수질바 위로 위치 조정
+      let position = { bottom: baseBottom };
+
+      // 각 장식품별 구체적인 위치 설정 (7%~85% 균등 배치)
+      const positions = {
+        // 브론즈 (왼쪽)
+        '해초': { left: '7%' },           // 가장 왼쪽 (5% → 7%)
+        '용암석': { left: '14.09%' },
+        '작은 동굴': { left: '21.18%' },
+        // 실버 (왼쪽-중앙)
+        '산호': { left: '28.27%' },
+        '드리프트 우드': { left: '35.36%' },
+        '조개 껍질': { left: '42.45%' },
+        // 골드 (오른쪽-중앙)
+        '그리스 신전': { left: '49.55%' },
+        '보물 상자': { left: '56.64%' },
+        '해적선': { left: '63.73%' },
+        // 플래티넘 (오른쪽)
+        '크리스탈 동굴': { left: '70.82%' },
+        'LED 해파리': { left: '77.91%' },
+        '아틀란티스 유적': { left: '85%' }  // 오른쪽
+      };
+
+      if (positions[decoName]) {
+        // 각 장식품의 위치 적용 (bottom 값이 있으면 그것도 적용)
+        if (positions[decoName].bottom) {
+          position.bottom = positions[decoName].bottom;
+        }
+        position.left = positions[decoName].left;
+      } else {
+        position.left = '50%';
+        position.transform = 'translateX(-50%)';
+      }
+
+      return position;
+    };
+
+    // 장식품 선택이 변경될 때마다 위치 초기화
     const newPositions = {};
-    displayDecorations.forEach((decoName, i) => {
-      // 저장된 위치도 없고, 현재 위치도 없는 경우에만 기본 위치 설정
-      if (!decorationPositions[decoName]) {
-        const position = defaultPositions[i] || { bottom: `${18 + (i % 3) * 7}%`, left: `${20 + (i % 3) * 30}%` };
-        newPositions[decoName] = position;
+    const savedPositions = JSON.parse(localStorage.getItem('decorationPositions') || '{}');
+
+    // 이전 장식품 목록과 현재 장식품 목록 비교
+    const prevDecorations = Object.keys(decorationPositions);
+    const hasChanged = JSON.stringify(prevDecorations.sort()) !== JSON.stringify(displayDecorations.sort());
+
+    displayDecorations.forEach((decoName) => {
+      // 장식품 목록이 변경되었거나 v12 리셋 후에는 무조건 새 위치 적용
+      const resetVersion = localStorage.getItem('decorationPositionsReset');
+      if (hasChanged || resetVersion === 'v12' || !savedPositions[decoName]) {
+        const fixedPosition = getRankPosition(decoName);
+        newPositions[decoName] = fixedPosition;
+      } else if (savedPositions[decoName] && !hasChanged) {
+        newPositions[decoName] = savedPositions[decoName];
+      } else {
+        const fixedPosition = getRankPosition(decoName);
+        newPositions[decoName] = fixedPosition;
       }
     });
 
-    if (Object.keys(newPositions).length > 0) {
-      setDecorationPositions(prev => ({ ...prev, ...newPositions }));
+    // 새 위치로 설정
+    setDecorationPositions(newPositions);
+
+    // 장식품이 변경되었으면 localStorage 초기화
+    if (hasChanged) {
+      localStorage.removeItem('decorationPositions');
     }
   }, [displayDecorations]);
   
@@ -295,41 +364,16 @@ const Home = ({
     }
   }, [decorationSettings]);
 
-  // 드래그 핸들러들
-  const handleMouseDown = (e, decoName) => {
-    e.preventDefault();
-    const timeout = setTimeout(() => {
-      setIsDragging(decoName);
-      // 햅틱 피드백 (모바일에서만 작동)
-      if (navigator.vibrate) {
-        navigator.vibrate(100);
-      }
-      // 토스트 메시지 표시
-      if (showToast) {
-        showToast('드래그하여 움직이세요', 'success');
-      }
-    }, 2000); // 2초 후 드래그 모드 활성화
-    setHoldTimeout(timeout);
-
-    // 전역 마우스 이벤트 리스너 추가
-    const handleGlobalMouseUp = () => {
-      if (holdTimeout) {
-        clearTimeout(holdTimeout);
-        setHoldTimeout(null);
-      }
+  // 어항 클릭 시 드래그 모드 해제
+  const handleAquariumClick = (e) => {
+    // 장식품이 아닌 빈 공간을 클릭했을 때 드래그 모드 해제
+    if (e.target === e.currentTarget && isDragging) {
       setIsDragging(null);
-      document.removeEventListener('mouseup', handleGlobalMouseUp);
-    };
-
-    document.addEventListener('mouseup', handleGlobalMouseUp);
-  };
-
-  const handleMouseUp = () => {
-    if (holdTimeout) {
-      clearTimeout(holdTimeout);
-      setHoldTimeout(null);
+      setSelectedDecoration(null);
+      if (showToast) {
+        showToast('드래그 모드 해제', 'info');
+      }
     }
-    setIsDragging(null);
   };
 
   const handleMouseMove = (e) => {
@@ -359,29 +403,22 @@ const Home = ({
     });
   };
 
-  // 터치 이벤트 핸들러들 (모바일 지원)
+  // 터치 더블탭 핸들러 (모바일 지원)
+  const [lastTouchTime, setLastTouchTime] = useState(0);
   const handleTouchStart = (e, decoName) => {
     e.preventDefault();
-    const timeout = setTimeout(() => {
-      setIsDragging(decoName);
-      // 햅틱 피드백 (모바일에서만 작동)
-      if (navigator.vibrate) {
-        navigator.vibrate(100);
-      }
-      // 토스트 메시지 표시
-      if (showToast) {
-        showToast('드래그하여 움직이세요', 'success');
-      }
-    }, 2000);
-    setHoldTimeout(timeout);
+    const currentTime = new Date().getTime();
+    const tapLength = currentTime - lastTouchTime;
+
+    if (tapLength < 500 && tapLength > 0) {
+      // 더블탭 감지
+      handleDoubleClick(e, decoName);
+    }
+    setLastTouchTime(currentTime);
   };
 
   const handleTouchEnd = () => {
-    if (holdTimeout) {
-      clearTimeout(holdTimeout);
-      setHoldTimeout(null);
-    }
-    setIsDragging(null);
+    // 터치 종료 시 처리 (필요한 경우)
   };
 
   const handleTouchMove = (e) => {
@@ -411,19 +448,31 @@ const Home = ({
     });
   };
 
-  // 더블클릭 핸들러
+  // 더블클릭 핸들러 - 드래그 모드 토글
   const handleDoubleClick = (e, decoName) => {
     e.preventDefault();
     e.stopPropagation();
 
-    if (selectedDecoration === decoName && showSettingsPanel) {
-      // 이미 선택된 장식품을 다시 더블클릭하면 패널 닫기
-      setShowSettingsPanel(false);
-      setSelectedDecoration(null);
+    if (isDragging === decoName) {
+      // 이미 드래그 중이면 드래그 모드 해제
+      setIsDragging(null);
+      if (showToast) {
+        showToast('드래그 모드 해제', 'info');
+      }
     } else {
-      // 새로운 장식품 선택하거나 패널 열기
+      // 드래그 모드 활성화
+      setIsDragging(decoName);
       setSelectedDecoration(decoName);
-      setShowSettingsPanel(true);
+
+      // 햅틱 피드백 (모바일에서만 작동)
+      if (navigator.vibrate) {
+        navigator.vibrate(100);
+      }
+
+      // 토스트 메시지 표시
+      if (showToast) {
+        showToast('드래그하여 움직이세요', 'success');
+      }
 
       // 기본 설정이 없으면 초기화
       if (!decorationSettings[decoName]) {
@@ -464,14 +513,6 @@ const Home = ({
     }
   };
 
-  // 컴포넌트 언마운트 시 타이머 정리
-  useEffect(() => {
-    return () => {
-      if (holdTimeout) {
-        clearTimeout(holdTimeout);
-      }
-    };
-  }, [holdTimeout]);
 
   return (
     <div className={`flex-1 overflow-y-auto custom-scrollbar scrollbar-hide-idle pb-20 ${bgColor}`}>
@@ -485,8 +526,8 @@ const Home = ({
             'bg-gradient-to-br from-purple-400 via-pink-400 to-indigo-500'
           } ${isDragging ? 'cursor-move' : ''}`}
           style={{ aspectRatio: '1/1' }}
+          onClick={handleAquariumClick}
           onMouseMove={handleMouseMove}
-          onMouseUp={handleMouseUp}
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
         >
@@ -563,7 +604,6 @@ const Home = ({
                   animationDuration: !isDragging ? `${3 + i * 0.5}s` : undefined,
                   animationDelay: !isDragging ? `${i * 0.3}s` : undefined
                 }}
-                onMouseDown={(e) => handleMouseDown(e, decoName)}
                 onTouchStart={(e) => handleTouchStart(e, decoName)}
                 onDoubleClick={(e) => handleDoubleClick(e, decoName)}
               >

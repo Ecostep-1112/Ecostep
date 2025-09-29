@@ -617,49 +617,25 @@ export const AquariumSettings = ({
 
           <h3 className={`text-sm font-medium mb-3 ${textColor}`}>장식품</h3>
           <div className={`${inputBg} rounded-lg p-3 mb-3`}>
-            <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center justify-between">
               <span className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>장식품: {selectedDecorations.length}개</span>
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => {
-                    if (selectedDecorations.length > 0) {
-                      setSelectedDecorations(selectedDecorations.slice(0, -1));
-                    }
-                  }}
-                  className={`w-8 h-8 ${cardBg} border ${borderColor} rounded flex items-center justify-center ${textColor}`}
-                >-</button>
-                <span className={`text-sm font-medium px-3 ${textColor}`}>{selectedDecorations.length}</span>
-                <button 
-                  onClick={() => {
-                    if (selectedDecorations.length < availableDecorations.length) {
-                      const nextDeco = availableDecorations.find(d => !selectedDecorations.includes(d.name));
-                      if (nextDeco) setSelectedDecorations([...selectedDecorations, nextDeco.name]);
-                    }
-                  }}
-                  className={`w-8 h-8 ${cardBg} border ${borderColor} rounded flex items-center justify-center ${textColor}`}
-                >+</button>
-              </div>
-            </div>
-            
-            <div className="flex items-center justify-end">
               <button
-                onClick={() => setIsRandomDecorations(!isRandomDecorations)}
+                onClick={() => setSelectedDecorations([])}
                 className={`flex items-center border ${isDarkMode ? 'border-gray-600' : 'border-gray-300'} rounded-lg px-3 py-1.5 ${isDarkMode ? 'hover:bg-gray-800' : 'hover:bg-gray-50'} transition-colors`}
               >
                 <div className={`w-4 h-4 mr-2 border ${isDarkMode ? 'border-gray-600' : 'border-gray-300'} rounded flex items-center justify-center`}>
-                  {isRandomDecorations && (
+                  {selectedDecorations.length === 0 && (
                     <svg className={`w-3 h-3 ${isDarkMode ? 'text-white' : 'text-gray-700'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
                   )}
                 </div>
-                <span className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>랜덤 선택</span>
+                <span className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>장식품 없애기</span>
               </button>
             </div>
           </div>
-          
-          {!isRandomDecorations && (
-            availableDecorations.length > 0 ? (
+
+          {availableDecorations.length > 0 ? (
               <div className="mb-6">
                 <h4 className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} mb-2`}>장식품 선택 ({selectedDecorations.length}/{availableDecorations.length})</h4>
                 {Object.entries(decorationsData).map(([rank, decorations]) => {
@@ -716,8 +692,7 @@ export const AquariumSettings = ({
                   보상 탭에서 장식품을 구매해주세요
                 </p>
               </div>
-            )
-          )}
+            )}
         </div>
       </div>
       

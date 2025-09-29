@@ -519,51 +519,75 @@ const EcostepApp = () => {
     calculateConsecutiveDays();
   }, [challengeHistory]);
 
-  // 수질 감소 로직
+  // 수질 감소 로직 - 사용자 임의 조정은 유지, 자정 후 활동 없을 때만 감소
   useEffect(() => {
     const calculateWaterQuality = () => {
-      if (!lastChallengeDate) return;
-      
+      if (!lastChallengeDate) {
+        // 첫 번째 챌린지 전에는 기본 수질 유지
+        setDaysWithoutChallenge(0);
+        return;
+      }
+
       const lastDate = new Date(lastChallengeDate);
       const today = new Date();
       today.setHours(0, 0, 0, 0);
       lastDate.setHours(0, 0, 0, 0);
       const daysDiff = Math.floor((today - lastDate) / (1000 * 60 * 60 * 24));
-      
+
+      // 마지막 수질 업데이트 날짜 확인
+      const lastWaterQualityUpdate = localStorage.getItem('lastWaterQualityUpdate');
+      const todayString = today.toISOString().split('T')[0];
+
+      // 오늘 이미 수질이 업데이트되었는지 확인 (사용자 조정 포함)
+      if (lastWaterQualityUpdate === todayString) {
+        setDaysWithoutChallenge(daysDiff);
+        return;
+      }
+
       if (daysDiff === 0) {
         // 오늘 챌린지 완료함 - 100%
         setWaterQuality(100);
-      } else {
-        // 챌린지 미완료 일수에 따른 수질 감소
+        localStorage.setItem('lastWaterQualityUpdate', todayString);
+      } else if (daysDiff > 0) {
+        // 챌린지 미완료 일수에 따른 수질 감소 (하루에 한 번만)
         let qualityDecrease = 0;
-        
+
         if (daysDiff === 1 || daysDiff === 2) {
           qualityDecrease = daysDiff * 5; // 1-2일: 5%씩
         } else if (daysDiff === 3 || daysDiff === 4) {
-          qualityDecrease = 10 + (daysDiff - 2) * 10; // 3-4일: 10%씩 (총 10+10, 10+20)
+          qualityDecrease = 10 + (daysDiff - 2) * 10; // 3-4일: 10%씩
         } else if (daysDiff === 5 || daysDiff === 6) {
-          qualityDecrease = 30 + (daysDiff - 4) * 20; // 5-6일: 20%씩 (총 30+20, 30+40)
+          qualityDecrease = 30 + (daysDiff - 4) * 20; // 5-6일: 20%씩
         } else if (daysDiff === 7) {
-          qualityDecrease = 70 + 25; // 7일: 25% (총 95)
+          qualityDecrease = 70 + 25; // 7일: 25%
         } else {
           qualityDecrease = 95 + (daysDiff - 7); // 8일 이후: 1%씩
         }
-        
+
         const newQuality = Math.max(0, 100 - qualityDecrease);
         setWaterQuality(newQuality);
+        localStorage.setItem('lastWaterQualityUpdate', todayString);
       }
-      
+
       setDaysWithoutChallenge(daysDiff);
     };
-    
+
     calculateWaterQuality();
-    
-    // 매일 자정에 수질 재계산
-    const interval = setInterval(() => {
+
+    // 자정에 수질 재계산 (하루에 한 번만)
+    const now = new Date();
+    const midnight = new Date(now);
+    midnight.setHours(24, 0, 0, 0);
+    const msUntilMidnight = midnight - now;
+
+    const midnightTimeout = setTimeout(() => {
       calculateWaterQuality();
-    }, 60000); // 1분마다 체크 (실제로는 자정 체크용)
-    
-    return () => clearInterval(interval);
+      // 매일 자정 체크
+      const dailyInterval = setInterval(calculateWaterQuality, 24 * 60 * 60 * 1000);
+      return () => clearInterval(dailyInterval);
+    }, msUntilMidnight);
+
+    return () => clearTimeout(midnightTimeout);
   }, [lastChallengeDate]);
 
   const bgColor = isDarkMode ? 'bg-black' : 'bg-white';

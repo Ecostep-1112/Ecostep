@@ -633,10 +633,8 @@ const Rewards = ({
                       {/* 블러 효과를 받을 컨테이너 */}
                       <div className={`w-full h-full flex flex-col items-center justify-between ${isLocked ? 'filter blur-[1px]' : ''}`}>
                         {/* 아이콘 - 고정 높이 영역 */}
-                        <div className="h-[42px] w-full flex items-center justify-center">
-                          <div className="w-9 h-9">
-                            {!isLocked && DecorationIcons[deco.name] && React.createElement(DecorationIcons[deco.name])}
-                          </div>
+                        <div className="h-[45px] w-full flex items-center justify-center">
+                          {!isLocked && DecorationIcons[deco.name] && React.createElement(DecorationIcons[deco.name])}
                         </div>
                         
                         {/* 텍스트 영역 - 중앙 정렬 */}

@@ -2,7 +2,7 @@ import React from 'react';
 
 const DecorationIcons = {
   // 브론즈 랭크 장식품
-  해초: ({ size = 25 }) => (
+  해초: ({ size = 35 }) => (
     <svg width={size} height={size} viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <filter id="seaweed-shadow" x="-50%" y="-50%" width="200%" height="200%">
@@ -99,7 +99,7 @@ const DecorationIcons = {
     </svg>
   ),
 
-  용암석: ({ size = 25 }) => (
+  용암석: ({ size = 35 }) => (
     <svg width={size} height={size} viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <filter id="lava-shadow" x="-50%" y="-50%" width="200%" height="200%">
@@ -169,7 +169,7 @@ const DecorationIcons = {
     </svg>
   ),
 
-  '작은 동굴': ({ size = 25 }) => (
+  '작은 동굴': ({ size = 35 }) => (
     <svg width={size} height={size} viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <filter id="cave-shadow" x="-50%" y="-50%" width="200%" height="200%">
@@ -230,7 +230,7 @@ const DecorationIcons = {
   ),
 
   // 실버 랭크 장식품
-  산호: ({ size = 25 }) => (
+  산호: ({ size = 35 }) => (
     <svg width={size} height={size} viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <filter id="coral-shadow" x="-50%" y="-50%" width="200%" height="200%">
@@ -328,7 +328,7 @@ const DecorationIcons = {
     </svg>
   ),
 
-  '드리프트 우드': ({ size = 25 }) => (
+  '드리프트 우드': ({ size = 35 }) => (
     <svg width={size} height={size} viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <filter id="driftwood-shadow" x="-50%" y="-50%" width="200%" height="200%">
@@ -349,7 +349,7 @@ const DecorationIcons = {
           <stop offset="100%" stopColor="#4e342e" />
         </linearGradient>
       </defs>
-      <g filter="url(#driftwood-shadow)">
+      <g filter="url(#driftwood-shadow)" transform="translate(0, 7)">
         {/* 메인 나무 줄기 - 자연스러운 유목 형태 */}
         <path
           d="M8 35 C10 33, 15 32, 22 31 C28 30, 35 30, 40 28 C45 26, 48 23, 49 20 C50 17, 48 14, 44 12 C40 10, 34 9, 28 10 C22 11, 16 13, 12 17 C8 21, 7 26, 8 30 C9 34, 8 35, 8 35"
@@ -407,7 +407,7 @@ const DecorationIcons = {
     </svg>
   ),
 
-  '조개 껍질': ({ size = 25 }) => (
+  '조개 껍질': ({ size = 35 }) => (
     <svg width={size} height={size} viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <filter id="shell-shadow" x="-50%" y="-50%" width="200%" height="200%">
@@ -490,7 +490,7 @@ const DecorationIcons = {
   ),
 
   // 골드 랭크 장식품
-  '그리스 신전': ({ size = 25 }) => (
+  '그리스 신전': ({ size = 35 }) => (
     <svg width={size} height={size} viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <filter id="temple-shadow" x="-50%" y="-50%" width="200%" height="200%">
@@ -541,7 +541,7 @@ const DecorationIcons = {
           <stop offset="100%" stopColor="#bdbdbd" />
         </linearGradient>
       </defs>
-      <g filter="url(#temple-shadow)">
+      <g filter="url(#temple-shadow)" transform="scale(0.9) translate(3, 3)">
         {/* 지붕 */}
         <path
           d="M8 20 L30 8 L52 20 L52 23 L8 23 Z"
@@ -589,7 +589,7 @@ const DecorationIcons = {
     </svg>
   ),
 
-  '보물 상자': ({ size = 25 }) => (
+  '보물 상자': ({ size = 35 }) => (
     <svg width={size} height={size} viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <filter id="chest-shadow" x="-50%" y="-50%" width="200%" height="200%">
@@ -650,7 +650,7 @@ const DecorationIcons = {
           <stop offset="100%" stopColor="#ffb300" />
         </radialGradient>
       </defs>
-      <g filter="url(#chest-shadow)">
+      <g filter="url(#chest-shadow)" transform="scale(1.1) translate(-3, -3)">
         {/* 상자 뚜껑 (열린 상태) */}
         <g transform="rotate(-20 30 25)">
           <path
@@ -706,7 +706,7 @@ const DecorationIcons = {
     </svg>
   ),
 
-  해적선: ({ size = 25 }) => (
+  해적선: ({ size = 35 }) => (
     <svg width={size} height={size} viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <filter id="ship-shadow" x="-50%" y="-50%" width="200%" height="200%">
@@ -801,7 +801,7 @@ const DecorationIcons = {
   ),
 
   // 플래티넘 랭크 장식품 (블러 완전 제거, 100% 선명)
-  '크리스탈 동굴': ({ size = 25 }) => (
+  '크리스탈 동굴': ({ size = 35 }) => (
     <svg width={size} height={size} viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <filter id="crystal-shadow" x="-50%" y="-50%" width="200%" height="200%">
@@ -897,7 +897,7 @@ const DecorationIcons = {
     </svg>
   ),
 
-  'LED 해파리': ({ size = 25 }) => (
+  'LED 해파리': ({ size = 35 }) => (
     <svg width={size} height={size} viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <filter id="jellyfish-shadow" x="-50%" y="-50%" width="200%" height="200%">
@@ -1049,7 +1049,7 @@ const DecorationIcons = {
     </svg>
   ),
 
-  '아틀란티스 유적': ({ size = 25 }) => (
+  '아틀란티스 유적': ({ size = 35 }) => (
     <svg width={size} height={size} viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <filter id="atlantis-shadow" x="-50%" y="-50%" width="200%" height="200%">

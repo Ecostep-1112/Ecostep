@@ -668,10 +668,8 @@ export const AquariumSettings = ({
                               disabled={!isSelected && selectedDecorations.length >= availableDecorations.length}
                             >
                               {/* 장식품 아이콘 */}
-                              <div className="flex items-center justify-center mb-1">
-                                <div className="w-9 h-9">
-                                  {DecoIcon && React.createElement(DecoIcon)}
-                                </div>
+                              <div className="h-[45px] w-full flex items-center justify-center mb-1">
+                                {DecoIcon && React.createElement(DecoIcon)}
                               </div>
                               
                               {/* 장식품 이름 */}

@@ -44,6 +44,8 @@ const Home = ({
   const [isDragging, setIsDragging] = useState(null);
   const [selectedDecoration, setSelectedDecoration] = useState(null);
   const [showSettingsPanel, setShowSettingsPanel] = useState(false);
+  const [doubleClickTimer, setDoubleClickTimer] = useState(null);
+  const [isHolding, setIsHolding] = useState(false);
   
   // totalPlasticSaved는 g 단위로 저장되어 있음
   // kg으로 변환: 1000g = 1kg
@@ -98,14 +100,10 @@ const Home = ({
     }
   }, [isRandomDecorations, selectedDecorations, purchasedDecorations, decorationsData, isActive]); // isActive 추가로 홈 탭 클릭 시 리렌더링
 
-  // 장식품 위치 초기화 (랭크별 고정 위치)
+  // 장식품 위치 초기화 (저장된 설정 또는 랭크별 고정 위치)
   useEffect(() => {
-    // localStorage 초기화 (임시 - 한번만 실행)
-    if (localStorage.getItem('decorationPositionsReset') !== 'v12') {
-      localStorage.removeItem('decorationPositions');
-      localStorage.setItem('decorationPositionsReset', 'v12');
-      setDecorationPositions({}); // 상태도 초기화
-    }
+    // 저장된 설정 불러오기
+    const savedConfigs = JSON.parse(localStorage.getItem('savedDecorationConfigs') || '{}');
 
     // 장식품별 랭크 정의
     const decorationRanks = {
@@ -169,35 +167,29 @@ const Home = ({
       return position;
     };
 
-    // 장식품 선택이 변경될 때마다 위치 초기화
+    // 장식품 선택이 변경될 때마다 위치 및 설정 초기화
     const newPositions = {};
-    const savedPositions = JSON.parse(localStorage.getItem('decorationPositions') || '{}');
-
-    // 이전 장식품 목록과 현재 장식품 목록 비교
-    const prevDecorations = Object.keys(decorationPositions);
-    const hasChanged = JSON.stringify(prevDecorations.sort()) !== JSON.stringify(displayDecorations.sort());
+    const newSettings = {};
 
     displayDecorations.forEach((decoName) => {
-      // 장식품 목록이 변경되었거나 v12 리셋 후에는 무조건 새 위치 적용
-      const resetVersion = localStorage.getItem('decorationPositionsReset');
-      if (hasChanged || resetVersion === 'v12' || !savedPositions[decoName]) {
-        const fixedPosition = getRankPosition(decoName);
-        newPositions[decoName] = fixedPosition;
-      } else if (savedPositions[decoName] && !hasChanged) {
-        newPositions[decoName] = savedPositions[decoName];
+      // 저장된 설정이 있으면 사용
+      if (savedConfigs[decoName]) {
+        newPositions[decoName] = savedConfigs[decoName].position;
+        newSettings[decoName] = savedConfigs[decoName].settings;
       } else {
+        // 저장된 설정이 없으면 기본 위치 사용
         const fixedPosition = getRankPosition(decoName);
         newPositions[decoName] = fixedPosition;
+        newSettings[decoName] = { size: 100, rotation: 0 };
       }
     });
 
-    // 새 위치로 설정
+    // 새 위치와 설정 적용
     setDecorationPositions(newPositions);
-
-    // 장식품이 변경되었으면 localStorage 초기화
-    if (hasChanged) {
-      localStorage.removeItem('decorationPositions');
-    }
+    setDecorationSettings(prev => ({
+      ...prev,
+      ...newSettings
+    }));
   }, [displayDecorations]);
   
   // 물고기 위치 초기화 및 애니메이션
@@ -366,13 +358,11 @@ const Home = ({
 
   // 어항 클릭 시 드래그 모드 해제
   const handleAquariumClick = (e) => {
-    // 장식품이 아닌 빈 공간을 클릭했을 때 드래그 모드 해제
-    if (e.target === e.currentTarget && isDragging) {
+    // 장식품이 아닌 빈 공간을 클릭했을 때 드래그 모드 및 설정 패널 해제
+    if (e.target === e.currentTarget && (isDragging || showSettingsPanel)) {
       setIsDragging(null);
       setSelectedDecoration(null);
-      if (showToast) {
-        showToast('드래그 모드 해제', 'info');
-      }
+      setShowSettingsPanel(false);
     }
   };
 
@@ -387,7 +377,8 @@ const Home = ({
     const y = ((rect.bottom - e.clientY) / rect.height) * 100;
 
     // 경계 체크 (어항 영역 내에서만 이동 가능)
-    const clampedX = Math.max(5, Math.min(95, x));
+    // translateX(-50%) 때문에 장식품 중앙이 기준이므로 양쪽에 여유 필요
+    const clampedX = Math.max(8, Math.min(92, x));
     const clampedY = Math.max(15, Math.min(85, y)); // 수질바 영역 제외
 
     // requestAnimationFrame을 사용하여 부드러운 애니메이션
@@ -396,8 +387,7 @@ const Home = ({
         ...prev,
         [isDragging]: {
           bottom: `${clampedY}%`,
-          left: `${clampedX}%`,
-          transform: 'translateX(-50%)'
+          left: `${clampedX}%`
         }
       }));
     });
@@ -413,12 +403,34 @@ const Home = ({
     if (tapLength < 500 && tapLength > 0) {
       // 더블탭 감지
       handleDoubleClick(e, decoName);
+      // 더블탭 후 계속 누르고 있는지 확인
+      setIsHolding(true);
+      setDoubleClickTimer(setTimeout(() => {
+        if (isHolding) {
+          // 더블탭 + 홀드 = 드래그 모드
+          setIsDragging(decoName);
+          setSelectedDecoration(decoName);
+          setShowSettingsPanel(false); // 드래그 시에는 패널 숨김
+        }
+      }, 200)); // 200ms 후 홀드 체크
+    } else if (showSettingsPanel && selectedDecoration === decoName) {
+      // 설정 패널이 열려있고 같은 장식품을 클릭하면 드래그 시작
+      setIsDragging(decoName);
+      setIsHolding(true);
     }
     setLastTouchTime(currentTime);
   };
 
-  const handleTouchEnd = () => {
-    // 터치 종료 시 처리 (필요한 경우)
+  const handleTouchEnd = (e, decoName) => {
+    // 터치 종료 시 드래그 중지
+    setIsHolding(false);
+    if (doubleClickTimer) {
+      clearTimeout(doubleClickTimer);
+      setDoubleClickTimer(null);
+    }
+    if (isDragging === decoName) {
+      setIsDragging(null);
+    }
   };
 
   const handleTouchMove = (e) => {
@@ -432,7 +444,8 @@ const Home = ({
     const x = ((touch.clientX - rect.left) / rect.width) * 100;
     const y = ((rect.bottom - touch.clientY) / rect.height) * 100;
 
-    const clampedX = Math.max(5, Math.min(95, x));
+    // translateX(-50%) 때문에 장식품 중앙이 기준이므로 양쪽에 여유 필요
+    const clampedX = Math.max(8, Math.min(92, x));
     const clampedY = Math.max(15, Math.min(85, y));
 
     // requestAnimationFrame을 사용하여 부드러운 애니메이션
@@ -441,38 +454,66 @@ const Home = ({
         ...prev,
         [isDragging]: {
           bottom: `${clampedY}%`,
-          left: `${clampedX}%`,
-          transform: 'translateX(-50%)'
+          left: `${clampedX}%`
         }
       }));
     });
   };
 
-  // 더블클릭 핸들러 - 드래그 모드 토글
+  // 마우스 다운 핸들러
+  const handleMouseDown = (e, decoName) => {
+    // 설정 패널이 열려있고 같은 장식품을 클릭하면 드래그 시작
+    if (showSettingsPanel && selectedDecoration === decoName) {
+      e.preventDefault();
+      setIsDragging(decoName);
+      setIsHolding(true);
+    }
+  };
+
+  // 마우스 업 핸들러
+  const handleMouseUp = (e, decoName) => {
+    // 마우스를 떼면 드래그 중지
+    setIsHolding(false);
+    if (doubleClickTimer) {
+      clearTimeout(doubleClickTimer);
+      setDoubleClickTimer(null);
+    }
+    if (isDragging === decoName) {
+      setIsDragging(null);
+    }
+  };
+
+  // 더블클릭 핸들러 - 설정 패널 표시
   const handleDoubleClick = (e, decoName) => {
     e.preventDefault();
     e.stopPropagation();
 
-    if (isDragging === decoName) {
-      // 이미 드래그 중이면 드래그 모드 해제
-      setIsDragging(null);
-      if (showToast) {
-        showToast('드래그 모드 해제', 'info');
-      }
-    } else {
-      // 드래그 모드 활성화
+    // 더블클릭 시점에 마우스가 눌려있는지 체크
+    const isMouseDown = e.buttons === 1; // 마우스 왼쪽 버튼이 눌려있음
+
+    if (isMouseDown) {
+      // 더블클릭 + 홀드 = 즉시 드래그 모드
       setIsDragging(decoName);
       setSelectedDecoration(decoName);
+      setShowSettingsPanel(false); // 드래그 시에는 패널 숨김
+      setIsHolding(true);
+
+    } else if (selectedDecoration === decoName && showSettingsPanel) {
+      // 같은 장식품 더블클릭 시 패널 닫기
+      setSelectedDecoration(null);
+      setShowSettingsPanel(false);
+      setIsDragging(null);
+    } else {
+      // 더블클릭만 = 설정 패널 표시
+      setSelectedDecoration(decoName);
+      setShowSettingsPanel(true);
+      setIsDragging(null);
 
       // 햅틱 피드백 (모바일에서만 작동)
       if (navigator.vibrate) {
         navigator.vibrate(100);
       }
 
-      // 토스트 메시지 표시
-      if (showToast) {
-        showToast('드래그하여 움직이세요', 'success');
-      }
 
       // 기본 설정이 없으면 초기화
       if (!decorationSettings[decoName]) {
@@ -484,6 +525,11 @@ const Home = ({
           }
         }));
       }
+
+      // 더블클릭 후 200ms 이내에 다시 누르면 드래그 모드
+      setDoubleClickTimer(setTimeout(() => {
+        setDoubleClickTimer(null);
+      }, 200));
     }
   };
 
@@ -493,7 +539,7 @@ const Home = ({
       setDecorationSettings(prev => ({
         ...prev,
         [selectedDecoration]: {
-          ...prev[selectedDecoration],
+          ...(prev[selectedDecoration] || { size: 100, rotation: 0 }),
           size: newSize
         }
       }));
@@ -506,7 +552,7 @@ const Home = ({
       setDecorationSettings(prev => ({
         ...prev,
         [selectedDecoration]: {
-          ...prev[selectedDecoration],
+          ...(prev[selectedDecoration] || { size: 100, rotation: 0 }),
           rotation: newRotation
         }
       }));
@@ -528,8 +574,29 @@ const Home = ({
           style={{ aspectRatio: '1/1' }}
           onClick={handleAquariumClick}
           onMouseMove={handleMouseMove}
+          onMouseUp={() => {
+            // 어항 어디서든 마우스를 떼면 드래그 종료
+            if (isDragging) {
+              setIsDragging(null);
+              setIsHolding(false);
+            }
+          }}
+          onMouseLeave={() => {
+            // 마우스가 어항을 벗어나도 드래그 종료
+            if (isDragging) {
+              setIsDragging(null);
+              setIsHolding(false);
+            }
+          }}
           onTouchMove={handleTouchMove}
-          onTouchEnd={handleTouchEnd}
+          onTouchEnd={() => {
+            // 터치 종료 시 드래그 종료
+            if (isDragging) {
+              setIsDragging(null);
+              setIsHolding(false);
+            }
+            setLastTouchTime(0); // 터치 타이머 리셋
+          }}
         >
           {/* 상단 그라데이션 구분선 */}
           <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/60 to-transparent"></div>
@@ -593,28 +660,27 @@ const Home = ({
             return DecoIcon ? (
               <div
                 key={i}
-                className={`absolute z-[2] ${isCurrentlyDragging ? 'cursor-move scale-110 opacity-80' : 'cursor-pointer animate-sway'} ${isSelected ? 'ring-2 ring-yellow-400 ring-opacity-70' : ''} transition-all duration-200`}
+                className={`absolute z-[2] ${isCurrentlyDragging ? 'cursor-move scale-110 opacity-80' : 'cursor-pointer animate-sway'} transition-all duration-200`}
                 style={{
                   ...position,
                   userSelect: 'none',
                   WebkitUserSelect: 'none',
                   pointerEvents: isDragging && isDragging !== decoName ? 'none' : 'auto',
-                  transform: `${position.transform || ''} rotate(${settings.rotation}deg)`,
+                  transform: `translateX(-50%) rotate(${settings.rotation}deg)`,
                   transformOrigin: 'center',
                   animationDuration: !isDragging ? `${3 + i * 0.5}s` : undefined,
                   animationDelay: !isDragging ? `${i * 0.3}s` : undefined
                 }}
                 onTouchStart={(e) => handleTouchStart(e, decoName)}
+                onTouchEnd={(e) => handleTouchEnd(e, decoName)}
+                onMouseDown={(e) => handleMouseDown(e, decoName)}
+                onMouseUp={(e) => handleMouseUp(e, decoName)}
                 onDoubleClick={(e) => handleDoubleClick(e, decoName)}
               >
                 {React.createElement(DecoIcon, { size: scaledSize })}
                 {/* 드래그 모드일 때 시각적 피드백 */}
                 {isCurrentlyDragging && (
                   <div className="absolute -inset-2 border-2 border-white/50 border-dashed rounded-full animate-pulse"></div>
-                )}
-                {/* 선택된 장식품 표시 */}
-                {isSelected && !isCurrentlyDragging && (
-                  <div className="absolute -inset-1 border-2 border-yellow-400 rounded-full"></div>
                 )}
               </div>
             ) : null;
@@ -977,21 +1043,66 @@ const Home = ({
               </div>
             </div>
 
-            {/* 리셋 버튼 */}
-            <button
-              onClick={() => {
-                setDecorationSettings(prev => ({
-                  ...prev,
-                  [selectedDecoration]: {
-                    size: 100,
-                    rotation: 0
+            {/* 버튼 그룹 */}
+            <div className="flex gap-2">
+              {/* 리셋 버튼 */}
+              <button
+                onClick={() => {
+                  setDecorationSettings(prev => ({
+                    ...prev,
+                    [selectedDecoration]: {
+                      size: 100,
+                      rotation: 0
+                    }
+                  }));
+                  // 위치도 초기화
+                  const decorationRanks = {
+                    '해초': { left: '7%' },
+                    '용암석': { left: '14.09%' },
+                    '작은 동굴': { left: '21.18%' },
+                    '산호': { left: '28.27%' },
+                    '드리프트 우드': { left: '35.36%' },
+                    '조개 껍질': { left: '42.45%' },
+                    '그리스 신전': { left: '49.55%' },
+                    '보물 상자': { left: '56.64%' },
+                    '해적선': { left: '63.73%' },
+                    '크리스탈 동굴': { left: '70.82%' },
+                    'LED 해파리': { left: '77.91%' },
+                    '아틀란티스 유적': { left: '85%' }
+                  };
+                  setDecorationPositions(prev => ({
+                    ...prev,
+                    [selectedDecoration]: {
+                      bottom: '15%',
+                      left: decorationRanks[selectedDecoration]?.left || '50%'
+                    }
+                  }));
+                }}
+                className={`flex-1 py-2 text-xs font-medium rounded-lg transition-colors ${isDarkMode ? 'bg-gray-700 text-gray-300 hover:bg-gray-600' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
+              >
+                기본값으로 리셋
+              </button>
+
+              {/* 위치 저장 버튼 */}
+              <button
+                onClick={() => {
+                  // 현재 장식품의 위치와 설정을 localStorage에 저장
+                  const savedDecorations = JSON.parse(localStorage.getItem('savedDecorationConfigs') || '{}');
+                  savedDecorations[selectedDecoration] = {
+                    position: decorationPositions[selectedDecoration],
+                    settings: decorationSettings[selectedDecoration] || { size: 100, rotation: 0 }
+                  };
+                  localStorage.setItem('savedDecorationConfigs', JSON.stringify(savedDecorations));
+
+                  if (showToast) {
+                    showToast('장식품 설정이 저장되었습니다', 'success');
                   }
-                }));
-              }}
-              className={`w-full py-2 text-xs font-medium rounded-lg transition-colors ${isDarkMode ? 'bg-gray-700 text-gray-300 hover:bg-gray-600' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
-            >
-              기본값으로 리셋
-            </button>
+                }}
+                className={`flex-1 py-2 text-xs font-medium rounded-lg transition-colors ${isDarkMode ? 'bg-blue-600 text-white hover:bg-blue-700' : 'bg-blue-500 text-white hover:bg-blue-600'}`}
+              >
+                장식품 위치 저장
+              </button>
+            </div>
           </div>
         </div>
       )}

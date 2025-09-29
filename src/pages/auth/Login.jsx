@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { FaApple } from 'react-icons/fa';
 import { FcGoogle } from 'react-icons/fc';
 import { RiKakaoTalkFill } from 'react-icons/ri';
-import { ChevronRight } from 'lucide-react';
+import { FiChevronRight } from 'react-icons/fi';
 import { signInWithGoogle, signInWithKakao, signInWithApple } from '../../lib/auth';
 import EarthStructure from '../../components/EarthStructure';
 
@@ -195,45 +195,46 @@ function Login({ onLogin }) {
               <button
                 onClick={() => handleLogin('Google')}
                 disabled={isLoading}
-                className="w-[280px] flex items-center justify-between bg-white/90 border border-gray-200 rounded-xl py-3 pl-4 pr-3 hover:bg-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-[237px] flex items-center justify-between bg-white/90 border border-gray-200 rounded-xl py-2 pl-[15px] pr-3 hover:bg-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <div className="flex items-center min-w-0 flex-1">
+                <div className="flex items-center">
                   <FcGoogle className="text-[18px] flex-shrink-0" />
-                  <span className="text-sm font-medium text-gray-600 ml-3 whitespace-nowrap">
-                    {isLoading ? '로그인 중...' : 'Google 로그인'}
+                  <span className="text-sm font-medium text-gray-600 ml-3">
+                    <span className="inline-block w-12 text-left tracking-tight">G<span className="text-[13px]">oo</span>gle</span>
+                    <span className="ml-1">{isLoading ? '로그인 중...' : '계정으로 로그인'}</span>
                   </span>
                 </div>
-                <ChevronRight className="text-gray-400 text-lg flex-shrink-0 ml-2" />
+                <FiChevronRight className="text-gray-400 text-lg flex-shrink-0" />
               </button>
 
               <button
                 onClick={() => handleLogin('Kakao')}
                 disabled={isLoading}
-                className="w-[280px] flex items-center justify-between bg-[#FEE500] rounded-xl py-3 pl-4 pr-3 hover:bg-[#FDD835] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-[237px] flex items-center justify-between bg-[#FEE500] rounded-xl py-2 pl-[15px] pr-3 hover:bg-[#FDD835] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <div className="flex items-center min-w-0 flex-1">
+                <div className="flex items-center">
                   <RiKakaoTalkFill className="text-[18px] text-gray-800 flex-shrink-0" />
-                  <span className="text-sm font-medium text-gray-600 ml-3 whitespace-nowrap">
-                    {isLoading ? '로그인 중...' : 'Kakao 로그인'}
+                  <span className="text-sm font-medium text-gray-600 ml-3">
+                    <span className="inline-block w-12 text-left tracking-[0.07em]">Kakao</span>
+                    <span className="ml-[4.5px]">{isLoading ? '로그인 중...' : '계정으로 로그인'}</span>
                   </span>
                 </div>
-                <ChevronRight className="text-gray-400 text-lg flex-shrink-0 ml-2" />
+                <FiChevronRight className="text-gray-400 text-lg flex-shrink-0" />
               </button>
 
               <button
-                onClick={() => {
-                  alert('Apple 로그인은 Apple Developer 계정이 필요합니다.\n구글 또는 카카오 로그인을 이용해주세요.');
-                }}
-                disabled={true}
-                className="w-[280px] flex items-center justify-between bg-gray-500 rounded-xl py-3 pl-4 pr-3 cursor-not-allowed opacity-50"
+                onClick={() => handleLogin('Apple')}
+                disabled={isLoading}
+                className="w-[237px] flex items-center justify-between bg-black rounded-xl py-2 pl-[15px] pr-3 hover:bg-gray-900 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <div className="flex items-center min-w-0 flex-1">
+                <div className="flex items-center">
                   <FaApple className="text-[18px] text-white flex-shrink-0" />
-                  <span className="text-sm font-medium text-gray-100 ml-3 whitespace-nowrap">
-                    Apple 로그인
+                  <span className="text-sm font-medium text-gray-500 ml-3">
+                    <span className="inline-block w-12 text-left tracking-[0.08em]">Apple</span>
+                    <span className="ml-1">{isLoading ? '로그인 중...' : '계정으로 로그인'}</span>
                   </span>
                 </div>
-                <ChevronRight className="text-gray-400 text-lg flex-shrink-0 ml-2" />
+                <FiChevronRight className="text-gray-500 text-lg flex-shrink-0" />
               </button>
               </div>
 

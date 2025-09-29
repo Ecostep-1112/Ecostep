@@ -83,7 +83,7 @@ const Challenge = ({
   const [todayCompleted, setTodayCompleted] = useState(false);
   const [historyRange, setHistoryRange] = useState(7); // 7일, 4주, 16주, 32주
   const [expandedDays, setExpandedDays] = useState([]); // 확장된 요일 추적
-  const [usagePeriod, setUsagePeriod] = useState(''); // 사용량 기간 선택 state
+  const [usagePeriod, setUsagePeriod] = useState('일주일'); // 사용량 기간 선택 state - 기본값 일주일
   const [showUsagePeriodDropdown, setShowUsagePeriodDropdown] = useState(false); // 사용량 기간 드롭다운 표시 여부
   const [customChallengeSavings, setCustomChallengeSavings] = useState(() => {
     const saved = localStorage.getItem('customChallengeSavings');

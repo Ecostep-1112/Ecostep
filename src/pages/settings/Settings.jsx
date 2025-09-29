@@ -1,5 +1,5 @@
 import React from 'react';
-import { FiChevronRight, FiSun, FiMoon, FiCheck } from 'react-icons/fi';
+import { ChevronRight, Sun, Moon, Check } from 'lucide-react';
 import { BronzeIcon, SilverIcon, GoldIcon, PlatinumIcon } from '../../components/RankIcons';
 import FishIcons from '../../components/FishIcons';
 import DecorationIcons from '../../components/DecorationIcons';
@@ -29,7 +29,7 @@ export const RankThemeSettings = ({ isDarkMode, userRanking, setUserRanking, set
     <div className={`flex-1 ${bgColor}`}>
       <div className={`${bgColor} p-4 flex items-center border-b ${borderColor}`}>
         <button onClick={() => setShowRankThemeSettings(false)} className="mr-3">
-          <FiChevronRight className={`w-5 h-5 rotate-180 ${textColor}`} />
+          <ChevronRight className={`w-5 h-5 rotate-180 ${textColor}`} />
         </button>
         <h2 className={`text-base font-medium ${textColor}`}>색상</h2>
       </div>
@@ -170,7 +170,7 @@ export const ThemeSettings = ({ isDarkMode, setIsDarkMode, setShowThemeSettings 
     <div className={`flex-1 ${bgColor}`}>
       <div className={`${bgColor} p-4 flex items-center border-b ${borderColor}`}>
         <button onClick={() => setShowThemeSettings(false)} className="mr-3">
-          <FiChevronRight className={`w-5 h-5 rotate-180 ${textColor}`} />
+          <ChevronRight className={`w-5 h-5 rotate-180 ${textColor}`} />
         </button>
         <h2 className={`text-base font-medium ${textColor}`}>화면</h2>
       </div>
@@ -270,7 +270,7 @@ export const LanguageSettings = ({ isDarkMode, language, setLanguage, setShowLan
     <div className={`flex-1 ${bgColor}`}>
       <div className={`${bgColor} p-4 flex items-center border-b ${borderColor}`}>
         <button onClick={() => setShowLanguageSettings(false)} className="mr-3">
-          <FiChevronRight className={`w-5 h-5 rotate-180 ${textColor}`} />
+          <ChevronRight className={`w-5 h-5 rotate-180 ${textColor}`} />
         </button>
         <h2 className={`text-base font-medium ${textColor}`}>언어</h2>
       </div>
@@ -340,7 +340,7 @@ export const NotificationSettings = ({ isDarkMode, notifications, setNotificatio
     <div className={`flex-1 ${bgColor}`}>
       <div className={`${bgColor} p-4 flex items-center border-b ${borderColor}`}>
         <button onClick={() => setShowNotificationSettings(false)} className="mr-3">
-          <FiChevronRight className={`w-5 h-5 rotate-180 ${textColor}`} />
+          <ChevronRight className={`w-5 h-5 rotate-180 ${textColor}`} />
         </button>
         <h2 className={`text-base font-medium ${textColor}`}>알림</h2>
       </div>
@@ -375,7 +375,7 @@ export const LocationSettings = ({ isDarkMode, locationSharing, setLocationShari
     <div className={`flex-1 ${bgColor}`}>
       <div className={`${bgColor} p-4 flex items-center border-b ${borderColor}`}>
         <button onClick={() => setShowLocationSettings(false)} className="mr-3">
-          <FiChevronRight className={`w-5 h-5 rotate-180 ${textColor}`} />
+          <ChevronRight className={`w-5 h-5 rotate-180 ${textColor}`} />
         </button>
         <h2 className={`text-base font-medium ${textColor}`}>위치</h2>
       </div>
@@ -439,7 +439,7 @@ export const AquariumSettings = ({
     <div className={`flex-1 ${bgColor} overflow-hidden flex flex-col relative`}>
       <div className={`${bgColor} p-4 flex items-center border-b ${borderColor}`}>
         <button onClick={() => setShowAquariumSettings(false)} className="mr-3">
-          <FiChevronRight className={`w-5 h-5 rotate-180 ${textColor}`} />
+          <ChevronRight className={`w-5 h-5 rotate-180 ${textColor}`} />
         </button>
         <h2 className={`text-base font-medium ${textColor}`}>어항 설정</h2>
       </div>

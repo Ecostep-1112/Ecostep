@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FiShare2, FiChevronDown, FiChevronUp, FiBook, FiPhone, FiChevronRight, FiArrowRight } from 'react-icons/fi';
-import { Check } from 'lucide-react';
+import { Share2, ChevronDown, ChevronUp, Book, Phone, ChevronRight, ArrowRight, Check } from 'lucide-react';
 import { generateEnvironmentalTip } from '../../services/claudeService';
 
 const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, showToast, onShowChatBot }) => {
@@ -363,9 +362,9 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
                 >
                   <span>{selectedCategory}</span>
                   {showCategoryDropdown ? (
-                    <FiChevronUp className="w-3 h-3" />
+                    <ChevronUp className="w-3 h-3" />
                   ) : (
-                    <FiChevronDown className="w-3 h-3" />
+                    <ChevronDown className="w-3 h-3" />
                   )}
                 </button>
                 {showCategoryDropdown && (
@@ -413,9 +412,9 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
                     <p className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
                       {environmentalTip.preview}
                       {expandedTip === environmentalTip.id ? (
-                        <FiChevronUp className={`inline w-3 h-3 ml-1 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
+                        <ChevronUp className={`inline w-3 h-3 ml-1 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
                       ) : (
-                        <FiArrowRight className={`inline w-3 h-3 ml-1 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
+                        <ArrowRight className={`inline w-3 h-3 ml-1 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
                       )}
                     </p>
                   </div>
@@ -434,7 +433,7 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
                         onClick={handleShareTip}
                         className="px-3 py-1.5 rounded-lg text-xs font-medium flex items-center transition-all bg-gradient-to-r from-cyan-500 via-blue-500 to-blue-600 text-white hover:opacity-90"
                       >
-                        <FiShare2 className="w-3 h-3 mr-1" />
+                        <Share2 className="w-3 h-3 mr-1" />
                         공유하기
                       </button>
                       <button 
@@ -489,9 +488,9 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
               >
                 <span>{selectedPlaceCategory}</span>
                 {showPlaceCategoryDropdown ? (
-                  <FiChevronUp className="w-3 h-3" />
+                  <ChevronUp className="w-3 h-3" />
                 ) : (
-                  <FiChevronDown className="w-3 h-3" />
+                  <ChevronDown className="w-3 h-3" />
                 )}
               </button>
               {showPlaceCategoryDropdown && (
@@ -585,20 +584,20 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
           <div className="space-y-2">
             <button className={`w-full flex items-center justify-between p-3 ${inputBg} rounded-lg`}>
               <div className="flex items-center">
-                <FiBook className={`w-4 h-4 mr-2 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
+                <Book className={`w-4 h-4 mr-2 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
                 <span className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>앱 사용 방법</span>
               </div>
-              <FiChevronRight className={`w-4 h-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
+              <ChevronRight className={`w-4 h-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
             </button>
             <button 
               onClick={onShowChatBot}
               className={`w-full flex items-center justify-between p-3 ${inputBg} rounded-lg`}
             >
               <div className="flex items-center">
-                <FiPhone className={`w-4 h-4 mr-2 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
+                <Phone className={`w-4 h-4 mr-2 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
                 <span className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>고객 센터</span>
               </div>
-              <FiChevronRight className={`w-4 h-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
+              <ChevronRight className={`w-4 h-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
             </button>
           </div>
         </div>

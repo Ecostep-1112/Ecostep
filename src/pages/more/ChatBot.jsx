@@ -1,7 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { FiChevronRight } from 'react-icons/fi';
-import { HiOutlineRefresh } from 'react-icons/hi';
-import { IoArrowUp } from 'react-icons/io5';
+import { ChevronRight, RotateCcw, ArrowUp } from 'lucide-react';
 
 const ChatBot = ({ isDarkMode, onBack }) => {
   // CSS 스타일을 컴포넌트 내부에 추가
@@ -12,7 +10,7 @@ const ChatBot = ({ isDarkMode, onBack }) => {
       .scrollbar-hide::-webkit-scrollbar {
         display: none;
       }
-      
+
       /* Hide scrollbar for IE, Edge and Firefox */
       .scrollbar-hide {
         -ms-overflow-style: none;  /* IE and Edge */
@@ -20,9 +18,18 @@ const ChatBot = ({ isDarkMode, onBack }) => {
       }
     `;
     document.head.appendChild(style);
-    
+
     return () => {
       document.head.removeChild(style);
+    };
+  }, []);
+
+  // 컴포넌트 언마운트 시 대화 세션 리셋
+  useEffect(() => {
+    return () => {
+      // 컴포넌트가 언마운트될 때 localStorage 초기화
+      const initialMessage = [{ id: 1, text: '안녕하세요. 에코스텝 고객센터입니다. 앱 사용에 대해 무엇이든 물어보세요.', sender: 'bot', timestamp: new Date() }];
+      localStorage.setItem('chatbot_messages', JSON.stringify(initialMessage));
     };
   }, []);
   // Load saved messages from localStorage
@@ -152,7 +159,7 @@ const ChatBot = ({ isDarkMode, onBack }) => {
             onClick={onBack}
             className="mr-3"
           >
-            <FiChevronRight className={`w-5 h-5 rotate-180 ${textColor}`} />
+            <ChevronRight className={`w-5 h-5 rotate-180 ${textColor}`} />
           </button>
           <div>
             <h1 className={`text-lg font-semibold ${textColor}`}>고객센터 챗봇</h1>
@@ -227,7 +234,7 @@ const ChatBot = ({ isDarkMode, onBack }) => {
                 : `${isDarkMode ? 'bg-gray-700 text-gray-500' : 'bg-gray-200 text-gray-400'}`
             } transition-all`}
           >
-            <IoArrowUp className="w-4 h-4" />
+            <ArrowUp className="w-4 h-4" />
           </button>
         </div>
       </div>

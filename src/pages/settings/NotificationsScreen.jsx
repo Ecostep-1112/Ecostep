@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FiChevronRight } from 'react-icons/fi';
+import { ChevronRight } from 'lucide-react';
 
 const NotificationsScreen = ({ isDarkMode, setShowNotifications, notifications, setNotifications, points, setPoints, earnPoints, rankTheme }) => {
   const getTimeDisplay = (timestamp) => {
@@ -80,7 +80,7 @@ const NotificationsScreen = ({ isDarkMode, setShowNotifications, notifications, 
               onClick={() => setShowNotifications(false)}
               className={`${isDarkMode ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'}`}
             >
-              <FiChevronRight className="w-5 h-5 rotate-180" />
+              <ChevronRight className="w-5 h-5 rotate-180" />
             </button>
             <h2 className={`text-base font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
               알림

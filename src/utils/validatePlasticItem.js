@@ -3,58 +3,107 @@
 
 export async function validatePlasticItem(itemName) {
   try {
-    // Claude API 호출 (예시 - 실제 구현 시 백엔드 필요)
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
+    // 1단계: 플라스틱 분류 확인
+    const classificationResponse = await fetch('http://localhost:5176/api/classify-plastic-item', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': process.env.REACT_APP_CLAUDE_API_KEY || '',
-        'anthropic-version': '2023-06-01'
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        model: 'claude-3-haiku-20240307',
-        max_tokens: 200,
-        messages: [{
-          role: 'user',
-          content: `다음 플라스틱 제품의 일반적인 무게를 추정해주세요.
-          
-제품명: "${itemName}"
-
-응답 형식 (JSON):
-{
-  "weight": 숫자 (그램 단위, 1-500 사이),
-  "confidence": "high" | "medium" | "low",
-  "description": "간단한 설명 (예: 500ml 기준)"
-}
-
-일반적으로 사용되는 플라스틱 제품의 평균 무게를 그램 단위로 추정해주세요.`
-        }]
+        itemName: itemName
       })
     });
 
-    if (!response.ok) {
-      throw new Error('API 호출 실패');
+    if (!classificationResponse.ok) {
+      throw new Error('분류 API 호출 실패');
     }
 
-    const data = await response.json();
-    const content = data.content[0].text;
-    
-    try {
-      const result = JSON.parse(content);
+    const classificationData = await classificationResponse.json();
+
+    // 플라스틱이 아닌 경우 0g 반환
+    if (!classificationData.isPlastic) {
       return {
-        weight: result.weight,
-        confidence: result.confidence,
-        description: result.description
+        weight: 0,
+        confidence: 'high',
+        description: '플라스틱이 아닌 제품으로 플라스틱 절약량에 포함되지 않습니다.'
       };
-    } catch (parseError) {
-      // JSON 파싱 실패 시 기본 로직 사용
-      return fallbackEstimation(itemName);
     }
+
+    // 2단계: 카테고리별 무게 계산
+    const weight = calculateWeightByCategory(classificationData.category, itemName);
+
+    return {
+      weight: weight,
+      confidence: classificationData.confidence,
+      description: `${itemName} (${getCategoryName(classificationData.category)}) - 예상 무게 ${weight}g`
+    };
+
   } catch (error) {
     console.error('Claude API 오류:', error);
     // API 오류 시 폴백 로직 사용
     return fallbackEstimation(itemName);
   }
+}
+
+// 카테고리별 무게 계산 함수
+function calculateWeightByCategory(category, itemName) {
+  const lowerName = itemName.toLowerCase();
+
+  switch (category) {
+    case 'bottle':
+      if (lowerName.includes('대') || lowerName.includes('2l')) return 50;
+      if (lowerName.includes('1.5l')) return 45;
+      if (lowerName.includes('소') || lowerName.includes('350ml')) return 15;
+      return 25; // 기본 500ml
+
+    case 'cup':
+      if (lowerName.includes('대') || lowerName.includes('벤티')) return 15;
+      if (lowerName.includes('소') || lowerName.includes('톨')) return 8;
+      return 10; // 중형
+
+    case 'bag':
+      if (lowerName.includes('대') || lowerName.includes('마트')) return 7;
+      if (lowerName.includes('소') || lowerName.includes('편의점')) return 3;
+      return 5; // 중형
+
+    case 'container':
+      if (lowerName.includes('도시락')) return 40;
+      if (lowerName.includes('반찬')) return 15;
+      if (lowerName.includes('대형')) return 50;
+      return 35; // 일반
+
+    case 'straw':
+      return 1;
+
+    case 'utensil':
+      if (lowerName.includes('세트')) return 3;
+      return 2; // 개별
+
+    case 'packaging':
+      if (lowerName.includes('택배')) return 30;
+      if (lowerName.includes('과일') || lowerName.includes('야채')) return 5;
+      return 15; // 일반
+
+    case 'other':
+    default:
+      return 10; // 기본값
+  }
+}
+
+// 카테고리 한글명 반환
+function getCategoryName(category) {
+  const categoryNames = {
+    'bottle': '병/보틀',
+    'cup': '컵',
+    'bag': '봉지/봉투',
+    'container': '용기',
+    'straw': '빨대',
+    'utensil': '수저류',
+    'packaging': '포장재',
+    'other': '기타'
+  };
+
+  return categoryNames[category] || '미분류';
 }
 
 // 폴백 무게 추정 로직 (API 없이 작동)

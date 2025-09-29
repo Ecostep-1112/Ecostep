@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FiChevronRight } from 'react-icons/fi';
+import { ChevronRight } from 'lucide-react';
 
 const SettingsScreen = ({ 
   isDarkMode, 
@@ -37,7 +37,7 @@ const SettingsScreen = ({
     <div className={`flex-1 ${bgColor} relative flex flex-col`}>
       <div className={`${bgColor} p-4 flex items-center border-b ${borderColor}`}>
         <button onClick={() => setShowSettings(false)} className="mr-3">
-          <FiChevronRight className={`w-5 h-5 rotate-180 ${textColor}`} />
+          <ChevronRight className={`w-5 h-5 rotate-180 ${textColor}`} />
         </button>
         <h2 className={`text-base font-medium ${textColor}`}>설정</h2>
       </div>
@@ -68,7 +68,7 @@ const SettingsScreen = ({
               <span className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} mr-2`}>
                 내 정보
               </span>
-              <FiChevronRight className={`w-4 h-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-400'}`} />
+              <ChevronRight className={`w-4 h-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-400'}`} />
             </div>
           </button>
 
@@ -83,7 +83,7 @@ const SettingsScreen = ({
                 <span className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} mr-2`}>
                   {language === 'ko' ? '한국어' : 'English'}
                 </span>
-                <FiChevronRight className={`w-4 h-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-400'}`} />
+                <ChevronRight className={`w-4 h-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-400'}`} />
               </div>
             </button>
             
@@ -98,7 +98,7 @@ const SettingsScreen = ({
                 <span className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} mr-2`}>
                   {notifications ? '켜짐' : '꺼짐'}
                 </span>
-                <FiChevronRight className={`w-4 h-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-400'}`} />
+                <ChevronRight className={`w-4 h-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-400'}`} />
               </div>
             </button>
             
@@ -113,7 +113,7 @@ const SettingsScreen = ({
                 <span className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} mr-2`}>
                   {locationSharing ? '켜짐' : '꺼짐'}
                 </span>
-                <FiChevronRight className={`w-4 h-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-400'}`} />
+                <ChevronRight className={`w-4 h-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-400'}`} />
               </div>
             </button>
             
@@ -128,7 +128,7 @@ const SettingsScreen = ({
                 <span className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} mr-2`}>
                   {isDarkMode ? '다크' : '라이트'}
                 </span>
-                <FiChevronRight className={`w-4 h-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-400'}`} />
+                <ChevronRight className={`w-4 h-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-400'}`} />
               </div>
             </button>
             
@@ -147,7 +147,7 @@ const SettingsScreen = ({
                    userRanking === 'gold' ? '골드' : 
                    '플래티넘'}
                 </span>
-                <FiChevronRight className={`w-4 h-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-400'}`} />
+                <ChevronRight className={`w-4 h-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-400'}`} />
               </div>
             </button>
           </div>

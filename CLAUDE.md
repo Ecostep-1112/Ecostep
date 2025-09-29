@@ -90,10 +90,54 @@ After making changes:
 4. Test with users via web browser
 5. Once design is finalized (~80%), migrate to Expo for native app
 
-## 작업 
-1. 작업을 진행하기 전에, 항상 한 번 더 생각해보고, 단계별로 차근차근 순차적으로 진행해주세요. 
-2. 관련 파일을 먼저 확인하고 진행해주세요. 
-3. 다른 얘기 없으면, 계속해서 이전 작업을 이어서 수정하는 겁니다. 
-4. 요청한 사항 이외에 것을 과하게 수정하지 말아주세요. 즉, 실수로 다른 부분의 코드를 건드리지 않도록 해주세요. 
-5. 항상 맞춤법과 띄어쓰기를 검토해서 반영해주세요. 
+## Local Storage Strategy
+
+### Current Implementation (Web Prototype)
+- **localStorage**: Used for web browser prototype phase
+- **Purpose**: Quick development and testing of core features
+- **Scope**: App settings, aquarium configuration, challenge preferences
+
+### Production App Migration Plan
+When migrating to native mobile app (Expo/React Native):
+
+1. **Local Storage (Device)**
+   - **React Native**: AsyncStorage for app settings
+   - **Expo**: SecureStore for sensitive data
+   - **Native**: UserDefaults (iOS) / SharedPreferences (Android)
+
+2. **Cloud Storage (Database)**
+   - User profiles and authentication
+   - Challenge completion records
+   - Points and rankings
+   - Friend relationships
+   - Plastic usage history
+
+3. **Hybrid Strategy**
+   - Local: User preferences, offline functionality
+   - Cloud: Critical user data, cross-device sync
+   - Sync: Online/offline data synchronization
+
+### Data Classification
+- **Local Only**: Theme, language, notifications, aquarium layout
+- **Cloud Only**: User account, social features, leaderboards
+- **Hybrid**: Challenge progress (local cache + cloud backup)
+
+## Claude API Integration
+
+### Current Features Using Claude API
+1. **Customer Service Chatbot** (`src/pages/more/ChatBot.jsx`)
+2. **Environmental Tips Generation**
+3. **Plastic Weight Calculation** (`src/utils/validatePlastic.js`, `src/utils/validatePlasticItem.js`)
+
+### API Configuration
+- Claude API key stored in `.env.local` as `VITE_CLAUDE_API_KEY`
+- Service layer at `src/services/claudeService.js`
+- Backend proxy server for API calls (`server.js`)
+
+## 작업
+1. 작업을 진행하기 전에, 항상 한 번 더 생각해보고, 단계별로 차근차근 순차적으로 진행해주세요.
+2. 관련 파일을 먼저 확인하고 진행해주세요.
+3. 다른 얘기 없으면, 계속해서 이전 작업을 이어서 수정하는 겁니다.
+4. 요청한 사항 이외에 것을 과하게 수정하지 말아주세요. 즉, 실수로 다른 부분의 코드를 건드리지 않도록 해주세요.
+5. 항상 맞춤법과 띄어쓰기를 검토해서 반영해주세요.
 6. 항상 수정을 완료 했으면 변경 내용을 간략히 정리해서 보여주세요. 

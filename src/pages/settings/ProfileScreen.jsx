@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FiChevronRight, FiChevronLeft, FiX, FiCamera, FiPlus, FiAlertTriangle } from 'react-icons/fi';
+import { ChevronRight, ChevronLeft, X, Camera, Plus, AlertTriangle } from 'lucide-react';
 import { getUserProfile, updateUserId, deleteAccount } from '../../lib/auth';
 import Toast from '../../components/Toast';
 
@@ -270,7 +270,7 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
         <div className={`absolute inset-0 z-50 ${bgColor}`}>
           <div className={`${bgColor} p-4 flex items-center border-b ${borderColor}`}>
             <button onClick={onClose} className="mr-3">
-              <FiChevronLeft className={`w-4 h-4 ${textColor}`} />
+              <ChevronLeft className={`w-4 h-4 ${textColor}`} />
             </button>
             <h2 className={`text-sm font-medium ${textColor}`}>{label}</h2>
           </div>
@@ -341,7 +341,7 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
         <div className={`absolute inset-0 z-50 ${bgColor}`}>
           <div className={`${bgColor} p-4 flex items-center border-b ${borderColor}`}>
             <button onClick={onClose} className="mr-3">
-              <FiChevronLeft className={`w-4 h-4 ${textColor}`} />
+              <ChevronLeft className={`w-4 h-4 ${textColor}`} />
             </button>
             <h2 className={`text-sm font-medium ${textColor}`}>{label}</h2>
           </div>
@@ -589,7 +589,7 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
     <div className={`flex-1 ${bgColor} relative`}>
       <div className={`${bgColor} p-4 flex items-center border-b ${borderColor}`}>
         <button onClick={() => setShowProfile(false)} className="mr-3">
-          <FiChevronRight className={`w-4 h-4 rotate-180 ${textColor}`} />
+          <ChevronRight className={`w-4 h-4 rotate-180 ${textColor}`} />
         </button>
         <h2 className={`text-sm font-medium ${textColor}`}>프로필</h2>
       </div>
@@ -602,12 +602,12 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
               {profileImage ? (
                 <img src={profileImage} alt="Profile" className="w-full h-full object-cover" />
               ) : (
-                <FiCamera className={`w-6 h-6 ${secondaryText}`} />
+                <Camera className={`w-6 h-6 ${secondaryText}`} />
               )}
             </div>
             {/* 플러스 아이콘을 안쪽으로 이동하고 크기 축소 */}
             <div className={`absolute bottom-1 right-1 w-5 h-5 ${isDarkMode ? 'bg-white' : 'bg-gray-800'} rounded-full flex items-center justify-center`}>
-              <FiPlus className={`w-2.5 h-2.5 ${isDarkMode ? 'text-gray-800' : 'text-white'}`} />
+              <Plus className={`w-2.5 h-2.5 ${isDarkMode ? 'text-gray-800' : 'text-white'}`} />
             </div>
             <input
               id="profile-upload"
@@ -631,7 +631,7 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
               <span className={`${secondaryText} text-sm mr-2`}>
                 {profileData.name || '없음'}
               </span>
-              <FiChevronRight className={`w-4 h-4 ${secondaryText}`} />
+              <ChevronRight className={`w-4 h-4 ${secondaryText}`} />
             </div>
           </button>
 
@@ -647,7 +647,7 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
               <span className={`${secondaryText} text-sm mr-2`}>
                 {profileData.userId || '없음'}
               </span>
-              <FiChevronRight className={`w-4 h-4 ${secondaryText}`} />
+              <ChevronRight className={`w-4 h-4 ${secondaryText}`} />
             </div>
           </button>
 
@@ -663,7 +663,7 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
               <span className={`${secondaryText} text-sm mr-2`}>
                 {profileData.birthDate || '없음'}
               </span>
-              <FiChevronRight className={`w-4 h-4 ${secondaryText}`} />
+              <ChevronRight className={`w-4 h-4 ${secondaryText}`} />
             </div>
           </button>
 
@@ -679,7 +679,7 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
               <span className={`${secondaryText} text-sm mr-2`}>
                 {profileData.phone || '없음'}
               </span>
-              <FiChevronRight className={`w-4 h-4 ${secondaryText}`} />
+              <ChevronRight className={`w-4 h-4 ${secondaryText}`} />
             </div>
           </button>
 
@@ -695,7 +695,7 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
               <span className={`${secondaryText} text-sm mr-2`}>
                 {profileData.email || '없음'}
               </span>
-              <FiChevronRight className={`w-4 h-4 ${secondaryText}`} />
+              <ChevronRight className={`w-4 h-4 ${secondaryText}`} />
             </div>
           </button>
         </div>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FiSettings } from 'react-icons/fi';
+import { Settings } from 'lucide-react';
 import FishIcons from '../../components/FishIcons';
 import DecorationIcons from '../../components/DecorationIcons';
 import WaterSurface from '../../components/WaterSurface';
@@ -612,7 +612,7 @@ const Home = ({
                   onClick={() => setShowAquariumSettings(true)}
                   className="px-2 bg-white/20 hover:bg-white/30 transition-colors rounded-lg flex items-center justify-center"
                 >
-                  <FiSettings className="w-3 h-3 text-white" />
+                  <Settings className="w-3 h-3 text-white" />
                 </button>
               </div>
             </div>

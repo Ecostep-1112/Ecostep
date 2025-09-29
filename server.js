@@ -132,7 +132,7 @@ app.post('/api/chatbot', async (req, res) => {
       messages: [
         {
           role: 'user',
-          content: message
+          content: `다음 질문에 대한 답변을 간결하게, 정중한 말투로, 필요없는 정보와 이모티콘 없이 답해줘. ${message}`
         }
       ]
     });
@@ -218,6 +218,269 @@ app.post('/api/environmental-tip', async (req, res) => {
   }
 });
 
+// Plastic weight calculation endpoint
+app.post('/api/validate-plastic-challenge', async (req, res) => {
+  try {
+    const { challenge } = req.body;
+
+    if (!challenge) {
+      return res.status(400).json({ error: 'Challenge text is required' });
+    }
+
+    // Check if API key exists
+    if (!CLAUDE_API_KEY || CLAUDE_API_KEY === 'your-api-key-here' || !CLAUDE_API_KEY.startsWith('sk-ant-')) {
+      console.log('Using fallback validation - Claude API key not configured');
+      // Fallback validation logic
+      const plasticKeywords = ['플라스틱', '비닐', '일회용', '컵', '빨대', '봉지', '포장'];
+      const isRelated = plasticKeywords.some(keyword => challenge.toLowerCase().includes(keyword));
+      const estimatedSavings = isRelated ? Math.floor(Math.random() * 20) + 5 : 0;
+
+      return res.json({
+        isValid: isRelated,
+        savings: estimatedSavings,
+        reason: isRelated ? '플라스틱 관련 챌린지로 인정됩니다.' : '플라스틱과 관련이 없는 챌린지입니다.'
+      });
+    }
+
+    // Call Claude API for plastic challenge validation
+    const response = await anthropic.messages.create({
+      model: 'claude-3-haiku-20240307',
+      max_tokens: 300,
+      messages: [{
+        role: 'user',
+        content: `다음 챌린지가 플라스틱 사용량 줄이기와 관련이 있는지 분석하고, 일일 플라스틱 절약량을 g 단위로 추정해주세요.
+
+챌린지: "${challenge}"
+
+다음 형식으로 JSON 응답을 보내주세요:
+{
+  "isValid": true/false,
+  "savings": 숫자 (g 단위),
+  "reason": "설명"
+}
+
+플라스틱 관련 키워드: 플라스틱, 비닐, 일회용, 컵, 빨대, 봉지, 포장, 용기, 병 등
+일반적인 절약량 기준:
+- 텀블러 사용: 15g
+- 빨대 안쓰기: 2g
+- 에코백 사용: 20g
+- 배달음식 줄이기: 50g`
+      }]
+    });
+
+    const content = response.content[0].text;
+    let validationData;
+
+    try {
+      const jsonMatch = content.match(/\{[\s\S]*\}/);
+      if (jsonMatch) {
+        validationData = JSON.parse(jsonMatch[0]);
+      } else {
+        throw new Error('No JSON found in response');
+      }
+    } catch (parseError) {
+      console.error('Failed to parse Claude response:', parseError);
+      // Fallback
+      const plasticKeywords = ['플라스틱', '비닐', '일회용', '컵', '빨대', '봉지', '포장'];
+      const isRelated = plasticKeywords.some(keyword => challenge.toLowerCase().includes(keyword));
+      validationData = {
+        isValid: isRelated,
+        savings: isRelated ? Math.floor(Math.random() * 20) + 5 : 0,
+        reason: isRelated ? '플라스틱 관련 챌린지로 인정됩니다.' : '플라스틱과 관련이 없는 챌린지입니다.'
+      };
+    }
+
+    res.json(validationData);
+  } catch (error) {
+    console.error('Plastic challenge validation error:', error);
+    res.status(500).json({ error: 'Failed to validate plastic challenge' });
+  }
+});
+
+// Plastic item category classification endpoint
+app.post('/api/classify-plastic-item', async (req, res) => {
+  try {
+    const { itemName } = req.body;
+
+    if (!itemName) {
+      return res.status(400).json({ error: 'Item name is required' });
+    }
+
+    // Check if API key exists
+    if (!CLAUDE_API_KEY || CLAUDE_API_KEY === 'your-api-key-here' || !CLAUDE_API_KEY.startsWith('sk-ant-')) {
+      console.log('Using fallback classification - Claude API key not configured');
+
+      // Simple keyword-based fallback classification
+      const lowerName = itemName.toLowerCase();
+      let category = null;
+      let isPlastic = false;
+
+      const plasticKeywords = [
+        '플라스틱', '비닐', '페트', 'pet', '일회용', '용기', '컵', '빨대',
+        '봉지', '봉투', '포장', '배달', '텀블러', '에코백', '장바구니',
+        '병', '보틀', '랩', '지퍼백', '스티로폼', '테이크아웃', '물티슈'
+      ];
+
+      isPlastic = plasticKeywords.some(keyword => lowerName.includes(keyword));
+
+      if (isPlastic) {
+        if (lowerName.includes('병') || lowerName.includes('보틀')) category = 'bottle';
+        else if (lowerName.includes('컵')) category = 'cup';
+        else if (lowerName.includes('봉지') || lowerName.includes('봉투')) category = 'bag';
+        else if (lowerName.includes('용기') || lowerName.includes('도시락')) category = 'container';
+        else if (lowerName.includes('빨대')) category = 'straw';
+        else if (lowerName.includes('수저') || lowerName.includes('포크')) category = 'utensil';
+        else category = 'other';
+      }
+
+      return res.json({
+        isPlastic,
+        category,
+        confidence: isPlastic ? 'medium' : 'high'
+      });
+    }
+
+    // Call Claude API for plastic classification
+    const response = await anthropic.messages.create({
+      model: 'claude-3-haiku-20240307',
+      max_tokens: 200,
+      messages: [{
+        role: 'user',
+        content: `다음 아이템이 플라스틱 제품인지 판단하고, 플라스틱이라면 적절한 카테고리로 분류해주세요.
+
+아이템: "${itemName}"
+
+다음 형식으로 JSON 응답을 보내주세요:
+{
+  "isPlastic": true/false,
+  "category": "bottle/cup/bag/container/straw/utensil/packaging/other" 또는 null (비플라스틱인 경우),
+  "confidence": "high/medium/low"
+}
+
+카테고리 설명:
+- bottle: 물병, 음료수병 등
+- cup: 일회용 컵, 커피컵 등
+- bag: 비닐봉지, 쇼핑백 등
+- container: 도시락, 포장용기 등
+- straw: 빨대
+- utensil: 포크, 숟가락, 젓가락 등
+- packaging: 포장재, 랩 등
+- other: 기타 플라스틱 제품
+
+만약 플라스틱이 아닌 제품이라면 isPlastic: false, category: null로 응답해주세요.`
+      }]
+    });
+
+    const content = response.content[0].text;
+    let classificationData;
+
+    try {
+      const jsonMatch = content.match(/\{[\s\S]*\}/);
+      if (jsonMatch) {
+        classificationData = JSON.parse(jsonMatch[0]);
+      } else {
+        throw new Error('No JSON found in response');
+      }
+    } catch (parseError) {
+      console.error('Failed to parse Claude response:', parseError);
+      // Fallback
+      classificationData = {
+        isPlastic: false,
+        category: null,
+        confidence: 'low'
+      };
+    }
+
+    res.json(classificationData);
+  } catch (error) {
+    console.error('Plastic item classification error:', error);
+    res.status(500).json({ error: 'Failed to classify plastic item' });
+  }
+});
+
+// Plastic item weight calculation endpoint
+app.post('/api/validate-plastic-item', async (req, res) => {
+  try {
+    const { itemName } = req.body;
+
+    if (!itemName) {
+      return res.status(400).json({ error: 'Item name is required' });
+    }
+
+    // Check if API key exists
+    if (!CLAUDE_API_KEY || CLAUDE_API_KEY === 'your-api-key-here' || !CLAUDE_API_KEY.startsWith('sk-ant-')) {
+      console.log('Using fallback estimation - Claude API key not configured');
+      // Fallback estimation logic
+      const defaultWeights = {
+        '플라스틱병': 20, '음료수병': 20, '물병': 20,
+        '컵': 15, '일회용컵': 15, '커피컵': 15,
+        '봉지': 5, '비닐봉지': 5, '쇼핑백': 10,
+        '용기': 30, '포장용기': 30, '도시락': 35,
+        '빨대': 1, '포크': 3, '수저': 4
+      };
+
+      const estimatedWeight = defaultWeights[itemName] || 10;
+      return res.json({
+        weight: estimatedWeight,
+        confidence: 'medium',
+        description: `${itemName}의 예상 무게는 ${estimatedWeight}g입니다.`
+      });
+    }
+
+    // Call Claude API for plastic item weight estimation
+    const response = await anthropic.messages.create({
+      model: 'claude-3-haiku-20240307',
+      max_tokens: 300,
+      messages: [{
+        role: 'user',
+        content: `다음 플라스틱 아이템의 개당 무게를 g 단위로 추정해주세요.
+
+아이템: "${itemName}"
+
+다음 형식으로 JSON 응답을 보내주세요:
+{
+  "weight": 숫자 (g 단위),
+  "confidence": "high/medium/low",
+  "description": "설명"
+}
+
+일반적인 플라스틱 아이템 무게 참고:
+- 페트병 (500ml): 20g
+- 일회용 컵: 15g
+- 비닐봉지: 5g
+- 플라스틱 용기: 25-40g
+- 빨대: 1-2g
+- 포크/스푼: 3-5g`
+      }]
+    });
+
+    const content = response.content[0].text;
+    let weightData;
+
+    try {
+      const jsonMatch = content.match(/\{[\s\S]*\}/);
+      if (jsonMatch) {
+        weightData = JSON.parse(jsonMatch[0]);
+      } else {
+        throw new Error('No JSON found in response');
+      }
+    } catch (parseError) {
+      console.error('Failed to parse Claude response:', parseError);
+      // Fallback
+      weightData = {
+        weight: 10,
+        confidence: 'low',
+        description: `${itemName}의 예상 무게는 약 10g입니다. (추정값)`
+      };
+    }
+
+    res.json(weightData);
+  } catch (error) {
+    console.error('Plastic item validation error:', error);
+    res.status(500).json({ error: 'Failed to validate plastic item' });
+  }
+});
+
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error('Server error:', err);
@@ -233,6 +496,9 @@ const server = app.listen(PORT, () => {
   console.log(`  GET  http://localhost:${PORT}/api/health`);
   console.log(`  POST http://localhost:${PORT}/api/chatbot`);
   console.log(`  POST http://localhost:${PORT}/api/environmental-tip`);
+  console.log(`  POST http://localhost:${PORT}/api/validate-plastic-challenge`);
+  console.log(`  POST http://localhost:${PORT}/api/classify-plastic-item`);
+  console.log(`  POST http://localhost:${PORT}/api/validate-plastic-item`);
   
   if (!CLAUDE_API_KEY || !CLAUDE_API_KEY.startsWith('sk-ant-')) {
     console.log('\n⚠️  Claude API key not configured - using mock data');

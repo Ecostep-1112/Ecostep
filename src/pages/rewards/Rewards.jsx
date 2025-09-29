@@ -1,5 +1,5 @@
 import React from 'react';
-import { FiLock } from 'react-icons/fi';
+import { Lock } from 'lucide-react';
 import FishIcons from '../../components/FishIcons';
 import DecorationIcons from '../../components/DecorationIcons';
 import { memo } from 'react';
@@ -348,7 +348,7 @@ const Rewards = ({
                 <>
                   <div className="absolute inset-0 bg-white bg-opacity-40 rounded-lg"></div>
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <FiLock className="w-5 h-5 text-gray-600 opacity-80" />
+                    <Lock className="w-5 h-5 text-gray-600 opacity-80" />
                   </div>
                 </>
               )}
@@ -400,7 +400,7 @@ const Rewards = ({
                 <>
                   <div className="absolute inset-0 bg-white bg-opacity-40 rounded-lg"></div>
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <FiLock className="w-5 h-5 text-gray-600 opacity-80" />
+                    <Lock className="w-5 h-5 text-gray-600 opacity-80" />
                   </div>
                 </>
               )}
@@ -452,7 +452,7 @@ const Rewards = ({
                 <>
                   <div className="absolute inset-0 bg-white bg-opacity-40 rounded-lg"></div>
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <FiLock className="w-5 h-5 text-gray-600 opacity-80" />
+                    <Lock className="w-5 h-5 text-gray-600 opacity-80" />
                   </div>
                 </>
               )}
@@ -562,7 +562,7 @@ const Rewards = ({
                         <>
                           <div className="absolute inset-0 bg-white bg-opacity-40 rounded-lg"></div>
                           <div className="absolute inset-0 flex items-center justify-center">
-                            <FiLock className="w-5 h-5 text-gray-600 opacity-80" />
+                            <Lock className="w-5 h-5 text-gray-600 opacity-80" />
                           </div>
                         </>
                       )}
@@ -673,7 +673,7 @@ const Rewards = ({
                         <>
                           <div className="absolute inset-0 bg-white bg-opacity-40 rounded-lg"></div>
                           <div className="absolute inset-0 flex items-center justify-center">
-                            <FiLock className="w-5 h-5 text-gray-600 opacity-80" />
+                            <Lock className="w-5 h-5 text-gray-600 opacity-80" />
                           </div>
                         </>
                       )}

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FiSearch, FiChevronRight, FiX } from 'react-icons/fi';
+import { Search, ChevronRight, X } from 'lucide-react';
 
 const SearchFriends = ({ isDarkMode, onBack, userRanking = 'bronze', showToast, currentUserId = '', currentUserName = '' }) => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -167,7 +167,7 @@ const SearchFriends = ({ isDarkMode, onBack, userRanking = 'bronze', showToast, 
       {/* 헤더 */}
       <div className={`flex items-center p-4 border-b ${borderColor}`}>
         <button onClick={onBack} className="mr-3">
-          <FiChevronRight className={`w-5 h-5 rotate-180 ${textColor}`} />
+          <ChevronRight className={`w-5 h-5 rotate-180 ${textColor}`} />
         </button>
         <h2 className={`text-base font-medium ${textColor}`}>아이디</h2>
       </div>
@@ -193,7 +193,7 @@ const SearchFriends = ({ isDarkMode, onBack, userRanking = 'bronze', showToast, 
                 }}
                 className={`absolute right-3 top-1/2 transform -translate-y-1/2 ${isDarkMode ? 'text-gray-400 hover:text-gray-300' : 'text-gray-500 hover:text-gray-700'} transition-colors`}
               >
-                <FiX className="w-4 h-4" />
+                <X className="w-4 h-4" />
               </button>
             )}
           </div>
@@ -201,7 +201,7 @@ const SearchFriends = ({ isDarkMode, onBack, userRanking = 'bronze', showToast, 
             onClick={handleSearch}
             className={`bg-transparent ${textColor} w-10 h-10 rounded-xl text-sm font-medium hover:opacity-80 transition-opacity flex items-center justify-center border ${borderColor}`}
           >
-            <FiSearch className={`w-4 h-4 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`} />
+            <Search className={`w-4 h-4 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`} />
           </button>
         </div>
 

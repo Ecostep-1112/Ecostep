@@ -116,7 +116,7 @@ const Home = ({
 
       do {
         // 랜덤 위치 생성 (어항 내부에서)
-        const left = 5 + Math.random() * 90; // 5% ~ 95%
+        const left = 2 + Math.random() * 96; // 2% ~ 98%
         const bottom = 15 + Math.random() * 10; // 15% ~ 25% (바닥 근처)
         position = { bottom: `${bottom}%`, left: `${left}%` };
 
@@ -353,7 +353,7 @@ const Home = ({
 
     // 경계 체크 (어항 영역 내에서만 이동 가능)
     return {
-      x: Math.max(5, Math.min(95, x)),
+      x: Math.max(2, Math.min(98, x)),
       y: Math.max(15, Math.min(85, y))
     };
   };

@@ -116,7 +116,7 @@ const Home = ({
 
       do {
         // 랜덤 위치 생성 (어항 내부에서)
-        const left = 10 + Math.random() * 80; // 10% ~ 90%
+        const left = 5 + Math.random() * 90; // 5% ~ 95%
         const bottom = 15 + Math.random() * 10; // 15% ~ 25% (바닥 근처)
         position = { bottom: `${bottom}%`, left: `${left}%` };
 
@@ -353,7 +353,7 @@ const Home = ({
 
     // 경계 체크 (어항 영역 내에서만 이동 가능)
     return {
-      x: Math.max(8, Math.min(92, x)),
+      x: Math.max(5, Math.min(95, x)),
       y: Math.max(15, Math.min(85, y))
     };
   };
@@ -1069,6 +1069,13 @@ const Home = ({
               >
                 장식품 위치 저장
               </button>
+            </div>
+
+            {/* 안내 메시지 */}
+            <div className="mt-2 text-center">
+              <p className={`text-xs italic ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} opacity-70`}>
+                장식품을 터치하여 움직일 수 있습니다
+              </p>
             </div>
           </div>
         </div>

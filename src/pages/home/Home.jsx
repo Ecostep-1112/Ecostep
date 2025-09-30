@@ -934,13 +934,13 @@ const Home = ({
       {/* 장식품 조절 패널 */}
       {showSettingsPanel && selectedDecoration && (
         <div
-          className={`absolute bottom-0 left-0 right-0 z-[25] ${isDarkMode ? 'bg-gray-800' : 'bg-white'} border-t ${isDarkMode ? 'border-gray-700' : 'border-gray-200'} p-4 transform transition-transform duration-300 ease-out`}
+          className={`absolute bottom-[76px] left-0 right-0 mx-7 z-[25] ${isDarkMode ? 'bg-gray-800' : 'bg-gray-50'} rounded-xl p-4 transform transition-transform duration-300 ease-out`}
           style={{
             animation: 'slideUp 0.3s ease-out forwards'
           }}
         >
-          <div className="flex items-center justify-between mb-3">
-            <h3 className={`text-sm font-medium ${textColor}`}>
+          <div className="flex items-center justify-between mb-2">
+            <h3 className={`text-xs font-medium ${textColor}`}>
               {selectedDecoration} 설정
             </h3>
             <button
@@ -948,16 +948,16 @@ const Home = ({
                 setShowSettingsPanel(false);
                 setSelectedDecoration(null);
               }}
-              className={`text-xs px-3 py-1 rounded-lg ${isDarkMode ? 'bg-gray-700 text-gray-300 hover:bg-gray-600' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'} transition-colors`}
+              className={`text-xs px-2 py-1 rounded-md ${isDarkMode ? 'bg-gray-700 text-gray-300 hover:bg-gray-600' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'} transition-colors`}
             >
               닫기
             </button>
           </div>
 
-          <div className="space-y-4">
+          <div className="space-y-3">
             {/* 크기 조절 */}
             <div>
-              <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center justify-between mb-1">
                 <label className={`text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                   크기
                 </label>
@@ -971,7 +971,7 @@ const Home = ({
                 max="150"
                 value={decorationSettings[selectedDecoration]?.size || 100}
                 onChange={(e) => handleSizeChange(parseInt(e.target.value))}
-                className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
+                className="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
                 style={{
                   background: `linear-gradient(to right,
                     #3B82F6 0%,
@@ -989,7 +989,7 @@ const Home = ({
 
             {/* 회전 조절 */}
             <div>
-              <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center justify-between mb-1">
                 <label className={`text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                   회전
                 </label>
@@ -1003,7 +1003,7 @@ const Home = ({
                 max="360"
                 value={decorationSettings[selectedDecoration]?.rotation || 0}
                 onChange={(e) => handleRotationChange(parseInt(e.target.value))}
-                className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
+                className="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
                 style={{
                   background: `linear-gradient(to right,
                     #10B981 0%,
@@ -1037,7 +1037,7 @@ const Home = ({
                     [selectedDecoration]: { bottom: '15%', left: '50%' }
                   }));
                 }}
-                className={`flex-1 py-2 text-xs font-medium rounded-lg transition-colors ${isDarkMode ? 'bg-gray-700 text-gray-300 hover:bg-gray-600' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
+                className={`flex-1 py-1.5 text-xs font-medium rounded-md transition-colors ${isDarkMode ? 'bg-gray-700 text-gray-300 hover:bg-gray-600' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
               >
                 기본값으로 리셋
               </button>
@@ -1057,7 +1057,7 @@ const Home = ({
                     showToast('장식품 설정이 저장되었습니다', 'success');
                   }
                 }}
-                className={`flex-1 py-2 text-xs font-medium rounded-lg transition-colors ${isDarkMode ? 'bg-blue-600 text-white hover:bg-blue-700' : 'bg-blue-500 text-white hover:bg-blue-600'}`}
+                className={`flex-1 py-1.5 text-xs font-medium rounded-md transition-colors ${isDarkMode ? 'bg-blue-600 text-white hover:bg-blue-700' : 'bg-blue-500 text-white hover:bg-blue-600'}`}
               >
                 장식품 위치 저장
               </button>

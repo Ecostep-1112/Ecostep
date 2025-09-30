@@ -666,19 +666,6 @@ const Home = ({
                   }}
                 >
                   {React.createElement(DecoIcon, { size: scaledSize })}
-                  {/* 회전 각도 표시 - 설정 패널이 열려있고 선택된 장식품일 때만 표시 */}
-                  {showSettingsPanel && selectedDecoration === decoName && rotationValue !== 0 && (
-                    <div
-                      className={`absolute -top-6 left-1/2 transform -translate-x-1/2 px-1.5 py-0.5 rounded text-[10px] font-bold ${
-                        isDarkMode ? 'bg-gray-800/80 text-cyan-400' : 'bg-white/80 text-cyan-600'
-                      } backdrop-blur-sm`}
-                      style={{
-                        transform: `translateX(-50%) rotate(-${rotationValue}deg)`
-                      }}
-                    >
-                      {rotationValue}°
-                    </div>
-                  )}
                   {/* 드래그 모드일 때 시각적 피드백 */}
                   {isCurrentlyDragging && (
                     <div className="absolute -inset-2 border-2 border-white/50 border-dashed rounded-full animate-pulse"></div>
@@ -1056,11 +1043,6 @@ const Home = ({
                       size: 100,
                       rotation: 0
                     }
-                  }));
-                  // 위치도 초기화 (중앙 배치)
-                  setDecorationPositions(prev => ({
-                    ...prev,
-                    [selectedDecoration]: { bottom: '15%', left: '50%' }
                   }));
                 }}
                 className={`flex-1 py-1.5 text-xs font-medium rounded-md transition-colors ${isDarkMode ? 'bg-gray-700 text-gray-300 hover:bg-gray-600 border border-gray-600' : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-300'}`}

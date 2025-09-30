@@ -1468,18 +1468,19 @@ const Challenge = ({
                 
                 // 목표가 설정되어 있는지 확인
                 if (plasticGoal && plasticGoal > 0) {
-                  // 목표가 설정된 경우 - 달성률 표시
+                  // 목표가 설정된 경우 - 남은 한도 표시
                   const usagePercentage = (weeklyUsage / plasticGoal) * 100;
                   const remainingPercentage = Math.max(0, Math.min(100, Math.round(100 - usagePercentage)));
-                  
+                  const remainingGrams = Math.max(0, plasticGoal - weeklyUsage);
+
                   return (
                     <>
                       <div className="flex justify-between text-xs mb-2">
                         <span className={`${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                          달성률
+                          남은 한도
                         </span>
                         <span className={`font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                          {remainingPercentage}%
+                          {remainingPercentage}% ({remainingGrams}g)
                         </span>
                       </div>
                       <div className={`w-full ${isDarkMode ? 'bg-gray-700' : 'bg-gray-200'} rounded-full h-1.5`}>

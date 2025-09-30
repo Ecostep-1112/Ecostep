@@ -347,8 +347,8 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
     <div className={`flex-1 overflow-y-auto custom-scrollbar scrollbar-hide-idle pb-20 ${bgColor}`}>
       <div className="min-h-full">
         {/* 오늘의 환경 상식 */}
-        <div className={`mx-3 mt-4 ${cardBg} border ${borderColor} rounded-xl p-4`}>
-          <div className="flex justify-between items-center mb-3">
+        <div className={`mx-3 mt-4 ${cardBg} border ${borderColor} rounded-xl p-2.5`}>
+          <div className="flex justify-between items-center mb-1.5">
             <div className="flex items-center">
               <h3 className={`${textColor} text-sm font-medium`}>오늘의 환경 상식</h3>
             </div>
@@ -395,12 +395,12 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
           )}
           
           {isLoadingTip && !environmentalTip ? (
-            <div className="flex justify-center items-center h-32">
+            <div className="flex justify-center items-center h-16">
               <div className="text-gray-500">팁을 불러오는 중...</div>
             </div>
           ) : environmentalTip ? (
             <div>
-              <div className="pb-3">
+              <div className="pb-1.5">
                 <div 
                   className="cursor-pointer"
                   onClick={() => setExpandedTip(expandedTip === environmentalTip.id ? null : environmentalTip.id)}
@@ -422,13 +422,13 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
                 
                 {/* 확장된 내용 */}
                 <div className={`overflow-hidden transition-all duration-300 ease-in-out ${
-                  expandedTip === environmentalTip.id ? 'max-h-96 opacity-100 mt-3' : 'max-h-0 opacity-0'
+                  expandedTip === environmentalTip.id ? 'max-h-96 opacity-100 mt-1.5' : 'max-h-0 opacity-0'
                 }`}>
-                  <div className={`${isDarkMode ? 'bg-gray-800' : 'bg-gray-50'} rounded-lg p-3`}>
+                  <div className={`${isDarkMode ? 'bg-gray-800' : 'bg-gray-50'} rounded-lg p-2`}>
                     <p className={`text-sm leading-relaxed text-justify ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                       {environmentalTip.content}
                     </p>
-                    <div className={`flex items-center justify-between mt-3 pt-3 border-t ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
+                    <div className={`flex items-center justify-between mt-1.5 pt-1.5 border-t ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
                       <button 
                         onClick={handleShareTip}
                         className="px-3 py-1.5 rounded-lg text-xs font-medium flex items-center transition-all bg-gradient-to-r from-cyan-500 via-blue-500 to-blue-600 text-white hover:opacity-90"
@@ -466,10 +466,10 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
               </p>
             </div>
           )}
-          
-          <div className="mt-2 pt-2">
-            <div className={`h-[1px] mb-2 bg-gradient-to-r from-transparent ${isDarkMode ? 'via-gray-700' : 'via-gray-200'} to-transparent`}></div>
-            <p className={`text-xs ${isDarkMode ? 'text-gray-500' : 'text-gray-400'} text-center`}>
+
+          <div className="mt-1.5 pt-1.5">
+            <div className={`h-[1px] mb-1 bg-gradient-to-r from-transparent ${isDarkMode ? 'via-gray-700' : 'via-gray-200'} to-transparent`}></div>
+            <p className={`text-xs ${isDarkMode ? 'text-gray-500' : 'text-gray-400'} text-center italic`}>
               매일 새로운 환경 팁을 확인하세요
             </p>
           </div>

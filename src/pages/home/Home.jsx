@@ -525,13 +525,18 @@ const Home = ({
   // 회전 변경 핸들러
   const handleRotationChange = (newRotation) => {
     if (selectedDecoration) {
-      setDecorationSettings(prev => ({
-        ...prev,
-        [selectedDecoration]: {
-          ...(prev[selectedDecoration] || { size: 100, rotation: 0 }),
-          rotation: newRotation
-        }
-      }));
+      console.log('Rotation changing to:', newRotation, 'for', selectedDecoration);
+      setDecorationSettings(prev => {
+        const newSettings = {
+          ...prev,
+          [selectedDecoration]: {
+            ...(prev[selectedDecoration] || { size: 100, rotation: 0 }),
+            rotation: newRotation
+          }
+        };
+        console.log('New decoration settings:', newSettings);
+        return newSettings;
+      });
     }
   };
 
@@ -632,20 +637,19 @@ const Home = ({
 
             // 크기 계산 (50% ~ 150%)
             const scaledSize = Math.round(25 * (settings.size / 100));
+            // 회전 값 확인 (디버깅용)
+            const rotationValue = settings.rotation || 0;
 
             return DecoIcon ? (
               <div
                 key={i}
-                className={`absolute z-[2] ${isCurrentlyDragging ? 'cursor-move scale-110 opacity-80' : 'cursor-pointer animate-sway'} transition-all duration-200`}
+                className={`absolute z-[2] ${isCurrentlyDragging ? 'cursor-move' : 'cursor-pointer'}`}
                 style={{
                   ...position,
+                  transform: `translateX(-50%)`,
                   userSelect: 'none',
                   WebkitUserSelect: 'none',
-                  pointerEvents: isDragging && isDragging !== decoName ? 'none' : 'auto',
-                  transform: `translateX(-50%) rotate(${settings.rotation}deg)`,
-                  transformOrigin: 'center',
-                  animationDuration: !isDragging ? `${3 + i * 0.5}s` : undefined,
-                  animationDelay: !isDragging ? `${i * 0.3}s` : undefined
+                  pointerEvents: isDragging && isDragging !== decoName ? 'none' : 'auto'
                 }}
                 onTouchStart={(e) => handleTouchStart(e, decoName)}
                 onTouchEnd={(e) => handleTouchEnd(e, decoName)}
@@ -653,11 +657,33 @@ const Home = ({
                 onMouseUp={(e) => handleMouseUp(e, decoName)}
                 onDoubleClick={(e) => handleDoubleClick(e, decoName)}
               >
-                {React.createElement(DecoIcon, { size: scaledSize })}
-                {/* 드래그 모드일 때 시각적 피드백 */}
-                {isCurrentlyDragging && (
-                  <div className="absolute -inset-2 border-2 border-white/50 border-dashed rounded-full animate-pulse"></div>
-                )}
+                <div
+                  className={`transition-all duration-200 relative`}
+                  style={{
+                    transform: `rotate(${rotationValue}deg) ${isCurrentlyDragging ? 'scale(1.1)' : 'scale(1)'}`,
+                    opacity: isCurrentlyDragging ? 0.8 : 1,
+                    transformOrigin: 'center bottom'
+                  }}
+                >
+                  {React.createElement(DecoIcon, { size: scaledSize })}
+                  {/* 회전 각도 표시 - 설정 패널이 열려있고 선택된 장식품일 때만 표시 */}
+                  {showSettingsPanel && selectedDecoration === decoName && rotationValue !== 0 && (
+                    <div
+                      className={`absolute -top-6 left-1/2 transform -translate-x-1/2 px-1.5 py-0.5 rounded text-[10px] font-bold ${
+                        isDarkMode ? 'bg-gray-800/80 text-cyan-400' : 'bg-white/80 text-cyan-600'
+                      } backdrop-blur-sm`}
+                      style={{
+                        transform: `translateX(-50%) rotate(-${rotationValue}deg)`
+                      }}
+                    >
+                      {rotationValue}°
+                    </div>
+                  )}
+                  {/* 드래그 모드일 때 시각적 피드백 */}
+                  {isCurrentlyDragging && (
+                    <div className="absolute -inset-2 border-2 border-white/50 border-dashed rounded-full animate-pulse"></div>
+                  )}
+                </div>
               </div>
             ) : null;
           })}
@@ -702,7 +728,7 @@ const Home = ({
         </div>
 
         {/* 연속 사용 알림 */}
-        <div className={`mx-4 mt-4 p-3 ${isDarkMode ? 'bg-gray-800' : 'bg-gray-50'} rounded-xl`}>
+        <div className={`mx-4 mt-4 p-3 ${isDarkMode ? 'bg-gray-800 border border-gray-700' : 'bg-gray-50 border border-gray-200'} rounded-xl`}>
           <div className="flex items-center justify-center gap-2">
             {/* 왼쪽 불꽃 SVG 아이콘 */}
             <svg 
@@ -758,7 +784,7 @@ const Home = ({
 
         {/* 통계 카드 */}
         <div className="mx-4 mt-4 mb-4">
-          <div className={`${isDarkMode ? 'bg-gray-800' : 'bg-gray-50'} rounded-xl p-6`}>
+          <div className={`${isDarkMode ? 'bg-gray-800 border border-gray-700' : 'bg-gray-50 border border-gray-200'} rounded-xl p-6`}>
             <div className="flex flex-col items-center">
               <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} text-xs mb-3`}>플라스틱 절약량</span>
               
@@ -840,7 +866,7 @@ const Home = ({
         </div>
         
         {/* 플라스틱 절약량 테스트 슬라이더 (개발용) */}
-        <div className={`mx-4 mt-4 mb-4 p-4 ${isDarkMode ? 'bg-gray-800' : 'bg-gray-50'} rounded-xl`}>
+        <div className={`mx-4 mt-4 mb-4 p-4 ${isDarkMode ? 'bg-gray-800 border border-gray-700' : 'bg-gray-50 border border-gray-200'} rounded-xl`}>
           <div className="flex items-center justify-between mb-2">
             <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} text-xs font-medium`}>
               테스트용 플라스틱 절약량 조절
@@ -895,7 +921,7 @@ const Home = ({
         </div>
         
         {/* 수질 테스트 슬라이더 (개발용) */}
-        <div className={`mx-4 mt-4 mb-4 p-4 ${isDarkMode ? 'bg-gray-800' : 'bg-gray-50'} rounded-xl`}>
+        <div className={`mx-4 mt-4 mb-4 p-4 ${isDarkMode ? 'bg-gray-800 border border-gray-700' : 'bg-gray-50 border border-gray-200'} rounded-xl`}>
           <div className="flex items-center justify-between mb-2">
             <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} text-xs font-medium`}>
               테스트용 수질 조절
@@ -934,12 +960,12 @@ const Home = ({
       {/* 장식품 조절 패널 */}
       {showSettingsPanel && selectedDecoration && (
         <div
-          className={`absolute bottom-[76px] left-0 right-0 mx-7 z-[25] ${isDarkMode ? 'bg-gray-800' : 'bg-gray-50'} rounded-xl p-4 transform transition-transform duration-300 ease-out`}
+          className={`absolute bottom-[76px] left-0 right-0 mx-7 z-[25] ${isDarkMode ? 'bg-gray-800/90 border border-gray-700' : 'bg-gray-50/90 border border-gray-200'} rounded-xl p-2 transform transition-transform duration-300 ease-out backdrop-blur-sm`}
           style={{
             animation: 'slideUp 0.3s ease-out forwards'
           }}
         >
-          <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center justify-between mb-1.5">
             <h3 className={`text-xs font-medium ${textColor}`}>
               {selectedDecoration} 설정
             </h3>
@@ -954,14 +980,14 @@ const Home = ({
             </button>
           </div>
 
-          <div className="space-y-3">
+          <div className="space-y-1.5">
             {/* 크기 조절 */}
             <div>
-              <div className="flex items-center justify-between mb-1">
+              <div className="flex items-center justify-between mb-0">
                 <label className={`text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                   크기
                 </label>
-                <span className={`text-xs font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                <span className={`text-xs font-bold ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                   {decorationSettings[selectedDecoration]?.size || 100}%
                 </span>
               </div>
@@ -974,7 +1000,7 @@ const Home = ({
                 className="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
                 style={{
                   background: `linear-gradient(to right,
-                    #3B82F6 0%,
+                    #06B6D4 0%,
                     #3B82F6 ${((decorationSettings[selectedDecoration]?.size || 100) - 50) / 100 * 100}%,
                     #E5E7EB ${((decorationSettings[selectedDecoration]?.size || 100) - 50) / 100 * 100}%,
                     #E5E7EB 100%)`
@@ -989,11 +1015,11 @@ const Home = ({
 
             {/* 회전 조절 */}
             <div>
-              <div className="flex items-center justify-between mb-1">
+              <div className="flex items-center justify-between mb-0">
                 <label className={`text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                   회전
                 </label>
-                <span className={`text-xs font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                <span className={`text-xs font-bold ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                   {decorationSettings[selectedDecoration]?.rotation || 0}°
                 </span>
               </div>
@@ -1006,8 +1032,8 @@ const Home = ({
                 className="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
                 style={{
                   background: `linear-gradient(to right,
-                    #10B981 0%,
-                    #10B981 ${(decorationSettings[selectedDecoration]?.rotation || 0) / 360 * 100}%,
+                    #06B6D4 0%,
+                    #3B82F6 ${(decorationSettings[selectedDecoration]?.rotation || 0) / 360 * 100}%,
                     #E5E7EB ${(decorationSettings[selectedDecoration]?.rotation || 0) / 360 * 100}%,
                     #E5E7EB 100%)`
                 }}
@@ -1020,7 +1046,7 @@ const Home = ({
             </div>
 
             {/* 버튼 그룹 */}
-            <div className="flex gap-2">
+            <div className="flex gap-2 mt-2">
               {/* 리셋 버튼 */}
               <button
                 onClick={() => {
@@ -1037,7 +1063,7 @@ const Home = ({
                     [selectedDecoration]: { bottom: '15%', left: '50%' }
                   }));
                 }}
-                className={`flex-1 py-1.5 text-xs font-medium rounded-md transition-colors ${isDarkMode ? 'bg-gray-700 text-gray-300 hover:bg-gray-600' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
+                className={`flex-1 py-1.5 text-xs font-medium rounded-md transition-colors ${isDarkMode ? 'bg-gray-700 text-gray-300 hover:bg-gray-600 border border-gray-600' : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-300'}`}
               >
                 기본값으로 리셋
               </button>
@@ -1057,7 +1083,7 @@ const Home = ({
                     showToast('장식품 설정이 저장되었습니다', 'success');
                   }
                 }}
-                className={`flex-1 py-1.5 text-xs font-medium rounded-md transition-colors ${isDarkMode ? 'bg-blue-600 text-white hover:bg-blue-700' : 'bg-blue-500 text-white hover:bg-blue-600'}`}
+                className={`flex-1 py-1.5 text-xs font-medium rounded-md transition-colors ${isDarkMode ? 'bg-gray-700 text-gray-300 hover:bg-gray-600 border border-gray-600' : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-300'}`}
               >
                 장식품 위치 저장
               </button>

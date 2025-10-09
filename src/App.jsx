@@ -627,16 +627,11 @@ const EcostepApp = () => {
   }
 
   return (
-    <div className={`flex items-center justify-center min-h-screen ${isDarkMode ? 'bg-gray-950' : 'bg-gray-100'} p-4`}>
-      {/* 핸드폰 프레임 - 더 현실적인 디자인 */}
-      <div className="relative w-full max-w-[375px] h-[812px] bg-gray-900 rounded-[2.5rem] p-[3px] shadow-2xl">
-        {/* 핸드폰 베젤 */}
-        <div className="w-full h-full bg-black rounded-[2.3rem] p-[8px]">
-        
+    <div className="h-screen w-full">
         {/* 화면 영역 */}
-        <div className={`w-full h-full ${bgColor} rounded-[2rem] overflow-hidden flex flex-col`}>
+        <div className={`w-full h-full ${bgColor} flex flex-col`}>
           {/* 상태바 */}
-          <div className={`${isDarkMode ? 'bg-gray-900' : 'bg-white'} px-3 py-3 flex justify-between items-center relative`}>
+          <div className={`fixed top-0 left-0 right-0 z-50 ${isDarkMode ? 'bg-gray-900' : 'bg-white'} px-3 py-3 flex justify-between items-center`}>
             <h1 className={`${isDarkMode ? 'text-white' : 'text-gray-800'} text-sm font-medium`}>
               {activeTab === 'home' && '홈'}
               {activeTab === 'challenge' && '챌린지'}
@@ -681,6 +676,7 @@ const EcostepApp = () => {
           </div>
 
           {/* 메인 콘텐츠 */}
+          <div className="flex-1 overflow-y-auto pt-12 pb-16">
           {showNotifications ? (
             <NotificationsScreen 
               isDarkMode={isDarkMode} 
@@ -825,10 +821,11 @@ const EcostepApp = () => {
               {activeTab === 'more' && showChatBot && <ChatBot isDarkMode={isDarkMode} onBack={() => setShowChatBot(false)} />}
             </>
           )}
+          </div>
 
           {/* 하단 네비게이션 - 글래스모피즘 효과 */}
           {!showNotifications && !showSettings && !showProfile && !showAquariumSettings && !showThemeSettings && !showRankThemeSettings && !showLanguageSettings && !showNotificationSettings && !showLocationSettings && !showFriendsList && !showGlobalList && (
-            <div style={{
+            <div className="fixed bottom-0 left-0 right-0 z-50" style={{
               backgroundColor: isDarkMode ? 'rgba(55, 65, 81, 0.3)' : 'rgba(255, 255, 255, 0.3)',
               backdropFilter: isDarkMode ? 'blur(20px) saturate(1.5)' : 'blur(20px) saturate(2.5)',
               WebkitBackdropFilter: isDarkMode ? 'blur(20px) saturate(1.5)' : 'blur(20px) saturate(2.5)',
@@ -861,19 +858,17 @@ const EcostepApp = () => {
             </div>
           )}
         </div>
-        </div>
+
+        {/* 토스트 메시지 */}
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          isVisible={toast.isVisible}
+          onClose={() => setToast(prev => ({ ...prev, isVisible: false }))}
+          isDarkMode={isDarkMode}
+          rankTheme={rankTheme}
+        />
       </div>
-      
-      {/* 토스트 메시지 */}
-      <Toast 
-        message={toast.message}
-        type={toast.type}
-        isVisible={toast.isVisible}
-        onClose={() => setToast(prev => ({ ...prev, isVisible: false }))}
-        isDarkMode={isDarkMode}
-        rankTheme={rankTheme}
-      />
-    </div>
   );
 };
 

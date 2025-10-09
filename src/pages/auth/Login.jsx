@@ -136,10 +136,7 @@ function Login({ onLogin }) {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100 p-4">
-      <div className="relative w-full max-w-[375px] h-[812px] bg-gray-900 rounded-[2.5rem] p-[3px] shadow-2xl">
-        <div className="w-full h-full bg-black rounded-[2.3rem] p-[8px]">
-          <div className="w-full h-full bg-gradient-to-br from-cyan-400 via-blue-500 to-blue-600 rounded-[2rem] overflow-hidden flex flex-col items-center px-6 py-8 relative">
+    <div className="w-full min-h-screen bg-gradient-to-br from-cyan-400 via-blue-500 to-blue-600 overflow-hidden flex flex-col items-center px-6 py-8 relative">
             {/* 별 애니메이션 */}
             <style jsx>{`
               @keyframes twinkle {
@@ -241,14 +238,11 @@ function Login({ onLogin }) {
               
               
               <div className="mt-3 text-center">
-                <button onClick={() => handleLogin('skip')} className="text-gray-400 text-xs py-2">
+                <button onClick={() => handleLogin('skip')} className="text-white text-xs py-2">
                   로그인 없이 둘러보기
                 </button>
               </div>
             </div>
-          </div>
-        </div>
-      </div>
     </div>
   );
 }

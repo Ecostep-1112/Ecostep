@@ -229,12 +229,12 @@ function Login({ onLogin }) {
               >
                 <div className="flex items-center">
                   <FaApple className="text-[18px] text-white flex-shrink-0" />
-                  <span className="text-sm font-medium text-gray-500 ml-3">
+                  <span className="text-sm font-medium text-white ml-3">
                     <span className="inline-block w-12 text-left tracking-[0.08em]">Apple</span>
                     <span className="ml-1">{isLoading ? '로그인 중...' : '계정으로 로그인'}</span>
                   </span>
                 </div>
-                <FiChevronRight className="text-gray-500 text-lg flex-shrink-0" />
+                <FiChevronRight className="text-gray-400 text-lg flex-shrink-0" />
               </button>
               </div>
 

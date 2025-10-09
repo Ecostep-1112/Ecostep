@@ -926,7 +926,14 @@ const Home = ({
             min="0"
             max="100"
             value={waterQuality}
-            onChange={(e) => setWaterQuality && setWaterQuality(parseInt(e.target.value))}
+            onChange={(e) => {
+              if (setWaterQuality) {
+                setWaterQuality(parseInt(e.target.value));
+                // 사용자가 임의로 조정했음을 표시
+                const today = new Date().toISOString().split('T')[0];
+                localStorage.setItem('lastWaterQualityUpdate', today);
+              }
+            }}
             className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
             style={{
               background: `linear-gradient(to right, 

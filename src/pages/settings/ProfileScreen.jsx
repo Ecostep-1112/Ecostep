@@ -494,7 +494,7 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
       <div className={`absolute inset-0 z-50 ${bgColor}`}>
         <div className={`${bgColor} p-4 flex items-center border-b ${borderColor}`}>
           <button onClick={onClose} className="mr-3">
-            <FiChevronLeft className={`w-4 h-4 ${textColor}`} />
+            <ChevronLeft className={`w-4 h-4 ${textColor}`} />
           </button>
           <h2 className={`text-sm font-medium ${textColor}`}>{label}</h2>
         </div>

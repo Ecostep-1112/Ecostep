@@ -6,9 +6,9 @@ const DecorationIcons = {
     <svg width={size} height={size} viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <filter id="seaweed-shadow" x="-50%" y="-50%" width="200%" height="200%">
-          <feGaussianBlur in="SourceAlpha" stdDeviation="1.5"/>
+          <feGaussianBlur in="SourceAlpha" stdDeviation="1.8"/>
           <feOffset dx="2" dy="2" result="offsetblur"/>
-          <feFlood floodColor="#000000" floodOpacity="0.3"/>
+          <feFlood floodColor="#000000" floodOpacity="0.35"/>
           <feComposite in2="offsetblur" operator="in"/>
           <feMerge>
             <feMergeNode/>
@@ -16,129 +16,219 @@ const DecorationIcons = {
           </feMerge>
         </filter>
         <linearGradient id="seaweed1" x1="0%" y1="100%" x2="0%" y2="0%">
-          <stop offset="0%" stopColor="#1b5e20" />
+          <stop offset="0%" stopColor="#0d3d11" />
+          <stop offset="15%" stopColor="#1b5e20" />
           <stop offset="35%" stopColor="#2e7d32" />
-          <stop offset="70%" stopColor="#66bb6a" />
-          <stop offset="100%" stopColor="#81c784" />
+          <stop offset="55%" stopColor="#43a047" />
+          <stop offset="75%" stopColor="#66bb6a" />
+          <stop offset="90%" stopColor="#81c784" />
+          <stop offset="100%" stopColor="#a5d6a7" stopOpacity="0.8"/>
         </linearGradient>
         <linearGradient id="seaweed2" x1="0%" y1="100%" x2="0%" y2="0%">
-          <stop offset="0%" stopColor="#1b5e20" />
+          <stop offset="0%" stopColor="#0d3d11" />
+          <stop offset="12%" stopColor="#1b5e20" />
           <stop offset="30%" stopColor="#388e3c" />
-          <stop offset="65%" stopColor="#4caf50" />
-          <stop offset="100%" stopColor="#81c784" />
+          <stop offset="50%" stopColor="#4caf50" />
+          <stop offset="70%" stopColor="#66bb6a" />
+          <stop offset="88%" stopColor="#81c784" />
+          <stop offset="100%" stopColor="#c8e6c9" stopOpacity="0.7"/>
         </linearGradient>
         <linearGradient id="seaweed3" x1="0%" y1="100%" x2="0%" y2="0%">
-          <stop offset="0%" stopColor="#2e7d32" />
+          <stop offset="0%" stopColor="#1b5e20" />
+          <stop offset="20%" stopColor="#2e7d32" />
           <stop offset="40%" stopColor="#43a047" />
-          <stop offset="75%" stopColor="#66bb6a" />
-          <stop offset="100%" stopColor="#9ccc65" />
+          <stop offset="60%" stopColor="#66bb6a" />
+          <stop offset="80%" stopColor="#81c784" />
+          <stop offset="100%" stopColor="#9ccc65" stopOpacity="0.75"/>
         </linearGradient>
         <linearGradient id="seaweed4" x1="0%" y1="100%" x2="0%" y2="0%">
           <stop offset="0%" stopColor="#2e7d32" />
+          <stop offset="25%" stopColor="#43a047" />
           <stop offset="50%" stopColor="#66bb6a" />
+          <stop offset="75%" stopColor="#81c784" />
           <stop offset="100%" stopColor="#a5d6a7" />
         </linearGradient>
         <radialGradient id="seaweedHighlight">
-          <stop offset="0%" stopColor="#ffffff" stopOpacity="0.4"/>
+          <stop offset="0%" stopColor="#ffffff" stopOpacity="0.5"/>
+          <stop offset="60%" stopColor="#ffffff" stopOpacity="0.2"/>
+          <stop offset="100%" stopColor="#ffffff" stopOpacity="0"/>
+        </radialGradient>
+        <radialGradient id="bubbleGradient">
+          <stop offset="0%" stopColor="#e3f2fd" stopOpacity="0.6"/>
+          <stop offset="40%" stopColor="#bbdefb" stopOpacity="0.4"/>
+          <stop offset="70%" stopColor="#90caf9" stopOpacity="0.2"/>
+          <stop offset="100%" stopColor="#64b5f6" stopOpacity="0"/>
+        </radialGradient>
+        <radialGradient id="bubbleShine">
+          <stop offset="0%" stopColor="#ffffff" stopOpacity="0.8"/>
+          <stop offset="50%" stopColor="#ffffff" stopOpacity="0.3"/>
           <stop offset="100%" stopColor="#ffffff" stopOpacity="0"/>
         </radialGradient>
       </defs>
       <g filter="url(#seaweed-shadow)">
-        {/* 왼쪽 해초 - 더 자연스러운 곡선 */}
+        {/* 왼쪽 해초 - 더 자연스러운 곡선과 불규칙성 */}
         <path
-          d="M16 50 C16 47, 14 44, 15 41 C16 38, 14 35, 15 32 C16 29, 14 26, 15 23 C16 20, 14 17, 16 14"
+          d="M16 50 C16 47, 14 44, 15 41 C15.5 39.5, 14.2 37, 15 35 C15.8 33, 14 30, 15 27.5 C16 25, 14.5 22, 15.2 19 C15.8 16.5, 14 14, 16 12"
           stroke="url(#seaweed1)"
-          strokeWidth="3.5"
+          strokeWidth="3.8"
           strokeLinecap="round"
           fill="none"
-          opacity="0.9"
+          opacity="0.92"
         />
-        {/* 왼쪽 해초 하이라이트 */}
+        {/* 왼쪽 해초 하이라이트 - 강화 */}
         <path
-          d="M16.5 48 C16.5 45, 15 42, 15.5 39 C16 36, 15 33, 15.5 30 C16 27, 15 24, 15.5 21"
+          d="M16.8 48 C16.8 45.5, 15.5 43, 16 40 C16.4 37.5, 15.2 35, 15.8 32 C16.3 29.5, 15 27, 15.6 24 C16.2 21, 15 18, 16 16"
           stroke="url(#seaweedHighlight)"
-          strokeWidth="1.5"
+          strokeWidth="1.6"
           strokeLinecap="round"
           fill="none"
         />
+        {/* 왼쪽 해초 잎맥 디테일 */}
+        <path d="M15 35 Q 12.5 35, 13 34.5" stroke="#4caf50" strokeWidth="0.6" fill="none" opacity="0.5"/>
+        <path d="M15 28 Q 12 28, 12.5 27.5" stroke="#4caf50" strokeWidth="0.6" fill="none" opacity="0.5"/>
+        <path d="M16 21 Q 13.5 21, 14 20.5" stroke="#66bb6a" strokeWidth="0.5" fill="none" opacity="0.4"/>
 
-        {/* 중앙 왼쪽 해초 */}
+        {/* 중앙 왼쪽 해초 - 메인 굵은 줄기 */}
         <path
-          d="M24 50 C24 46, 22 42, 24 38 C26 34, 22 31, 24 27 C26 23, 22 20, 24 16 C26 14, 24 13, 25 12"
+          d="M24 50 C24 46, 22.5 43, 23.5 39.5 C24.5 36, 22 33, 24 29 C25.5 25.5, 22.5 22, 24 18 C25.5 14.5, 23.5 12, 25 10"
           stroke="url(#seaweed2)"
-          strokeWidth="4"
+          strokeWidth="4.5"
           strokeLinecap="round"
           fill="none"
           opacity="0.95"
         />
         {/* 중앙 왼쪽 해초 하이라이트 */}
         <path
-          d="M25 48 C25 45, 24 41, 25 37 C26 33, 24 29, 25 26 C26 22, 24 18, 25 16"
+          d="M25.2 48 C25.2 45, 24 42, 24.8 39 C25.5 36, 24 33, 25 30 C25.8 27, 24.2 24, 25 21 C25.7 18, 24.5 15, 25.5 13"
           stroke="url(#seaweedHighlight)"
-          strokeWidth="1.8"
+          strokeWidth="2"
           strokeLinecap="round"
           fill="none"
         />
+        {/* 중앙 왼쪽 해초 작은 잎들 */}
+        <path d="M23.5 40 Q 20 39.5, 21 39" stroke="#66bb6a" strokeWidth="1.2" fill="none" opacity="0.6"/>
+        <path d="M24 34 Q 20.5 34, 21.5 33.5" stroke="#66bb6a" strokeWidth="1.1" fill="none" opacity="0.6"/>
+        <path d="M23 28 Q 19.5 28, 20.5 27.5" stroke="#81c784" strokeWidth="1" fill="none" opacity="0.55"/>
+        <path d="M24.5 22 Q 21 22, 22 21.5" stroke="#81c784" strokeWidth="0.9" fill="none" opacity="0.5"/>
+        <path d="M24 16 Q 20.5 16.5, 21.5 16" stroke="#9ccc65" strokeWidth="0.8" fill="none" opacity="0.45"/>
+        {/* 줄기 잎맥 */}
+        <path d="M24 45 L 24.2 44.5" stroke="#2e7d32" strokeWidth="0.4" fill="none" opacity="0.6"/>
+        <path d="M23.5 38 L 23.8 37.5" stroke="#388e3c" strokeWidth="0.4" fill="none" opacity="0.5"/>
+        <path d="M24 30 L 24.3 29.5" stroke="#43a047" strokeWidth="0.4" fill="none" opacity="0.5"/>
 
-        {/* 중앙 오른쪽 해초 */}
+        {/* 중앙 오른쪽 해초 - 대칭 */}
         <path
-          d="M36 50 C36 46, 38 42, 36 38 C34 34, 38 31, 36 27 C34 23, 38 20, 36 16 C34 14, 36 13, 35 12"
+          d="M36 50 C36 46, 37.5 43, 36.5 39.5 C35.5 36, 38 33, 36 29 C34.5 25.5, 37.5 22, 36 18 C34.5 14.5, 36.5 12, 35 10"
           stroke="url(#seaweed2)"
-          strokeWidth="4"
+          strokeWidth="4.5"
           strokeLinecap="round"
           fill="none"
           opacity="0.95"
         />
         {/* 중앙 오른쪽 해초 하이라이트 */}
         <path
-          d="M35 48 C35 45, 36 41, 35 37 C34 33, 36 29, 35 26 C34 22, 36 18, 35 16"
+          d="M34.8 48 C34.8 45, 36 42, 35.2 39 C34.5 36, 36 33, 35 30 C34.2 27, 35.8 24, 35 21 C34.3 18, 35.5 15, 34.5 13"
           stroke="url(#seaweedHighlight)"
-          strokeWidth="1.8"
+          strokeWidth="2"
           strokeLinecap="round"
           fill="none"
         />
+        {/* 중앙 오른쪽 해초 작은 잎들 */}
+        <path d="M36.5 40 Q 40 39.5, 39 39" stroke="#66bb6a" strokeWidth="1.2" fill="none" opacity="0.6"/>
+        <path d="M36 34 Q 39.5 34, 38.5 33.5" stroke="#66bb6a" strokeWidth="1.1" fill="none" opacity="0.6"/>
+        <path d="M37 28 Q 40.5 28, 39.5 27.5" stroke="#81c784" strokeWidth="1" fill="none" opacity="0.55"/>
+        <path d="M35.5 22 Q 39 22, 38 21.5" stroke="#81c784" strokeWidth="0.9" fill="none" opacity="0.5"/>
+        <path d="M36 16 Q 39.5 16.5, 38.5 16" stroke="#9ccc65" strokeWidth="0.8" fill="none" opacity="0.45"/>
+        {/* 줄기 잎맥 */}
+        <path d="M36 45 L 35.8 44.5" stroke="#2e7d32" strokeWidth="0.4" fill="none" opacity="0.6"/>
+        <path d="M36.5 38 L 36.2 37.5" stroke="#388e3c" strokeWidth="0.4" fill="none" opacity="0.5"/>
+        <path d="M36 30 L 35.7 29.5" stroke="#43a047" strokeWidth="0.4" fill="none" opacity="0.5"/>
 
-        {/* 오른쪽 해초 */}
+        {/* 오른쪽 해초 - 불규칙한 곡선 */}
         <path
-          d="M44 50 C44 47, 46 44, 45 41 C44 38, 46 35, 45 32 C44 29, 46 26, 45 23 C44 20, 46 17, 44 14"
+          d="M44 50 C44 47, 46 44, 45 41 C44.5 39, 45.8 36.5, 45 34 C44.2 31.5, 46 29, 45 26.5 C44 24, 45.5 21.5, 44.8 19 C44.2 16.5, 46 14, 44 12"
           stroke="url(#seaweed3)"
-          strokeWidth="3.5"
+          strokeWidth="3.8"
           strokeLinecap="round"
           fill="none"
-          opacity="0.9"
+          opacity="0.92"
         />
         {/* 오른쪽 해초 하이라이트 */}
         <path
-          d="M43.5 48 C43.5 45, 45 42, 44.5 39 C44 36, 45 33, 44.5 30 C44 27, 45 24, 44.5 21"
+          d="M43.2 48 C43.2 45.5, 44.5 43, 44 40 C43.6 37.5, 44.8 35, 44.2 32 C43.7 29.5, 45 27, 44.4 24 C43.8 21, 45 18, 44 16"
           stroke="url(#seaweedHighlight)"
-          strokeWidth="1.5"
+          strokeWidth="1.6"
           strokeLinecap="round"
           fill="none"
         />
+        {/* 오른쪽 해초 잎맥 디테일 */}
+        <path d="M45 35 Q 47.5 35, 47 34.5" stroke="#4caf50" strokeWidth="0.6" fill="none" opacity="0.5"/>
+        <path d="M45 28 Q 48 28, 47.5 27.5" stroke="#4caf50" strokeWidth="0.6" fill="none" opacity="0.5"/>
+        <path d="M44 21 Q 46.5 21, 46 20.5" stroke="#66bb6a" strokeWidth="0.5" fill="none" opacity="0.4"/>
 
-        {/* 작은 해초들 - 더 다양하게 */}
+        {/* 작은 해초들 - 더 다양하고 자연스럽게 */}
         <path
-          d="M10 50 C10 48, 9 45, 10 43 C11 41, 9 39, 10 36 C11 34, 9 32, 10 30"
+          d="M10 50 C10 48, 9.5 46, 9.8 44 C10.2 42, 9 40, 10 37.5 C10.8 35.5, 9.2 33, 10 30.5 C10.5 28.5, 9.5 27, 10.2 25"
           stroke="url(#seaweed4)"
-          strokeWidth="2.5"
+          strokeWidth="2.8"
           strokeLinecap="round"
           fill="none"
-          opacity="0.8"
+          opacity="0.82"
         />
-        <path
-          d="M50 50 C50 48, 51 45, 50 43 C49 41, 51 39, 50 36 C49 34, 51 32, 50 30"
-          stroke="url(#seaweed4)"
-          strokeWidth="2.5"
-          strokeLinecap="round"
-          fill="none"
-          opacity="0.8"
-        />
+        <path d="M10 40 Q 7.5 40, 8 39.5" stroke="#81c784" strokeWidth="0.7" fill="none" opacity="0.5"/>
+        <path d="M10 33 Q 7 33, 7.5 32.5" stroke="#9ccc65" strokeWidth="0.6" fill="none" opacity="0.45"/>
 
-        {/* 미세한 잎사귀 디테일 */}
-        <path d="M24 42 Q 21 42, 22 41" stroke="#81c784" strokeWidth="0.8" fill="none" opacity="0.6"/>
-        <path d="M24 33 Q 27 33, 26 32" stroke="#81c784" strokeWidth="0.8" fill="none" opacity="0.6"/>
-        <path d="M36 42 Q 39 42, 38 41" stroke="#81c784" strokeWidth="0.8" fill="none" opacity="0.6"/>
-        <path d="M36 33 Q 33 33, 34 32" stroke="#81c784" strokeWidth="0.8" fill="none" opacity="0.6"/>
+        <path
+          d="M50 50 C50 48, 50.5 46, 50.2 44 C49.8 42, 51 40, 50 37.5 C49.2 35.5, 50.8 33, 50 30.5 C49.5 28.5, 50.5 27, 49.8 25"
+          stroke="url(#seaweed4)"
+          strokeWidth="2.8"
+          strokeLinecap="round"
+          fill="none"
+          opacity="0.82"
+        />
+        <path d="M50 40 Q 52.5 40, 52 39.5" stroke="#81c784" strokeWidth="0.7" fill="none" opacity="0.5"/>
+        <path d="M50 33 Q 53 33, 52.5 32.5" stroke="#9ccc65" strokeWidth="0.6" fill="none" opacity="0.45"/>
+
+        {/* 아주 작은 배경 해초 */}
+        <path d="M7 48 C7 46.5, 6.5 45, 7 43.5" stroke="#66bb6a" strokeWidth="1.5" fill="none" opacity="0.4"/>
+        <path d="M53 48 C53 46.5, 53.5 45, 53 43.5" stroke="#66bb6a" strokeWidth="1.5" fill="none" opacity="0.4"/>
+
+        {/* 작은 이끼류 또는 부착 생물 디테일 (barnacles) */}
+        <circle cx="24" cy="44" r="0.8" fill="#2e7d32" opacity="0.6"/>
+        <circle cx="24.3" cy="43.7" r="0.4" fill="#4caf50" opacity="0.5"/>
+        <circle cx="36" cy="44" r="0.8" fill="#2e7d32" opacity="0.6"/>
+        <circle cx="35.7" cy="43.7" r="0.4" fill="#4caf50" opacity="0.5"/>
+        <circle cx="23.5" cy="31" r="0.6" fill="#388e3c" opacity="0.5"/>
+        <circle cx="36.5" cy="31" r="0.6" fill="#388e3c" opacity="0.5"/>
+
+        {/* 공기 방울들 - 해초에서 올라오는 작은 기포 */}
+        <circle cx="18" cy="35" r="1.8" fill="url(#bubbleGradient)"/>
+        <circle cx="18.5" cy="34.5" r="0.8" fill="url(#bubbleShine)"/>
+        <circle cx="18" cy="35.5" r="0.3" fill="#ffffff" opacity="0.6"/>
+
+        <circle cx="27" cy="28" r="2" fill="url(#bubbleGradient)"/>
+        <circle cx="27.6" cy="27.4" r="1" fill="url(#bubbleShine)"/>
+        <circle cx="27" cy="28.6" r="0.4" fill="#ffffff" opacity="0.6"/>
+
+        <circle cx="33" cy="25" r="1.6" fill="url(#bubbleGradient)"/>
+        <circle cx="33.5" cy="24.6" r="0.7" fill="url(#bubbleShine)"/>
+        <circle cx="33" cy="25.5" r="0.3" fill="#ffffff" opacity="0.6"/>
+
+        <circle cx="42" cy="32" r="1.5" fill="url(#bubbleGradient)"/>
+        <circle cx="42.4" cy="31.6" r="0.6" fill="url(#bubbleShine)"/>
+        <circle cx="42" cy="32.5" r="0.25" fill="#ffffff" opacity="0.6"/>
+
+        <circle cx="12" cy="42" r="1.2" fill="url(#bubbleGradient)" opacity="0.8"/>
+        <circle cx="12.3" cy="41.7" r="0.5" fill="url(#bubbleShine)"/>
+
+        {/* 떠다니는 미세 입자들 */}
+        <circle cx="20" cy="20" r="0.4" fill="#a5d6a7" opacity="0.5"/>
+        <circle cx="40" cy="22" r="0.3" fill="#a5d6a7" opacity="0.4"/>
+        <circle cx="30" cy="15" r="0.35" fill="#c8e6c9" opacity="0.45"/>
+        <circle cx="15" cy="25" r="0.3" fill="#81c784" opacity="0.4"/>
+        <circle cx="45" cy="26" r="0.35" fill="#81c784" opacity="0.4"/>
+        <circle cx="25" cy="12" r="0.25" fill="#9ccc65" opacity="0.35"/>
+        <circle cx="35" cy="14" r="0.3" fill="#9ccc65" opacity="0.4"/>
       </g>
     </svg>
   ),
@@ -147,9 +237,9 @@ const DecorationIcons = {
     <svg width={size} height={size} viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <filter id="lava-shadow" x="-50%" y="-50%" width="200%" height="200%">
-          <feGaussianBlur in="SourceAlpha" stdDeviation="1.5"/>
+          <feGaussianBlur in="SourceAlpha" stdDeviation="1.8"/>
           <feOffset dx="2" dy="2" result="offsetblur"/>
-          <feFlood floodColor="#000000" floodOpacity="0.35"/>
+          <feFlood floodColor="#000000" floodOpacity="0.4"/>
           <feComposite in2="offsetblur" operator="in"/>
           <feMerge>
             <feMergeNode/>
@@ -157,123 +247,253 @@ const DecorationIcons = {
           </feMerge>
         </filter>
         <linearGradient id="lavaRock" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#7a7a7a" />
-          <stop offset="20%" stopColor="#6a6a6a" />
-          <stop offset="40%" stopColor="#5a5a5a" />
+          <stop offset="0%" stopColor="#8a8a8a" />
+          <stop offset="15%" stopColor="#7a7a7a" />
+          <stop offset="30%" stopColor="#6a6a6a" />
+          <stop offset="45%" stopColor="#5a5a5a" />
           <stop offset="60%" stopColor="#4a4a4a" />
-          <stop offset="80%" stopColor="#3a3a3a" />
-          <stop offset="100%" stopColor="#2a2a2a" />
+          <stop offset="75%" stopColor="#3a3a3a" />
+          <stop offset="90%" stopColor="#2a2a2a" />
+          <stop offset="100%" stopColor="#1a1a1a" />
         </linearGradient>
         <linearGradient id="lavaRockSide" x1="100%" y1="0%" x2="0%" y2="100%">
           <stop offset="0%" stopColor="#5a5a5a" />
-          <stop offset="50%" stopColor="#4a4a4a" />
+          <stop offset="35%" stopColor="#4a4a4a" />
+          <stop offset="70%" stopColor="#3a3a3a" />
           <stop offset="100%" stopColor="#2a2a2a" />
         </linearGradient>
         <radialGradient id="lavaHighlight">
-          <stop offset="0%" stopColor="#9a9a9a" stopOpacity="0.5"/>
-          <stop offset="50%" stopColor="#7a7a7a" stopOpacity="0.3"/>
+          <stop offset="0%" stopColor="#aaaaaa" stopOpacity="0.6"/>
+          <stop offset="40%" stopColor="#9a9a9a" stopOpacity="0.4"/>
+          <stop offset="70%" stopColor="#7a7a7a" stopOpacity="0.2"/>
           <stop offset="100%" stopColor="#6a6a6a" stopOpacity="0"/>
         </radialGradient>
         <radialGradient id="lavaHoleDepth1">
-          <stop offset="0%" stopColor="#0a0a0a" />
+          <stop offset="0%" stopColor="#000000" />
+          <stop offset="30%" stopColor="#0a0a0a" />
           <stop offset="60%" stopColor="#1a1a1a" />
           <stop offset="100%" stopColor="#2a2a2a" />
         </radialGradient>
         <radialGradient id="lavaHoleDepth2">
-          <stop offset="0%" stopColor="#050505" />
+          <stop offset="0%" stopColor="#000000" />
+          <stop offset="25%" stopColor="#050505" />
           <stop offset="70%" stopColor="#0d0d0d" />
           <stop offset="100%" stopColor="#1a1a1a" />
         </radialGradient>
+        <linearGradient id="mineralVein" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#8b4513" />
+          <stop offset="50%" stopColor="#a0522d" />
+          <stop offset="100%" stopColor="#cd853f" />
+        </linearGradient>
+        <linearGradient id="ironOxide" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#d2691e" stopOpacity="0.4"/>
+          <stop offset="50%" stopColor="#ff6347" stopOpacity="0.3"/>
+          <stop offset="100%" stopColor="#ff4500" stopOpacity="0.2"/>
+        </linearGradient>
+        <radialGradient id="crystalShine">
+          <stop offset="0%" stopColor="#ffffff" stopOpacity="0.6"/>
+          <stop offset="50%" stopColor="#e0e0e0" stopOpacity="0.3"/>
+          <stop offset="100%" stopColor="#c0c0c0" stopOpacity="0"/>
+        </radialGradient>
       </defs>
       <g filter="url(#lava-shadow)">
-        {/* 메인 돌 모양 - 더 입체적으로 */}
+        {/* 메인 돌 모양 - 더 불규칙하고 거친 형태 */}
         <path
-          d="M12 40 C11 35, 12 30, 15 25 C18 20, 22 17, 28 16 C34 15, 39 17, 43 21 C47 25, 48 30, 47 35 C46 40, 44 43, 40 45 C36 47, 31 47, 26 46 C21 45, 17 43, 15 40 C13 37, 12 40, 12 40"
+          d="M12 40 C11 35, 11.5 30, 14.5 25.5 C17.5 21, 21 17.5, 27.5 16.2 C33.5 15, 38.5 17, 42.8 21.2 C47 25.5, 48.5 30.5, 47.2 35.5 C46 40.5, 44.5 43.5, 40.5 45.5 C36.5 47.5, 31.5 47.8, 26.2 46.5 C21 45.2, 17.5 43.5, 15.2 40.5 C13 37.5, 12 40, 12 40"
           fill="url(#lavaRock)"
         />
 
-        {/* 측면 어두운 부분 - 입체감 */}
+        {/* 측면 어두운 부분 - 강화된 입체감 */}
         <path
-          d="M40 45 C36 47, 31 47, 26 46 C21 45, 17 43, 15 40 C13 37, 12 40, 12 40 C12 41, 13 42, 15 43 C17 44, 21 46, 26 47 C31 48, 36 48, 40 46 C42 45, 41 45, 40 45"
+          d="M40.5 45.5 C36.5 47.5, 31.5 47.8, 26.2 46.5 C21 45.2, 17.5 43.5, 15.2 40.5 C13 37.5, 12 40, 12 40 C12 41, 13 42.5, 15.2 44 C17.5 45.5, 21.5 47, 26.5 48 C31.5 49, 36.5 48.8, 40.5 47 C42.5 46, 42 45.5, 40.5 45.5"
           fill="url(#lavaRockSide)"
-          opacity="0.7"
+          opacity="0.75"
         />
 
-        {/* 큰 구멍들 - 더 깊이감 있게 */}
-        <ellipse cx="20" cy="30" rx="3.5" ry="4.5" fill="url(#lavaHoleDepth1)"/>
-        <ellipse cx="20" cy="30.5" rx="2.5" ry="3" fill="#0a0a0a"/>
-
-        <ellipse cx="34" cy="28" rx="4" ry="3.5" fill="url(#lavaHoleDepth2)"/>
-        <ellipse cx="34" cy="28.5" rx="3" ry="2.5" fill="#050505"/>
-
-        <ellipse cx="27" cy="37" rx="3" ry="3.5" fill="url(#lavaHoleDepth1)"/>
-        <ellipse cx="27" cy="37.5" rx="2" ry="2.5" fill="#0a0a0a"/>
-
-        <ellipse cx="38" cy="35" rx="3.5" ry="3" fill="url(#lavaHoleDepth2)"/>
-        <ellipse cx="38" cy="35.5" rx="2.5" ry="2" fill="#050505"/>
-
-        {/* 중간 구멍들 */}
-        <circle cx="24" cy="25" r="2" fill="url(#lavaHoleDepth1)"/>
-        <circle cx="24" cy="25.5" r="1.3" fill="#1a1a1a"/>
-
-        <circle cx="31" cy="32" r="2.3" fill="url(#lavaHoleDepth2)"/>
-        <circle cx="31" cy="32.5" r="1.5" fill="#0d0d0d"/>
-
-        <circle cx="40" cy="30" r="1.8" fill="url(#lavaHoleDepth1)"/>
-        <circle cx="40" cy="30.5" r="1.2" fill="#1a1a1a"/>
-
-        {/* 작은 구멍들 */}
-        <circle cx="17" cy="35" r="1.2" fill="#2a2a2a"/>
-        <circle cx="17" cy="35.3" r="0.7" fill="#1a1a1a"/>
-
-        <circle cx="22" cy="40" r="1" fill="#2a2a2a"/>
-        <circle cx="22" cy="40.2" r="0.6" fill="#1a1a1a"/>
-
-        <circle cx="35" cy="23" r="0.9" fill="#333333"/>
-        <circle cx="35" cy="23.2" r="0.5" fill="#1a1a1a"/>
-
-        <circle cx="42" cy="38" r="1.1" fill="#2a2a2a"/>
-        <circle cx="42" cy="38.2" r="0.6" fill="#1a1a1a"/>
-
-        <circle cx="15" cy="28" r="0.8" fill="#333333"/>
-
-        <circle cx="30" cy="22" r="0.7" fill="#333333"/>
-        <circle cx="44" cy="32" r="0.8" fill="#333333"/>
-        <circle cx="19" cy="38" r="0.6" fill="#333333"/>
-
-        {/* 표면 하이라이트 - 더 강하게 */}
-        <ellipse cx="28" cy="20" rx="12" ry="5" fill="url(#lavaHighlight)"/>
-        <ellipse cx="32" cy="24" rx="8" ry="4" fill="url(#lavaHighlight)" opacity="0.6"/>
-
-        {/* 울퉁불퉁한 질감 디테일 */}
+        {/* 거친 표면 질감 */}
         <path
-          d="M12 40 C13 39, 14 40, 15 39 C16 38, 17 39, 18 38"
-          stroke="#5a5a5a"
-          strokeWidth="1"
+          d="M12.5 38 C13 37.5, 13.5 38, 14 37.5 C14.5 37, 15 37.5, 15.5 37 C16 36.5, 16.5 37, 17 36.5"
+          stroke="#4a4a4a"
+          strokeWidth="0.8"
           fill="none"
           opacity="0.6"
+        />
+        <path
+          d="M43 23 C43.5 22.5, 44 23, 44.5 22.5 C45 22, 45.5 22.5, 46 22 C46.5 21.5, 47 22, 47.5 21.5"
+          stroke="#4a4a4a"
+          strokeWidth="0.8"
+          fill="none"
+          opacity="0.6"
+        />
+
+        {/* 미네랄 광맥 - 화산석 특유의 광물질 */}
+        <path
+          d="M18 28 Q 22 26, 26 27 Q 30 28, 34 26"
+          stroke="url(#mineralVein)"
+          strokeWidth="0.5"
+          fill="none"
+          opacity="0.6"
+        />
+        <path
+          d="M22 35 Q 25 33, 28 34 Q 31 35, 34 33"
+          stroke="url(#mineralVein)"
+          strokeWidth="0.4"
+          fill="none"
+          opacity="0.5"
+        />
+        <path
+          d="M30 20 Q 33 22, 36 21 Q 39 20, 41 22"
+          stroke="url(#mineralVein)"
+          strokeWidth="0.4"
+          fill="none"
+          opacity="0.55"
+        />
+
+        {/* 철 산화물 패치 (붉은 광물 침전) */}
+        <ellipse cx="16" cy="32" rx="2.5" ry="2" fill="url(#ironOxide)"/>
+        <ellipse cx="38" cy="24" rx="2" ry="1.5" fill="url(#ironOxide)"/>
+        <ellipse cx="42" cy="33" rx="1.8" ry="1.3" fill="url(#ironOxide)"/>
+        <ellipse cx="26" cy="42" rx="2.2" ry="1.6" fill="url(#ironOxide)"/>
+
+        {/* 균열 및 틈새 */}
+        <path
+          d="M24 20 Q 25 22, 24 24 Q 23.5 26, 24 28"
+          stroke="#1a1a1a"
+          strokeWidth="0.8"
+          fill="none"
+          opacity="0.7"
+        />
+        <path
+          d="M24 20 Q 25 22, 24 24 Q 23.5 26, 24 28"
+          stroke="#000000"
+          strokeWidth="0.3"
+          fill="none"
+          opacity="0.8"
+        />
+        <path
+          d="M36 30 Q 37 32, 36.5 34 Q 37 36, 36 38"
+          stroke="#1a1a1a"
+          strokeWidth="0.7"
+          fill="none"
+          opacity="0.7"
+        />
+        <path
+          d="M36 30 Q 37 32, 36.5 34 Q 37 36, 36 38"
+          stroke="#000000"
+          strokeWidth="0.25"
+          fill="none"
+          opacity="0.8"
+        />
+        <path
+          d="M15 25 Q 16 27, 15.5 29"
+          stroke="#1a1a1a"
+          strokeWidth="0.6"
+          fill="none"
+          opacity="0.6"
+        />
+
+        {/* 큰 구멍들 - 더 불규칙하고 깊이감 있게 */}
+        <ellipse cx="20" cy="30" rx="3.8" ry="4.8" fill="url(#lavaHoleDepth1)" transform="rotate(-15 20 30)"/>
+        <ellipse cx="20" cy="30.8" rx="2.8" ry="3.2" fill="#0a0a0a" transform="rotate(-15 20 30)"/>
+        <ellipse cx="20.5" cy="30" rx="1.2" ry="1.5" fill="#000000" transform="rotate(-15 20 30)"/>
+
+        <path d="M34 28 C34 28, 30 26, 30 29 C30 32, 34 31, 38 31 C38 31, 38 27, 34 28" fill="url(#lavaHoleDepth2)"/>
+        <ellipse cx="34" cy="29" rx="2.5" ry="2" fill="#050505"/>
+        {/* 구멍 속 크리스탈 */}
+        <circle cx="33.5" cy="28.5" r="0.6" fill="url(#crystalShine)"/>
+        <circle cx="35" cy="29" r="0.4" fill="#ffffff" opacity="0.5"/>
+
+        <ellipse cx="27" cy="37.5" rx="3.2" ry="3.8" fill="url(#lavaHoleDepth1)" transform="rotate(20 27 37.5)"/>
+        <ellipse cx="27" cy="38" rx="2.2" ry="2.7" fill="#0a0a0a" transform="rotate(20 27 37.5)"/>
+        <ellipse cx="27.3" cy="37.5" rx="1" ry="1.3" fill="#000000" transform="rotate(20 27 37.5)"/>
+
+        <ellipse cx="38" cy="35.5" rx="3.8" ry="3.3" fill="url(#lavaHoleDepth2)" transform="rotate(-25 38 35.5)"/>
+        <ellipse cx="38" cy="36" rx="2.7" ry="2.2" fill="#050505" transform="rotate(-25 38 35.5)"/>
+        {/* 구멍 속 크리스탈 */}
+        <circle cx="38.5" cy="35.5" r="0.7" fill="url(#crystalShine)"/>
+        <circle cx="37.5" cy="36" r="0.5" fill="#ffffff" opacity="0.4"/>
+
+        {/* 중간 구멍들 - 불규칙한 모양 */}
+        <ellipse cx="24" cy="25" rx="2.3" ry="2.5" fill="url(#lavaHoleDepth1)" transform="rotate(10 24 25)"/>
+        <ellipse cx="24" cy="25.5" rx="1.4" ry="1.6" fill="#1a1a1a" transform="rotate(10 24 25)"/>
+        <circle cx="24.3" cy="25" r="0.4" fill="url(#crystalShine)" opacity="0.6"/>
+
+        <ellipse cx="31" cy="32" rx="2.5" ry="2.7" fill="url(#lavaHoleDepth2)" transform="rotate(-18 31 32)"/>
+        <ellipse cx="31" cy="32.6" rx="1.6" ry="1.8" fill="#0d0d0d" transform="rotate(-18 31 32)"/>
+
+        <ellipse cx="40" cy="30" rx="2" ry="2.1" fill="url(#lavaHoleDepth1)" transform="rotate(8 40 30)"/>
+        <ellipse cx="40" cy="30.5" rx="1.3" ry="1.4" fill="#1a1a1a" transform="rotate(8 40 30)"/>
+
+        {/* 작은 구멍들 - 더 많은 변화 */}
+        <ellipse cx="17" cy="35" rx="1.3" ry="1.5" fill="#2a2a2a" transform="rotate(15 17 35)"/>
+        <ellipse cx="17" cy="35.4" rx="0.8" ry="0.9" fill="#1a1a1a" transform="rotate(15 17 35)"/>
+
+        <ellipse cx="22" cy="40" rx="1.1" ry="1.2" fill="#2a2a2a" transform="rotate(-12 22 40)"/>
+        <ellipse cx="22" cy="40.3" rx="0.7" ry="0.75" fill="#1a1a1a" transform="rotate(-12 22 40)"/>
+
+        <ellipse cx="35" cy="23" rx="1" ry="1.1" fill="#333333" transform="rotate(20 35 23)"/>
+        <ellipse cx="35" cy="23.3" rx="0.6" ry="0.65" fill="#1a1a1a" transform="rotate(20 35 23)"/>
+
+        <ellipse cx="42" cy="38" rx="1.2" ry="1.3" fill="#2a2a2a" transform="rotate(-8 42 38)"/>
+        <ellipse cx="42" cy="38.3" rx="0.7" ry="0.8" fill="#1a1a1a" transform="rotate(-8 42 38)"/>
+
+        <circle cx="15" cy="28" r="0.9" fill="#333333"/>
+        <circle cx="15" cy="28.2" r="0.5" fill="#1a1a1a"/>
+
+        <circle cx="30" cy="22" r="0.8" fill="#333333"/>
+        <circle cx="44" cy="32" r="0.85" fill="#333333"/>
+        <circle cx="19" cy="38" r="0.7" fill="#333333"/>
+        <circle cx="32" cy="40" r="0.65" fill="#333333"/>
+        <circle cx="45" cy="27" r="0.6" fill="#333333"/>
+
+        {/* 표면 하이라이트 - 더 강하고 자연스럽게 */}
+        <ellipse cx="28" cy="19" rx="13" ry="5.5" fill="url(#lavaHighlight)"/>
+        <ellipse cx="32" cy="23" rx="9" ry="4.5" fill="url(#lavaHighlight)" opacity="0.65"/>
+        <ellipse cx="25" cy="22" rx="5" ry="3" fill="url(#lavaHighlight)" opacity="0.5"/>
+
+        {/* 울퉁불퉁한 질감 디테일 - 강화 */}
+        <path
+          d="M12.5 40 C13.5 39, 14.5 40, 15.5 39 C16.5 38, 17.5 39, 18.5 38"
+          stroke="#5a5a5a"
+          strokeWidth="1.1"
+          fill="none"
+          opacity="0.65"
         />
         <path
           d="M43 25 C44 24, 45 25, 46 24 C47 23, 48 24, 49 23"
           stroke="#5a5a5a"
-          strokeWidth="1"
+          strokeWidth="1.1"
           fill="none"
-          opacity="0.6"
+          opacity="0.65"
         />
         <path
-          d="M16 30 C17 29, 18 30, 19 29"
+          d="M16 30 C17 29, 18 30, 19 29 C20 28.5, 21 29, 22 28.5"
           stroke="#6a6a6a"
-          strokeWidth="0.8"
+          strokeWidth="0.9"
+          fill="none"
+          opacity="0.55"
+        />
+        <path
+          d="M40 40 C41 39, 42 40, 43 39 C44 38.5, 45 39, 46 38.5"
+          stroke="#6a6a6a"
+          strokeWidth="0.9"
+          fill="none"
+          opacity="0.55"
+        />
+        <path
+          d="M28 44 C29 43.5, 30 44, 31 43.5 C32 43, 33 43.5, 34 43"
+          stroke="#5a5a5a"
+          strokeWidth="0.7"
           fill="none"
           opacity="0.5"
         />
-        <path
-          d="M40 40 C41 39, 42 40, 43 39"
-          stroke="#6a6a6a"
-          strokeWidth="0.8"
-          fill="none"
-          opacity="0.5"
-        />
+
+        {/* 미세한 표면 범프 */}
+        <circle cx="23" cy="33" r="0.5" fill="#6a6a6a" opacity="0.4"/>
+        <circle cx="29" cy="29" r="0.4" fill="#6a6a6a" opacity="0.4"/>
+        <circle cx="35" cy="31" r="0.45" fill="#6a6a6a" opacity="0.4"/>
+        <circle cx="18" cy="26" r="0.4" fill="#6a6a6a" opacity="0.35"/>
+        <circle cx="41" cy="28" r="0.5" fill="#6a6a6a" opacity="0.4"/>
       </g>
     </svg>
   ),
@@ -282,9 +502,9 @@ const DecorationIcons = {
     <svg width={size} height={size} viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <filter id="cave-shadow" x="-50%" y="-50%" width="200%" height="200%">
-          <feGaussianBlur in="SourceAlpha" stdDeviation="1.5"/>
+          <feGaussianBlur in="SourceAlpha" stdDeviation="1.8"/>
           <feOffset dx="2" dy="2" result="offsetblur"/>
-          <feFlood floodColor="#000000" floodOpacity="0.35"/>
+          <feFlood floodColor="#000000" floodOpacity="0.4"/>
           <feComposite in2="offsetblur" operator="in"/>
           <feMerge>
             <feMergeNode/>
@@ -292,118 +512,275 @@ const DecorationIcons = {
           </feMerge>
         </filter>
         <linearGradient id="caveOuter" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stopColor="#bcaaa4" />
-          <stop offset="30%" stopColor="#a1887f" />
-          <stop offset="70%" stopColor="#8d6e63" />
-          <stop offset="100%" stopColor="#6d4c41" />
+          <stop offset="0%" stopColor="#d7ccc8" />
+          <stop offset="15%" stopColor="#bcaaa4" />
+          <stop offset="35%" stopColor="#a1887f" />
+          <stop offset="60%" stopColor="#8d6e63" />
+          <stop offset="85%" stopColor="#6d4c41" />
+          <stop offset="100%" stopColor="#5d4037" />
         </linearGradient>
         <linearGradient id="caveMiddle" x1="0%" y1="0%" x2="0%" y2="100%">
           <stop offset="0%" stopColor="#a1887f" />
-          <stop offset="40%" stopColor="#8d6e63" />
-          <stop offset="80%" stopColor="#6d4c41" />
-          <stop offset="100%" stopColor="#5d4037" />
+          <stop offset="25%" stopColor="#8d6e63" />
+          <stop offset="55%" stopColor="#6d4c41" />
+          <stop offset="80%" stopColor="#5d4037" />
+          <stop offset="100%" stopColor="#4e342e" />
         </linearGradient>
         <linearGradient id="caveInnerLayer" x1="0%" y1="0%" x2="0%" y2="100%">
           <stop offset="0%" stopColor="#5d4037" />
-          <stop offset="50%" stopColor="#4e342e" />
-          <stop offset="100%" stopColor="#3e2723" />
+          <stop offset="35%" stopColor="#4e342e" />
+          <stop offset="70%" stopColor="#3e2723" />
+          <stop offset="100%" stopColor="#2e2e2e" />
         </linearGradient>
         <radialGradient id="caveInner">
-          <stop offset="0%" stopColor="#0a0a0a" />
-          <stop offset="40%" stopColor="#1a1a1a" />
-          <stop offset="80%" stopColor="#2e2e2e" />
+          <stop offset="0%" stopColor="#000000" />
+          <stop offset="25%" stopColor="#0a0a0a" />
+          <stop offset="50%" stopColor="#1a1a1a" />
+          <stop offset="75%" stopColor="#2e2e2e" />
           <stop offset="100%" stopColor="#3e2723" />
         </radialGradient>
         <radialGradient id="caveHighlight">
-          <stop offset="0%" stopColor="#d7ccc8" stopOpacity="0.5"/>
+          <stop offset="0%" stopColor="#efebe9" stopOpacity="0.6"/>
+          <stop offset="50%" stopColor="#d7ccc8" stopOpacity="0.4"/>
           <stop offset="100%" stopColor="#bcaaa4" stopOpacity="0"/>
+        </radialGradient>
+        <linearGradient id="mossGreen" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#558b2f" stopOpacity="0.5"/>
+          <stop offset="50%" stopColor="#689f38" stopOpacity="0.4"/>
+          <stop offset="100%" stopColor="#7cb342" stopOpacity="0.3"/>
+        </linearGradient>
+        <linearGradient id="lichenYellow" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#afb42b" stopOpacity="0.4"/>
+          <stop offset="50%" stopColor="#c0ca33" stopOpacity="0.3"/>
+          <stop offset="100%" stopColor="#cddc39" stopOpacity="0.2"/>
+        </linearGradient>
+        <linearGradient id="stalactiteGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="#8d6e63" />
+          <stop offset="50%" stopColor="#6d4c41" />
+          <stop offset="100%" stopColor="#5d4037" />
+        </linearGradient>
+        <radialGradient id="waterDrop">
+          <stop offset="0%" stopColor="#b3e5fc" stopOpacity="0.7"/>
+          <stop offset="50%" stopColor="#81d4fa" stopOpacity="0.4"/>
+          <stop offset="100%" stopColor="#4fc3f7" stopOpacity="0"/>
+        </radialGradient>
+        <radialGradient id="wetRockShine">
+          <stop offset="0%" stopColor="#ffffff" stopOpacity="0.4"/>
+          <stop offset="70%" stopColor="#e0e0e0" stopOpacity="0.2"/>
+          <stop offset="100%" stopColor="#bdbdbd" stopOpacity="0"/>
         </radialGradient>
       </defs>
       <g filter="url(#cave-shadow)">
-        {/* 동굴 외형 - 가장 바깥층 */}
+        {/* 동굴 외형 - 더 불규칙한 바깥층 */}
         <path
-          d="M10 45 C10 38, 11 31, 15 26 C19 21, 24 18, 30 18 C36 18, 41 21, 45 26 C49 31, 50 38, 50 45 L10 45"
+          d="M10 45 C10 38, 11 31.5, 14.5 26.5 C18 22, 22.5 19, 28 18.2 C32 17.8, 35.5 18.5, 39 20 C42 21.3, 44.5 23.5, 46.5 26.5 C49.5 31, 50.5 37.5, 50 45 L10 45"
           fill="url(#caveOuter)"
         />
 
-        {/* 동굴 중간층 - 3단계 레이어 */}
+        {/* 동굴 중간층 - 4단계 레이어로 강화 */}
         <path
-          d="M13 45 C13 39, 14 33, 18 29 C22 25, 26 23, 30 23 C34 23, 38 25, 42 29 C46 33, 47 39, 47 45 L13 45"
+          d="M13 45 C13 39.5, 13.8 33.5, 17.5 29.5 C21 25.8, 25 23.5, 29.5 23.2 C33.5 23, 37 24.5, 40.5 27.5 C44.5 31, 46.5 37, 47 45 L13 45"
           fill="url(#caveMiddle)"
         />
 
-        {/* 동굴 내부층 */}
+        {/* 동굴 내부층 - 더 깊은 레이어 */}
         <path
-          d="M16 45 C16 40.5, 17 36, 21 32.5 C25 29, 27.5 27.5, 30 27.5 C32.5 27.5, 35 29, 39 32.5 C43 36, 44 40.5, 44 45 L16 45"
+          d="M16 45 C16 41, 16.8 36.5, 20.5 33 C24 29.8, 27 28, 30 27.8 C33 27.8, 36 29.5, 39.5 33 C43 36.5, 44.2 41, 44 45 L16 45"
           fill="url(#caveInnerLayer)"
         />
 
-        {/* 동굴 입구 - 더 깊게 */}
+        {/* 동굴 입구 - 훨씬 더 깊게 */}
         <path
-          d="M19 45 C19 41, 20 37, 24 34 C27.5 31, 29 30, 30 30 C31 30, 32.5 31, 36 34 C40 37, 41 41, 41 45 L19 45"
+          d="M19.5 45 C19.5 41.5, 20.2 38, 23.5 35 C26.5 32.2, 28.5 31, 30 31 C31.5 31, 33.5 32.2, 36.5 35 C39.8 38, 40.5 41.5, 40.5 45 L19.5 45"
           fill="url(#caveInner)"
         />
 
-        {/* 바위 표면 하이라이트 */}
-        <ellipse cx="30" cy="22" rx="10" ry="4" fill="url(#caveHighlight)"/>
-        <ellipse cx="20" cy="30" rx="4" ry="6" fill="url(#caveHighlight)" opacity="0.6"/>
-        <ellipse cx="40" cy="30" rx="4" ry="6" fill="url(#caveHighlight)" opacity="0.6"/>
+        {/* 입구 최심부 그림자 */}
+        <ellipse cx="30" cy="38" rx="8" ry="5" fill="#000000" opacity="0.3"/>
+        <ellipse cx="30" cy="39" rx="6" ry="3" fill="#000000" opacity="0.4"/>
+
+        {/* 종유석 (stalactites) - 동굴 천장에서 내려오는 */}
+        <path
+          d="M22 18 C22 18, 21.5 19, 21.8 20 C22 21, 22.2 22.5, 22 23.5 C21.8 24, 22 24, 22 24"
+          fill="url(#stalactiteGrad)"
+          opacity="0.85"
+        />
+        <path d="M22 18 L 22.2 19.5" stroke="#6d4c41" strokeWidth="0.3" fill="none" opacity="0.6"/>
+
+        <path
+          d="M27 19 C27 19, 26.8 20, 27 21.5 C27.2 23, 27 24, 26.8 25 C26.7 25.5, 27 25.5, 27 25.5"
+          fill="url(#stalactiteGrad)"
+          opacity="0.85"
+        />
+        <path d="M27 19 L 27.1 21" stroke="#6d4c41" strokeWidth="0.3" fill="none" opacity="0.6"/>
+
+        <path
+          d="M33 19.5 C33 19.5, 33.2 20.5, 33 22 C32.8 23.5, 33 24.5, 33.2 25.5 C33.3 26, 33 26, 33 26"
+          fill="url(#stalactiteGrad)"
+          opacity="0.85"
+        />
+        <path d="M33 19.5 L 32.9 21.5" stroke="#6d4c41" strokeWidth="0.3" fill="none" opacity="0.6"/>
+
+        <path
+          d="M38 18.5 C38 18.5, 38.3 19.5, 38 21 C37.8 22.5, 38 23.5, 38.2 24.5 C38.3 25, 38 25, 38 25"
+          fill="url(#stalactiteGrad)"
+          opacity="0.85"
+        />
+        <path d="M38 18.5 L 38.1 20" stroke="#6d4c41" strokeWidth="0.3" fill="none" opacity="0.6"/>
+
+        {/* 이끼 및 조류 패치 */}
+        <ellipse cx="14" cy="33" rx="3" ry="4" fill="url(#mossGreen)"/>
+        <ellipse cx="13.5" cy="32" rx="1.5" ry="2" fill="url(#mossGreen)" opacity="0.7"/>
+        <ellipse cx="14.5" cy="34.5" rx="1.2" ry="1.8" fill="url(#mossGreen)" opacity="0.6"/>
+
+        <ellipse cx="46" cy="33" rx="3" ry="4" fill="url(#mossGreen)"/>
+        <ellipse cx="46.5" cy="32" rx="1.5" ry="2" fill="url(#mossGreen)" opacity="0.7"/>
+        <ellipse cx="45.5" cy="34.5" rx="1.2" ry="1.8" fill="url(#mossGreen)" opacity="0.6"/>
+
+        <ellipse cx="19" cy="28" rx="2.5" ry="3" fill="url(#mossGreen)" opacity="0.8"/>
+        <ellipse cx="18.5" cy="27.5" rx="1" ry="1.5" fill="url(#mossGreen)" opacity="0.6"/>
+
+        <ellipse cx="41" cy="28" rx="2.5" ry="3" fill="url(#mossGreen)" opacity="0.8"/>
+        <ellipse cx="41.5" cy="27.5" rx="1" ry="1.5" fill="url(#mossGreen)" opacity="0.6"/>
+
+        {/* 지의류 (lichen) 패치 - 노란빛 */}
+        <ellipse cx="16" cy="26" rx="1.8" ry="1.5" fill="url(#lichenYellow)"/>
+        <ellipse cx="24" cy="21" rx="1.5" ry="1.2" fill="url(#lichenYellow)"/>
+        <ellipse cx="36" cy="21" rx="1.6" ry="1.3" fill="url(#lichenYellow)"/>
+        <ellipse cx="44" cy="26" rx="1.7" ry="1.4" fill="url(#lichenYellow)"/>
+
+        {/* 물방울 효과 */}
+        <circle cx="22" cy="24.5" r="0.8" fill="url(#waterDrop)"/>
+        <circle cx="22.2" cy="24.3" r="0.3" fill="#ffffff" opacity="0.7"/>
+
+        <circle cx="27" cy="26" r="0.7" fill="url(#waterDrop)"/>
+        <circle cx="27.2" cy="25.8" r="0.25" fill="#ffffff" opacity="0.7"/>
+
+        <circle cx="33" cy="26.5" r="0.7" fill="url(#waterDrop)"/>
+        <circle cx="33.2" cy="26.3" r="0.25" fill="#ffffff" opacity="0.7"/>
+
+        <circle cx="38" cy="25.5" r="0.75" fill="url(#waterDrop)"/>
+        <circle cx="38.2" cy="25.3" r="0.3" fill="#ffffff" opacity="0.7"/>
+
+        {/* 바위 표면 하이라이트 - 강화 */}
+        <ellipse cx="30" cy="21" rx="11" ry="4.5" fill="url(#caveHighlight)"/>
+        <ellipse cx="28" cy="23" rx="7" ry="3" fill="url(#caveHighlight)" opacity="0.7"/>
+        <ellipse cx="20" cy="30" rx="4.5" ry="6.5" fill="url(#caveHighlight)" opacity="0.65"/>
+        <ellipse cx="40" cy="30" rx="4.5" ry="6.5" fill="url(#caveHighlight)" opacity="0.65"/>
+
+        {/* 젖은 바위 표면 반사광 */}
+        <ellipse cx="18" cy="32" rx="2" ry="3" fill="url(#wetRockShine)"/>
+        <ellipse cx="25" cy="27" rx="2.5" ry="2" fill="url(#wetRockShine)"/>
+        <ellipse cx="35" cy="27" rx="2.5" ry="2" fill="url(#wetRockShine)"/>
+        <ellipse cx="42" cy="32" rx="2" ry="3" fill="url(#wetRockShine)"/>
 
         {/* 돌 질감 디테일 - 더 사실적으로 */}
-        <circle cx="15" cy="35" r="2.5" fill="#8d6e63" opacity="0.7"/>
-        <circle cx="15.5" cy="34.5" r="1" fill="#a1887f" opacity="0.5"/>
+        <ellipse cx="15" cy="35.5" rx="2.7" ry="3" fill="#8d6e63" opacity="0.75" transform="rotate(-15 15 35.5)"/>
+        <ellipse cx="15.5" cy="35" rx="1.2" ry="1.5" fill="#a1887f" opacity="0.55" transform="rotate(-15 15 35.5)"/>
+        <circle cx="15.8" cy="34.8" r="0.5" fill="#bcaaa4" opacity="0.4"/>
 
-        <circle cx="45" cy="35" r="2.5" fill="#8d6e63" opacity="0.7"/>
-        <circle cx="45.5" cy="34.5" r="1" fill="#a1887f" opacity="0.5"/>
+        <ellipse cx="45" cy="35.5" rx="2.7" ry="3" fill="#8d6e63" opacity="0.75" transform="rotate(15 45 35.5)"/>
+        <ellipse cx="44.5" cy="35" rx="1.2" ry="1.5" fill="#a1887f" opacity="0.55" transform="rotate(15 45 35.5)"/>
+        <circle cx="44.2" cy="34.8" r="0.5" fill="#bcaaa4" opacity="0.4"/>
 
-        <circle cx="22" cy="28" r="2" fill="#a1887f" opacity="0.6"/>
-        <circle cx="22.5" cy="27.5" r="0.8" fill="#bcaaa4" opacity="0.4"/>
+        <ellipse cx="22" cy="28.5" rx="2.2" ry="2.5" fill="#a1887f" opacity="0.65" transform="rotate(8 22 28.5)"/>
+        <ellipse cx="22.5" cy="28" rx="0.9" ry="1.2" fill="#bcaaa4" opacity="0.45" transform="rotate(8 22 28.5)"/>
 
-        <circle cx="38" cy="28" r="2" fill="#a1887f" opacity="0.6"/>
-        <circle cx="38.5" cy="27.5" r="0.8" fill="#bcaaa4" opacity="0.4"/>
+        <ellipse cx="38" cy="28.5" rx="2.2" ry="2.5" fill="#a1887f" opacity="0.65" transform="rotate(-8 38 28.5)"/>
+        <ellipse cx="37.5" cy="28" rx="0.9" ry="1.2" fill="#bcaaa4" opacity="0.45" transform="rotate(-8 38 28.5)"/>
 
-        <circle cx="12" cy="42" r="1.5" fill="#6d4c41" opacity="0.5"/>
-        <circle cx="48" cy="42" r="1.5" fill="#6d4c41" opacity="0.5"/>
+        <circle cx="12" cy="42" r="1.6" fill="#6d4c41" opacity="0.55"/>
+        <circle cx="12.3" cy="41.7" r="0.7" fill="#8d6e63" opacity="0.4"/>
 
-        {/* 추가 작은 돌들 */}
-        <circle cx="27" cy="23" r="1.2" fill="#8d6e63" opacity="0.5"/>
-        <circle cx="33" cy="23" r="1.2" fill="#8d6e63" opacity="0.5"/>
-        <circle cx="18" cy="38" r="1" fill="#6d4c41" opacity="0.4"/>
-        <circle cx="42" cy="38" r="1" fill="#6d4c41" opacity="0.4"/>
+        <circle cx="48" cy="42" r="1.6" fill="#6d4c41" opacity="0.55"/>
+        <circle cx="47.7" cy="41.7" r="0.7" fill="#8d6e63" opacity="0.4"/>
 
-        {/* 균열 디테일 */}
+        {/* 바닥 자갈과 돌 파편 */}
+        <ellipse cx="24" cy="45" rx="1.2" ry="0.6" fill="#5d4037" opacity="0.6"/>
+        <ellipse cx="26" cy="45" rx="0.9" ry="0.5" fill="#6d4c41" opacity="0.6"/>
+        <ellipse cx="28" cy="45" rx="1.1" ry="0.55" fill="#5d4037" opacity="0.6"/>
+        <ellipse cx="32" cy="45" rx="1" ry="0.5" fill="#6d4c41" opacity="0.6"/>
+        <ellipse cx="34" cy="45" rx="1.3" ry="0.65" fill="#5d4037" opacity="0.6"/>
+        <ellipse cx="36" cy="45" rx="0.85" ry="0.45" fill="#6d4c41" opacity="0.6"/>
+
+        {/* 추가 작은 돌들 - 더 많은 변화 */}
+        <ellipse cx="27" cy="23.5" rx="1.3" ry="1.5" fill="#8d6e63" opacity="0.55" transform="rotate(12 27 23.5)"/>
+        <circle cx="27.3" cy="23.2" r="0.5" fill="#a1887f" opacity="0.4"/>
+
+        <ellipse cx="33" cy="23.5" rx="1.3" ry="1.5" fill="#8d6e63" opacity="0.55" transform="rotate(-12 33 23.5)"/>
+        <circle cx="32.7" cy="23.2" r="0.5" fill="#a1887f" opacity="0.4"/>
+
+        <ellipse cx="18" cy="38.5" rx="1.1" ry="1.3" fill="#6d4c41" opacity="0.45" transform="rotate(20 18 38.5)"/>
+        <ellipse cx="42" cy="38.5" rx="1.1" ry="1.3" fill="#6d4c41" opacity="0.45" transform="rotate(-20 42 38.5)"/>
+
+        {/* 균열 디테일 - 강화 */}
         <path
-          d="M14 30 Q 15 32, 14 34"
+          d="M14 30 Q 14.5 31, 14.2 32 Q 14.8 33.5, 14 35"
           stroke="#5d4037"
+          strokeWidth="0.7"
+          fill="none"
+          opacity="0.65"
+        />
+        <path
+          d="M14 30 Q 14.5 31, 14.2 32 Q 14.8 33.5, 14 35"
+          stroke="#3e2723"
+          strokeWidth="0.3"
+          fill="none"
+          opacity="0.7"
+        />
+        <path
+          d="M46 30 Q 45.5 31, 45.8 32 Q 45.2 33.5, 46 35"
+          stroke="#5d4037"
+          strokeWidth="0.7"
+          fill="none"
+          opacity="0.65"
+        />
+        <path
+          d="M46 30 Q 45.5 31, 45.8 32 Q 45.2 33.5, 46 35"
+          stroke="#3e2723"
+          strokeWidth="0.3"
+          fill="none"
+          opacity="0.7"
+        />
+        <path
+          d="M25 25 Q 25.5 26, 25.2 27 Q 25.7 28, 25 29.5"
+          stroke="#6d4c41"
           strokeWidth="0.6"
+          fill="none"
+          opacity="0.55"
+        />
+        <path
+          d="M25 25 Q 25.5 26, 25.2 27 Q 25.7 28, 25 29.5"
+          stroke="#4e342e"
+          strokeWidth="0.25"
           fill="none"
           opacity="0.6"
         />
         <path
-          d="M46 30 Q 45 32, 46 34"
-          stroke="#5d4037"
+          d="M35 25 Q 34.5 26, 34.8 27 Q 34.3 28, 35 29.5"
+          stroke="#6d4c41"
           strokeWidth="0.6"
+          fill="none"
+          opacity="0.55"
+        />
+        <path
+          d="M35 25 Q 34.5 26, 34.8 27 Q 34.3 28, 35 29.5"
+          stroke="#4e342e"
+          strokeWidth="0.25"
           fill="none"
           opacity="0.6"
         />
-        <path
-          d="M25 25 Q 26 27, 25 29"
-          stroke="#6d4c41"
-          strokeWidth="0.5"
-          fill="none"
-          opacity="0.5"
-        />
-        <path
-          d="M35 25 Q 34 27, 35 29"
-          stroke="#6d4c41"
-          strokeWidth="0.5"
-          fill="none"
-          opacity="0.5"
-        />
 
-        {/* 바닥 그림자 효과 - 더 강하게 */}
-        <ellipse cx="30" cy="45" rx="14" ry="2.5" fill="#3e2723" opacity="0.4"/>
-        <ellipse cx="30" cy="45" rx="10" ry="1.5" fill="#2e2e2e" opacity="0.5"/>
+        {/* 미세한 바위 질감 선 */}
+        <path d="M17 37 C18 36.5, 19 37, 20 36.5" stroke="#6d4c41" strokeWidth="0.5" fill="none" opacity="0.5"/>
+        <path d="M40 37 C41 36.5, 42 37, 43 36.5" stroke="#6d4c41" strokeWidth="0.5" fill="none" opacity="0.5"/>
+        <path d="M23 24 C24 23.7, 25 24, 26 23.7" stroke="#8d6e63" strokeWidth="0.4" fill="none" opacity="0.45"/>
+        <path d="M34 24 C35 23.7, 36 24, 37 23.7" stroke="#8d6e63" strokeWidth="0.4" fill="none" opacity="0.45"/>
+
+        {/* 바닥 그림자 효과 - 더 강하고 자연스럽게 */}
+        <ellipse cx="30" cy="45" rx="15" ry="2.8" fill="#3e2723" opacity="0.45"/>
+        <ellipse cx="30" cy="45" rx="11" ry="1.8" fill="#2e2e2e" opacity="0.55"/>
+        <ellipse cx="30" cy="45" rx="7" ry="1" fill="#1a1a1a" opacity="0.4"/>
       </g>
     </svg>
   ),

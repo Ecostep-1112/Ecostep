@@ -413,9 +413,9 @@ const DecorationIcons = {
     <svg width={size} height={size} viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <filter id="coral-shadow" x="-50%" y="-50%" width="200%" height="200%">
-          <feGaussianBlur in="SourceAlpha" stdDeviation="1.3"/>
-          <feOffset dx="2" dy="2" result="offsetblur"/>
-          <feFlood floodColor="#000000" floodOpacity="0.28"/>
+          <feGaussianBlur in="SourceAlpha" stdDeviation="1.8"/>
+          <feOffset dx="2" dy="2.5" result="offsetblur"/>
+          <feFlood floodColor="#000000" floodOpacity="0.35"/>
           <feComposite in2="offsetblur" operator="in"/>
           <feMerge>
             <feMergeNode/>
@@ -423,86 +423,285 @@ const DecorationIcons = {
           </feMerge>
         </filter>
         <linearGradient id="coralMain" x1="0%" y1="100%" x2="0%" y2="0%">
-          <stop offset="0%" stopColor="#c62828" />
-          <stop offset="100%" stopColor="#ff5252" />
-        </linearGradient>
-        <linearGradient id="coralBranch1" x1="0%" y1="100%" x2="100%" y2="0%">
-          <stop offset="0%" stopColor="#d32f2f" />
-          <stop offset="100%" stopColor="#ff6b6b" />
-        </linearGradient>
-        <linearGradient id="coralBranch2" x1="100%" y1="100%" x2="0%" y2="0%">
-          <stop offset="0%" stopColor="#d32f2f" />
-          <stop offset="100%" stopColor="#ff6b6b" />
-        </linearGradient>
-        <linearGradient id="coralSmall" x1="0%" y1="100%" x2="0%" y2="0%">
-          <stop offset="0%" stopColor="#e53935" />
+          <stop offset="0%" stopColor="#b71c1c" />
+          <stop offset="20%" stopColor="#c62828" />
+          <stop offset="40%" stopColor="#d32f2f" />
+          <stop offset="70%" stopColor="#ff5252" />
+          <stop offset="85%" stopColor="#ff6b6b" />
           <stop offset="100%" stopColor="#ff8787" />
         </linearGradient>
+        <linearGradient id="coralBranch1" x1="0%" y1="100%" x2="100%" y2="0%">
+          <stop offset="0%" stopColor="#c62828" />
+          <stop offset="25%" stopColor="#d32f2f" />
+          <stop offset="50%" stopColor="#e53935" />
+          <stop offset="75%" stopColor="#ff6b6b" />
+          <stop offset="100%" stopColor="#ff8787" />
+        </linearGradient>
+        <linearGradient id="coralBranch2" x1="100%" y1="100%" x2="0%" y2="0%">
+          <stop offset="0%" stopColor="#c62828" />
+          <stop offset="25%" stopColor="#d32f2f" />
+          <stop offset="50%" stopColor="#e53935" />
+          <stop offset="75%" stopColor="#ff6b6b" />
+          <stop offset="100%" stopColor="#ff8787" />
+        </linearGradient>
+        <linearGradient id="coralSmall" x1="0%" y1="100%" x2="0%" y2="0%">
+          <stop offset="0%" stopColor="#d32f2f" />
+          <stop offset="35%" stopColor="#e53935" />
+          <stop offset="70%" stopColor="#ff6b6b" />
+          <stop offset="100%" stopColor="#ff9999" />
+        </linearGradient>
+        <linearGradient id="coralTiny" x1="0%" y1="100%" x2="0%" y2="0%">
+          <stop offset="0%" stopColor="#e53935" />
+          <stop offset="50%" stopColor="#ff8787" />
+          <stop offset="100%" stopColor="#ffaaaa" />
+        </linearGradient>
+        <radialGradient id="coralGlow">
+          <stop offset="0%" stopColor="#ffcccc" stopOpacity="0.6"/>
+          <stop offset="50%" stopColor="#ff9999" stopOpacity="0.3"/>
+          <stop offset="100%" stopColor="#ff6b6b" stopOpacity="0"/>
+        </radialGradient>
+        <radialGradient id="coralPolyp1">
+          <stop offset="0%" stopColor="#ffb3b3" />
+          <stop offset="50%" stopColor="#ff8787" />
+          <stop offset="100%" stopColor="#ff6b6b" />
+        </radialGradient>
+        <radialGradient id="coralPolyp2">
+          <stop offset="0%" stopColor="#ffcccc" />
+          <stop offset="50%" stopColor="#ff9999" />
+          <stop offset="100%" stopColor="#ff7777" />
+        </radialGradient>
       </defs>
       <g filter="url(#coral-shadow)">
-        {/* 메인 줄기 */}
+        {/* 메인 줄기 - 더 굵고 입체적으로 */}
         <path
-          d="M30 50 L30 35 M30 35 L25 25 M30 35 L35 25"
+          d="M30 50 L30 35"
           stroke="url(#coralMain)"
-          strokeWidth="4"
+          strokeWidth="5"
           strokeLinecap="round"
         />
-
-        {/* 왼쪽 가지들 - 더 복잡하게 */}
+        {/* 메인 줄기 하이라이트 - 정확히 가운데 */}
         <path
-          d="M25 25 L20 20 M25 25 L22 18 M20 20 L16 18 M20 20 L18 15"
+          d="M30 48 L30 37"
+          stroke="#ff9999"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          opacity="0.5"
+        />
+
+        {/* 메인 가지 - 왼쪽 */}
+        <path
+          d="M30 35 L25 25"
+          stroke="url(#coralMain)"
+          strokeWidth="4.5"
+          strokeLinecap="round"
+        />
+        <path
+          d="M30 34 L26 27"
+          stroke="#ff8787"
+          strokeWidth="1.2"
+          strokeLinecap="round"
+          opacity="0.4"
+        />
+
+        {/* 메인 가지 - 오른쪽 */}
+        <path
+          d="M30 35 L35 25"
+          stroke="url(#coralMain)"
+          strokeWidth="4.5"
+          strokeLinecap="round"
+        />
+        <path
+          d="M30 34 L34 27"
+          stroke="#ff8787"
+          strokeWidth="1.2"
+          strokeLinecap="round"
+          opacity="0.4"
+        />
+
+        {/* 왼쪽 가지들 - 1차 */}
+        <path
+          d="M25 25 L20 20"
           stroke="url(#coralBranch1)"
-          strokeWidth="3"
+          strokeWidth="3.5"
           strokeLinecap="round"
         />
         <path
-          d="M22 18 L19 14 M16 18 L14 15 M18 15 L15 12"
+          d="M25 25 L22 18"
           stroke="url(#coralBranch1)"
-          strokeWidth="2"
+          strokeWidth="3.2"
           strokeLinecap="round"
         />
 
-        {/* 오른쪽 가지들 - 더 복잡하게 */}
+        {/* 왼쪽 가지들 - 2차 */}
         <path
-          d="M35 25 L40 20 M35 25 L38 18 M40 20 L44 18 M40 20 L42 15"
-          stroke="url(#coralBranch2)"
-          strokeWidth="3"
+          d="M20 20 L16 18 M20 20 L18 15 M20 20 L17 22"
+          stroke="url(#coralSmall)"
+          strokeWidth="2.8"
           strokeLinecap="round"
         />
         <path
-          d="M38 18 L41 14 M44 18 L46 15 M42 15 L45 12"
-          stroke="url(#coralBranch2)"
-          strokeWidth="2"
-          strokeLinecap="round"
-        />
-
-        {/* 중간 가지들 */}
-        <path
-          d="M30 35 L27 30 M30 35 L33 30 M27 30 L25 27 M33 30 L35 27"
+          d="M22 18 L19 14 M22 18 L20 16"
           stroke="url(#coralSmall)"
           strokeWidth="2.5"
           strokeLinecap="round"
         />
 
-        {/* 끝 장식 - 더 많이 */}
-        <circle cx="16" cy="18" r="2.5" fill="#ff6b6b"/>
-        <circle cx="18" cy="15" r="2.5" fill="#ff8787"/>
-        <circle cx="22" cy="18" r="2.5" fill="#ff6b6b"/>
-        <circle cx="19" cy="14" r="2" fill="#ff9999"/>
-        <circle cx="14" cy="15" r="2" fill="#ff7777"/>
-        <circle cx="15" cy="12" r="1.5" fill="#ffaaaa"/>
+        {/* 왼쪽 가지들 - 3차 (잔가지) */}
+        <path
+          d="M16 18 L14 16 M16 18 L14 19 M18 15 L16 13 M18 15 L15 14"
+          stroke="url(#coralTiny)"
+          strokeWidth="2"
+          strokeLinecap="round"
+        />
+        <path
+          d="M19 14 L17 12 M19 14 L18 11"
+          stroke="url(#coralTiny)"
+          strokeWidth="1.8"
+          strokeLinecap="round"
+        />
 
-        <circle cx="44" cy="18" r="2.5" fill="#ff6b6b"/>
-        <circle cx="42" cy="15" r="2.5" fill="#ff8787"/>
-        <circle cx="38" cy="18" r="2.5" fill="#ff6b6b"/>
-        <circle cx="41" cy="14" r="2" fill="#ff9999"/>
-        <circle cx="46" cy="15" r="2" fill="#ff7777"/>
-        <circle cx="45" cy="12" r="1.5" fill="#ffaaaa"/>
+        {/* 오른쪽 가지들 - 1차 */}
+        <path
+          d="M35 25 L40 20"
+          stroke="url(#coralBranch2)"
+          strokeWidth="3.5"
+          strokeLinecap="round"
+        />
+        <path
+          d="M35 25 L38 18"
+          stroke="url(#coralBranch2)"
+          strokeWidth="3.2"
+          strokeLinecap="round"
+        />
 
-        <circle cx="27" cy="30" r="2" fill="#ff9999"/>
-        <circle cx="33" cy="30" r="2" fill="#ff9999"/>
-        <circle cx="25" cy="27" r="1.5" fill="#ffaaaa"/>
-        <circle cx="35" cy="27" r="1.5" fill="#ffaaaa"/>
+        {/* 오른쪽 가지들 - 2차 */}
+        <path
+          d="M40 20 L44 18 M40 20 L42 15 M40 20 L43 22"
+          stroke="url(#coralSmall)"
+          strokeWidth="2.8"
+          strokeLinecap="round"
+        />
+        <path
+          d="M38 18 L41 14 M38 18 L40 16"
+          stroke="url(#coralSmall)"
+          strokeWidth="2.5"
+          strokeLinecap="round"
+        />
+
+        {/* 오른쪽 가지들 - 3차 (잔가지) */}
+        <path
+          d="M44 18 L46 16 M44 18 L46 19 M42 15 L44 13 M42 15 L45 14"
+          stroke="url(#coralTiny)"
+          strokeWidth="2"
+          strokeLinecap="round"
+        />
+        <path
+          d="M41 14 L43 12 M41 14 L42 11"
+          stroke="url(#coralTiny)"
+          strokeWidth="1.8"
+          strokeLinecap="round"
+        />
+
+        {/* 중간 가지들 */}
+        <path
+          d="M30 35 L27 30 M30 35 L33 30"
+          stroke="url(#coralSmall)"
+          strokeWidth="3"
+          strokeLinecap="round"
+        />
+        <path
+          d="M27 30 L25 27 M27 30 L24 29"
+          stroke="url(#coralTiny)"
+          strokeWidth="2.3"
+          strokeLinecap="round"
+        />
+        <path
+          d="M33 30 L35 27 M33 30 L36 29"
+          stroke="url(#coralTiny)"
+          strokeWidth="2.3"
+          strokeLinecap="round"
+        />
+
+        {/* 산호 폴립(polyps) - 왼쪽 끝단들 */}
+        <circle cx="16" cy="18" r="3" fill="url(#coralPolyp1)"/>
+        <circle cx="16.5" cy="17.5" r="1" fill="#ffcccc" opacity="0.7"/>
+
+        <circle cx="18" cy="15" r="2.8" fill="url(#coralPolyp2)"/>
+        <circle cx="18.5" cy="14.5" r="0.9" fill="#ffe0e0" opacity="0.7"/>
+
+        <circle cx="14" cy="16" r="2.5" fill="url(#coralPolyp1)"/>
+        <circle cx="14.5" cy="15.5" r="0.8" fill="#ffd5d5" opacity="0.6"/>
+
+        <circle cx="14" cy="19" r="2.3" fill="url(#coralPolyp2)"/>
+        <circle cx="14.5" cy="18.6" r="0.7" fill="#ffe0e0" opacity="0.6"/>
+
+        <circle cx="19" cy="14" r="2.6" fill="url(#coralPolyp1)"/>
+        <circle cx="19.5" cy="13.5" r="0.8" fill="#ffcccc" opacity="0.7"/>
+
+        <circle cx="17" cy="12" r="2.2" fill="url(#coralPolyp2)"/>
+        <circle cx="17.5" cy="11.6" r="0.7" fill="#ffe0e0" opacity="0.6"/>
+
+        <circle cx="18" cy="11" r="1.8" fill="url(#coralPolyp1)"/>
+        <circle cx="18.4" cy="10.7" r="0.6" fill="#ffd5d5" opacity="0.5"/>
+
+        <circle cx="16" cy="13" r="2" fill="url(#coralPolyp2)"/>
+
+        {/* 산호 폴립 - 오른쪽 끝단들 */}
+        <circle cx="44" cy="18" r="3" fill="url(#coralPolyp1)"/>
+        <circle cx="43.5" cy="17.5" r="1" fill="#ffcccc" opacity="0.7"/>
+
+        <circle cx="42" cy="15" r="2.8" fill="url(#coralPolyp2)"/>
+        <circle cx="41.5" cy="14.5" r="0.9" fill="#ffe0e0" opacity="0.7"/>
+
+        <circle cx="46" cy="16" r="2.5" fill="url(#coralPolyp1)"/>
+        <circle cx="45.5" cy="15.5" r="0.8" fill="#ffd5d5" opacity="0.6"/>
+
+        <circle cx="46" cy="19" r="2.3" fill="url(#coralPolyp2)"/>
+        <circle cx="45.5" cy="18.6" r="0.7" fill="#ffe0e0" opacity="0.6"/>
+
+        <circle cx="41" cy="14" r="2.6" fill="url(#coralPolyp1)"/>
+        <circle cx="40.5" cy="13.5" r="0.8" fill="#ffcccc" opacity="0.7"/>
+
+        <circle cx="43" cy="12" r="2.2" fill="url(#coralPolyp2)"/>
+        <circle cx="42.5" cy="11.6" r="0.7" fill="#ffe0e0" opacity="0.6"/>
+
+        <circle cx="42" cy="11" r="1.8" fill="url(#coralPolyp1)"/>
+        <circle cx="41.6" cy="10.7" r="0.6" fill="#ffd5d5" opacity="0.5"/>
+
+        <circle cx="44" cy="13" r="2" fill="url(#coralPolyp2)"/>
+
+        {/* 중간 폴립들 */}
+        <circle cx="27" cy="30" r="2.5" fill="url(#coralPolyp1)"/>
+        <circle cx="27.5" cy="29.6" r="0.8" fill="#ffcccc" opacity="0.6"/>
+
+        <circle cx="33" cy="30" r="2.5" fill="url(#coralPolyp1)"/>
+        <circle cx="32.5" cy="29.6" r="0.8" fill="#ffcccc" opacity="0.6"/>
+
+        <circle cx="25" cy="27" r="2" fill="url(#coralPolyp2)"/>
+        <circle cx="25.5" cy="26.7" r="0.6" fill="#ffe0e0" opacity="0.5"/>
+
+        <circle cx="35" cy="27" r="2" fill="url(#coralPolyp2)"/>
+        <circle cx="34.5" cy="26.7" r="0.6" fill="#ffe0e0" opacity="0.5"/>
+
+        <circle cx="24" cy="29" r="1.7" fill="url(#coralPolyp1)"/>
+        <circle cx="36" cy="29" r="1.7" fill="url(#coralPolyp1)"/>
+
+        {/* 산호 표면 질감 - 작은 돌기들 */}
+        <circle cx="30" cy="42" r="1.2" fill="#ff9999" opacity="0.5"/>
+        <circle cx="28" cy="40" r="1" fill="#ff9999" opacity="0.5"/>
+        <circle cx="32" cy="40" r="1" fill="#ff9999" opacity="0.5"/>
+        <circle cx="29" cy="38" r="0.9" fill="#ffaaaa" opacity="0.4"/>
+        <circle cx="31" cy="38" r="0.9" fill="#ffaaaa" opacity="0.4"/>
+
+        <circle cx="26" cy="28" r="0.8" fill="#ffaaaa" opacity="0.4"/>
+        <circle cx="34" cy="28" r="0.8" fill="#ffaaaa" opacity="0.4"/>
+        <circle cx="23" cy="22" r="0.7" fill="#ffb3b3" opacity="0.3"/>
+        <circle cx="37" cy="22" r="0.7" fill="#ffb3b3" opacity="0.3"/>
+
+        {/* 미세한 발광 효과 */}
+        <ellipse cx="30" cy="25" rx="8" ry="10" fill="url(#coralGlow)"/>
+        <ellipse cx="22" cy="18" rx="5" ry="6" fill="url(#coralGlow)" opacity="0.7"/>
+        <ellipse cx="38" cy="18" rx="5" ry="6" fill="url(#coralGlow)" opacity="0.7"/>
       </g>
     </svg>
   ),
@@ -511,9 +710,9 @@ const DecorationIcons = {
     <svg width={size} height={size} viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <filter id="driftwood-shadow" x="-50%" y="-50%" width="200%" height="200%">
-          <feGaussianBlur in="SourceAlpha" stdDeviation="1.3"/>
-          <feOffset dx="2" dy="2" result="offsetblur"/>
-          <feFlood floodColor="#000000" floodOpacity="0.28"/>
+          <feGaussianBlur in="SourceAlpha" stdDeviation="1.8"/>
+          <feOffset dx="2" dy="2.5" result="offsetblur"/>
+          <feFlood floodColor="#000000" floodOpacity="0.35"/>
           <feComposite in2="offsetblur" operator="in"/>
           <feMerge>
             <feMergeNode/>
@@ -521,67 +720,193 @@ const DecorationIcons = {
           </feMerge>
         </filter>
         <linearGradient id="driftwood" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#a1887f" />
-          <stop offset="20%" stopColor="#8d6e63" />
+          <stop offset="0%" stopColor="#bcaaa4" />
+          <stop offset="15%" stopColor="#a1887f" />
+          <stop offset="30%" stopColor="#8d6e63" />
           <stop offset="50%" stopColor="#6d4c41" />
-          <stop offset="80%" stopColor="#5d4037" />
+          <stop offset="70%" stopColor="#5d4037" />
+          <stop offset="85%" stopColor="#4e342e" />
+          <stop offset="100%" stopColor="#3e2723" />
+        </linearGradient>
+        <linearGradient id="driftwoodSide" x1="100%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="#6d4c41" />
+          <stop offset="50%" stopColor="#5d4037" />
+          <stop offset="100%" stopColor="#3e2723" />
+        </linearGradient>
+        <linearGradient id="driftwoodBranch1" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#8d6e63" />
+          <stop offset="35%" stopColor="#6d4c41" />
+          <stop offset="70%" stopColor="#5d4037" />
           <stop offset="100%" stopColor="#4e342e" />
+        </linearGradient>
+        <linearGradient id="driftwoodBranch2" x1="100%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="#8d6e63" />
+          <stop offset="35%" stopColor="#6d4c41" />
+          <stop offset="70%" stopColor="#5d4037" />
+          <stop offset="100%" stopColor="#4e342e" />
+        </linearGradient>
+        <linearGradient id="driftwoodBranch3" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="#a1887f" />
+          <stop offset="50%" stopColor="#795548" />
+          <stop offset="100%" stopColor="#6d4c41" />
+        </linearGradient>
+        <radialGradient id="woodKnot1">
+          <stop offset="0%" stopColor="#3e2723" />
+          <stop offset="50%" stopColor="#4e342e" />
+          <stop offset="100%" stopColor="#5d4037" />
+        </radialGradient>
+        <radialGradient id="woodKnot2">
+          <stop offset="0%" stopColor="#3e2723" />
+          <stop offset="70%" stopColor="#5d4037" />
+          <stop offset="100%" stopColor="#6d4c41" />
+        </radialGradient>
+        <radialGradient id="woodHighlight">
+          <stop offset="0%" stopColor="#d7ccc8" stopOpacity="0.5"/>
+          <stop offset="50%" stopColor="#bcaaa4" stopOpacity="0.3"/>
+          <stop offset="100%" stopColor="#a1887f" stopOpacity="0"/>
+        </radialGradient>
+        <linearGradient id="moss" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#558b2f" />
+          <stop offset="50%" stopColor="#689f38" />
+          <stop offset="100%" stopColor="#7cb342" />
         </linearGradient>
       </defs>
       <g filter="url(#driftwood-shadow)" transform="translate(0, 7)">
-        {/* 메인 나무 줄기 - 자연스러운 유목 형태 */}
+        {/* 메인 나무 줄기 - 더 입체적으로 */}
         <path
           d="M8 35 C10 33, 15 32, 22 31 C28 30, 35 30, 40 28 C45 26, 48 23, 49 20 C50 17, 48 14, 44 12 C40 10, 34 9, 28 10 C22 11, 16 13, 12 17 C8 21, 7 26, 8 30 C9 34, 8 35, 8 35"
           fill="url(#driftwood)"
         />
 
-        {/* 나뭇가지 1 */}
+        {/* 측면 어두운 부분 - 3D 입체감 */}
+        <path
+          d="M8 35 C10 33, 15 32, 22 31 C18 32, 14 33, 11 34 C9 34.5, 8 35, 8 35 Z"
+          fill="url(#driftwoodSide)"
+          opacity="0.6"
+        />
+        <path
+          d="M40 28 C45 26, 48 23, 49 20 C48 22, 46 25, 42 27 C41 27.5, 40 28, 40 28 Z"
+          fill="#3e2723"
+          opacity="0.4"
+        />
+
+        {/* 나뭇가지 1 - 더 자연스럽게 */}
         <path
           d="M40 28 C43 26, 46 23, 48 19 C50 15, 51 12, 51 12"
-          stroke="#6d4c41"
-          strokeWidth="4"
+          stroke="url(#driftwoodBranch1)"
+          strokeWidth="4.5"
           strokeLinecap="round"
+        />
+        {/* 가지 하이라이트 */}
+        <path
+          d="M40.5 27.5 C42 26, 44 24, 46 21"
+          stroke="#a1887f"
+          strokeWidth="1"
+          strokeLinecap="round"
+          opacity="0.4"
         />
 
         {/* 나뭇가지 2 */}
         <path
           d="M22 31 C19 29, 15 27, 12 23 C9 19, 8 16, 8 16"
-          stroke="#5d4037"
-          strokeWidth="3.5"
+          stroke="url(#driftwoodBranch2)"
+          strokeWidth="4"
           strokeLinecap="round"
+        />
+        {/* 가지 하이라이트 */}
+        <path
+          d="M21.5 30.5 C20 29, 18 27, 16 25"
+          stroke="#a1887f"
+          strokeWidth="0.9"
+          strokeLinecap="round"
+          opacity="0.4"
         />
 
         {/* 나뭇가지 3 */}
         <path
           d="M30 30 C30 27, 32 24, 35 21"
-          stroke="#795548"
-          strokeWidth="3"
+          stroke="url(#driftwoodBranch3)"
+          strokeWidth="3.5"
           strokeLinecap="round"
         />
+        {/* 가지 하이라이트 */}
+        <path
+          d="M30.5 29 C30.5 27, 31.5 25, 33 23"
+          stroke="#bcaaa4"
+          strokeWidth="0.8"
+          strokeLinecap="round"
+          opacity="0.3"
+        />
 
-        {/* 나이테 패턴 - 나무 단면 */}
-        <ellipse cx="28" cy="22" rx="12" ry="6" stroke="#4e342e" strokeWidth="1" fill="none"/>
-        <ellipse cx="28" cy="22" rx="10" ry="5" stroke="#5d4037" strokeWidth="0.8" fill="none" opacity="0.8"/>
-        <ellipse cx="28" cy="22" rx="8" ry="4" stroke="#5d4037" strokeWidth="0.6" fill="none" opacity="0.6"/>
-        <ellipse cx="28" cy="22" rx="6" ry="3" stroke="#5d4037" strokeWidth="0.5" fill="none" opacity="0.5"/>
-        <ellipse cx="28" cy="22" rx="4" ry="2" stroke="#5d4037" strokeWidth="0.4" fill="none" opacity="0.4"/>
-        <ellipse cx="28" cy="22" rx="2" ry="1" stroke="#5d4037" strokeWidth="0.3" fill="none" opacity="0.3"/>
+        {/* 나이테 패턴 - 나무 단면 더 입체적으로 */}
+        <ellipse cx="28" cy="22" rx="12.5" ry="6.5" stroke="#3e2723" strokeWidth="1.2" fill="none"/>
+        <ellipse cx="28" cy="22" rx="11" ry="5.5" stroke="#4e342e" strokeWidth="1" fill="none" opacity="0.9"/>
+        <ellipse cx="28" cy="22" rx="9.5" ry="4.8" stroke="#5d4037" strokeWidth="0.9" fill="none" opacity="0.8"/>
+        <ellipse cx="28" cy="22" rx="8" ry="4" stroke="#5d4037" strokeWidth="0.8" fill="none" opacity="0.7"/>
+        <ellipse cx="28" cy="22" rx="6.5" ry="3.3" stroke="#6d4c41" strokeWidth="0.7" fill="none" opacity="0.6"/>
+        <ellipse cx="28" cy="22" rx="5" ry="2.5" stroke="#6d4c41" strokeWidth="0.6" fill="none" opacity="0.5"/>
+        <ellipse cx="28" cy="22" rx="3.5" ry="1.8" stroke="#795548" strokeWidth="0.5" fill="none" opacity="0.4"/>
+        <ellipse cx="28" cy="22" rx="2" ry="1" stroke="#8d6e63" strokeWidth="0.4" fill="none" opacity="0.3"/>
 
-        {/* 나무 질감 - 세로 결 */}
-        <line x1="10" y1="18" x2="46" y2="15" stroke="#5d4037" strokeWidth="0.8" opacity="0.5"/>
-        <line x1="11" y1="22" x2="45" y2="19" stroke="#5d4037" strokeWidth="0.7" opacity="0.5"/>
-        <line x1="10" y1="26" x2="46" y2="23" stroke="#5d4037" strokeWidth="0.6" opacity="0.5"/>
-        <line x1="11" y1="30" x2="44" y2="27" stroke="#5d4037" strokeWidth="0.5" opacity="0.5"/>
-        <line x1="12" y1="33" x2="40" y2="30" stroke="#5d4037" strokeWidth="0.5" opacity="0.4"/>
+        {/* 나무 질감 - 세로 결 더 디테일하게 */}
+        <line x1="10" y1="18" x2="46" y2="15" stroke="#4e342e" strokeWidth="1" opacity="0.6"/>
+        <line x1="10" y1="19" x2="46" y2="16" stroke="#5d4037" strokeWidth="0.7" opacity="0.4"/>
+        <line x1="11" y1="22" x2="45" y2="19" stroke="#5d4037" strokeWidth="0.9" opacity="0.6"/>
+        <line x1="11" y1="23" x2="45" y2="20" stroke="#6d4c41" strokeWidth="0.6" opacity="0.4"/>
+        <line x1="10" y1="26" x2="46" y2="23" stroke="#5d4037" strokeWidth="0.8" opacity="0.5"/>
+        <line x1="10" y1="27" x2="46" y2="24" stroke="#6d4c41" strokeWidth="0.5" opacity="0.4"/>
+        <line x1="11" y1="30" x2="44" y2="27" stroke="#5d4037" strokeWidth="0.7" opacity="0.5"/>
+        <line x1="11" y1="31" x2="44" y2="28" stroke="#6d4c41" strokeWidth="0.5" opacity="0.4"/>
+        <line x1="12" y1="33" x2="40" y2="30" stroke="#5d4037" strokeWidth="0.6" opacity="0.5"/>
 
-        {/* 나무 옹이와 균열 */}
-        <circle cx="18" cy="24" r="2.5" fill="#4e342e" opacity="0.7"/>
-        <circle cx="36" cy="26" r="2" fill="#4e342e" opacity="0.6"/>
-        <circle cx="25" cy="28" r="1.5" fill="#4e342e" opacity="0.5"/>
+        {/* 나무 옹이 - 더 입체적으로 */}
+        <ellipse cx="18" cy="24" rx="3" ry="2.8" fill="url(#woodKnot1)"/>
+        <ellipse cx="18.5" cy="23.5" rx="2" ry="1.8" fill="#3e2723" opacity="0.8"/>
+        <ellipse cx="19" cy="23.2" rx="1" ry="0.9" fill="#2e1a16" opacity="0.6"/>
 
-        {/* 균열 */}
-        <path d="M20 20 L22 23 L21 26" stroke="#3e2723" strokeWidth="0.5" fill="none"/>
-        <path d="M38 24 L39 27 L38 29" stroke="#3e2723" strokeWidth="0.5" fill="none"/>
+        <ellipse cx="36" cy="26" rx="2.5" ry="2.2" fill="url(#woodKnot2)"/>
+        <ellipse cx="36.5" cy="25.6" rx="1.6" ry="1.4" fill="#3e2723" opacity="0.7"/>
+        <ellipse cx="37" cy="25.3" rx="0.8" ry="0.7" fill="#2e1a16" opacity="0.5"/>
+
+        <ellipse cx="25" cy="28" rx="2" ry="1.8" fill="url(#woodKnot1)"/>
+        <ellipse cx="25.5" cy="27.6" rx="1.2" ry="1.1" fill="#3e2723" opacity="0.7"/>
+
+        <circle cx="44" cy="17" r="1.8" fill="url(#woodKnot2)"/>
+        <circle cx="44.3" cy="16.8" r="1" fill="#3e2723" opacity="0.6"/>
+
+        <circle cx="14" cy="21" r="1.5" fill="url(#woodKnot1)"/>
+        <circle cx="14.3" cy="20.8" r="0.8" fill="#3e2723" opacity="0.6"/>
+
+        {/* 균열 - 더 깊고 사실적으로 */}
+        <path d="M20 20 L21 21.5 L22 23 L21.5 24.5 L21 26" stroke="#2e1a16" strokeWidth="1" fill="none" opacity="0.7"/>
+        <path d="M20.3 20.3 L21 21.5 L21.8 23 L21.5 24.3 L21.2 25.5" stroke="#3e2723" strokeWidth="0.6" fill="none" opacity="0.5"/>
+
+        <path d="M38 24 L38.5 25.5 L39 27 L38.8 28 L38.5 29" stroke="#2e1a16" strokeWidth="0.9" fill="none" opacity="0.7"/>
+        <path d="M38.2 24.2 L38.5 25.5 L38.8 27 L38.7 28 L38.4 28.7" stroke="#3e2723" strokeWidth="0.5" fill="none" opacity="0.5"/>
+
+        <path d="M32 14 Q 33 16, 32.5 18" stroke="#3e2723" strokeWidth="0.7" fill="none" opacity="0.6"/>
+        <path d="M12 32 Q 13 33, 12.5 34" stroke="#3e2723" strokeWidth="0.6" fill="none" opacity="0.6"/>
+
+        {/* 하이라이트 - 마모된 부분 */}
+        <ellipse cx="28" cy="15" rx="10" ry="4" fill="url(#woodHighlight)"/>
+        <ellipse cx="42" cy="21" rx="5" ry="3" fill="url(#woodHighlight)" opacity="0.6"/>
+        <ellipse cx="16" cy="29" rx="4" ry="2.5" fill="url(#woodHighlight)" opacity="0.5"/>
+
+        {/* 이끼와 풍화 효과 */}
+        <ellipse cx="10" cy="31" rx="2.5" ry="2" fill="url(#moss)" opacity="0.6"/>
+        <ellipse cx="11" cy="32" rx="1.8" ry="1.5" fill="#558b2f" opacity="0.4"/>
+
+        <ellipse cx="46" cy="19" rx="2" ry="1.6" fill="url(#moss)" opacity="0.5"/>
+        <ellipse cx="46.5" cy="19.5" rx="1.4" ry="1.1" fill="#558b2f" opacity="0.4"/>
+
+        <circle cx="24" cy="13" r="1.2" fill="#558b2f" opacity="0.5"/>
+        <circle cx="34" cy="12" r="1" fill="#689f38" opacity="0.4"/>
+
+        {/* 작은 홈들 */}
+        <circle cx="15" cy="27" r="0.8" fill="#4e342e" opacity="0.5"/>
+        <circle cx="40" cy="24" r="0.7" fill="#4e342e" opacity="0.5"/>
+        <circle cx="30" cy="32" r="0.6" fill="#4e342e" opacity="0.4"/>
+        <circle cx="22" cy="18" r="0.6" fill="#4e342e" opacity="0.4"/>
       </g>
     </svg>
   ),
@@ -590,9 +915,9 @@ const DecorationIcons = {
     <svg width={size} height={size} viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <filter id="shell-shadow" x="-50%" y="-50%" width="200%" height="200%">
-          <feGaussianBlur in="SourceAlpha" stdDeviation="1.3"/>
-          <feOffset dx="2" dy="2" result="offsetblur"/>
-          <feFlood floodColor="#000000" floodOpacity="0.28"/>
+          <feGaussianBlur in="SourceAlpha" stdDeviation="1.8"/>
+          <feOffset dx="2" dy="2.5" result="offsetblur"/>
+          <feFlood floodColor="#000000" floodOpacity="0.35"/>
           <feComposite in2="offsetblur" operator="in"/>
           <feMerge>
             <feMergeNode/>
@@ -600,70 +925,205 @@ const DecorationIcons = {
           </feMerge>
         </filter>
         <linearGradient id="shellMain" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#ffccbc" />
+          <stop offset="0%" stopColor="#ffe0d0" />
+          <stop offset="15%" stopColor="#ffccbc" />
           <stop offset="30%" stopColor="#ffab91" />
-          <stop offset="70%" stopColor="#ff8a65" />
+          <stop offset="50%" stopColor="#ff8a65" />
+          <stop offset="75%" stopColor="#ff7043" />
+          <stop offset="100%" stopColor="#ff5722" />
+        </linearGradient>
+        <linearGradient id="shellLayer2" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#ffccbc" />
+          <stop offset="40%" stopColor="#ffab91" />
+          <stop offset="75%" stopColor="#ff8a65" />
           <stop offset="100%" stopColor="#ff7043" />
         </linearGradient>
+        <linearGradient id="shellLayer3" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#ffab91" />
+          <stop offset="50%" stopColor="#ff8a65" />
+          <stop offset="100%" stopColor="#ff6e40" />
+        </linearGradient>
         <linearGradient id="shellSpiral" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#ff6e40" />
+          <stop offset="0%" stopColor="#ff7043" />
+          <stop offset="50%" stopColor="#ff6e40" />
           <stop offset="100%" stopColor="#ff5722" />
         </linearGradient>
         <linearGradient id="shellSpiral2" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#ff5722" />
+          <stop offset="0%" stopColor="#ff6e40" />
+          <stop offset="50%" stopColor="#ff5722" />
           <stop offset="100%" stopColor="#e64a19" />
         </linearGradient>
+        <linearGradient id="shellSpiral3" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#ff5722" />
+          <stop offset="50%" stopColor="#e64a19" />
+          <stop offset="100%" stopColor="#d84315" />
+        </linearGradient>
         <radialGradient id="shellHighlight">
-          <stop offset="0%" stopColor="#ffffff" stopOpacity="0.5"/>
+          <stop offset="0%" stopColor="#ffffff" stopOpacity="0.7"/>
+          <stop offset="50%" stopColor="#fff3e0" stopOpacity="0.4"/>
           <stop offset="100%" stopColor="#ffffff" stopOpacity="0"/>
         </radialGradient>
         <radialGradient id="shellHighlight2">
-          <stop offset="0%" stopColor="#fff3e0" stopOpacity="0.4"/>
+          <stop offset="0%" stopColor="#fff8e1" stopOpacity="0.6"/>
+          <stop offset="50%" stopColor="#ffe0b2" stopOpacity="0.3"/>
           <stop offset="100%" stopColor="#ffffff" stopOpacity="0"/>
         </radialGradient>
-        <radialGradient id="pearl">
+        <radialGradient id="shellHighlight3">
+          <stop offset="0%" stopColor="#ffe0d0" stopOpacity="0.5"/>
+          <stop offset="100%" stopColor="#ffccbc" stopOpacity="0"/>
+        </radialGradient>
+        <radialGradient id="nacre">
           <stop offset="0%" stopColor="#ffffff" stopOpacity="0.9"/>
-          <stop offset="50%" stopColor="#fce4ec" stopOpacity="0.7"/>
-          <stop offset="100%" stopColor="#f8bbd0" stopOpacity="0.5"/>
+          <stop offset="30%" stopColor="#fce4ec" stopOpacity="0.7"/>
+          <stop offset="60%" stopColor="#f8bbd0" stopOpacity="0.5"/>
+          <stop offset="100%" stopColor="#f48fb1" stopOpacity="0.3"/>
+        </radialGradient>
+        <radialGradient id="pearl1">
+          <stop offset="0%" stopColor="#ffffff" />
+          <stop offset="40%" stopColor="#fff3e0" />
+          <stop offset="70%" stopColor="#fce4ec" />
+          <stop offset="100%" stopColor="#f8bbd0" />
         </radialGradient>
         <radialGradient id="pearl2">
-          <stop offset="0%" stopColor="#ffffff" stopOpacity="0.8"/>
-          <stop offset="100%" stopColor="#fce4ec" stopOpacity="0.4"/>
+          <stop offset="0%" stopColor="#ffffff" />
+          <stop offset="50%" stopColor="#fce4ec" />
+          <stop offset="100%" stopColor="#f48fb1" />
+        </radialGradient>
+        <radialGradient id="pearl3">
+          <stop offset="0%" stopColor="#fff8f0" />
+          <stop offset="60%" stopColor="#ffe0e0" />
+          <stop offset="100%" stopColor="#ffc1cc" />
+        </radialGradient>
+        <radialGradient id="shellDepth">
+          <stop offset="0%" stopColor="#d84315" />
+          <stop offset="50%" stopColor="#bf360c" />
+          <stop offset="100%" stopColor="#3e2723" />
         </radialGradient>
       </defs>
       <g filter="url(#shell-shadow)">
-        {/* 소라 껍질 메인 - 더 나선형으로 */}
+        {/* 소라 껍질 외부층 - 가장 큰 레이어 */}
         <path
           d="M30 48 C40 48, 46 42, 46 34 C46 26, 42 20, 36 17 C30 14, 24 15, 20 19 C16 23, 15 28, 17 33 C19 38, 22 41, 26 42 C30 43, 33 41, 34 38 C35 35, 34 32, 32 30 C30 28, 28 27, 27 27"
           fill="url(#shellMain)"
         />
 
-        {/* 나선 무늬 - 더 선명하게 */}
+        {/* 껍질 중간층 */}
+        <path
+          d="M30 46 C39 46, 44 40.5, 44 33.5 C44 26.5, 40.5 21, 35.5 18.5 C30.5 16, 25 17, 21.5 20.5 C18 24, 17 28.5, 18.5 32.5 C20 37, 23 40, 26.5 41 C30 42, 32.5 40, 33.5 37.5 C34.5 35, 33.5 32.5, 31.5 31 C29.5 29.5, 28 29, 27.5 29"
+          fill="url(#shellLayer2)"
+        />
+
+        {/* 껍질 내부층 */}
+        <path
+          d="M30 44 C37.5 44, 42 39, 42 33 C42 27, 39 22, 35 20 C31 18, 26 19, 23 22 C20 25, 19 29, 20 32.5 C21.5 36, 24 38.5, 27 39.5 C30 40.5, 32 39, 33 37 C34 35, 33 32.5, 31.5 31.5 C30 30.5, 28.5 30.5, 28 30.5"
+          fill="url(#shellLayer3)"
+        />
+
+        {/* 나선 외곽 라인들 - 성장선 */}
+        <path
+          d="M30 46 C38 46, 43 41, 43 34 C43 27, 40 22, 36 19"
+          stroke="#d84315"
+          strokeWidth="0.8"
+          fill="none"
+          opacity="0.5"
+        />
+        <path
+          d="M30 44 C37 44, 41 39.5, 41 33.5 C41 27.5, 38.5 23, 35.5 20.5"
+          stroke="#e64a19"
+          strokeWidth="0.7"
+          fill="none"
+          opacity="0.4"
+        />
+        <path
+          d="M30 42 C36 42, 39.5 38, 39.5 33 C39.5 28, 37 24, 34.5 22"
+          stroke="#ff6e40"
+          strokeWidth="0.6"
+          fill="none"
+          opacity="0.4"
+        />
+
+        {/* 나선 무늬 - 1차 (가장 바깥) */}
         <path
           d="M30 40 C35 40, 38 37, 38 33 C38 29, 36 26, 33 24 C30 22, 27 22, 25 24 C23 26, 22 28, 23 31 C24 34, 26 35, 28 36 C30 37, 31 36, 32 35 C33 34, 33 33, 32 32"
           stroke="url(#shellSpiral)"
-          strokeWidth="1.2"
+          strokeWidth="1.5"
           fill="none"
         />
+        {/* 나선 하이라이트 */}
+        <path
+          d="M30.5 39 C34 39, 37 36.5, 37 33 C37 29.5, 35 27, 33 25"
+          stroke="#ffab91"
+          strokeWidth="0.7"
+          fill="none"
+          opacity="0.5"
+        />
+
+        {/* 나선 무늬 - 2차 */}
         <path
           d="M30 36 C33 36, 35 34, 35 31 C35 28, 33 26, 31 25 C29 24, 27 24, 26 26 C25 28, 25 29, 26 30 C27 31, 28 32, 29 32"
           stroke="url(#shellSpiral2)"
-          strokeWidth="0.8"
+          strokeWidth="1.2"
           fill="none"
         />
 
-        {/* 하이라이트와 광택 */}
-        <ellipse cx="35" cy="28" rx="7" ry="9" fill="url(#shellHighlight)"/>
-        <ellipse cx="32" cy="32" rx="4" ry="5" fill="url(#shellHighlight2)"/>
+        {/* 나선 무늬 - 3차 (중심부) */}
+        <path
+          d="M30 33 C31.5 33, 33 32, 33 30.5 C33 29, 32 28, 31 27.5 C30 27, 29 27.5, 28.5 28 C28 28.5, 28 29, 28.5 29.5 C29 30, 29.5 30, 29.7 30"
+          stroke="url(#shellSpiral3)"
+          strokeWidth="1"
+          fill="none"
+        />
 
-        {/* 진주 효과 */}
-        <circle cx="33" cy="30" r="2" fill="url(#pearl)"/>
-        <circle cx="28" cy="34" r="1.5" fill="url(#pearl2)"/>
+        {/* 나선 중심 깊이감 */}
+        <circle cx="29.5" cy="29.5" r="2" fill="url(#shellDepth)"/>
+        <circle cx="29.5" cy="29.5" r="1.3" fill="#3e2723" opacity="0.7"/>
 
-        {/* 껍질 라인 디테일 */}
-        <path d="M20 30 C22 29, 24 29, 26 30" stroke="#ff8a65" strokeWidth="0.5" opacity="0.4"/>
-        <path d="M22 34 C24 33, 26 33, 28 34" stroke="#ff8a65" strokeWidth="0.5" opacity="0.4"/>
-        <path d="M24 38 C26 37, 28 37, 30 38" stroke="#ff8a65" strokeWidth="0.5" opacity="0.4"/>
+        {/* 자개(nacre) 진주층 효과 */}
+        <ellipse cx="32" cy="32" rx="5" ry="6" fill="url(#nacre)" opacity="0.6"/>
+        <ellipse cx="28" cy="36" rx="4" ry="5" fill="url(#nacre)" opacity="0.5"/>
+
+        {/* 하이라이트와 광택 - 더 풍부하게 */}
+        <ellipse cx="35" cy="28" rx="8" ry="10" fill="url(#shellHighlight)"/>
+        <ellipse cx="32" cy="32" rx="5" ry="6.5" fill="url(#shellHighlight2)"/>
+        <ellipse cx="38" cy="30" rx="4" ry="5" fill="url(#shellHighlight3)"/>
+
+        {/* 진주 효과 - 더 풍부하게 */}
+        <circle cx="33" cy="30" r="2.5" fill="url(#pearl1)"/>
+        <circle cx="33.5" cy="29.5" r="1" fill="white" opacity="0.8"/>
+
+        <circle cx="28" cy="34" r="2" fill="url(#pearl2)"/>
+        <circle cx="28.5" cy="33.5" r="0.8" fill="white" opacity="0.7"/>
+
+        <circle cx="35" cy="33" r="1.8" fill="url(#pearl3)"/>
+        <circle cx="35.4" cy="32.7" r="0.7" fill="white" opacity="0.6"/>
+
+        <circle cx="31" cy="36" r="1.5" fill="url(#pearl1)"/>
+        <circle cx="31.3" cy="35.8" r="0.6" fill="white" opacity="0.6"/>
+
+        {/* 작은 진주 반짝임들 */}
+        <circle cx="36" cy="35" r="1.2" fill="url(#pearl2)" opacity="0.7"/>
+        <circle cx="26" cy="31" r="1" fill="url(#pearl3)" opacity="0.6"/>
+        <circle cx="29" cy="38" r="0.9" fill="url(#pearl1)" opacity="0.6"/>
+
+        {/* 껍질 성장선 디테일 */}
+        <path d="M20 30 C22 29, 24 29, 26 30" stroke="#ff8a65" strokeWidth="0.6" opacity="0.5"/>
+        <path d="M21 32 C23 31.2, 25 31.2, 27 32" stroke="#ff8a65" strokeWidth="0.6" opacity="0.5"/>
+        <path d="M22 34 C24 33, 26 33, 28 34" stroke="#ff8a65" strokeWidth="0.6" opacity="0.5"/>
+        <path d="M23 36 C25 35.2, 27 35.2, 29 36" stroke="#ff8a65" strokeWidth="0.6" opacity="0.5"/>
+        <path d="M24 38 C26 37, 28 37, 30 38" stroke="#ff8a65" strokeWidth="0.6" opacity="0.5"/>
+        <path d="M25 40 C27 39.2, 29 39.2, 31 40" stroke="#ff7043" strokeWidth="0.6" opacity="0.4"/>
+
+        {/* 껍질 홈 디테일 */}
+        <path d="M34 24 C35 25, 36 26, 37 28" stroke="#e64a19" strokeWidth="0.5" opacity="0.4"/>
+        <path d="M36 26 C37 27.5, 38 29, 39 31" stroke="#e64a19" strokeWidth="0.5" opacity="0.4"/>
+        <path d="M38 29 C39 30.5, 40 32.5, 40.5 34.5" stroke="#e64a19" strokeWidth="0.5" opacity="0.4"/>
+
+        {/* 미세한 질감 포인트들 */}
+        <circle cx="34" cy="38" r="0.5" fill="#ff7043" opacity="0.4"/>
+        <circle cx="38" cy="36" r="0.5" fill="#ff7043" opacity="0.4"/>
+        <circle cx="40" cy="32" r="0.5" fill="#ff6e40" opacity="0.4"/>
+        <circle cx="24" cy="26" r="0.5" fill="#ffab91" opacity="0.4"/>
+        <circle cx="22" cy="28" r="0.5" fill="#ffab91" opacity="0.4"/>
       </g>
     </svg>
   ),

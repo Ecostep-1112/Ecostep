@@ -67,104 +67,140 @@ const DecorationIcons = {
       </defs>
       <g filter="url(#seaweed-shadow)">
         {/* 왼쪽 해초 - 더 자연스러운 곡선과 불규칙성 */}
-        <path
-          d="M16 50 C16 47, 14 44, 15 41 C15.5 39.5, 14.2 37, 15 35 C15.8 33, 14 30, 15 27.5 C16 25, 14.5 22, 15.2 19 C15.8 16.5, 14 14, 16 12"
-          stroke="url(#seaweed1)"
-          strokeWidth="3.8"
-          strokeLinecap="round"
-          fill="none"
-          opacity="0.92"
-        />
-        {/* 왼쪽 해초 하이라이트 - 강화 */}
-        <path
-          d="M16.8 48 C16.8 45.5, 15.5 43, 16 40 C16.4 37.5, 15.2 35, 15.8 32 C16.3 29.5, 15 27, 15.6 24 C16.2 21, 15 18, 16 16"
-          stroke="url(#seaweedHighlight)"
-          strokeWidth="1.6"
-          strokeLinecap="round"
-          fill="none"
-        />
-        {/* 왼쪽 해초 잎맥 디테일 */}
-        <path d="M15 35 Q 12.5 35, 13 34.5" stroke="#4caf50" strokeWidth="0.6" fill="none" opacity="0.5"/>
-        <path d="M15 28 Q 12 28, 12.5 27.5" stroke="#4caf50" strokeWidth="0.6" fill="none" opacity="0.5"/>
-        <path d="M16 21 Q 13.5 21, 14 20.5" stroke="#66bb6a" strokeWidth="0.5" fill="none" opacity="0.4"/>
+        <g>
+          <animateTransform
+            attributeName="transform"
+            type="rotate"
+            values="0 16 50; -1.5 16 50; 0 16 50; 1 16 50; 0 16 50"
+            dur="3.5s"
+            repeatCount="indefinite"
+          />
+          <path
+            d="M16 50 C16 47, 14 44, 15 41 C15.5 39.5, 14.2 37, 15 35 C15.8 33, 14 30, 15 27.5 C16 25, 14.5 22, 15.2 19 C15.8 16.5, 14 14, 16 12"
+            stroke="url(#seaweed1)"
+            strokeWidth="3.8"
+            strokeLinecap="round"
+            fill="none"
+            opacity="0.92"
+          />
+          {/* 왼쪽 해초 하이라이트 - 강화 */}
+          <path
+            d="M16.8 48 C16.8 45.5, 15.5 43, 16 40 C16.4 37.5, 15.2 35, 15.8 32 C16.3 29.5, 15 27, 15.6 24 C16.2 21, 15 18, 16 16"
+            stroke="url(#seaweedHighlight)"
+            strokeWidth="1.6"
+            strokeLinecap="round"
+            fill="none"
+          />
+          {/* 왼쪽 해초 잎맥 디테일 */}
+          <path d="M15 35 Q 12.5 35, 13 34.5" stroke="#4caf50" strokeWidth="0.6" fill="none" opacity="0.5"/>
+          <path d="M15 28 Q 12 28, 12.5 27.5" stroke="#4caf50" strokeWidth="0.6" fill="none" opacity="0.5"/>
+          <path d="M16 21 Q 13.5 21, 14 20.5" stroke="#66bb6a" strokeWidth="0.5" fill="none" opacity="0.4"/>
+        </g>
 
         {/* 중앙 왼쪽 해초 - 메인 굵은 줄기 */}
-        <path
-          d="M24 50 C24 46, 22.5 43, 23.5 39.5 C24.5 36, 22 33, 24 29 C25.5 25.5, 22.5 22, 24 18 C25.5 14.5, 23.5 12, 25 10"
-          stroke="url(#seaweed2)"
-          strokeWidth="4.5"
-          strokeLinecap="round"
-          fill="none"
-          opacity="0.95"
-        />
-        {/* 중앙 왼쪽 해초 하이라이트 */}
-        <path
-          d="M25.2 48 C25.2 45, 24 42, 24.8 39 C25.5 36, 24 33, 25 30 C25.8 27, 24.2 24, 25 21 C25.7 18, 24.5 15, 25.5 13"
-          stroke="url(#seaweedHighlight)"
-          strokeWidth="2"
-          strokeLinecap="round"
-          fill="none"
-        />
-        {/* 중앙 왼쪽 해초 작은 잎들 */}
-        <path d="M23.5 40 Q 20 39.5, 21 39" stroke="#66bb6a" strokeWidth="1.2" fill="none" opacity="0.6"/>
-        <path d="M24 34 Q 20.5 34, 21.5 33.5" stroke="#66bb6a" strokeWidth="1.1" fill="none" opacity="0.6"/>
-        <path d="M23 28 Q 19.5 28, 20.5 27.5" stroke="#81c784" strokeWidth="1" fill="none" opacity="0.55"/>
-        <path d="M24.5 22 Q 21 22, 22 21.5" stroke="#81c784" strokeWidth="0.9" fill="none" opacity="0.5"/>
-        <path d="M24 16 Q 20.5 16.5, 21.5 16" stroke="#9ccc65" strokeWidth="0.8" fill="none" opacity="0.45"/>
-        {/* 줄기 잎맥 */}
-        <path d="M24 45 L 24.2 44.5" stroke="#2e7d32" strokeWidth="0.4" fill="none" opacity="0.6"/>
-        <path d="M23.5 38 L 23.8 37.5" stroke="#388e3c" strokeWidth="0.4" fill="none" opacity="0.5"/>
-        <path d="M24 30 L 24.3 29.5" stroke="#43a047" strokeWidth="0.4" fill="none" opacity="0.5"/>
+        <g>
+          <animateTransform
+            attributeName="transform"
+            type="rotate"
+            values="0 24 50; 1.5 24 50; 0 24 50; -1 24 50; 0 24 50"
+            dur="4s"
+            repeatCount="indefinite"
+          />
+          <path
+            d="M24 50 C24 46, 22.5 43, 23.5 39.5 C24.5 36, 22 33, 24 29 C25.5 25.5, 22.5 22, 24 18 C25.5 14.5, 23.5 12, 25 10"
+            stroke="url(#seaweed2)"
+            strokeWidth="4.5"
+            strokeLinecap="round"
+            fill="none"
+            opacity="0.95"
+          />
+          {/* 중앙 왼쪽 해초 하이라이트 */}
+          <path
+            d="M25.2 48 C25.2 45, 24 42, 24.8 39 C25.5 36, 24 33, 25 30 C25.8 27, 24.2 24, 25 21 C25.7 18, 24.5 15, 25.5 13"
+            stroke="url(#seaweedHighlight)"
+            strokeWidth="2"
+            strokeLinecap="round"
+            fill="none"
+          />
+          {/* 중앙 왼쪽 해초 작은 잎들 */}
+          <path d="M23.5 40 Q 20 39.5, 21 39" stroke="#66bb6a" strokeWidth="1.2" fill="none" opacity="0.6"/>
+          <path d="M24 34 Q 20.5 34, 21.5 33.5" stroke="#66bb6a" strokeWidth="1.1" fill="none" opacity="0.6"/>
+          <path d="M23 28 Q 19.5 28, 20.5 27.5" stroke="#81c784" strokeWidth="1" fill="none" opacity="0.55"/>
+          <path d="M24.5 22 Q 21 22, 22 21.5" stroke="#81c784" strokeWidth="0.9" fill="none" opacity="0.5"/>
+          <path d="M24 16 Q 20.5 16.5, 21.5 16" stroke="#9ccc65" strokeWidth="0.8" fill="none" opacity="0.45"/>
+          {/* 줄기 잎맥 */}
+          <path d="M24 45 L 24.2 44.5" stroke="#2e7d32" strokeWidth="0.4" fill="none" opacity="0.6"/>
+          <path d="M23.5 38 L 23.8 37.5" stroke="#388e3c" strokeWidth="0.4" fill="none" opacity="0.5"/>
+          <path d="M24 30 L 24.3 29.5" stroke="#43a047" strokeWidth="0.4" fill="none" opacity="0.5"/>
+        </g>
 
         {/* 중앙 오른쪽 해초 - 대칭 */}
-        <path
-          d="M36 50 C36 46, 37.5 43, 36.5 39.5 C35.5 36, 38 33, 36 29 C34.5 25.5, 37.5 22, 36 18 C34.5 14.5, 36.5 12, 35 10"
-          stroke="url(#seaweed2)"
-          strokeWidth="4.5"
-          strokeLinecap="round"
-          fill="none"
-          opacity="0.95"
-        />
-        {/* 중앙 오른쪽 해초 하이라이트 */}
-        <path
-          d="M34.8 48 C34.8 45, 36 42, 35.2 39 C34.5 36, 36 33, 35 30 C34.2 27, 35.8 24, 35 21 C34.3 18, 35.5 15, 34.5 13"
-          stroke="url(#seaweedHighlight)"
-          strokeWidth="2"
-          strokeLinecap="round"
-          fill="none"
-        />
-        {/* 중앙 오른쪽 해초 작은 잎들 */}
-        <path d="M36.5 40 Q 40 39.5, 39 39" stroke="#66bb6a" strokeWidth="1.2" fill="none" opacity="0.6"/>
-        <path d="M36 34 Q 39.5 34, 38.5 33.5" stroke="#66bb6a" strokeWidth="1.1" fill="none" opacity="0.6"/>
-        <path d="M37 28 Q 40.5 28, 39.5 27.5" stroke="#81c784" strokeWidth="1" fill="none" opacity="0.55"/>
-        <path d="M35.5 22 Q 39 22, 38 21.5" stroke="#81c784" strokeWidth="0.9" fill="none" opacity="0.5"/>
-        <path d="M36 16 Q 39.5 16.5, 38.5 16" stroke="#9ccc65" strokeWidth="0.8" fill="none" opacity="0.45"/>
-        {/* 줄기 잎맥 */}
-        <path d="M36 45 L 35.8 44.5" stroke="#2e7d32" strokeWidth="0.4" fill="none" opacity="0.6"/>
-        <path d="M36.5 38 L 36.2 37.5" stroke="#388e3c" strokeWidth="0.4" fill="none" opacity="0.5"/>
-        <path d="M36 30 L 35.7 29.5" stroke="#43a047" strokeWidth="0.4" fill="none" opacity="0.5"/>
+        <g>
+          <animateTransform
+            attributeName="transform"
+            type="rotate"
+            values="0 36 50; -1.5 36 50; 0 36 50; 1 36 50; 0 36 50"
+            dur="3.8s"
+            repeatCount="indefinite"
+          />
+          <path
+            d="M36 50 C36 46, 37.5 43, 36.5 39.5 C35.5 36, 38 33, 36 29 C34.5 25.5, 37.5 22, 36 18 C34.5 14.5, 36.5 12, 35 10"
+            stroke="url(#seaweed2)"
+            strokeWidth="4.5"
+            strokeLinecap="round"
+            fill="none"
+            opacity="0.95"
+          />
+          {/* 중앙 오른쪽 해초 하이라이트 */}
+          <path
+            d="M34.8 48 C34.8 45, 36 42, 35.2 39 C34.5 36, 36 33, 35 30 C34.2 27, 35.8 24, 35 21 C34.3 18, 35.5 15, 34.5 13"
+            stroke="url(#seaweedHighlight)"
+            strokeWidth="2"
+            strokeLinecap="round"
+            fill="none"
+          />
+          {/* 중앙 오른쪽 해초 작은 잎들 */}
+          <path d="M36.5 40 Q 40 39.5, 39 39" stroke="#66bb6a" strokeWidth="1.2" fill="none" opacity="0.6"/>
+          <path d="M36 34 Q 39.5 34, 38.5 33.5" stroke="#66bb6a" strokeWidth="1.1" fill="none" opacity="0.6"/>
+          <path d="M37 28 Q 40.5 28, 39.5 27.5" stroke="#81c784" strokeWidth="1" fill="none" opacity="0.55"/>
+          <path d="M35.5 22 Q 39 22, 38 21.5" stroke="#81c784" strokeWidth="0.9" fill="none" opacity="0.5"/>
+          <path d="M36 16 Q 39.5 16.5, 38.5 16" stroke="#9ccc65" strokeWidth="0.8" fill="none" opacity="0.45"/>
+          {/* 줄기 잎맥 */}
+          <path d="M36 45 L 35.8 44.5" stroke="#2e7d32" strokeWidth="0.4" fill="none" opacity="0.6"/>
+          <path d="M36.5 38 L 36.2 37.5" stroke="#388e3c" strokeWidth="0.4" fill="none" opacity="0.5"/>
+          <path d="M36 30 L 35.7 29.5" stroke="#43a047" strokeWidth="0.4" fill="none" opacity="0.5"/>
+        </g>
 
         {/* 오른쪽 해초 - 불규칙한 곡선 */}
-        <path
-          d="M44 50 C44 47, 46 44, 45 41 C44.5 39, 45.8 36.5, 45 34 C44.2 31.5, 46 29, 45 26.5 C44 24, 45.5 21.5, 44.8 19 C44.2 16.5, 46 14, 44 12"
-          stroke="url(#seaweed3)"
-          strokeWidth="3.8"
-          strokeLinecap="round"
-          fill="none"
-          opacity="0.92"
-        />
-        {/* 오른쪽 해초 하이라이트 */}
-        <path
-          d="M43.2 48 C43.2 45.5, 44.5 43, 44 40 C43.6 37.5, 44.8 35, 44.2 32 C43.7 29.5, 45 27, 44.4 24 C43.8 21, 45 18, 44 16"
-          stroke="url(#seaweedHighlight)"
-          strokeWidth="1.6"
-          strokeLinecap="round"
-          fill="none"
-        />
-        {/* 오른쪽 해초 잎맥 디테일 */}
-        <path d="M45 35 Q 47.5 35, 47 34.5" stroke="#4caf50" strokeWidth="0.6" fill="none" opacity="0.5"/>
-        <path d="M45 28 Q 48 28, 47.5 27.5" stroke="#4caf50" strokeWidth="0.6" fill="none" opacity="0.5"/>
-        <path d="M44 21 Q 46.5 21, 46 20.5" stroke="#66bb6a" strokeWidth="0.5" fill="none" opacity="0.4"/>
+        <g>
+          <animateTransform
+            attributeName="transform"
+            type="rotate"
+            values="0 44 50; 1.5 44 50; 0 44 50; -1 44 50; 0 44 50"
+            dur="4.2s"
+            repeatCount="indefinite"
+          />
+          <path
+            d="M44 50 C44 47, 46 44, 45 41 C44.5 39, 45.8 36.5, 45 34 C44.2 31.5, 46 29, 45 26.5 C44 24, 45.5 21.5, 44.8 19 C44.2 16.5, 46 14, 44 12"
+            stroke="url(#seaweed3)"
+            strokeWidth="3.8"
+            strokeLinecap="round"
+            fill="none"
+            opacity="0.92"
+          />
+          {/* 오른쪽 해초 하이라이트 */}
+          <path
+            d="M43.2 48 C43.2 45.5, 44.5 43, 44 40 C43.6 37.5, 44.8 35, 44.2 32 C43.7 29.5, 45 27, 44.4 24 C43.8 21, 45 18, 44 16"
+            stroke="url(#seaweedHighlight)"
+            strokeWidth="1.6"
+            strokeLinecap="round"
+            fill="none"
+          />
+          {/* 오른쪽 해초 잎맥 디테일 */}
+          <path d="M45 35 Q 47.5 35, 47 34.5" stroke="#4caf50" strokeWidth="0.6" fill="none" opacity="0.5"/>
+          <path d="M45 28 Q 48 28, 47.5 27.5" stroke="#4caf50" strokeWidth="0.6" fill="none" opacity="0.5"/>
+          <path d="M44 21 Q 46.5 21, 46 20.5" stroke="#66bb6a" strokeWidth="0.5" fill="none" opacity="0.4"/>
+        </g>
 
         {/* 작은 해초들 - 더 다양하고 자연스럽게 */}
         <path
@@ -1000,68 +1036,116 @@ const DecorationIcons = {
         />
 
         {/* 산호 폴립(polyps) - 왼쪽 끝단들 */}
-        <circle cx="16" cy="18" r="3" fill="url(#coralPolyp1)"/>
-        <circle cx="16.5" cy="17.5" r="1" fill="#ffcccc" opacity="0.7"/>
+        <g>
+          <animateTransform
+            attributeName="transform"
+            type="scale"
+            values="1; 1.02; 1; 0.98; 1"
+            dur="4.5s"
+            repeatCount="indefinite"
+            additive="sum"
+          />
+          <animate
+            attributeName="opacity"
+            values="1; 0.85; 1; 0.9; 1"
+            dur="4.5s"
+            repeatCount="indefinite"
+          />
+          <circle cx="16" cy="18" r="3" fill="url(#coralPolyp1)"/>
+          <circle cx="16.5" cy="17.5" r="1" fill="#ffcccc" opacity="0.7"/>
 
-        <circle cx="18" cy="15" r="2.8" fill="url(#coralPolyp2)"/>
-        <circle cx="18.5" cy="14.5" r="0.9" fill="#ffe0e0" opacity="0.7"/>
+          <circle cx="18" cy="15" r="2.8" fill="url(#coralPolyp2)"/>
+          <circle cx="18.5" cy="14.5" r="0.9" fill="#ffe0e0" opacity="0.7"/>
 
-        <circle cx="14" cy="16" r="2.5" fill="url(#coralPolyp1)"/>
-        <circle cx="14.5" cy="15.5" r="0.8" fill="#ffd5d5" opacity="0.6"/>
+          <circle cx="14" cy="16" r="2.5" fill="url(#coralPolyp1)"/>
+          <circle cx="14.5" cy="15.5" r="0.8" fill="#ffd5d5" opacity="0.6"/>
 
-        <circle cx="14" cy="19" r="2.3" fill="url(#coralPolyp2)"/>
-        <circle cx="14.5" cy="18.6" r="0.7" fill="#ffe0e0" opacity="0.6"/>
+          <circle cx="14" cy="19" r="2.3" fill="url(#coralPolyp2)"/>
+          <circle cx="14.5" cy="18.6" r="0.7" fill="#ffe0e0" opacity="0.6"/>
 
-        <circle cx="19" cy="14" r="2.6" fill="url(#coralPolyp1)"/>
-        <circle cx="19.5" cy="13.5" r="0.8" fill="#ffcccc" opacity="0.7"/>
+          <circle cx="19" cy="14" r="2.6" fill="url(#coralPolyp1)"/>
+          <circle cx="19.5" cy="13.5" r="0.8" fill="#ffcccc" opacity="0.7"/>
 
-        <circle cx="17" cy="12" r="2.2" fill="url(#coralPolyp2)"/>
-        <circle cx="17.5" cy="11.6" r="0.7" fill="#ffe0e0" opacity="0.6"/>
+          <circle cx="17" cy="12" r="2.2" fill="url(#coralPolyp2)"/>
+          <circle cx="17.5" cy="11.6" r="0.7" fill="#ffe0e0" opacity="0.6"/>
 
-        <circle cx="18" cy="11" r="1.8" fill="url(#coralPolyp1)"/>
-        <circle cx="18.4" cy="10.7" r="0.6" fill="#ffd5d5" opacity="0.5"/>
+          <circle cx="18" cy="11" r="1.8" fill="url(#coralPolyp1)"/>
+          <circle cx="18.4" cy="10.7" r="0.6" fill="#ffd5d5" opacity="0.5"/>
 
-        <circle cx="16" cy="13" r="2" fill="url(#coralPolyp2)"/>
+          <circle cx="16" cy="13" r="2" fill="url(#coralPolyp2)"/>
+        </g>
 
         {/* 산호 폴립 - 오른쪽 끝단들 */}
-        <circle cx="44" cy="18" r="3" fill="url(#coralPolyp1)"/>
-        <circle cx="43.5" cy="17.5" r="1" fill="#ffcccc" opacity="0.7"/>
+        <g>
+          <animateTransform
+            attributeName="transform"
+            type="scale"
+            values="1; 0.98; 1; 1.02; 1"
+            dur="5s"
+            repeatCount="indefinite"
+            additive="sum"
+          />
+          <animate
+            attributeName="opacity"
+            values="1; 0.9; 1; 0.85; 1"
+            dur="5s"
+            repeatCount="indefinite"
+          />
+          <circle cx="44" cy="18" r="3" fill="url(#coralPolyp1)"/>
+          <circle cx="43.5" cy="17.5" r="1" fill="#ffcccc" opacity="0.7"/>
 
-        <circle cx="42" cy="15" r="2.8" fill="url(#coralPolyp2)"/>
-        <circle cx="41.5" cy="14.5" r="0.9" fill="#ffe0e0" opacity="0.7"/>
+          <circle cx="42" cy="15" r="2.8" fill="url(#coralPolyp2)"/>
+          <circle cx="41.5" cy="14.5" r="0.9" fill="#ffe0e0" opacity="0.7"/>
 
-        <circle cx="46" cy="16" r="2.5" fill="url(#coralPolyp1)"/>
-        <circle cx="45.5" cy="15.5" r="0.8" fill="#ffd5d5" opacity="0.6"/>
+          <circle cx="46" cy="16" r="2.5" fill="url(#coralPolyp1)"/>
+          <circle cx="45.5" cy="15.5" r="0.8" fill="#ffd5d5" opacity="0.6"/>
 
-        <circle cx="46" cy="19" r="2.3" fill="url(#coralPolyp2)"/>
-        <circle cx="45.5" cy="18.6" r="0.7" fill="#ffe0e0" opacity="0.6"/>
+          <circle cx="46" cy="19" r="2.3" fill="url(#coralPolyp2)"/>
+          <circle cx="45.5" cy="18.6" r="0.7" fill="#ffe0e0" opacity="0.6"/>
 
-        <circle cx="41" cy="14" r="2.6" fill="url(#coralPolyp1)"/>
-        <circle cx="40.5" cy="13.5" r="0.8" fill="#ffcccc" opacity="0.7"/>
+          <circle cx="41" cy="14" r="2.6" fill="url(#coralPolyp1)"/>
+          <circle cx="40.5" cy="13.5" r="0.8" fill="#ffcccc" opacity="0.7"/>
 
-        <circle cx="43" cy="12" r="2.2" fill="url(#coralPolyp2)"/>
-        <circle cx="42.5" cy="11.6" r="0.7" fill="#ffe0e0" opacity="0.6"/>
+          <circle cx="43" cy="12" r="2.2" fill="url(#coralPolyp2)"/>
+          <circle cx="42.5" cy="11.6" r="0.7" fill="#ffe0e0" opacity="0.6"/>
 
-        <circle cx="42" cy="11" r="1.8" fill="url(#coralPolyp1)"/>
-        <circle cx="41.6" cy="10.7" r="0.6" fill="#ffd5d5" opacity="0.5"/>
+          <circle cx="42" cy="11" r="1.8" fill="url(#coralPolyp1)"/>
+          <circle cx="41.6" cy="10.7" r="0.6" fill="#ffd5d5" opacity="0.5"/>
 
-        <circle cx="44" cy="13" r="2" fill="url(#coralPolyp2)"/>
+          <circle cx="44" cy="13" r="2" fill="url(#coralPolyp2)"/>
+        </g>
 
         {/* 중간 폴립들 */}
-        <circle cx="27" cy="30" r="2.5" fill="url(#coralPolyp1)"/>
-        <circle cx="27.5" cy="29.6" r="0.8" fill="#ffcccc" opacity="0.6"/>
+        <g>
+          <animateTransform
+            attributeName="transform"
+            type="scale"
+            values="1; 1.01; 1; 0.99; 1"
+            dur="4.2s"
+            repeatCount="indefinite"
+            additive="sum"
+          />
+          <animate
+            attributeName="opacity"
+            values="1; 0.88; 1; 0.92; 1"
+            dur="4.2s"
+            repeatCount="indefinite"
+          />
+          <circle cx="27" cy="30" r="2.5" fill="url(#coralPolyp1)"/>
+          <circle cx="27.5" cy="29.6" r="0.8" fill="#ffcccc" opacity="0.6"/>
 
-        <circle cx="33" cy="30" r="2.5" fill="url(#coralPolyp1)"/>
-        <circle cx="32.5" cy="29.6" r="0.8" fill="#ffcccc" opacity="0.6"/>
+          <circle cx="33" cy="30" r="2.5" fill="url(#coralPolyp1)"/>
+          <circle cx="32.5" cy="29.6" r="0.8" fill="#ffcccc" opacity="0.6"/>
 
-        <circle cx="25" cy="27" r="2" fill="url(#coralPolyp2)"/>
-        <circle cx="25.5" cy="26.7" r="0.6" fill="#ffe0e0" opacity="0.5"/>
+          <circle cx="25" cy="27" r="2" fill="url(#coralPolyp2)"/>
+          <circle cx="25.5" cy="26.7" r="0.6" fill="#ffe0e0" opacity="0.5"/>
 
-        <circle cx="35" cy="27" r="2" fill="url(#coralPolyp2)"/>
-        <circle cx="34.5" cy="26.7" r="0.6" fill="#ffe0e0" opacity="0.5"/>
+          <circle cx="35" cy="27" r="2" fill="url(#coralPolyp2)"/>
+          <circle cx="34.5" cy="26.7" r="0.6" fill="#ffe0e0" opacity="0.5"/>
 
-        <circle cx="24" cy="29" r="1.7" fill="url(#coralPolyp1)"/>
-        <circle cx="36" cy="29" r="1.7" fill="url(#coralPolyp1)"/>
+          <circle cx="24" cy="29" r="1.7" fill="url(#coralPolyp1)"/>
+          <circle cx="36" cy="29" r="1.7" fill="url(#coralPolyp1)"/>
+        </g>
 
         {/* 산호 표면 질감 - 작은 돌기들 */}
         <circle cx="30" cy="42" r="1.2" fill="#ff9999" opacity="0.5"/>
@@ -2448,6 +2532,13 @@ const DecorationIcons = {
         </linearGradient>
       </defs>
       <g filter="url(#jellyfish-shadow)">
+        <animateTransform
+          attributeName="transform"
+          type="translate"
+          values="0 0; 0 -2; 0 0; 0 1; 0 0"
+          dur="4s"
+          repeatCount="indefinite"
+        />
         {/* Translucent bell outer membrane */}
         <ellipse cx="30" cy="25" rx="16" ry="13" fill="url(#jellyHead)" opacity="0.9"/>
 

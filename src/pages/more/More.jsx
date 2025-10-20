@@ -347,7 +347,7 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
     <div className={`flex-1 overflow-y-auto custom-scrollbar scrollbar-hide-idle pb-20 ${bgColor}`}>
       <div className="min-h-full">
         {/* 오늘의 환경 상식 */}
-        <div className={`mx-3 mt-4 ${cardBg} border ${borderColor} rounded-xl p-4`}>
+        <div className={`mx-3 mt-4 ${cardBg} border ${borderColor} rounded-xl px-4 pt-4 pb-0`}>
           <div className="flex justify-between items-center mb-3">
             <div className="flex items-center">
               <h3 className={`${textColor} text-sm font-medium`}>오늘의 환경 상식</h3>
@@ -424,11 +424,11 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
                 <div className={`overflow-hidden transition-all duration-300 ease-in-out ${
                   expandedTip === environmentalTip.id ? 'max-h-96 opacity-100 mt-3' : 'max-h-0 opacity-0'
                 }`}>
-                  <div className={`${isDarkMode ? 'bg-gray-800' : 'bg-gray-50'} rounded-lg p-3`}>
+                  <div className="px-3 pt-2 pb-0">
                     <p className={`text-sm leading-relaxed text-justify ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                       {environmentalTip.content}
                     </p>
-                    <div className={`flex items-center justify-between mt-3 pt-3 border-t ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
+                    <div className={`flex items-center justify-between mt-2 pt-2 border-t ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
                       <button 
                         onClick={handleShareTip}
                         className="px-3 py-1.5 rounded-lg text-xs font-medium flex items-center transition-all bg-gradient-to-r from-cyan-500 via-blue-500 to-blue-600 text-white hover:opacity-90"
@@ -436,10 +436,10 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
                         <Share2 className="w-3 h-3 mr-1" />
                         공유하기
                       </button>
-                      <button 
+                      <button
                         onClick={handleCheckTip}
                         className={`${
-                          hasCheckedTip 
+                          hasCheckedTip
                             ? isDarkMode ? 'bg-gray-700 text-gray-400 cursor-not-allowed' : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                             : 'bg-gradient-to-r from-cyan-500 via-blue-500 to-blue-600 text-white hover:opacity-90'
                         } px-3 py-1.5 rounded-lg text-xs font-medium flex items-center transition-colors`}
@@ -455,6 +455,12 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
                         )}
                       </button>
                     </div>
+                    <div className="mt-2 -mb-1.5">
+                      <div className={`h-[1px] mb-2 bg-gradient-to-r from-transparent ${isDarkMode ? 'via-gray-700' : 'via-gray-200'} to-transparent`}></div>
+                      <p className={`text-xs m-0 pb-2 ${isDarkMode ? 'text-gray-500' : 'text-gray-400'} text-center italic leading-none`}>
+                        매일 새로운 환경 팁을 확인하세요
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -466,13 +472,6 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
               </p>
             </div>
           )}
-
-          <div className="mt-3 pt-3">
-            <div className={`h-[1px] mb-2 bg-gradient-to-r from-transparent ${isDarkMode ? 'via-gray-700' : 'via-gray-200'} to-transparent`}></div>
-            <p className={`text-xs ${isDarkMode ? 'text-gray-500' : 'text-gray-400'} text-center italic`}>
-              매일 새로운 환경 팁을 확인하세요
-            </p>
-          </div>
         </div>
 
         {/* 제로웨이스트 맵 */}
@@ -579,19 +578,19 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
         </div>
 
         {/* 도움말 */}
-        <div className={`mx-3 mt-4 ${cardBg} border ${borderColor} rounded-xl p-4`}>
-          <h3 className={`${textColor} text-sm font-medium mb-3`}>도움말</h3>
+        <div className={`mx-3 mt-4 ${cardBg} border ${borderColor} rounded-xl p-3`}>
+          <h3 className={`${textColor} text-sm font-medium mb-2`}>도움말</h3>
           <div className="space-y-2">
-            <button className={`w-full flex items-center justify-between p-3 ${inputBg} rounded-lg`}>
+            <button className={`w-full flex items-center justify-between p-2.5 ${inputBg} rounded-lg`}>
               <div className="flex items-center">
                 <Book className={`w-4 h-4 mr-2 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
                 <span className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>앱 사용 방법</span>
               </div>
               <ChevronRight className={`w-4 h-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
             </button>
-            <button 
+            <button
               onClick={onShowChatBot}
-              className={`w-full flex items-center justify-between p-3 ${inputBg} rounded-lg`}
+              className={`w-full flex items-center justify-between p-2.5 ${inputBg} rounded-lg`}
             >
               <div className="flex items-center">
                 <Phone className={`w-4 h-4 mr-2 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />

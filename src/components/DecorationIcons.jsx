@@ -46,7 +46,7 @@ const DecorationIcons = {
       <g filter="url(#seaweed-shadow)">
         {/* 왼쪽 해초 - 더 자연스러운 곡선 */}
         <path
-          d="M16 50 C16 46, 14 42, 15 38 C16 34, 14 30, 15 26 C16 22, 14 18, 15 14 C16 10, 14 6, 16 3"
+          d="M16 50 C16 47, 14 44, 15 41 C16 38, 14 35, 15 32 C16 29, 14 26, 15 23 C16 20, 14 17, 16 14"
           stroke="url(#seaweed1)"
           strokeWidth="3.5"
           strokeLinecap="round"
@@ -55,7 +55,7 @@ const DecorationIcons = {
         />
         {/* 왼쪽 해초 하이라이트 */}
         <path
-          d="M16.5 48 C16.5 44, 15 40, 15.5 36 C16 32, 15 28, 15.5 24 C16 20, 15 16, 15.5 12"
+          d="M16.5 48 C16.5 45, 15 42, 15.5 39 C16 36, 15 33, 15.5 30 C16 27, 15 24, 15.5 21"
           stroke="url(#seaweedHighlight)"
           strokeWidth="1.5"
           strokeLinecap="round"
@@ -64,7 +64,7 @@ const DecorationIcons = {
 
         {/* 중앙 왼쪽 해초 */}
         <path
-          d="M24 50 C24 45, 22 40, 24 35 C26 30, 22 25, 24 20 C26 15, 22 10, 24 5 C26 3, 24 1, 25 0"
+          d="M24 50 C24 46, 22 42, 24 38 C26 34, 22 31, 24 27 C26 23, 22 20, 24 16 C26 14, 24 13, 25 12"
           stroke="url(#seaweed2)"
           strokeWidth="4"
           strokeLinecap="round"
@@ -73,7 +73,7 @@ const DecorationIcons = {
         />
         {/* 중앙 왼쪽 해초 하이라이트 */}
         <path
-          d="M25 48 C25 43, 24 38, 25 33 C26 28, 24 23, 25 18 C26 13, 24 8, 25 5"
+          d="M25 48 C25 45, 24 41, 25 37 C26 33, 24 29, 25 26 C26 22, 24 18, 25 16"
           stroke="url(#seaweedHighlight)"
           strokeWidth="1.8"
           strokeLinecap="round"
@@ -82,7 +82,7 @@ const DecorationIcons = {
 
         {/* 중앙 오른쪽 해초 */}
         <path
-          d="M36 50 C36 45, 38 40, 36 35 C34 30, 38 25, 36 20 C34 15, 38 10, 36 5 C34 3, 36 1, 35 0"
+          d="M36 50 C36 46, 38 42, 36 38 C34 34, 38 31, 36 27 C34 23, 38 20, 36 16 C34 14, 36 13, 35 12"
           stroke="url(#seaweed2)"
           strokeWidth="4"
           strokeLinecap="round"
@@ -91,7 +91,7 @@ const DecorationIcons = {
         />
         {/* 중앙 오른쪽 해초 하이라이트 */}
         <path
-          d="M35 48 C35 43, 36 38, 35 33 C34 28, 36 23, 35 18 C34 13, 36 8, 35 5"
+          d="M35 48 C35 45, 36 41, 35 37 C34 33, 36 29, 35 26 C34 22, 36 18, 35 16"
           stroke="url(#seaweedHighlight)"
           strokeWidth="1.8"
           strokeLinecap="round"
@@ -100,7 +100,7 @@ const DecorationIcons = {
 
         {/* 오른쪽 해초 */}
         <path
-          d="M44 50 C44 46, 46 42, 45 38 C44 34, 46 30, 45 26 C44 22, 46 18, 45 14 C44 10, 46 6, 44 3"
+          d="M44 50 C44 47, 46 44, 45 41 C44 38, 46 35, 45 32 C44 29, 46 26, 45 23 C44 20, 46 17, 44 14"
           stroke="url(#seaweed3)"
           strokeWidth="3.5"
           strokeLinecap="round"
@@ -109,7 +109,7 @@ const DecorationIcons = {
         />
         {/* 오른쪽 해초 하이라이트 */}
         <path
-          d="M43.5 48 C43.5 44, 45 40, 44.5 36 C44 32, 45 28, 44.5 24 C44 20, 45 16, 44.5 12"
+          d="M43.5 48 C43.5 45, 45 42, 44.5 39 C44 36, 45 33, 44.5 30 C44 27, 45 24, 44.5 21"
           stroke="url(#seaweedHighlight)"
           strokeWidth="1.5"
           strokeLinecap="round"
@@ -118,7 +118,7 @@ const DecorationIcons = {
 
         {/* 작은 해초들 - 더 다양하게 */}
         <path
-          d="M10 50 C10 47, 9 44, 10 41 C11 38, 9 35, 10 32 C11 29, 9 26, 10 24"
+          d="M10 50 C10 48, 9 45, 10 43 C11 41, 9 39, 10 36 C11 34, 9 32, 10 30"
           stroke="url(#seaweed4)"
           strokeWidth="2.5"
           strokeLinecap="round"
@@ -126,7 +126,7 @@ const DecorationIcons = {
           opacity="0.8"
         />
         <path
-          d="M50 50 C50 47, 51 44, 50 41 C49 38, 51 35, 50 32 C49 29, 51 26, 50 24"
+          d="M50 50 C50 48, 51 45, 50 43 C49 41, 51 39, 50 36 C49 34, 51 32, 50 30"
           stroke="url(#seaweed4)"
           strokeWidth="2.5"
           strokeLinecap="round"
@@ -135,10 +135,10 @@ const DecorationIcons = {
         />
 
         {/* 미세한 잎사귀 디테일 */}
-        <path d="M24 40 Q 21 39, 22 38" stroke="#81c784" strokeWidth="0.8" fill="none" opacity="0.6"/>
-        <path d="M24 28 Q 27 27, 26 26" stroke="#81c784" strokeWidth="0.8" fill="none" opacity="0.6"/>
-        <path d="M36 40 Q 39 39, 38 38" stroke="#81c784" strokeWidth="0.8" fill="none" opacity="0.6"/>
-        <path d="M36 28 Q 33 27, 34 26" stroke="#81c784" strokeWidth="0.8" fill="none" opacity="0.6"/>
+        <path d="M24 42 Q 21 42, 22 41" stroke="#81c784" strokeWidth="0.8" fill="none" opacity="0.6"/>
+        <path d="M24 33 Q 27 33, 26 32" stroke="#81c784" strokeWidth="0.8" fill="none" opacity="0.6"/>
+        <path d="M36 42 Q 39 42, 38 41" stroke="#81c784" strokeWidth="0.8" fill="none" opacity="0.6"/>
+        <path d="M36 33 Q 33 33, 34 32" stroke="#81c784" strokeWidth="0.8" fill="none" opacity="0.6"/>
       </g>
     </svg>
   ),

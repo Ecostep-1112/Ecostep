@@ -171,10 +171,42 @@ app.post('/api/chatbot', async (req, res) => {
 // Environmental tip endpoint
 app.post('/api/environmental-tip', async (req, res) => {
   try {
+    const { category } = req.body;
+
     // Check if API key exists
     if (!CLAUDE_API_KEY || CLAUDE_API_KEY === 'your-api-key-here' || !CLAUDE_API_KEY.startsWith('sk-ant-')) {
       console.log('Using mock data - Claude API key not configured');
       return res.json(generateMockTip());
+    }
+
+    // 카테고리별 프롬프트 생성
+    let categoryPrompt = '';
+    let categoryName = category || '랜덤';
+
+    switch(categoryName) {
+      case '재활용 팁':
+        categoryPrompt = `재활용 팁 카테고리에서 실용적인 팁을 하나 생성해주세요.
+        주제: 플라스틱, 종이, 유리, 금속 등의 올바른 분리배출 방법, 재활용품 활용법, 업사이클링 아이디어 등
+        예시: 페트병 분리배출 방법, 우유팩 재활용, 커피 찌꺼기 활용법 등`;
+        break;
+      case '생활 습관':
+        categoryPrompt = `생활 습관 카테고리에서 실용적인 팁을 하나 생성해주세요.
+        주제: 일상생활에서 쉽게 실천할 수 있는 친환경 습관, 일회용품 줄이기, 친환경 소비 등
+        예시: 텀블러 사용하기, 장바구니 휴대하기, 손수건 사용하기, 메쉬백으로 장보기 등`;
+        break;
+      case '에너지 절약':
+        categoryPrompt = `에너지 절약 카테고리에서 실용적인 팁을 하나 생성해주세요.
+        주제: 전기, 가스, 물 등의 에너지 절약 방법, 효율적인 에너지 사용법 등
+        예시: 대기전력 차단하기, LED 전구 사용, 에어컨 적정 온도 유지, 찬물 세탁 등`;
+        break;
+      case '제로웨이스트':
+        categoryPrompt = `제로웨이스트 카테고리에서 실용적인 팁을 하나 생성해주세요.
+        주제: 쓰레기 제로를 목표로 하는 실천법, 친환경 대체품 사용, 무포장 제품 구매 등
+        예시: 밀랍 랩 사용하기, 천연 수세미 사용, 고체 샴푸바, 스테인리스 빨대 등`;
+        break;
+      default:
+        categoryPrompt = `환경 보호와 제로웨이스트에 관한 실용적인 팁을 하나 생성해주세요.
+        카테고리는 재활용 팁, 생활 습관, 에너지 절약, 제로웨이스트 중 하나를 선택해주세요.`;
     }
 
     // Call Claude API
@@ -183,24 +215,25 @@ app.post('/api/environmental-tip', async (req, res) => {
       max_tokens: 500,
       messages: [{
         role: 'user',
-        content: `환경 보호와 제로웨이스트에 관한 실용적인 팁을 하나 생성해주세요. 
-        
+        content: `${categoryPrompt}
+
         다음 형식으로 JSON 응답을 보내주세요:
         {
           "title": "간단한 제목 (20자 이내)",
           "preview": "짧은 미리보기 텍스트 (40자 이내)",
           "content": "자세한 설명 (200자 이내, 실천 방법 포함)",
-          "category": "카테고리 (재활용 팁, 생활 습관, 에너지 절약, 제로웨이스트 중 하나)"
+          "category": "${categoryName === '랜덤' ? '카테고리 (재활용 팁, 생활 습관, 에너지 절약, 제로웨이스트 중 하나)' : categoryName}"
         }
-        
-        실용적이고 한국에서 실천 가능한 내용으로 작성해주세요.`
+
+        실용적이고 한국에서 실천 가능한 내용으로 작성해주세요.
+        매번 다른 팁을 생성해주세요.`
       }]
     });
-    
+
     // Extract JSON from Claude's response
     const content = response.content[0].text;
     let tipData;
-    
+
     try {
       // Try to parse JSON from the response
       const jsonMatch = content.match(/\{[\s\S]*\}/);
@@ -213,12 +246,12 @@ app.post('/api/environmental-tip', async (req, res) => {
       console.error('Failed to parse Claude response:', parseError);
       return res.json(generateMockTip());
     }
-    
+
     res.json({
       id: Date.now(),
       ...tipData
     });
-    
+
   } catch (error) {
     console.error('Error generating environmental tip:', error);
     res.json(generateMockTip());

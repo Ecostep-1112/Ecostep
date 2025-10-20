@@ -10,6 +10,7 @@ import {
   customPlasticItemStorage,
   selectedChallengeStorage
 } from '../../utils/localStorage';
+import { supabase } from '../../lib/supabase';
 
 const Challenge = ({ 
   isDarkMode,
@@ -464,7 +465,7 @@ const Challenge = ({
     checkMidnight();
   }, [currentWeekStart, currentDayIndex, weeklyProgress, testDate]);
 
-  const handleCompleteToday = () => {
+  const handleCompleteToday = async () => {
     if (!todayCompleted && currentWeekStart) {
       // 현재 주차 데이터 가져오기 (없으면 생성)
       const currentWeekData = weeklyProgress[currentWeekStart] || {
@@ -472,20 +473,20 @@ const Challenge = ({
         days: [null, null, null, null, null, null, null],
         startDate: currentWeekStart
       };
-      
+
       // 챌린지가 설정되지 않았으면 현재 선택된 챌린지 사용
       const finalChallenge = currentWeekData.challenge || selectedChallenge;
-      
+
       // 챌린지가 없으면 에러 메시지 표시
       if (!finalChallenge) {
         showToast('챌린지를 먼저 선택해주세요', 'error');
         return;
       }
-      
+
       const updatedWeek = {
         ...currentWeekData,
         challenge: finalChallenge,
-        days: currentWeekData.days.map((day, idx) => 
+        days: currentWeekData.days.map((day, idx) =>
           idx === currentDayIndex ? true : day
         )
       };
@@ -493,7 +494,7 @@ const Challenge = ({
       setWeeklyProgress(updatedProgress);
       localStorage.setItem('weeklyProgress', JSON.stringify(updatedProgress));
       setTodayCompleted(true);
-      
+
       // 플라스틱 절약량 계산 및 반영
       let plasticSaved = 0;
       if (challengeSavings[finalChallenge]) {
@@ -501,7 +502,7 @@ const Challenge = ({
       } else if (customChallengeSavings[finalChallenge]) {
         plasticSaved = customChallengeSavings[finalChallenge];
       }
-      
+
       // 홈 화면에 플라스틱 절약량 반영
       if (plasticSaved > 0 && setTotalPlasticSaved) {
         const currentTotal = parseFloat(localStorage.getItem('totalPlasticSaved') || '0');
@@ -509,14 +510,46 @@ const Challenge = ({
         localStorage.setItem('totalPlasticSaved', newTotal.toString());
         setTotalPlasticSaved(newTotal);
       }
-      
+
+      // Supabase에 데일리 챌린지 기록 저장
+      try {
+        // 사용자 ID 가져오기
+        let userId = null;
+        const savedProfileData = localStorage.getItem('profileData');
+        if (savedProfileData) {
+          try {
+            const parsed = JSON.parse(savedProfileData);
+            userId = parsed.userId;
+          } catch (e) {
+            console.error('프로필 데이터 파싱 오류:', e);
+          }
+        }
+
+        if (userId) {
+          const { error } = await supabase
+            .from('daily_chal_data')
+            .insert({
+              record_id: crypto.randomUUID(),
+              user_id: userId,
+              is_completed: true,
+              total_completed: 1,
+              created_at: new Date().toISOString().split('T')[0],
+              content: finalChallenge
+            });
+
+          if (error) throw error;
+        }
+      } catch (error) {
+        console.error('데일리 챌린지 기록 저장 실패:', error);
+      }
+
       // 포인트 증가 및 토스트 메시지 표시
       if (earnPoints) {
         earnPoints(100);
       } else if (setPoints) {
         setPoints(prev => prev + 100);
       }
-      
+
       // 토스트 메시지 표시
       if (showToast) {
         if (plasticSaved > 0) {
@@ -525,17 +558,17 @@ const Challenge = ({
           showToast('100P 획득', 'success');
         }
       }
-      
+
       // 수질 100%로 회복 및 마지막 챌린지 날짜 업데이트
       if (setWaterQuality) {
         setWaterQuality(100);
       }
-      
+
       const today = new Date().toISOString();
       if (setLastChallengeDate) {
         setLastChallengeDate(today);
       }
-      
+
       // 챌린지 기록에 추가 (연속 날짜 계산용)
       if (setChallengeHistory) {
         const newHistory = [...(challengeHistory || []), today];
@@ -1865,20 +1898,20 @@ const Challenge = ({
                     </div>
                   </div>
                 </div>
-                <button 
-                  onClick={() => {
+                <button
+                  onClick={async () => {
                     let recordItem = null;
                     let totalWeight = 0;
-                    
+
                     if (selectedPlasticItem && selectedPlasticItem !== '') {
-                      recordItem = plasticItems.find(i => i.name === selectedPlasticItem) || 
+                      recordItem = plasticItems.find(i => i.name === selectedPlasticItem) ||
                                   customPlasticItems.find(i => i.name === selectedPlasticItem) ||
                                   customAddedItems.find(i => i.name === selectedPlasticItem);
                       if (recordItem) {
                         totalWeight = plasticQuantity * recordItem.weight;
                       }
                     }
-                    
+
                     if (recordItem && plasticQuantity > 0) {
                       const newRecord = {
                         date: new Date(testDate || new Date()).toISOString(),
@@ -1887,11 +1920,44 @@ const Challenge = ({
                         unitWeight: recordItem.weight,
                         totalWeight: totalWeight
                       };
-                      
+
                       const updatedRecords = [...plasticRecords, newRecord];
                       setPlasticRecords(updatedRecords);
                       localStorage.setItem('plasticRecords', JSON.stringify(updatedRecords));
-                      
+
+                      // Supabase에 플라스틱 기록 저장
+                      try {
+                        // 사용자 ID 가져오기
+                        let userId = null;
+                        const savedProfileData = localStorage.getItem('profileData');
+                        if (savedProfileData) {
+                          try {
+                            const parsed = JSON.parse(savedProfileData);
+                            userId = parsed.userId;
+                          } catch (e) {
+                            console.error('프로필 데이터 파싱 오류:', e);
+                          }
+                        }
+
+                        if (userId) {
+                          const { error } = await supabase
+                            .from('zero_chal_data')
+                            .insert({
+                              record_id: crypto.randomUUID(),
+                              user_id: userId,
+                              item_type: recordItem.name,
+                              item_num: 1,
+                              tracked_date: new Date(testDate || new Date()).toISOString().split('T')[0],
+                              quantity: plasticQuantity,
+                              weight: totalWeight
+                            });
+
+                          if (error) throw error;
+                        }
+                      } catch (error) {
+                        console.error('플라스틱 기록 저장 실패:', error);
+                      }
+
                       // 입력 초기화
                       setSelectedPlasticItem(null);
                       setPlasticQuantity(1);

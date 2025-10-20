@@ -5,21 +5,31 @@
 const CLAUDE_API_KEY = import.meta.env.VITE_CLAUDE_API_KEY || 'your-api-key-here';
 const CLAUDE_API_URL = 'https://api.anthropic.com/v1/messages';
 
-export const generateEnvironmentalTip = async (category = null, index = null) => {
-  // 개발 환경에서는 Mock 데이터를 반환
-  // 실제 환경에서는 백엔드 API를 통해 Claude API를 호출
-  if (!CLAUDE_API_KEY || CLAUDE_API_KEY === 'your-api-key-here') {
-    // Mock 데이터 생성 (개발용)
-    return generateMockTip(category, index);
-  }
+export const generateEnvironmentalTip = async (category = null) => {
   try {
+    // 오늘 날짜를 기준으로 캐시 키 생성
+    const today = new Date().toDateString(); // "Mon Jan 20 2025"
+    const cacheKey = `env-tip-${today}-${category || '랜덤'}`;
+
+    // 캐시 확인
+    const cachedTip = localStorage.getItem(cacheKey);
+    if (cachedTip) {
+      console.log('캐시에서 팁 로드:', category);
+      return JSON.parse(cachedTip);
+    }
+
+    console.log('새로운 팁 생성 중:', category);
+
     // 백엔드 서버를 통해 Claude API 호출
     const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5176';
     const response = await fetch(`${API_URL}/api/environmental-tip`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-      }
+      },
+      body: JSON.stringify({
+        category: category || '랜덤'
+      })
     });
 
     if (!response.ok) {
@@ -27,12 +37,15 @@ export const generateEnvironmentalTip = async (category = null, index = null) =>
     }
 
     const tipData = await response.json();
-    
+
+    // 캐시에 저장
+    localStorage.setItem(cacheKey, JSON.stringify(tipData));
+
     return tipData;
   } catch (error) {
     console.error('환경 팁 로드 실패 - Mock 데이터 사용:', error);
     // 백엔드 서버가 실행되지 않은 경우 Mock 데이터 사용
-    return generateMockTip(category, index);
+    return generateMockTip(category, null);
   }
 };
 

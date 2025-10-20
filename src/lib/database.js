@@ -38,40 +38,43 @@ export const getUserProfile = async (userId) => {
   }
 };
 
-// 사용자 통계 저장
+// 사용자 정보 저장 (user_info 테이블 사용)
 export const saveUserStats = async (userId, stats) => {
   try {
     const { data, error } = await supabase
-      .from('user_stats')
+      .from('user_info')
       .upsert({
         user_id: userId,
-        ...stats,
-        updated_at: new Date().toISOString()
+        point_current: stats.point_current || stats.points || 0,
+        points_total: stats.points_total || stats.totalPoints || 0,
+        rank: stats.rank || 'bronze',
+        amount: stats.amount || stats.plasticGoal || 0,
+        ...stats
       })
       .select()
       .single();
-    
+
     if (error) throw error;
     return { data, error: null };
   } catch (error) {
-    console.error('통계 저장 에러:', error);
+    console.error('유저 정보 저장 에러:', error);
     return { data: null, error };
   }
 };
 
-// 사용자 통계 가져오기
+// 사용자 정보 가져오기 (user_info 테이블 사용)
 export const getUserStats = async (userId) => {
   try {
     const { data, error } = await supabase
-      .from('user_stats')
+      .from('user_info')
       .select('*')
       .eq('user_id', userId)
       .single();
-    
+
     if (error) throw error;
     return { data, error: null };
   } catch (error) {
-    console.error('통계 가져오기 에러:', error);
+    console.error('유저 정보 가져오기 에러:', error);
     return { data: null, error };
   }
 };
@@ -278,16 +281,25 @@ export const getStoreDecorations = async () => {
 
 // ======================== 사용자 정보 관련 함수 ========================
 
-// 사용자 정보 저장/업데이트
+// 사용자 정보 저장/업데이트 (통합 함수)
 export const saveUserInfo = async (userId, userInfo) => {
   try {
+    // user_info 테이블에 맞게 필드명 매핑
+    const mappedInfo = {
+      user_id: userId,
+      name: userInfo.name || userInfo.username || 'User',
+      email: userInfo.email,
+      point_current: userInfo.point_current !== undefined ? userInfo.point_current : (userInfo.points || 0),
+      points_total: userInfo.points_total !== undefined ? userInfo.points_total : (userInfo.totalPoints || 0),
+      rank: userInfo.rank || 'bronze',
+      amount: userInfo.amount !== undefined ? userInfo.amount : (userInfo.plasticGoal || 0),
+      phone_num: userInfo.phone_num || userInfo.phone,
+      user_password: userInfo.user_password
+    };
+
     const { data, error } = await supabase
       .from('user_info')
-      .upsert({
-        user_id: userId,
-        ...userInfo,
-        updated_at: new Date().toISOString()
-      })
+      .upsert(mappedInfo)
       .select()
       .single();
 
@@ -312,6 +324,46 @@ export const getUserInfo = async (userId) => {
     return { data, error: null };
   } catch (error) {
     console.error('사용자 정보 가져오기 에러:', error);
+    return { data: null, error };
+  }
+};
+
+// ======================== 구매 아이템 관련 함수 ========================
+
+// 사용자 구매 아이템 저장
+export const saveUserItem = async (userId, itemId) => {
+  try {
+    const { data, error } = await supabase
+      .from('user_item')
+      .insert({
+        user_id: userId,
+        item_id: itemId,
+        ordered_at: new Date().toISOString().split('T')[0] // DATE 형식
+      })
+      .select()
+      .single();
+
+    if (error) throw error;
+    return { data, error: null };
+  } catch (error) {
+    console.error('아이템 저장 에러:', error);
+    return { data: null, error };
+  }
+};
+
+// 사용자 구매 아이템 목록 가져오기
+export const getUserItems = async (userId) => {
+  try {
+    const { data, error } = await supabase
+      .from('user_item')
+      .select('item_id, ordered_at')
+      .eq('user_id', userId)
+      .order('ordered_at', { ascending: false });
+
+    if (error) throw error;
+    return { data, error: null };
+  } catch (error) {
+    console.error('아이템 목록 가져오기 에러:', error);
     return { data: null, error };
   }
 };
@@ -427,6 +479,145 @@ export const addZeroWastePlace = async (placeData) => {
     return { data, error: null };
   } catch (error) {
     console.error('제로 웨이스트 장소 추가 에러:', error);
+    return { data: null, error };
+  }
+};
+
+// ======================== 사용자 구매 아이템 관련 함수 ========================
+
+// 사용자가 구매한 아이템 목록 가져오기
+export const getUserPurchasedItems = async (userId) => {
+  try {
+    const { data, error } = await supabase
+      .from('user_item')
+      .select('item_id')
+      .eq('user_id', userId);
+
+    if (error) throw error;
+    return { data, error: null };
+  } catch (error) {
+    console.error('구매 아이템 가져오기 에러:', error);
+    return { data: null, error };
+  }
+};
+
+// 아이템 구매 (user_item에 추가)
+export const purchaseItem = async (userId, itemId) => {
+  try {
+    const { data, error } = await supabase
+      .from('user_item')
+      .insert({
+        user_id: userId,
+        item_id: itemId,
+        ordered_at: new Date().toISOString()
+      })
+      .select()
+      .single();
+
+    if (error) throw error;
+    return { data, error: null };
+  } catch (error) {
+    console.error('아이템 구매 에러:', error);
+    return { data: null, error };
+  }
+};
+
+// ======================== 데일리 챌린지 기록 관련 함수 ========================
+
+// 데일리 챌린지 기록 저장
+export const saveDailyChallengeRecord = async (userId, challengeData) => {
+  try {
+    const { data, error } = await supabase
+      .from('daily_chal_data')
+      .insert({
+        record_id: `${userId}_${Date.now()}`,
+        user_id: userId,
+        chal_id: challengeData.chal_id || null,
+        is_completed: challengeData.is_completed || false,
+        total_completed: challengeData.total_completed || 1,
+        content: challengeData.content || '',
+        created_at: new Date().toISOString()
+      })
+      .select()
+      .single();
+
+    if (error) throw error;
+    return { data, error: null };
+  } catch (error) {
+    console.error('데일리 챌린지 저장 에러:', error);
+    return { data: null, error };
+  }
+};
+
+// 사용자의 데일리 챌린지 기록 가져오기
+export const getUserDailyChallengeRecords = async (userId) => {
+  try {
+    const { data, error } = await supabase
+      .from('daily_chal_data')
+      .select('*')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+    return { data, error: null };
+  } catch (error) {
+    console.error('데일리 챌린지 기록 가져오기 에러:', error);
+    return { data: null, error };
+  }
+};
+
+// ======================== 제로 챌린지 (플라스틱 기록) 관련 함수 ========================
+
+// 제로 챌린지 플라스틱 기록 저장
+export const saveZeroChallengeRecord = async (userId, plasticData) => {
+  try {
+    const { data, error } = await supabase
+      .from('zero_chal_data')
+      .insert({
+        record_id: `${userId}_${Date.now()}`,
+        user_id: userId,
+        item_id: plasticData.item_id || null,
+        item_type: plasticData.item_type,
+        item_num: plasticData.item_num || 1,
+        tracked_date: plasticData.tracked_date || new Date().toISOString().split('T')[0],
+        quantity: plasticData.quantity || 1,
+        weight: plasticData.weight || 0,
+        created_at: new Date().toISOString()
+      })
+      .select()
+      .single();
+
+    if (error) throw error;
+    return { data, error: null };
+  } catch (error) {
+    console.error('플라스틱 기록 저장 에러:', error);
+    return { data: null, error };
+  }
+};
+
+// 사용자의 플라스틱 기록 가져오기
+export const getUserZeroChallengeRecords = async (userId, startDate = null, endDate = null) => {
+  try {
+    let query = supabase
+      .from('zero_chal_data')
+      .select('*')
+      .eq('user_id', userId);
+
+    if (startDate) {
+      query = query.gte('tracked_date', startDate);
+    }
+    if (endDate) {
+      query = query.lte('tracked_date', endDate);
+    }
+
+    query = query.order('tracked_date', { ascending: false });
+
+    const { data, error } = await query;
+
+    if (error) throw error;
+    return { data, error: null };
+  } catch (error) {
+    console.error('플라스틱 기록 가져오기 에러:', error);
     return { data: null, error };
   }
 };

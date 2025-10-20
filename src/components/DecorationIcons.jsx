@@ -386,10 +386,18 @@ const DecorationIcons = {
         />
 
         {/* 철 산화물 패치 (붉은 광물 침전) */}
-        <ellipse cx="16" cy="32" rx="2.5" ry="2" fill="url(#ironOxide)"/>
-        <ellipse cx="38" cy="24" rx="2" ry="1.5" fill="url(#ironOxide)"/>
-        <ellipse cx="42" cy="33" rx="1.8" ry="1.3" fill="url(#ironOxide)"/>
-        <ellipse cx="26" cy="42" rx="2.2" ry="1.6" fill="url(#ironOxide)"/>
+        <g>
+          <animate
+            attributeName="opacity"
+            values="0.6; 1; 0.6"
+            dur="4.5s"
+            repeatCount="indefinite"
+          />
+          <ellipse cx="16" cy="32" rx="2.5" ry="2" fill="url(#ironOxide)"/>
+          <ellipse cx="38" cy="24" rx="2" ry="1.5" fill="url(#ironOxide)"/>
+          <ellipse cx="42" cy="33" rx="1.8" ry="1.3" fill="url(#ironOxide)"/>
+          <ellipse cx="26" cy="42" rx="2.2" ry="1.6" fill="url(#ironOxide)"/>
+        </g>
 
         {/* 균열 및 틈새 */}
         <path
@@ -436,8 +444,12 @@ const DecorationIcons = {
         <path d="M34 28 C34 28, 30 26, 30 29 C30 32, 34 31, 38 31 C38 31, 38 27, 34 28" fill="url(#lavaHoleDepth2)"/>
         <ellipse cx="34" cy="29" rx="2.5" ry="2" fill="#050505"/>
         {/* 구멍 속 크리스탈 */}
-        <circle cx="33.5" cy="28.5" r="0.6" fill="url(#crystalShine)"/>
-        <circle cx="35" cy="29" r="0.4" fill="#ffffff" opacity="0.5"/>
+        <circle cx="33.5" cy="28.5" r="0.6" fill="url(#crystalShine)">
+          <animate attributeName="opacity" values="0.4; 1; 0.4" dur="3.5s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="35" cy="29" r="0.4" fill="#ffffff" opacity="0.5">
+          <animate attributeName="opacity" values="0.3; 0.8; 0.3" dur="3.8s" repeatCount="indefinite"/>
+        </circle>
 
         <ellipse cx="27" cy="37.5" rx="3.2" ry="3.8" fill="url(#lavaHoleDepth1)" transform="rotate(20 27 37.5)"/>
         <ellipse cx="27" cy="38" rx="2.2" ry="2.7" fill="#0a0a0a" transform="rotate(20 27 37.5)"/>
@@ -446,13 +458,19 @@ const DecorationIcons = {
         <ellipse cx="38" cy="35.5" rx="3.8" ry="3.3" fill="url(#lavaHoleDepth2)" transform="rotate(-25 38 35.5)"/>
         <ellipse cx="38" cy="36" rx="2.7" ry="2.2" fill="#050505" transform="rotate(-25 38 35.5)"/>
         {/* 구멍 속 크리스탈 */}
-        <circle cx="38.5" cy="35.5" r="0.7" fill="url(#crystalShine)"/>
-        <circle cx="37.5" cy="36" r="0.5" fill="#ffffff" opacity="0.4"/>
+        <circle cx="38.5" cy="35.5" r="0.7" fill="url(#crystalShine)">
+          <animate attributeName="opacity" values="0.5; 1; 0.5" dur="4s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="37.5" cy="36" r="0.5" fill="#ffffff" opacity="0.4">
+          <animate attributeName="opacity" values="0.2; 0.7; 0.2" dur="4.2s" repeatCount="indefinite"/>
+        </circle>
 
         {/* 중간 구멍들 - 불규칙한 모양 */}
         <ellipse cx="24" cy="25" rx="2.3" ry="2.5" fill="url(#lavaHoleDepth1)" transform="rotate(10 24 25)"/>
         <ellipse cx="24" cy="25.5" rx="1.4" ry="1.6" fill="#1a1a1a" transform="rotate(10 24 25)"/>
-        <circle cx="24.3" cy="25" r="0.4" fill="url(#crystalShine)" opacity="0.6"/>
+        <circle cx="24.3" cy="25" r="0.4" fill="url(#crystalShine)" opacity="0.6">
+          <animate attributeName="opacity" values="0.3; 0.9; 0.3" dur="3.2s" repeatCount="indefinite"/>
+        </circle>
 
         <ellipse cx="31" cy="32" rx="2.5" ry="2.7" fill="url(#lavaHoleDepth2)" transform="rotate(-18 31 32)"/>
         <ellipse cx="31" cy="32.6" rx="1.6" ry="1.8" fill="#0d0d0d" transform="rotate(-18 31 32)"/>
@@ -626,14 +644,22 @@ const DecorationIcons = {
         />
 
         {/* 동굴 입구 - 훨씬 더 깊게 */}
-        <path
-          d="M19.5 45 C19.5 41.5, 20.2 38, 23.5 35 C26.5 32.2, 28.5 31, 30 31 C31.5 31, 33.5 32.2, 36.5 35 C39.8 38, 40.5 41.5, 40.5 45 L19.5 45"
-          fill="url(#caveInner)"
-        />
+        <g>
+          <animate
+            attributeName="opacity"
+            values="1; 0.85; 1"
+            dur="5.5s"
+            repeatCount="indefinite"
+          />
+          <path
+            d="M19.5 45 C19.5 41.5, 20.2 38, 23.5 35 C26.5 32.2, 28.5 31, 30 31 C31.5 31, 33.5 32.2, 36.5 35 C39.8 38, 40.5 41.5, 40.5 45 L19.5 45"
+            fill="url(#caveInner)"
+          />
 
-        {/* 입구 최심부 그림자 */}
-        <ellipse cx="30" cy="38" rx="8" ry="5" fill="#000000" opacity="0.3"/>
-        <ellipse cx="30" cy="39" rx="6" ry="3" fill="#000000" opacity="0.4"/>
+          {/* 입구 최심부 그림자 */}
+          <ellipse cx="30" cy="38" rx="8" ry="5" fill="#000000" opacity="0.3"/>
+          <ellipse cx="30" cy="39" rx="6" ry="3" fill="#000000" opacity="0.4"/>
+        </g>
 
         {/* 종유석 (stalactites) - 동굴 천장에서 내려오는 */}
         <path
@@ -1233,6 +1259,14 @@ const DecorationIcons = {
         </linearGradient>
       </defs>
       <g filter="url(#driftwood-shadow)" transform="translate(0, 7)">
+        <animateTransform
+          attributeName="transform"
+          type="rotate"
+          values="0 30 25; -0.8 30 25; 0 30 25; 0.5 30 25; 0 30 25"
+          dur="4.5s"
+          repeatCount="indefinite"
+          additive="sum"
+        />
         {/* 메인 나무 줄기 - 더 입체적으로 */}
         <path
           d="M8 35 C10 33, 15 32, 22 31 C28 30, 35 30, 40 28 C45 26, 48 23, 49 20 C50 17, 48 14, 44 12 C40 10, 34 9, 28 10 C22 11, 16 13, 12 17 C8 21, 7 26, 8 30 C9 34, 8 35, 8 35"
@@ -1549,17 +1583,33 @@ const DecorationIcons = {
         <ellipse cx="38" cy="30" rx="4" ry="5" fill="url(#shellHighlight3)"/>
 
         {/* 진주 효과 - 더 풍부하게 */}
-        <circle cx="33" cy="30" r="2.5" fill="url(#pearl1)"/>
-        <circle cx="33.5" cy="29.5" r="1" fill="white" opacity="0.8"/>
+        <g>
+          <animate
+            attributeName="opacity"
+            values="0.8; 1; 0.8"
+            dur="6.5s"
+            repeatCount="indefinite"
+          />
+          <circle cx="33" cy="30" r="2.5" fill="url(#pearl1)"/>
+          <circle cx="33.5" cy="29.5" r="1" fill="white" opacity="0.8">
+            <animate attributeName="opacity" values="0.6; 1; 0.6" dur="5.5s" repeatCount="indefinite"/>
+          </circle>
 
-        <circle cx="28" cy="34" r="2" fill="url(#pearl2)"/>
-        <circle cx="28.5" cy="33.5" r="0.8" fill="white" opacity="0.7"/>
+          <circle cx="28" cy="34" r="2" fill="url(#pearl2)"/>
+          <circle cx="28.5" cy="33.5" r="0.8" fill="white" opacity="0.7">
+            <animate attributeName="opacity" values="0.5; 0.9; 0.5" dur="6s" repeatCount="indefinite"/>
+          </circle>
 
-        <circle cx="35" cy="33" r="1.8" fill="url(#pearl3)"/>
-        <circle cx="35.4" cy="32.7" r="0.7" fill="white" opacity="0.6"/>
+          <circle cx="35" cy="33" r="1.8" fill="url(#pearl3)"/>
+          <circle cx="35.4" cy="32.7" r="0.7" fill="white" opacity="0.6">
+            <animate attributeName="opacity" values="0.4; 0.8; 0.4" dur="5.8s" repeatCount="indefinite"/>
+          </circle>
 
-        <circle cx="31" cy="36" r="1.5" fill="url(#pearl1)"/>
-        <circle cx="31.3" cy="35.8" r="0.6" fill="white" opacity="0.6"/>
+          <circle cx="31" cy="36" r="1.5" fill="url(#pearl1)"/>
+          <circle cx="31.3" cy="35.8" r="0.6" fill="white" opacity="0.6">
+            <animate attributeName="opacity" values="0.4; 0.8; 0.4" dur="6.2s" repeatCount="indefinite"/>
+          </circle>
+        </g>
 
         {/* 작은 진주 반짝임들 */}
         <circle cx="36" cy="35" r="1.2" fill="url(#pearl2)" opacity="0.7"/>
@@ -1753,11 +1803,19 @@ const DecorationIcons = {
         <line x1="48" y1="22" x2="48" y2="44.5" stroke="#c8c8c8" strokeWidth="0.6" opacity="0.7"/>
 
         {/* 기둥 하이라이트 - 햇빛 효과 */}
-        <ellipse cx="14.5" cy="30" rx="2" ry="8" fill="url(#marbleHighlight)"/>
-        <ellipse cx="22.5" cy="30" rx="2" ry="8" fill="url(#marbleHighlight)"/>
-        <ellipse cx="30.5" cy="30" rx="2" ry="8" fill="url(#marbleHighlight)"/>
-        <ellipse cx="38.5" cy="30" rx="2" ry="8" fill="url(#marbleHighlight)"/>
-        <ellipse cx="46.5" cy="30" rx="2" ry="8" fill="url(#marbleHighlight)"/>
+        <g>
+          <animate
+            attributeName="opacity"
+            values="0.7; 1; 0.7"
+            dur="4.5s"
+            repeatCount="indefinite"
+          />
+          <ellipse cx="14.5" cy="30" rx="2" ry="8" fill="url(#marbleHighlight)"/>
+          <ellipse cx="22.5" cy="30" rx="2" ry="8" fill="url(#marbleHighlight)"/>
+          <ellipse cx="30.5" cy="30" rx="2" ry="8" fill="url(#marbleHighlight)"/>
+          <ellipse cx="38.5" cy="30" rx="2" ry="8" fill="url(#marbleHighlight)"/>
+          <ellipse cx="46.5" cy="30" rx="2" ry="8" fill="url(#marbleHighlight)"/>
+        </g>
 
         {/* 크레피도마 (기단) - 3단 계단 */}
         <rect x="8" y="45" width="44" height="2.5" fill="url(#templeBase)"/>
@@ -1939,10 +1997,22 @@ const DecorationIcons = {
         <circle cx="40" cy="40" r="0.4" fill="#4e342e" opacity="0.3"/>
 
         {/* 금속 장식 밴드 - 더욱 화려하게 */}
-        <rect x="13" y="30" width="34" height="2.8" fill="url(#metalBandGold)"/>
-        <rect x="13" y="30" width="34" height="0.5" fill="#fff9c4" opacity="0.5"/>
-        <rect x="13" y="42" width="34" height="2.8" fill="url(#metalBandGold)"/>
-        <rect x="13" y="42" width="34" height="0.5" fill="#fff9c4" opacity="0.5"/>
+        <g>
+          <animate
+            attributeName="opacity"
+            values="0.9; 1; 0.9"
+            dur="3.5s"
+            repeatCount="indefinite"
+          />
+          <rect x="13" y="30" width="34" height="2.8" fill="url(#metalBandGold)"/>
+          <rect x="13" y="30" width="34" height="0.5" fill="#fff9c4" opacity="0.5">
+            <animate attributeName="opacity" values="0.3; 0.7; 0.3" dur="3s" repeatCount="indefinite"/>
+          </rect>
+          <rect x="13" y="42" width="34" height="2.8" fill="url(#metalBandGold)"/>
+          <rect x="13" y="42" width="34" height="0.5" fill="#fff9c4" opacity="0.5">
+            <animate attributeName="opacity" values="0.3; 0.7; 0.3" dur="3.2s" repeatCount="indefinite"/>
+          </rect>
+        </g>
 
         {/* 금속 밴드 장식 무늬 - 엠보싱 효과 */}
         <circle cx="16" cy="31.4" r="0.6" fill="#c6a200" opacity="0.5"/>
@@ -2115,6 +2185,13 @@ const DecorationIcons = {
         </linearGradient>
       </defs>
       <g filter="url(#ship-shadow)">
+        <animateTransform
+          attributeName="transform"
+          type="rotate"
+          values="0 30 40; -1.2 30 40; 0 30 40; 1 30 40; 0 30 40"
+          dur="4s"
+          repeatCount="indefinite"
+        />
         {/* 배 본체 - 더 디테일하게 */}
         <path
           d="M8 36 C8 40, 12 42, 20 43 L40 43 C48 42, 52 40, 52 36 L50 32 L48 28 L12 28 L10 32 Z"

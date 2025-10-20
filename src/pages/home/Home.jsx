@@ -117,7 +117,7 @@ const Home = ({
       do {
         // 랜덤 위치 생성 (어항 내부에서)
         const left = 2 + Math.random() * 96; // 2% ~ 98%
-        const bottom = 15 + Math.random() * 10; // 15% ~ 25% (바닥 근처)
+        const bottom = 10 + Math.random() * 10; // 10% ~ 20% (수질바 위)
         position = { bottom: `${bottom}%`, left: `${left}%` };
 
         // 다른 장식품과 겹치는지 확인
@@ -136,7 +136,7 @@ const Home = ({
         // 시도 횟수 초과 시 단순 배치
         if (attempts >= maxAttempts) {
           position = {
-            bottom: '15%',
+            bottom: '10%',
             left: `${20 + (index * 15)}%` // 최소 간격으로 배치
           };
           break;
@@ -354,7 +354,7 @@ const Home = ({
     // 경계 체크 (어항 영역 내에서만 이동 가능)
     return {
       x: Math.max(2, Math.min(98, x)),
-      y: Math.max(15, Math.min(85, y))
+      y: Math.max(10, Math.min(85, y))  // 하단 10%부터 이동 가능
     };
   };
 

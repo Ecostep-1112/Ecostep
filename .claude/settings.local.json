@@ -48,7 +48,8 @@
       "Bash(start http://localhost:5175)",
       "Bash(git fetch:*)",
       "Bash(gh api:*)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Read(//c/**)"
     ],
     "deny": [],
     "ask": [],

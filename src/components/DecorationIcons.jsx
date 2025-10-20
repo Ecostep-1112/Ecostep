@@ -1133,9 +1133,9 @@ const DecorationIcons = {
     <svg width={size} height={size} viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <filter id="temple-shadow" x="-50%" y="-50%" width="200%" height="200%">
-          <feGaussianBlur in="SourceAlpha" stdDeviation="1.3"/>
-          <feOffset dx="2" dy="2" result="offsetblur"/>
-          <feFlood floodColor="#000000" floodOpacity="0.28"/>
+          <feGaussianBlur in="SourceAlpha" stdDeviation="1.8"/>
+          <feOffset dx="2" dy="2.5" result="offsetblur"/>
+          <feFlood floodColor="#000000" floodOpacity="0.35"/>
           <feComposite in2="offsetblur" operator="in"/>
           <feMerge>
             <feMergeNode/>
@@ -1143,87 +1143,185 @@ const DecorationIcons = {
           </feMerge>
         </filter>
         <linearGradient id="templeRoof" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="#ffffff" />
+          <stop offset="15%" stopColor="#f9f9f9" />
+          <stop offset="40%" stopColor="#f5f5f5" />
+          <stop offset="70%" stopColor="#eeeeee" />
+          <stop offset="100%" stopColor="#e0e0e0" />
+        </linearGradient>
+        <linearGradient id="templeRoofTile" x1="0%" y1="0%" x2="0%" y2="100%">
           <stop offset="0%" stopColor="#f5f5f5" />
+          <stop offset="50%" stopColor="#e8e8e8" />
+          <stop offset="100%" stopColor="#d5d5d5" />
+        </linearGradient>
+        <linearGradient id="pillarMarble" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stopColor="#d0d0d0" />
+          <stop offset="20%" stopColor="#e8e8e8" />
+          <stop offset="40%" stopColor="#fafafa" />
+          <stop offset="60%" stopColor="#ffffff" />
+          <stop offset="80%" stopColor="#f5f5f5" />
           <stop offset="100%" stopColor="#e0e0e0" />
         </linearGradient>
-        <linearGradient id="pillar1" x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%" stopColor="#e0e0e0" />
-          <stop offset="50%" stopColor="#fafafa" />
-          <stop offset="100%" stopColor="#e0e0e0" />
-        </linearGradient>
-        <linearGradient id="pillar2" x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%" stopColor="#e0e0e0" />
-          <stop offset="50%" stopColor="#fafafa" />
-          <stop offset="100%" stopColor="#e0e0e0" />
-        </linearGradient>
-        <linearGradient id="pillar3" x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%" stopColor="#e0e0e0" />
-          <stop offset="50%" stopColor="#fafafa" />
-          <stop offset="100%" stopColor="#e0e0e0" />
-        </linearGradient>
-        <linearGradient id="pillar4" x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%" stopColor="#e0e0e0" />
-          <stop offset="50%" stopColor="#fafafa" />
-          <stop offset="100%" stopColor="#e0e0e0" />
-        </linearGradient>
-        <linearGradient id="pillar5" x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%" stopColor="#e0e0e0" />
-          <stop offset="50%" stopColor="#fafafa" />
-          <stop offset="100%" stopColor="#e0e0e0" />
-        </linearGradient>
-        <linearGradient id="pillarTop" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stopColor="#fafafa" />
+        <linearGradient id="pillarCapital" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="#ffffff" />
+          <stop offset="30%" stopColor="#fafafa" />
+          <stop offset="70%" stopColor="#f0f0f0" />
           <stop offset="100%" stopColor="#e0e0e0" />
         </linearGradient>
         <linearGradient id="templeBase" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stopColor="#e0e0e0" />
+          <stop offset="0%" stopColor="#e8e8e8" />
+          <stop offset="30%" stopColor="#e0e0e0" />
+          <stop offset="70%" stopColor="#d0d0d0" />
           <stop offset="100%" stopColor="#bdbdbd" />
         </linearGradient>
+        <linearGradient id="templeFrieze" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stopColor="#e8e8e8" />
+          <stop offset="50%" stopColor="#f5f5f5" />
+          <stop offset="100%" stopColor="#e8e8e8" />
+        </linearGradient>
+        <radialGradient id="marbleHighlight">
+          <stop offset="0%" stopColor="#ffffff" stopOpacity="0.6"/>
+          <stop offset="50%" stopColor="#ffffff" stopOpacity="0.3"/>
+          <stop offset="100%" stopColor="#ffffff" stopOpacity="0"/>
+        </radialGradient>
+        <radialGradient id="columnGlow">
+          <stop offset="0%" stopColor="#ffffff" stopOpacity="0.4"/>
+          <stop offset="100%" stopColor="#ffffff" stopOpacity="0"/>
+        </radialGradient>
       </defs>
       <g filter="url(#temple-shadow)" transform="scale(0.9) translate(3, 3)">
-        {/* 지붕 */}
+        {/* 페디먼트 (삼각형 지붕) - 더 입체적으로 */}
         <path
           d="M8 20 L30 8 L52 20 L52 23 L8 23 Z"
           fill="url(#templeRoof)"
         />
 
-        {/* 지붕 디테일 */}
-        <path d="M30 8 L30 12" stroke="#e0e0e0" strokeWidth="1"/>
-        <path d="M20 14 L40 14" stroke="#e0e0e0" strokeWidth="0.5"/>
+        {/* 지붕 측면 그림자 */}
+        <path
+          d="M8 20 L30 8 L30 11 L8 23 Z"
+          fill="#d0d0d0"
+          opacity="0.3"
+        />
+        <path
+          d="M52 20 L30 8 L30 11 L52 23 Z"
+          fill="#e8e8e8"
+          opacity="0.2"
+        />
 
-        {/* 기둥들 - 더 웅장하게 */}
-        <rect x="12" y="23" width="5" height="22" fill="url(#pillar1)" rx="0.5"/>
-        <rect x="20" y="23" width="5" height="22" fill="url(#pillar2)" rx="0.5"/>
-        <rect x="28" y="23" width="5" height="22" fill="url(#pillar3)" rx="0.5"/>
-        <rect x="36" y="23" width="5" height="22" fill="url(#pillar4)" rx="0.5"/>
-        <rect x="44" y="23" width="5" height="22" fill="url(#pillar5)" rx="0.5"/>
+        {/* 지붕 장식 디테일 - 아크로테리온 (꼭대기 장식) */}
+        <circle cx="30" cy="8" r="1.5" fill="#f5f5f5"/>
+        <path d="M30 6.5 L28.5 8 L31.5 8 Z" fill="#fafafa"/>
+        <circle cx="8" cy="20" r="1.2" fill="#e8e8e8"/>
+        <circle cx="52" cy="20" r="1.2" fill="#e8e8e8"/>
 
-        {/* 기둥 상단 장식 */}
-        <rect x="11" y="20" width="7" height="3.5" fill="url(#pillarTop)" rx="0.3"/>
-        <rect x="19" y="20" width="7" height="3.5" fill="url(#pillarTop)" rx="0.3"/>
-        <rect x="27" y="20" width="7" height="3.5" fill="url(#pillarTop)" rx="0.3"/>
-        <rect x="35" y="20" width="7" height="3.5" fill="url(#pillarTop)" rx="0.3"/>
-        <rect x="43" y="20" width="7" height="3.5" fill="url(#pillarTop)" rx="0.3"/>
+        {/* 페디먼트 조각 장식 (프리즈) */}
+        <path d="M15 18 L17 16 L19 18" stroke="#d0d0d0" strokeWidth="0.8" fill="none"/>
+        <path d="M23 15 L25 13 L27 15" stroke="#d0d0d0" strokeWidth="0.8" fill="none"/>
+        <path d="M33 15 L35 13 L37 15" stroke="#d0d0d0" strokeWidth="0.8" fill="none"/>
+        <path d="M41 18 L43 16 L45 18" stroke="#d0d0d0" strokeWidth="0.8" fill="none"/>
 
-        {/* 기둥 세로 홈 */}
-        <line x1="14" y1="24" x2="14" y2="44" stroke="#bdbdbd" strokeWidth="0.5"/>
-        <line x1="15" y1="24" x2="15" y2="44" stroke="#bdbdbd" strokeWidth="0.5"/>
-        <line x1="22" y1="24" x2="22" y2="44" stroke="#bdbdbd" strokeWidth="0.5"/>
-        <line x1="23" y1="24" x2="23" y2="44" stroke="#bdbdbd" strokeWidth="0.5"/>
-        <line x1="30" y1="24" x2="30" y2="44" stroke="#bdbdbd" strokeWidth="0.5"/>
-        <line x1="31" y1="24" x2="31" y2="44" stroke="#bdbdbd" strokeWidth="0.5"/>
-        <line x1="38" y1="24" x2="38" y2="44" stroke="#bdbdbd" strokeWidth="0.5"/>
-        <line x1="39" y1="24" x2="39" y2="44" stroke="#bdbdbd" strokeWidth="0.5"/>
-        <line x1="46" y1="24" x2="46" y2="44" stroke="#bdbdbd" strokeWidth="0.5"/>
-        <line x1="47" y1="24" x2="47" y2="44" stroke="#bdbdbd" strokeWidth="0.5"/>
+        {/* 중앙 조각상 실루엣 */}
+        <ellipse cx="30" cy="16" rx="2" ry="3" fill="#d5d5d5" opacity="0.5"/>
 
-        {/* 바닥 */}
-        <rect x="8" y="45" width="44" height="3" fill="url(#templeBase)"/>
+        {/* 엔타블러처 (기둥 상단 구조물) */}
+        <rect x="8" y="20" width="44" height="1.5" fill="url(#templeFrieze)"/>
 
-        {/* 계단 */}
-        <rect x="10" y="48" width="40" height="2" fill="#bdbdbd"/>
-        <rect x="12" y="50" width="36" height="1.5" fill="#9e9e9e"/>
-        <rect x="14" y="51.5" width="32" height="1" fill="#757575"/>
+        {/* 트리글리프 패턴 (프리즈 장식) */}
+        <rect x="10" y="20.2" width="1" height="1" fill="#d0d0d0" opacity="0.6"/>
+        <rect x="11.5" y="20.2" width="1" height="1" fill="#d0d0d0" opacity="0.6"/>
+        <rect x="20" y="20.2" width="1" height="1" fill="#d0d0d0" opacity="0.6"/>
+        <rect x="21.5" y="20.2" width="1" height="1" fill="#d0d0d0" opacity="0.6"/>
+        <rect x="30" y="20.2" width="1" height="1" fill="#d0d0d0" opacity="0.6"/>
+        <rect x="31.5" y="20.2" width="1" height="1" fill="#d0d0d0" opacity="0.6"/>
+        <rect x="40" y="20.2" width="1" height="1" fill="#d0d0d0" opacity="0.6"/>
+        <rect x="41.5" y="20.2" width="1" height="1" fill="#d0d0d0" opacity="0.6"/>
+        <rect x="48" y="20.2" width="1" height="1" fill="#d0d0d0" opacity="0.6"/>
+
+        {/* 기둥 주두 (Capital) - 이오닉 양식 */}
+        <rect x="11" y="19.5" width="7" height="2" fill="url(#pillarCapital)" rx="0.3"/>
+        <ellipse cx="14.5" cy="19.5" rx="2" ry="0.8" fill="#f5f5f5"/>
+        <circle cx="13" cy="19.5" r="0.5" fill="#e0e0e0"/>
+        <circle cx="16" cy="19.5" r="0.5" fill="#e0e0e0"/>
+
+        <rect x="19" y="19.5" width="7" height="2" fill="url(#pillarCapital)" rx="0.3"/>
+        <ellipse cx="22.5" cy="19.5" rx="2" ry="0.8" fill="#f5f5f5"/>
+        <circle cx="21" cy="19.5" r="0.5" fill="#e0e0e0"/>
+        <circle cx="24" cy="19.5" r="0.5" fill="#e0e0e0"/>
+
+        <rect x="27" y="19.5" width="7" height="2" fill="url(#pillarCapital)" rx="0.3"/>
+        <ellipse cx="30.5" cy="19.5" rx="2" ry="0.8" fill="#f5f5f5"/>
+        <circle cx="29" cy="19.5" r="0.5" fill="#e0e0e0"/>
+        <circle cx="32" cy="19.5" r="0.5" fill="#e0e0e0"/>
+
+        <rect x="35" y="19.5" width="7" height="2" fill="url(#pillarCapital)" rx="0.3"/>
+        <ellipse cx="38.5" cy="19.5" rx="2" ry="0.8" fill="#f5f5f5"/>
+        <circle cx="37" cy="19.5" r="0.5" fill="#e0e0e0"/>
+        <circle cx="40" cy="19.5" r="0.5" fill="#e0e0e0"/>
+
+        <rect x="43" y="19.5" width="7" height="2" fill="url(#pillarCapital)" rx="0.3"/>
+        <ellipse cx="46.5" cy="19.5" rx="2" ry="0.8" fill="#f5f5f5"/>
+        <circle cx="45" cy="19.5" r="0.5" fill="#e0e0e0"/>
+        <circle cx="48" cy="19.5" r="0.5" fill="#e0e0e0"/>
+
+        {/* 기둥들 - 대리석 질감 */}
+        <rect x="12" y="21.5" width="5" height="23.5" fill="url(#pillarMarble)" rx="0.5"/>
+        <rect x="20" y="21.5" width="5" height="23.5" fill="url(#pillarMarble)" rx="0.5"/>
+        <rect x="28" y="21.5" width="5" height="23.5" fill="url(#pillarMarble)" rx="0.5"/>
+        <rect x="36" y="21.5" width="5" height="23.5" fill="url(#pillarMarble)" rx="0.5"/>
+        <rect x="44" y="21.5" width="5" height="23.5" fill="url(#pillarMarble)" rx="0.5"/>
+
+        {/* 기둥 플루팅 (세로 홈) - 더 정교하게 */}
+        <line x1="13" y1="22" x2="13" y2="44.5" stroke="#c8c8c8" strokeWidth="0.6" opacity="0.7"/>
+        <line x1="14.5" y1="22" x2="14.5" y2="44.5" stroke="#ffffff" strokeWidth="0.5" opacity="0.5"/>
+        <line x1="16" y1="22" x2="16" y2="44.5" stroke="#c8c8c8" strokeWidth="0.6" opacity="0.7"/>
+
+        <line x1="21" y1="22" x2="21" y2="44.5" stroke="#c8c8c8" strokeWidth="0.6" opacity="0.7"/>
+        <line x1="22.5" y1="22" x2="22.5" y2="44.5" stroke="#ffffff" strokeWidth="0.5" opacity="0.5"/>
+        <line x1="24" y1="22" x2="24" y2="44.5" stroke="#c8c8c8" strokeWidth="0.6" opacity="0.7"/>
+
+        <line x1="29" y1="22" x2="29" y2="44.5" stroke="#c8c8c8" strokeWidth="0.6" opacity="0.7"/>
+        <line x1="30.5" y1="22" x2="30.5" y2="44.5" stroke="#ffffff" strokeWidth="0.5" opacity="0.5"/>
+        <line x1="32" y1="22" x2="32" y2="44.5" stroke="#c8c8c8" strokeWidth="0.6" opacity="0.7"/>
+
+        <line x1="37" y1="22" x2="37" y2="44.5" stroke="#c8c8c8" strokeWidth="0.6" opacity="0.7"/>
+        <line x1="38.5" y1="22" x2="38.5" y2="44.5" stroke="#ffffff" strokeWidth="0.5" opacity="0.5"/>
+        <line x1="40" y1="22" x2="40" y2="44.5" stroke="#c8c8c8" strokeWidth="0.6" opacity="0.7"/>
+
+        <line x1="45" y1="22" x2="45" y2="44.5" stroke="#c8c8c8" strokeWidth="0.6" opacity="0.7"/>
+        <line x1="46.5" y1="22" x2="46.5" y2="44.5" stroke="#ffffff" strokeWidth="0.5" opacity="0.5"/>
+        <line x1="48" y1="22" x2="48" y2="44.5" stroke="#c8c8c8" strokeWidth="0.6" opacity="0.7"/>
+
+        {/* 기둥 하이라이트 - 햇빛 효과 */}
+        <ellipse cx="14.5" cy="30" rx="2" ry="8" fill="url(#marbleHighlight)"/>
+        <ellipse cx="22.5" cy="30" rx="2" ry="8" fill="url(#marbleHighlight)"/>
+        <ellipse cx="30.5" cy="30" rx="2" ry="8" fill="url(#marbleHighlight)"/>
+        <ellipse cx="38.5" cy="30" rx="2" ry="8" fill="url(#marbleHighlight)"/>
+        <ellipse cx="46.5" cy="30" rx="2" ry="8" fill="url(#marbleHighlight)"/>
+
+        {/* 크레피도마 (기단) - 3단 계단 */}
+        <rect x="8" y="45" width="44" height="2.5" fill="url(#templeBase)"/>
+        <rect x="8" y="45" width="44" height="0.3" fill="#f0f0f0" opacity="0.6"/>
+
+        {/* 대리석 균열 및 풍화 효과 */}
+        <path d="M12 35 L13 37" stroke="#d0d0d0" strokeWidth="0.3" opacity="0.4"/>
+        <path d="M22 28 L23 31" stroke="#d0d0d0" strokeWidth="0.3" opacity="0.4"/>
+        <path d="M38 33 L39 36" stroke="#d0d0d0" strokeWidth="0.3" opacity="0.4"/>
+        <circle cx="17" cy="40" r="0.4" fill="#d0d0d0" opacity="0.3"/>
+        <circle cx="32" cy="38" r="0.4" fill="#d0d0d0" opacity="0.3"/>
+        <circle cx="45" cy="42" r="0.4" fill="#d0d0d0" opacity="0.3"/>
+
+        {/* 계단 - 더 입체적으로 */}
+        <rect x="10" y="47.5" width="40" height="2" fill="#d0d0d0"/>
+        <rect x="10" y="47.5" width="40" height="0.3" fill="#e8e8e8"/>
+        <rect x="12" y="49.5" width="36" height="1.5" fill="#b8b8b8"/>
+        <rect x="12" y="49.5" width="36" height="0.2" fill="#d0d0d0"/>
+        <rect x="14" y="51" width="32" height="1.2" fill="#9e9e9e"/>
+        <rect x="14" y="51" width="32" height="0.2" fill="#b8b8b8"/>
+
+        {/* 계단 측면 그림자 */}
+        <rect x="10" y="48.8" width="1" height="0.7" fill="#a0a0a0" opacity="0.5"/>
+        <rect x="12" y="50.3" width="1" height="0.7" fill="#909090" opacity="0.5"/>
+        <rect x="14" y="51.8" width="1" height="0.4" fill="#808080" opacity="0.5"/>
       </g>
     </svg>
   ),
@@ -1232,9 +1330,9 @@ const DecorationIcons = {
     <svg width={size} height={size} viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <filter id="chest-shadow" x="-50%" y="-50%" width="200%" height="200%">
-          <feGaussianBlur in="SourceAlpha" stdDeviation="1.3"/>
-          <feOffset dx="2" dy="2" result="offsetblur"/>
-          <feFlood floodColor="#000000" floodOpacity="0.28"/>
+          <feGaussianBlur in="SourceAlpha" stdDeviation="1.8"/>
+          <feOffset dx="2" dy="2.5" result="offsetblur"/>
+          <feFlood floodColor="#000000" floodOpacity="0.35"/>
           <feComposite in2="offsetblur" operator="in"/>
           <feMerge>
             <feMergeNode/>
@@ -1242,104 +1340,283 @@ const DecorationIcons = {
           </feMerge>
         </filter>
         <linearGradient id="chestLid" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stopColor="#8d6e63" />
-          <stop offset="100%" stopColor="#6d4c41" />
-        </linearGradient>
-        <linearGradient id="chestBody" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stopColor="#6d4c41" />
+          <stop offset="0%" stopColor="#a1887f" />
+          <stop offset="20%" stopColor="#8d6e63" />
+          <stop offset="50%" stopColor="#795548" />
+          <stop offset="80%" stopColor="#6d4c41" />
           <stop offset="100%" stopColor="#5d4037" />
         </linearGradient>
-        <linearGradient id="metalBand1" x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%" stopColor="#ffc107" />
+        <linearGradient id="chestBody" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="#795548" />
+          <stop offset="25%" stopColor="#6d4c41" />
+          <stop offset="60%" stopColor="#5d4037" />
+          <stop offset="85%" stopColor="#4e342e" />
+          <stop offset="100%" stopColor="#3e2723" />
+        </linearGradient>
+        <linearGradient id="chestBodySide" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stopColor="#5d4037" />
+          <stop offset="50%" stopColor="#6d4c41" />
+          <stop offset="100%" stopColor="#5d4037" />
+        </linearGradient>
+        <linearGradient id="metalBandGold" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stopColor="#c6a200" />
+          <stop offset="15%" stopColor="#f9a825" />
+          <stop offset="30%" stopColor="#ffc107" />
           <stop offset="50%" stopColor="#ffeb3b" />
-          <stop offset="100%" stopColor="#ffc107" />
+          <stop offset="70%" stopColor="#ffd54f" />
+          <stop offset="85%" stopColor="#ffc107" />
+          <stop offset="100%" stopColor="#c6a200" />
         </linearGradient>
-        <linearGradient id="metalBand2" x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%" stopColor="#ffc107" />
+        <linearGradient id="goldBandLuxury" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stopColor="#f57f17" />
+          <stop offset="20%" stopColor="#ffb300" />
+          <stop offset="40%" stopColor="#ffd54f" />
+          <stop offset="60%" stopColor="#fff59d" />
+          <stop offset="80%" stopColor="#ffd54f" />
+          <stop offset="100%" stopColor="#f57f17" />
+        </linearGradient>
+        <radialGradient id="lockGolden">
+          <stop offset="0%" stopColor="#fffde7" />
+          <stop offset="30%" stopColor="#fff9c4" />
+          <stop offset="60%" stopColor="#ffd54f" />
+          <stop offset="100%" stopColor="#ffc107" />
+        </radialGradient>
+        <radialGradient id="goldCoin1">
+          <stop offset="0%" stopColor="#fffde7" />
+          <stop offset="20%" stopColor="#fff9c4" />
           <stop offset="50%" stopColor="#ffeb3b" />
-          <stop offset="100%" stopColor="#ffc107" />
-        </linearGradient>
-        <linearGradient id="goldBand" x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%" stopColor="#ffb300" />
-          <stop offset="50%" stopColor="#ffd54f" />
+          <stop offset="80%" stopColor="#ffd700" />
+          <stop offset="100%" stopColor="#f9a825" />
+        </radialGradient>
+        <radialGradient id="goldCoin2">
+          <stop offset="0%" stopColor="#fff9c4" />
+          <stop offset="40%" stopColor="#ffeb3b" />
+          <stop offset="80%" stopColor="#ffc107" />
+          <stop offset="100%" stopColor="#f57f17" />
+        </radialGradient>
+        <radialGradient id="goldCoin3">
+          <stop offset="0%" stopColor="#fffde7" />
+          <stop offset="30%" stopColor="#fff59d" />
+          <stop offset="70%" stopColor="#ffd54f" />
           <stop offset="100%" stopColor="#ffb300" />
-        </linearGradient>
-        <radialGradient id="lock">
-          <stop offset="0%" stopColor="#ffd54f" />
-          <stop offset="100%" stopColor="#ffc107" />
         </radialGradient>
-        <radialGradient id="gold1">
-          <stop offset="0%" stopColor="#fff59d" />
-          <stop offset="100%" stopColor="#ffd700" />
+        <radialGradient id="gemRuby">
+          <stop offset="0%" stopColor="#ff80ab" />
+          <stop offset="40%" stopColor="#f50057" />
+          <stop offset="80%" stopColor="#c51162" />
+          <stop offset="100%" stopColor="#880e4f" />
         </radialGradient>
-        <radialGradient id="gold2">
-          <stop offset="0%" stopColor="#fff59d" />
-          <stop offset="100%" stopColor="#ffd700" />
+        <radialGradient id="gemSapphire">
+          <stop offset="0%" stopColor="#82b1ff" />
+          <stop offset="40%" stopColor="#2979ff" />
+          <stop offset="80%" stopColor="#2962ff" />
+          <stop offset="100%" stopColor="#0d47a1" />
         </radialGradient>
-        <radialGradient id="gold3">
-          <stop offset="0%" stopColor="#ffeb3b" />
-          <stop offset="100%" stopColor="#ffc107" />
+        <radialGradient id="gemEmerald">
+          <stop offset="0%" stopColor="#69f0ae" />
+          <stop offset="40%" stopColor="#00e676" />
+          <stop offset="80%" stopColor="#00c853" />
+          <stop offset="100%" stopColor="#1b5e20" />
         </radialGradient>
-        <radialGradient id="gold4">
-          <stop offset="0%" stopColor="#ffeb3b" />
-          <stop offset="100%" stopColor="#ffc107" />
+        <radialGradient id="gemAmethyst">
+          <stop offset="0%" stopColor="#ea80fc" />
+          <stop offset="40%" stopColor="#d500f9" />
+          <stop offset="80%" stopColor="#aa00ff" />
+          <stop offset="100%" stopColor="#4a148c" />
         </radialGradient>
-        <radialGradient id="gold5">
-          <stop offset="0%" stopColor="#fff59d" />
-          <stop offset="100%" stopColor="#ffb300" />
+        <radialGradient id="treasureGlow">
+          <stop offset="0%" stopColor="#fffde7" stopOpacity="0.8"/>
+          <stop offset="50%" stopColor="#ffeb3b" stopOpacity="0.4"/>
+          <stop offset="100%" stopColor="#ffc107" stopOpacity="0"/>
+        </radialGradient>
+        <radialGradient id="gemSparkle">
+          <stop offset="0%" stopColor="#ffffff" stopOpacity="0.9"/>
+          <stop offset="50%" stopColor="#ffffff" stopOpacity="0.5"/>
+          <stop offset="100%" stopColor="#ffffff" stopOpacity="0"/>
         </radialGradient>
       </defs>
       <g filter="url(#chest-shadow)" transform="scale(1.1) translate(-3, -3)">
-        {/* 상자 뚜껑 (열린 상태) */}
+        {/* 상자 뚜껑 (열린 상태) - 더 입체적으로 */}
         <g transform="rotate(-20 30 25)">
           <path
             d="M15 25 C15 22, 17 20, 20 20 L40 20 C43 20, 45 22, 45 25 L45 28 L15 28 Z"
             fill="url(#chestLid)"
           />
-          {/* 뚜껑 장식 */}
-          <rect x="15" y="23" width="30" height="1" fill="url(#goldBand)"/>
+          {/* 뚜껑 측면 그림자 */}
+          <path
+            d="M15 25 L15 28 L17 28 L17 25 C17 23, 18 21, 20 21"
+            fill="#4e342e"
+            opacity="0.5"
+          />
+          {/* 뚜껑 금속 장식 - 더 화려하게 */}
+          <rect x="15" y="23" width="30" height="1.5" fill="url(#goldBandLuxury)"/>
+          <rect x="15" y="23" width="30" height="0.3" fill="#fff9c4" opacity="0.6"/>
+          {/* 뚜껑 장식 무늬 */}
+          <circle cx="22" cy="23.7" r="0.5" fill="#f9a825" opacity="0.7"/>
+          <circle cx="30" cy="23.7" r="0.5" fill="#f9a825" opacity="0.7"/>
+          <circle cx="38" cy="23.7" r="0.5" fill="#f9a825" opacity="0.7"/>
+          {/* 나무 결 */}
+          <path d="M20 22 Q 25 21.5, 30 22 Q 35 22.5, 40 22" stroke="#6d4c41" strokeWidth="0.3" fill="none" opacity="0.4"/>
+          <path d="M18 24 Q 23 23.5, 28 24 Q 33 24.5, 38 24" stroke="#6d4c41" strokeWidth="0.3" fill="none" opacity="0.4"/>
         </g>
 
-        {/* 상자 본체 */}
+        {/* 상자 본체 - 입체감 강화 */}
         <rect x="15" y="28" width="30" height="18" fill="url(#chestBody)" rx="2"/>
+        {/* 상자 측면 하이라이트 */}
+        <rect x="15.5" y="28.5" width="2" height="17" fill="url(#chestBodySide)" opacity="0.3"/>
+        <rect x="42.5" y="28.5" width="2" height="17" fill="#3e2723" opacity="0.4"/>
 
-        {/* 금속 장식 */}
-        <rect x="13" y="30" width="34" height="2.5" fill="url(#metalBand1)"/>
-        <rect x="13" y="42" width="34" height="2.5" fill="url(#metalBand2)"/>
+        {/* 나무 결 디테일 */}
+        <line x1="17" y1="30" x2="43" y2="30" stroke="#5d4037" strokeWidth="0.4" opacity="0.3"/>
+        <line x1="17" y1="33" x2="43" y2="33" stroke="#5d4037" strokeWidth="0.4" opacity="0.3"/>
+        <line x1="17" y1="36" x2="43" y2="36" stroke="#5d4037" strokeWidth="0.4" opacity="0.3"/>
+        <line x1="17" y1="39" x2="43" y2="39" stroke="#5d4037" strokeWidth="0.4" opacity="0.3"/>
+        <line x1="17" y1="42" x2="43" y2="42" stroke="#5d4037" strokeWidth="0.4" opacity="0.3"/>
+        <path d="M19 31 Q 22 30.8, 25 31 Q 28 31.2, 31 31" stroke="#6d4c41" strokeWidth="0.3" fill="none" opacity="0.3"/>
+        <path d="M35 34 Q 38 33.8, 41 34" stroke="#6d4c41" strokeWidth="0.3" fill="none" opacity="0.3"/>
+        <circle cx="20" cy="35" r="0.4" fill="#4e342e" opacity="0.3"/>
+        <circle cx="40" cy="40" r="0.4" fill="#4e342e" opacity="0.3"/>
 
-        {/* 자물쇠 */}
-        <circle cx="30" cy="37" r="3.5" fill="url(#lock)"/>
-        <rect x="28.5" y="37" width="3" height="4" fill="#ffb300"/>
-        <circle cx="30" cy="38" r="1" fill="#5d4037"/>
+        {/* 금속 장식 밴드 - 더욱 화려하게 */}
+        <rect x="13" y="30" width="34" height="2.8" fill="url(#metalBandGold)"/>
+        <rect x="13" y="30" width="34" height="0.5" fill="#fff9c4" opacity="0.5"/>
+        <rect x="13" y="42" width="34" height="2.8" fill="url(#metalBandGold)"/>
+        <rect x="13" y="42" width="34" height="0.5" fill="#fff9c4" opacity="0.5"/>
 
-        {/* 보물들 - 더 화려하게 */}
-        <circle cx="22" cy="31" r="2.5" fill="url(#gold1)"/>
-        <circle cx="38" cy="31" r="2.5" fill="url(#gold2)"/>
-        <circle cx="25" cy="29" r="2" fill="url(#gold3)"/>
-        <circle cx="35" cy="29" r="2" fill="url(#gold4)"/>
-        <circle cx="30" cy="28" r="2.5" fill="url(#gold5)"/>
+        {/* 금속 밴드 장식 무늬 - 엠보싱 효과 */}
+        <circle cx="16" cy="31.4" r="0.6" fill="#c6a200" opacity="0.5"/>
+        <circle cx="20" cy="31.4" r="0.6" fill="#c6a200" opacity="0.5"/>
+        <circle cx="24" cy="31.4" r="0.6" fill="#c6a200" opacity="0.5"/>
+        <circle cx="28" cy="31.4" r="0.6" fill="#c6a200" opacity="0.5"/>
+        <circle cx="32" cy="31.4" r="0.6" fill="#c6a200" opacity="0.5"/>
+        <circle cx="36" cy="31.4" r="0.6" fill="#c6a200" opacity="0.5"/>
+        <circle cx="40" cy="31.4" r="0.6" fill="#c6a200" opacity="0.5"/>
+        <circle cx="44" cy="31.4" r="0.6" fill="#c6a200" opacity="0.5"/>
 
-        {/* 보석들 */}
-        <rect x="27" y="30" width="2" height="2" fill="#e91e63" transform="rotate(45 28 31)"/>
-        <rect x="32" y="29" width="2" height="2" fill="#2196f3" transform="rotate(45 33 30)"/>
-        <circle cx="20" cy="29" r="1" fill="#4caf50"/>
-        <circle cx="40" cy="29" r="1" fill="#9c27b0"/>
+        <circle cx="16" cy="43.4" r="0.6" fill="#c6a200" opacity="0.5"/>
+        <circle cx="20" cy="43.4" r="0.6" fill="#c6a200" opacity="0.5"/>
+        <circle cx="24" cy="43.4" r="0.6" fill="#c6a200" opacity="0.5"/>
+        <circle cx="28" cy="43.4" r="0.6" fill="#c6a200" opacity="0.5"/>
+        <circle cx="32" cy="43.4" r="0.6" fill="#c6a200" opacity="0.5"/>
+        <circle cx="36" cy="43.4" r="0.6" fill="#c6a200" opacity="0.5"/>
+        <circle cx="40" cy="43.4" r="0.6" fill="#c6a200" opacity="0.5"/>
+        <circle cx="44" cy="43.4" r="0.6" fill="#c6a200" opacity="0.5"/>
 
-        {/* 반짝임 효과 */}
-        <circle cx="22" cy="31" r="0.5" fill="white">
+        {/* 자물쇠 - 정교하게 */}
+        <circle cx="30" cy="37" r="4" fill="url(#lockGolden)"/>
+        <circle cx="30" cy="37" r="4" fill="none" stroke="#f9a825" strokeWidth="0.5"/>
+        <circle cx="30" cy="36.5" r="1.5" fill="#fff9c4" opacity="0.5"/>
+        {/* 자물쇠 구멍 */}
+        <rect x="28.5" y="37" width="3" height="4.5" fill="#c6a200" rx="0.3"/>
+        <rect x="29" y="37.5" width="2" height="3.5" fill="#f57f17"/>
+        <circle cx="30" cy="38.5" r="1.2" fill="#4e342e"/>
+        <circle cx="30" cy="38.5" r="0.7" fill="#3e2723"/>
+        {/* 자물쇠 장식 */}
+        <circle cx="27.5" cy="35.5" r="0.4" fill="#f9a825"/>
+        <circle cx="32.5" cy="35.5" r="0.4" fill="#f9a825"/>
+        <path d="M28 34.5 L32 34.5" stroke="#c6a200" strokeWidth="0.5"/>
+
+        {/* 보물 발광 효과 - 전체 */}
+        <ellipse cx="30" cy="30" rx="16" ry="8" fill="url(#treasureGlow)"/>
+
+        {/* 금화들 - 더 다양하게 */}
+        <circle cx="22" cy="31" r="2.8" fill="url(#goldCoin1)"/>
+        <circle cx="22.5" cy="30.5" r="1.2" fill="#fffde7" opacity="0.6"/>
+        <circle cx="22" cy="31" r="2.2" fill="none" stroke="#f9a825" strokeWidth="0.3"/>
+        <circle cx="22" cy="31" r="1.8" fill="none" stroke="#c6a200" strokeWidth="0.2"/>
+
+        <circle cx="38" cy="31" r="2.8" fill="url(#goldCoin2)"/>
+        <circle cx="38.5" cy="30.5" r="1.2" fill="#fff9c4" opacity="0.6"/>
+        <circle cx="38" cy="31" r="2.2" fill="none" stroke="#f57f17" strokeWidth="0.3"/>
+        <circle cx="38" cy="31" r="1.8" fill="none" stroke="#c6a200" strokeWidth="0.2"/>
+
+        <circle cx="25" cy="29" r="2.3" fill="url(#goldCoin3)"/>
+        <circle cx="25.4" cy="28.7" r="1" fill="#fffde7" opacity="0.5"/>
+        <circle cx="25" cy="29" r="1.8" fill="none" stroke="#ffb300" strokeWidth="0.2"/>
+
+        <circle cx="35" cy="29" r="2.3" fill="url(#goldCoin1)"/>
+        <circle cx="35.4" cy="28.7" r="1" fill="#fff9c4" opacity="0.5"/>
+        <circle cx="35" cy="29" r="1.8" fill="none" stroke="#f9a825" strokeWidth="0.2"/>
+
+        <circle cx="30" cy="28" r="2.8" fill="url(#goldCoin3)"/>
+        <circle cx="30.5" cy="27.5" r="1.2" fill="#fffde7" opacity="0.6"/>
+        <circle cx="30" cy="28" r="2.2" fill="none" stroke="#ffc107" strokeWidth="0.3"/>
+        <circle cx="30" cy="28" r="1.8" fill="none" stroke="#f57f17" strokeWidth="0.2"/>
+
+        {/* 추가 작은 금화들 */}
+        <circle cx="19" cy="30" r="1.5" fill="url(#goldCoin2)"/>
+        <circle cx="19.3" cy="29.8" r="0.6" fill="#fff9c4" opacity="0.5"/>
+
+        <circle cx="41" cy="30" r="1.5" fill="url(#goldCoin1)"/>
+        <circle cx="41.3" cy="29.8" r="0.6" fill="#fffde7" opacity="0.5"/>
+
+        <circle cx="27" cy="31" r="1.3" fill="url(#goldCoin3)"/>
+        <circle cx="33" cy="31" r="1.3" fill="url(#goldCoin2)"/>
+
+        {/* 보석들 - 더 정교하게 */}
+        {/* 루비 */}
+        <rect x="27" y="30" width="2.5" height="2.5" fill="url(#gemRuby)" transform="rotate(45 28.25 31.25)" rx="0.3"/>
+        <polygon points="28.25,30.5 29,31.25 28.25,32 27.5,31.25" fill="#ff80ab" opacity="0.6"/>
+        <circle cx="28.25" cy="31.25" r="0.4" fill="url(#gemSparkle)"/>
+
+        {/* 사파이어 */}
+        <rect x="32" y="29" width="2.5" height="2.5" fill="url(#gemSapphire)" transform="rotate(45 33.25 30.25)" rx="0.3"/>
+        <polygon points="33.25,29.5 34,30.25 33.25,31 32.5,30.25" fill="#82b1ff" opacity="0.6"/>
+        <circle cx="33.25" cy="30.25" r="0.4" fill="url(#gemSparkle)"/>
+
+        {/* 에메랄드 */}
+        <circle cx="20" cy="29" r="1.3" fill="url(#gemEmerald)"/>
+        <circle cx="20.3" cy="28.7" r="0.5" fill="#69f0ae" opacity="0.6"/>
+        <circle cx="20" cy="29" r="0.3" fill="url(#gemSparkle)"/>
+
+        {/* 자수정 */}
+        <circle cx="40" cy="29" r="1.3" fill="url(#gemAmethyst)"/>
+        <circle cx="40.3" cy="28.7" r="0.5" fill="#ea80fc" opacity="0.6"/>
+        <circle cx="40" cy="29" r="0.3" fill="url(#gemSparkle)"/>
+
+        {/* 추가 보석들 */}
+        <circle cx="24" cy="31.5" r="0.8" fill="url(#gemSapphire)"/>
+        <circle cx="24.2" cy="31.3" r="0.3" fill="#82b1ff" opacity="0.7"/>
+
+        <circle cx="36" cy="31.5" r="0.8" fill="url(#gemEmerald)"/>
+        <circle cx="36.2" cy="31.3" r="0.3" fill="#69f0ae" opacity="0.7"/>
+
+        <circle cx="30" cy="30.5" r="0.7" fill="url(#gemRuby)"/>
+        <circle cx="30.2" cy="30.3" r="0.2" fill="#ff80ab" opacity="0.7"/>
+
+        {/* 반짝임 효과 - 더 많고 다양하게 */}
+        <circle cx="22" cy="31" r="0.6" fill="white">
           <animate attributeName="opacity" values="1;0.2;1" dur="2s" repeatCount="indefinite"/>
         </circle>
-        <circle cx="38" cy="31" r="0.5" fill="white">
+        <circle cx="38" cy="31" r="0.6" fill="white">
           <animate attributeName="opacity" values="0.2;1;0.2" dur="2s" repeatCount="indefinite"/>
         </circle>
-        <circle cx="30" cy="28" r="0.5" fill="white">
+        <circle cx="30" cy="28" r="0.6" fill="white">
           <animate attributeName="opacity" values="0.5;1;0.5" dur="1.5s" repeatCount="indefinite"/>
         </circle>
-        <circle cx="27" cy="30" r="0.3" fill="white">
+        <circle cx="28" cy="31" r="0.4" fill="white">
           <animate attributeName="opacity" values="1;0.3;1" dur="1.8s" repeatCount="indefinite"/>
         </circle>
-        <circle cx="33" cy="29" r="0.3" fill="white">
+        <circle cx="33" cy="30" r="0.4" fill="white">
           <animate attributeName="opacity" values="0.3;1;0.3" dur="1.6s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="25" cy="29" r="0.4" fill="white">
+          <animate attributeName="opacity" values="0.4;1;0.4" dur="2.2s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="35" cy="29" r="0.4" fill="white">
+          <animate attributeName="opacity" values="1;0.4;1" dur="2.4s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="20" cy="29" r="0.3" fill="white">
+          <animate attributeName="opacity" values="0.6;1;0.6" dur="1.4s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="40" cy="29" r="0.3" fill="white">
+          <animate attributeName="opacity" values="1;0.6;1" dur="1.7s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="19" cy="30" r="0.3" fill="white">
+          <animate attributeName="opacity" values="0.5;1;0.5" dur="2.1s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="41" cy="30" r="0.3" fill="white">
+          <animate attributeName="opacity" values="1;0.5;1" dur="1.9s" repeatCount="indefinite"/>
         </circle>
       </g>
     </svg>

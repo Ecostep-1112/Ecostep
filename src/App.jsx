@@ -590,7 +590,7 @@ const EcostepApp = () => {
     return () => clearTimeout(midnightTimeout);
   }, [lastChallengeDate]);
 
-  const bgColor = isDarkMode ? 'bg-black' : 'bg-white';
+  const bgColor = isDarkMode ? 'bg-gray-900' : 'bg-white';
   const borderColor = isDarkMode ? 'border-gray-800' : 'border-gray-200';
 
   // 로그아웃 함수
@@ -627,9 +627,9 @@ const EcostepApp = () => {
   }
 
   return (
-    <div className="h-screen w-full">
+    <div className={`h-screen w-full ${bgColor}`}>
         {/* 화면 영역 */}
-        <div className={`w-full h-full ${bgColor} flex flex-col`}>
+        <div className="w-full h-full flex flex-col">
           {/* 상태바 */}
           <div className={`fixed top-0 left-0 right-0 z-50 ${isDarkMode ? 'bg-gray-900' : 'bg-white'} px-3 py-3 flex justify-between items-center`}>
             <h1 className={`${isDarkMode ? 'text-white' : 'text-gray-800'} text-sm font-medium`}>
@@ -676,7 +676,7 @@ const EcostepApp = () => {
           </div>
 
           {/* 메인 콘텐츠 */}
-          <div className="flex-1 overflow-y-auto pt-12 pb-16">
+          <div className={`flex-1 overflow-y-auto pt-12 pb-16 ${bgColor}`}>
           {showNotifications ? (
             <NotificationsScreen 
               isDarkMode={isDarkMode} 

@@ -49,8 +49,8 @@ Ecostep is a mobile app concept that combines environmental protection with a fi
 - **Frontend**: React + Vite
 - **Styling**: Tailwind CSS
 - **Database**: Supabase (connected and configured)
+- **Mobile Deployment**: Capacitor (hybrid app framework)
 - **Version Control**: Git + GitHub (repository: https://github.com/Ecostep-1112/Ecostep)
-- **Future**: Will migrate to Expo/React Native for App Store deployment
 
 ## Project Setup
 - **Development Server**: `npm run dev`
@@ -63,6 +63,45 @@ Ecostep is a mobile app concept that combines environmental protection with a fi
   - Kakao API key for KakaoTalk sharing (get from https://developers.kakao.com)
   - Naver Maps API credentials
   - Do not commit `.env.local` file (already in .gitignore)
+
+## Capacitor Setup
+Capacitor is used to convert this React web app into native iOS and Android apps.
+
+### Installation
+```bash
+npm install @capacitor/core @capacitor/cli
+npx cap init
+```
+
+### Build & Sync
+1. **Build web app**: `npm run build`
+2. **Add platforms**:
+   - iOS: `npx cap add ios`
+   - Android: `npx cap add android`
+3. **Sync web code**: `npx cap sync`
+4. **Open in native IDE**:
+   - iOS: `npx cap open ios` (opens Xcode)
+   - Android: `npx cap open android` (opens Android Studio)
+
+### Capacitor Plugins
+- `@capacitor/preferences`: Local storage
+- `@capacitor/storage`: Persistent key-value storage
+- `@capacitor/splash-screen`: Native splash screen
+- `@capacitor/status-bar`: Status bar customization
+- `@capacitor/keyboard`: Keyboard behavior
+- `@capacitor/share`: Native sharing (for KakaoTalk)
+
+### Development Workflow
+1. Develop and test in web browser (`npm run dev`)
+2. When ready for mobile testing: `npm run build && npx cap sync`
+3. Test on iOS/Android simulator or device
+4. Iterate and repeat
+
+### Important Notes
+- Web code in `dist/` folder is copied to native projects
+- Always run `npx cap sync` after `npm run build`
+- Native code lives in `ios/` and `android/` folders
+- Keep `capacitor.config.ts` updated with app settings
 
 ## Kakao API Setup
 1. Visit https://developers.kakao.com
@@ -88,7 +127,7 @@ After making changes:
 2. Implement core features and game mechanics
 3. Set up database schema in Supabase
 4. Test with users via web browser
-5. Once design is finalized (~80%), migrate to Expo for native app
+5. Once design is finalized (~80%), build with Capacitor for iOS/Android deployment
 
 ## Local Storage Strategy
 
@@ -98,12 +137,13 @@ After making changes:
 - **Scope**: App settings, aquarium configuration, challenge preferences
 
 ### Production App Migration Plan
-When migrating to native mobile app (Expo/React Native):
+When building with Capacitor for iOS/Android:
 
 1. **Local Storage (Device)**
-   - **React Native**: AsyncStorage for app settings
-   - **Expo**: SecureStore for sensitive data
-   - **Native**: UserDefaults (iOS) / SharedPreferences (Android)
+   - **Capacitor Preferences**: For app settings and user preferences
+   - **Capacitor Storage**: Key-value storage API (replaces localStorage)
+   - **Capacitor SecureStorage**: For sensitive data (tokens, credentials)
+   - **Native**: UserDefaults (iOS) / SharedPreferences (Android) via Capacitor plugins
 
 2. **Cloud Storage (Database)**
    - User profiles and authentication
@@ -113,8 +153,8 @@ When migrating to native mobile app (Expo/React Native):
    - Plastic usage history
 
 3. **Hybrid Strategy**
-   - Local: User preferences, offline functionality
-   - Cloud: Critical user data, cross-device sync
+   - Local: User preferences, offline functionality (Capacitor Storage)
+   - Cloud: Critical user data, cross-device sync (Supabase)
    - Sync: Online/offline data synchronization
 
 ### Data Classification

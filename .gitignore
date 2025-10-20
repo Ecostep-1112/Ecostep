@@ -42,3 +42,6 @@ Thumbs.db
 *.p8
 AuthKey_*.p8
 .yoyo/
+
+# Images
+*.png

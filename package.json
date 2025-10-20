@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "server": "nodemon server.js",
+    "server": "cd backend && nodemon server.js",
     "dev:all": "concurrently --kill-others --raw \"npm run server\" \"npm run dev\"",
     "stop": "npx kill-port 5175 5176",
     "build": "vite build",

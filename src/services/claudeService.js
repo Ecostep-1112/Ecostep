@@ -14,7 +14,8 @@ export const generateEnvironmentalTip = async (category = null, index = null) =>
   }
   try {
     // 백엔드 서버를 통해 Claude API 호출
-    const response = await fetch('http://localhost:5176/api/environmental-tip', {
+    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5176';
+    const response = await fetch(`${API_URL}/api/environmental-tip`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

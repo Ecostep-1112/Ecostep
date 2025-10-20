@@ -16,7 +16,14 @@ const PORT = process.env.PORT || 5176;
 
 // Middleware
 app.use(cors({
-  origin: ['http://localhost:3000', 'http://127.0.0.1:3000', 'http://localhost:5175', 'http://127.0.0.1:5175'],
+  origin: [
+    'http://localhost:3000',
+    'http://127.0.0.1:3000',
+    'http://localhost:5175',
+    'http://127.0.0.1:5175',
+    'https://ecostep-production.up.railway.app',
+    /\.railway\.app$/  // Railway 도메인 허용
+  ],
   credentials: true
 }));
 app.use(express.json());
@@ -489,17 +496,21 @@ app.use((err, req, res, next) => {
 
 // Start server
 const server = app.listen(PORT, () => {
-  console.log(`\n🚀 Backend server running on http://localhost:${PORT}`);
-  console.log(`📱 Frontend should run on http://localhost:5175`);
+  const baseUrl = process.env.RAILWAY_PUBLIC_DOMAIN
+    ? `https://${process.env.RAILWAY_PUBLIC_DOMAIN}`
+    : `http://localhost:${PORT}`;
+
+  console.log(`\n🚀 Backend server running on ${baseUrl}`);
+  console.log(`📱 Port: ${PORT}`);
   console.log(`\nAvailable endpoints:`);
-  console.log(`  GET  http://localhost:${PORT}/`);
-  console.log(`  GET  http://localhost:${PORT}/api/health`);
-  console.log(`  POST http://localhost:${PORT}/api/chatbot`);
-  console.log(`  POST http://localhost:${PORT}/api/environmental-tip`);
-  console.log(`  POST http://localhost:${PORT}/api/validate-plastic-challenge`);
-  console.log(`  POST http://localhost:${PORT}/api/classify-plastic-item`);
-  console.log(`  POST http://localhost:${PORT}/api/validate-plastic-item`);
-  
+  console.log(`  GET  ${baseUrl}/`);
+  console.log(`  GET  ${baseUrl}/api/health`);
+  console.log(`  POST ${baseUrl}/api/chatbot`);
+  console.log(`  POST ${baseUrl}/api/environmental-tip`);
+  console.log(`  POST ${baseUrl}/api/validate-plastic-challenge`);
+  console.log(`  POST ${baseUrl}/api/classify-plastic-item`);
+  console.log(`  POST ${baseUrl}/api/validate-plastic-item`);
+
   if (!CLAUDE_API_KEY || !CLAUDE_API_KEY.startsWith('sk-ant-')) {
     console.log('\n⚠️  Claude API key not configured - using mock data');
   } else {

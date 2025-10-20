@@ -4,7 +4,8 @@
 export async function validatePlasticItem(itemName) {
   try {
     // 1단계: 플라스틱 분류 확인
-    const classificationResponse = await fetch('http://localhost:5176/api/classify-plastic-item', {
+    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5176';
+    const classificationResponse = await fetch(`${API_URL}/api/classify-plastic-item`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

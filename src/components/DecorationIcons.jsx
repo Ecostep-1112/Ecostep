@@ -1720,95 +1720,252 @@ const DecorationIcons = {
   '크리스탈 동굴': ({ size = 35 }) => (
     <svg width={size} height={size} viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
+        {/* Enhanced shadow filter */}
         <filter id="crystal-shadow" x="-50%" y="-50%" width="200%" height="200%">
-          <feGaussianBlur in="SourceAlpha" stdDeviation="1.3"/>
-          <feOffset dx="2" dy="2" result="offsetblur"/>
-          <feFlood floodColor="#000000" floodOpacity="0.28"/>
+          <feGaussianBlur in="SourceAlpha" stdDeviation="1.8"/>
+          <feOffset dx="2" dy="2.5" result="offsetblur"/>
+          <feFlood floodColor="#000000" floodOpacity="0.35"/>
           <feComposite in2="offsetblur" operator="in"/>
           <feMerge>
             <feMergeNode/>
             <feMergeNode in="SourceGraphic"/>
           </feMerge>
         </filter>
+        {/* Rich cave wall gradient */}
         <linearGradient id="crystalCaveOuter" x1="0%" y1="0%" x2="0%" y2="100%">
           <stop offset="0%" stopColor="#4a148c" />
-          <stop offset="50%" stopColor="#6a1b9a" />
+          <stop offset="20%" stopColor="#5e1d9a" />
+          <stop offset="40%" stopColor="#6a1b9a" />
+          <stop offset="60%" stopColor="#4a148c" />
+          <stop offset="80%" stopColor="#311b92" />
           <stop offset="100%" stopColor="#1a237e" />
         </linearGradient>
+        {/* Deep cave interior */}
         <radialGradient id="crystalCaveInner">
           <stop offset="0%" stopColor="#000033" />
+          <stop offset="30%" stopColor="#0d1552" />
           <stop offset="60%" stopColor="#1a237e" />
-          <stop offset="100%" stopColor="#311b92" />
+          <stop offset="85%" stopColor="#311b92" />
+          <stop offset="100%" stopColor="#4a148c" />
         </radialGradient>
+        {/* Multi-faceted crystal gradients */}
         <linearGradient id="crystal1" x1="0%" y1="100%" x2="0%" y2="0%">
-          <stop offset="0%" stopColor="#7c4dff" />
-          <stop offset="100%" stopColor="#b388ff" />
+          <stop offset="0%" stopColor="#5e35b1" />
+          <stop offset="20%" stopColor="#7c4dff" />
+          <stop offset="40%" stopColor="#9575cd" />
+          <stop offset="60%" stopColor="#b388ff" />
+          <stop offset="80%" stopColor="#d1c4e9" />
+          <stop offset="100%" stopColor="#ede7f6" />
         </linearGradient>
         <linearGradient id="crystal2" x1="0%" y1="100%" x2="0%" y2="0%">
-          <stop offset="0%" stopColor="#536dfe" />
-          <stop offset="100%" stopColor="#8c9eff" />
+          <stop offset="0%" stopColor="#304ffe" />
+          <stop offset="20%" stopColor="#536dfe" />
+          <stop offset="40%" stopColor="#6b7fff" />
+          <stop offset="60%" stopColor="#8c9eff" />
+          <stop offset="80%" stopColor="#c5cae9" />
+          <stop offset="100%" stopColor="#e8eaf6" />
         </linearGradient>
         <linearGradient id="crystal3" x1="0%" y1="100%" x2="0%" y2="0%">
-          <stop offset="0%" stopColor="#651fff" />
-          <stop offset="100%" stopColor="#a255ff" />
+          <stop offset="0%" stopColor="#4527a0" />
+          <stop offset="20%" stopColor="#651fff" />
+          <stop offset="40%" stopColor="#7c4dff" />
+          <stop offset="60%" stopColor="#a255ff" />
+          <stop offset="80%" stopColor="#d1c4e9" />
+          <stop offset="100%" stopColor="#f3e5f5" />
         </linearGradient>
         <linearGradient id="crystal4" x1="0%" y1="100%" x2="0%" y2="0%">
-          <stop offset="0%" stopColor="#448aff" />
-          <stop offset="100%" stopColor="#82b1ff" />
+          <stop offset="0%" stopColor="#2962ff" />
+          <stop offset="20%" stopColor="#448aff" />
+          <stop offset="40%" stopColor="#6a9eff" />
+          <stop offset="60%" stopColor="#82b1ff" />
+          <stop offset="80%" stopColor="#b3d5ff" />
+          <stop offset="100%" stopColor="#e3f2fd" />
         </linearGradient>
         <linearGradient id="crystal5" x1="0%" y1="100%" x2="0%" y2="0%">
-          <stop offset="0%" stopColor="#7e57c2" />
-          <stop offset="100%" stopColor="#9575cd" />
+          <stop offset="0%" stopColor="#673ab7" />
+          <stop offset="20%" stopColor="#7e57c2" />
+          <stop offset="40%" stopColor="#9575cd" />
+          <stop offset="60%" stopColor="#b39ddb" />
+          <stop offset="80%" stopColor="#d1c4e9" />
+          <stop offset="100%" stopColor="#ede7f6" />
         </linearGradient>
         <linearGradient id="crystal6" x1="0%" y1="100%" x2="0%" y2="0%">
-          <stop offset="0%" stopColor="#5e35b1" />
-          <stop offset="100%" stopColor="#7e57c2" />
+          <stop offset="0%" stopColor="#512da8" />
+          <stop offset="20%" stopColor="#5e35b1" />
+          <stop offset="40%" stopColor="#7e57c2" />
+          <stop offset="60%" stopColor="#9575cd" />
+          <stop offset="80%" stopColor="#b39ddb" />
+          <stop offset="100%" stopColor="#d1c4e9" />
         </linearGradient>
+        {/* Glowing vein gradients */}
+        <linearGradient id="veinGlow1" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stopColor="transparent" />
+          <stop offset="30%" stopColor="#7c4dff" opacity="0.6" />
+          <stop offset="50%" stopColor="#b388ff" opacity="0.8" />
+          <stop offset="70%" stopColor="#7c4dff" opacity="0.6" />
+          <stop offset="100%" stopColor="transparent" />
+        </linearGradient>
+        <linearGradient id="veinGlow2" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stopColor="transparent" />
+          <stop offset="30%" stopColor="#536dfe" opacity="0.5" />
+          <stop offset="50%" stopColor="#8c9eff" opacity="0.7" />
+          <stop offset="70%" stopColor="#536dfe" opacity="0.5" />
+          <stop offset="100%" stopColor="transparent" />
+        </linearGradient>
+        {/* Crystal sparkle gradient */}
+        <radialGradient id="crystalSparkle">
+          <stop offset="0%" stopColor="#ffffff" />
+          <stop offset="50%" stopColor="#e1f5fe" />
+          <stop offset="100%" stopColor="transparent" />
+        </radialGradient>
       </defs>
       <g filter="url(#crystal-shadow)">
-        {/* 동굴 외형 */}
+        {/* Cave outer form with texture */}
         <path
           d="M8 45 C8 36, 10 27, 16 22 C22 17, 28 15, 30 15 C32 15, 38 17, 44 22 C50 27, 52 36, 52 45 L8 45"
           fill="url(#crystalCaveOuter)"
         />
 
-        {/* 크리스탈들 - 더 선명하고 다양하게 */}
+        {/* Glowing veins in cave walls */}
+        <path d="M12 42 Q15 38, 18 36 T24 32" stroke="url(#veinGlow1)" strokeWidth="0.8" fill="none">
+          <animate attributeName="stroke-opacity" values="0.4;0.8;0.4" dur="3s" repeatCount="indefinite"/>
+        </path>
+        <path d="M48 42 Q45 39, 42 37 T36 33" stroke="url(#veinGlow2)" strokeWidth="0.8" fill="none">
+          <animate attributeName="stroke-opacity" values="0.6;1;0.6" dur="2.5s" repeatCount="indefinite"/>
+        </path>
+        <path d="M10 38 Q14 35, 17 33" stroke="url(#veinGlow1)" strokeWidth="0.6" fill="none">
+          <animate attributeName="stroke-opacity" values="0.5;0.9;0.5" dur="2.8s" repeatCount="indefinite"/>
+        </path>
+        <path d="M50 38 Q46 36, 43 34" stroke="url(#veinGlow2)" strokeWidth="0.6" fill="none">
+          <animate attributeName="stroke-opacity" values="0.3;0.7;0.3" dur="3.2s" repeatCount="indefinite"/>
+        </path>
+
+        {/* Main crystals with faceted geometry */}
+        {/* Crystal 1 - Left side */}
         <path d="M18 42 L20 28 L22 42 Z" fill="url(#crystal1)"/>
+        <path d="M18 42 L19 35 L20 28 Z" fill="#7c4dff" opacity="0.4"/>
+        <path d="M20 28 L22 42 L21 35 Z" fill="#b388ff" opacity="0.3"/>
+        <polygon points="19,35 20,28 21,35" fill="white" opacity="0.5"/>
+
+        {/* Crystal 2 - Left center */}
         <path d="M23 44 L26 25 L29 44 Z" fill="url(#crystal2)"/>
+        <path d="M23 44 L25 34 L26 25 Z" fill="#536dfe" opacity="0.4"/>
+        <path d="M26 25 L29 44 L27.5 34 Z" fill="#8c9eff" opacity="0.3"/>
+        <polygon points="25,34 26,25 27.5,34" fill="white" opacity="0.5"/>
+
+        {/* Crystal 3 - Center (tallest) */}
         <path d="M30 42 L33 20 L36 42 Z" fill="url(#crystal3)"/>
+        <path d="M30 42 L32 31 L33 20 Z" fill="#651fff" opacity="0.4"/>
+        <path d="M33 20 L36 42 L34 31 Z" fill="#a255ff" opacity="0.3"/>
+        <polygon points="32,31 33,20 34,31" fill="white" opacity="0.6"/>
+        <polygon points="32.5,27 33,22 33.5,27" fill="white" opacity="0.8"/>
+
+        {/* Crystal 4 - Right center */}
         <path d="M37 44 L40 30 L43 44 Z" fill="url(#crystal4)"/>
+        <path d="M37 44 L39 37 L40 30 Z" fill="#448aff" opacity="0.4"/>
+        <path d="M40 30 L43 44 L41 37 Z" fill="#82b1ff" opacity="0.3"/>
+        <polygon points="39,37 40,30 41,37" fill="white" opacity="0.5"/>
 
-        {/* 작은 크리스탈들 */}
+        {/* Small crystal clusters */}
+        {/* Left cluster */}
         <path d="M15 40 L16 35 L17 40 Z" fill="url(#crystal5)"/>
+        <path d="M14 41 L15 37 L16 41 Z" fill="url(#crystal6)" opacity="0.8"/>
+        <polygon points="15.5,37 16,35 16.5,37" fill="white" opacity="0.6"/>
+
+        {/* Right cluster */}
         <path d="M45 40 L46 35 L47 40 Z" fill="url(#crystal6)"/>
+        <path d="M44 41 L45 37 L46 41 Z" fill="url(#crystal5)" opacity="0.8"/>
+        <polygon points="45.5,37 46,35 46.5,37" fill="white" opacity="0.6"/>
 
-        {/* 크리스탈 하이라이트 */}
-        <path d="M20 32 L20.5 30 L21 32 Z" fill="white"/>
-        <path d="M26 28 L26.5 26 L27 28 Z" fill="white"/>
+        {/* Medium crystals */}
+        <path d="M12 43 L13 39 L14 43 Z" fill="url(#crystal1)" opacity="0.9"/>
+        <path d="M48 43 L49 39 L50 43 Z" fill="url(#crystal2)" opacity="0.9"/>
+
+        {/* Crystal highlights - prismatic effects */}
+        <path d="M20 32 L20.5 30 L21 32 Z" fill="white" opacity="0.9"/>
+        <path d="M26 28 L26.5 26 L27 28 Z" fill="white" opacity="0.9"/>
         <path d="M33 24 L33.5 22 L34 24 Z" fill="white"/>
-        <path d="M40 34 L40.5 32 L41 34 Z" fill="white"/>
+        <path d="M40 34 L40.5 32 L41 34 Z" fill="white" opacity="0.9"/>
 
-        {/* 반짝임 효과 */}
-        <circle cx="20" cy="35" r="1.2" fill="white">
+        {/* Internal refractions */}
+        <line x1="20" y1="35" x2="20.5" y2="30" stroke="#e1f5fe" strokeWidth="0.3" opacity="0.6"/>
+        <line x1="26" y1="34" x2="26.5" y2="28" stroke="#e1f5fe" strokeWidth="0.3" opacity="0.6"/>
+        <line x1="33" y1="31" x2="33.5" y2="24" stroke="#e1f5fe" strokeWidth="0.4" opacity="0.7"/>
+        <line x1="40" y1="37" x2="40.5" y2="33" stroke="#e1f5fe" strokeWidth="0.3" opacity="0.6"/>
+
+        {/* Enhanced sparkle effects - 15+ points */}
+        <circle cx="20" cy="35" r="1.2" fill="url(#crystalSparkle)">
           <animate attributeName="opacity" values="1;0.3;1" dur="2s" repeatCount="indefinite"/>
         </circle>
-        <circle cx="33" cy="28" r="1.2" fill="white">
+        <circle cx="33" cy="28" r="1.4" fill="url(#crystalSparkle)">
           <animate attributeName="opacity" values="0.3;1;0.3" dur="2.5s" repeatCount="indefinite"/>
         </circle>
-        <circle cx="40" cy="37" r="1" fill="white">
+        <circle cx="40" cy="37" r="1.1" fill="url(#crystalSparkle)">
           <animate attributeName="opacity" values="0.6;1;0.6" dur="1.8s" repeatCount="indefinite"/>
         </circle>
-        <circle cx="26" cy="32" r="0.8" fill="white">
+        <circle cx="26" cy="32" r="1" fill="url(#crystalSparkle)">
           <animate attributeName="opacity" values="1;0.4;1" dur="2.2s" repeatCount="indefinite"/>
         </circle>
+        <circle cx="16" cy="37" r="0.8" fill="white">
+          <animate attributeName="opacity" values="0.7;1;0.7" dur="2.3s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="46" cy="37" r="0.8" fill="white">
+          <animate attributeName="opacity" values="1;0.5;1" dur="1.9s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="30" cy="30" r="0.9" fill="white">
+          <animate attributeName="opacity" values="0.5;1;0.5" dur="2.7s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="22" cy="38" r="0.7" fill="#b388ff">
+          <animate attributeName="opacity" values="0.8;0.3;0.8" dur="2.1s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="38" cy="39" r="0.7" fill="#b388ff">
+          <animate attributeName="opacity" values="0.4;0.9;0.4" dur="2.4s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="28" cy="36" r="0.6" fill="#8c9eff">
+          <animate attributeName="opacity" values="0.9;0.4;0.9" dur="2.6s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="35" cy="35" r="0.6" fill="#8c9eff">
+          <animate attributeName="opacity" values="0.5;1;0.5" dur="2s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="19" cy="40" r="0.5" fill="#d1c4e9">
+          <animate attributeName="opacity" values="0.6;1;0.6" dur="1.7s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="41" cy="40" r="0.5" fill="#d1c4e9">
+          <animate attributeName="opacity" values="1;0.6;1" dur="2.9s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="24" cy="39" r="0.5" fill="#c5cae9">
+          <animate attributeName="opacity" values="0.7;0.3;0.7" dur="2.2s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="36" cy="40" r="0.5" fill="#c5cae9">
+          <animate attributeName="opacity" values="0.4;0.8;0.4" dur="1.8s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="32" cy="38" r="0.5" fill="white">
+          <animate attributeName="opacity" values="0.8;1;0.8" dur="2.3s" repeatCount="indefinite"/>
+        </circle>
 
-        {/* 동굴 입구 */}
+        {/* Cave entrance with depth */}
         <ellipse cx="30" cy="42" rx="10" ry="6" fill="url(#crystalCaveInner)"/>
 
-        {/* 추가 디테일 */}
-        <circle cx="14" cy="38" r="0.5" fill="#b388ff"/>
-        <circle cx="46" cy="38" r="0.5" fill="#b388ff"/>
-        <circle cx="30" cy="40" r="0.5" fill="#7c4dff"/>
+        {/* Crystal reflections on cave floor */}
+        <ellipse cx="20" cy="44" rx="1.5" ry="0.8" fill="#7c4dff" opacity="0.3">
+          <animate attributeName="opacity" values="0.3;0.5;0.3" dur="2s" repeatCount="indefinite"/>
+        </ellipse>
+        <ellipse cx="26" cy="44.5" rx="2" ry="0.9" fill="#536dfe" opacity="0.3">
+          <animate attributeName="opacity" values="0.3;0.5;0.3" dur="2.5s" repeatCount="indefinite"/>
+        </ellipse>
+        <ellipse cx="33" cy="44.5" rx="2.5" ry="1" fill="#651fff" opacity="0.4">
+          <animate attributeName="opacity" values="0.4;0.6;0.4" dur="2.2s" repeatCount="indefinite"/>
+        </ellipse>
+        <ellipse cx="40" cy="44.5" rx="2" ry="0.9" fill="#448aff" opacity="0.3">
+          <animate attributeName="opacity" values="0.3;0.5;0.3" dur="1.8s" repeatCount="indefinite"/>
+        </ellipse>
+
+        {/* Additional cave details */}
+        <circle cx="14" cy="38" r="0.6" fill="#b388ff" opacity="0.8"/>
+        <circle cx="46" cy="38" r="0.6" fill="#b388ff" opacity="0.8"/>
+        <circle cx="30" cy="40" r="0.7" fill="#7c4dff" opacity="0.9"/>
+        <circle cx="25" cy="41" r="0.5" fill="#8c9eff" opacity="0.7"/>
+        <circle cx="35" cy="41" r="0.5" fill="#8c9eff" opacity="0.7"/>
       </g>
     </svg>
   ),
@@ -1816,150 +1973,354 @@ const DecorationIcons = {
   'LED 해파리': ({ size = 35 }) => (
     <svg width={size} height={size} viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
+        {/* Enhanced shadow filter */}
         <filter id="jellyfish-shadow" x="-50%" y="-50%" width="200%" height="200%">
-          <feGaussianBlur in="SourceAlpha" stdDeviation="1.3"/>
-          <feOffset dx="2" dy="2" result="offsetblur"/>
-          <feFlood floodColor="#000000" floodOpacity="0.28"/>
+          <feGaussianBlur in="SourceAlpha" stdDeviation="1.8"/>
+          <feOffset dx="2" dy="2.5" result="offsetblur"/>
+          <feFlood floodColor="#000000" floodOpacity="0.35"/>
           <feComposite in2="offsetblur" operator="in"/>
           <feMerge>
             <feMergeNode/>
             <feMergeNode in="SourceGraphic"/>
           </feMerge>
         </filter>
+        {/* Bioluminescent bell gradients */}
         <radialGradient id="jellyHead">
-          <stop offset="0%" stopColor="#e1f5fe"/>
-          <stop offset="50%" stopColor="#81d4fa"/>
-          <stop offset="100%" stopColor="#4fc3f7"/>
+          <stop offset="0%" stopColor="#e1f5fe" />
+          <stop offset="20%" stopColor="#b3e5fc" />
+          <stop offset="40%" stopColor="#81d4fa" />
+          <stop offset="60%" stopColor="#4fc3f7" />
+          <stop offset="80%" stopColor="#29b6f6" />
+          <stop offset="100%" stopColor="#03a9f4" />
         </radialGradient>
         <radialGradient id="jellyGlow">
-          <stop offset="0%" stopColor="#ffffff"/>
-          <stop offset="50%" stopColor="#b3e5fc"/>
-          <stop offset="100%" stopColor="#81d4fa"/>
+          <stop offset="0%" stopColor="#ffffff" />
+          <stop offset="20%" stopColor="#e1f5fe" />
+          <stop offset="40%" stopColor="#b3e5fc" />
+          <stop offset="60%" stopColor="#81d4fa" />
+          <stop offset="80%" stopColor="#4fc3f7" />
+          <stop offset="100%" stopColor="#29b6f6" />
         </radialGradient>
         <radialGradient id="jellyInner">
-          <stop offset="0%" stopColor="#ffffff"/>
-          <stop offset="100%" stopColor="#e1f5fe"/>
+          <stop offset="0%" stopColor="#ffffff" />
+          <stop offset="30%" stopColor="#f5f5f5" />
+          <stop offset="60%" stopColor="#e1f5fe" />
+          <stop offset="100%" stopColor="#b3e5fc" />
         </radialGradient>
+        {/* LED circuit glow */}
+        <radialGradient id="ledGlow">
+          <stop offset="0%" stopColor="#ffffff" />
+          <stop offset="40%" stopColor="#80deea" />
+          <stop offset="70%" stopColor="#4dd0e1" />
+          <stop offset="100%" stopColor="transparent" />
+        </radialGradient>
+        {/* Rich tentacle gradients */}
         <linearGradient id="tentacle1" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stopColor="#4fc3f7"/>
-          <stop offset="100%" stopColor="#0288d1"/>
+          <stop offset="0%" stopColor="#81d4fa" />
+          <stop offset="20%" stopColor="#4fc3f7" />
+          <stop offset="40%" stopColor="#29b6f6" />
+          <stop offset="60%" stopColor="#03a9f4" />
+          <stop offset="80%" stopColor="#0288d1" />
+          <stop offset="100%" stopColor="#0277bd" />
         </linearGradient>
         <linearGradient id="tentacle2" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stopColor="#4fc3f7"/>
-          <stop offset="100%" stopColor="#0288d1"/>
+          <stop offset="0%" stopColor="#80deea" />
+          <stop offset="20%" stopColor="#4dd0e1" />
+          <stop offset="40%" stopColor="#26c6da" />
+          <stop offset="60%" stopColor="#00bcd4" />
+          <stop offset="80%" stopColor="#00acc1" />
+          <stop offset="100%" stopColor="#0097a7" />
         </linearGradient>
         <linearGradient id="tentacle3" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stopColor="#4fc3f7"/>
-          <stop offset="100%" stopColor="#0288d1"/>
+          <stop offset="0%" stopColor="#b3e5fc" />
+          <stop offset="20%" stopColor="#81d4fa" />
+          <stop offset="40%" stopColor="#4fc3f7" />
+          <stop offset="60%" stopColor="#29b6f6" />
+          <stop offset="80%" stopColor="#039be5" />
+          <stop offset="100%" stopColor="#0277bd" />
         </linearGradient>
         <linearGradient id="tentacle4" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stopColor="#4fc3f7"/>
-          <stop offset="100%" stopColor="#0288d1"/>
+          <stop offset="0%" stopColor="#4dd0e1" />
+          <stop offset="20%" stopColor="#26c6da" />
+          <stop offset="40%" stopColor="#00bcd4" />
+          <stop offset="60%" stopColor="#00acc1" />
+          <stop offset="80%" stopColor="#0097a7" />
+          <stop offset="100%" stopColor="#00838f" />
         </linearGradient>
         <linearGradient id="tentacle5" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stopColor="#4fc3f7"/>
-          <stop offset="100%" stopColor="#0288d1"/>
+          <stop offset="0%" stopColor="#4fc3f7" />
+          <stop offset="20%" stopColor="#29b6f6" />
+          <stop offset="40%" stopColor="#03a9f4" />
+          <stop offset="60%" stopColor="#039be5" />
+          <stop offset="80%" stopColor="#0288d1" />
+          <stop offset="100%" stopColor="#01579b" />
+        </linearGradient>
+        <linearGradient id="tentacle6" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="#b2ebf2" />
+          <stop offset="20%" stopColor="#80deea" />
+          <stop offset="40%" stopColor="#4dd0e1" />
+          <stop offset="60%" stopColor="#26c6da" />
+          <stop offset="80%" stopColor="#00acc1" />
+          <stop offset="100%" stopColor="#006064" />
+        </linearGradient>
+        {/* Circuit trace gradient */}
+        <linearGradient id="circuitTrace" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#00e5ff" opacity="0.8" />
+          <stop offset="50%" stopColor="#18ffff" opacity="1" />
+          <stop offset="100%" stopColor="#00e5ff" opacity="0.8" />
         </linearGradient>
       </defs>
       <g filter="url(#jellyfish-shadow)">
-        {/* 해파리 머리 - 선명하게 */}
-        <ellipse cx="30" cy="25" rx="16" ry="13" fill="url(#jellyHead)"/>
+        {/* Translucent bell outer membrane */}
+        <ellipse cx="30" cy="25" rx="16" ry="13" fill="url(#jellyHead)" opacity="0.9"/>
 
-        {/* 내부 발광 효과 */}
+        {/* Pulsating glow rings */}
+        <ellipse cx="30" cy="25" rx="15" ry="12" stroke="#80deea" strokeWidth="0.5" fill="none">
+          <animate attributeName="opacity" values="0.3;0.7;0.3" dur="3s" repeatCount="indefinite"/>
+          <animate attributeName="rx" values="15;16;15" dur="3s" repeatCount="indefinite"/>
+          <animate attributeName="ry" values="12;13;12" dur="3s" repeatCount="indefinite"/>
+        </ellipse>
+        <ellipse cx="30" cy="25" rx="13" ry="10.5" stroke="#4dd0e1" strokeWidth="0.5" fill="none">
+          <animate attributeName="opacity" values="0.5;0.9;0.5" dur="2.5s" repeatCount="indefinite"/>
+          <animate attributeName="rx" values="13;14;13" dur="2.5s" repeatCount="indefinite"/>
+          <animate attributeName="ry" values="10.5;11.5;10.5" dur="2.5s" repeatCount="indefinite"/>
+        </ellipse>
+
+        {/* Internal bioluminescent glow */}
         <ellipse cx="30" cy="25" rx="12" ry="10" fill="url(#jellyGlow)">
           <animate attributeName="opacity" values="0.6;0.9;0.6" dur="3s" repeatCount="indefinite"/>
         </ellipse>
 
-        {/* 내부 패턴 */}
-        <ellipse cx="30" cy="25" rx="8" ry="6" fill="url(#jellyInner)"/>
-
-        {/* 촉수들 - 더 선명하고 많이 */}
-        <path
-          d="M18 32 C18 37, 16 42, 18 47 C20 52, 18 54, 18 54"
-          stroke="url(#tentacle1)"
-          strokeWidth="2"
-          fill="none"
-        >
-          <animate attributeName="d"
-            values="M18 32 C18 37, 16 42, 18 47 C20 52, 18 54, 18 54;
-                    M18 32 C18 37, 20 42, 18 47 C16 52, 18 54, 18 54;
-                    M18 32 C18 37, 16 42, 18 47 C20 52, 18 54, 18 54"
-            dur="4s" repeatCount="indefinite"/>
+        {/* LED circuit patterns inside bell */}
+        <path d="M20 25 L22 23 L25 23 L27 25" stroke="url(#circuitTrace)" strokeWidth="0.4" fill="none">
+          <animate attributeName="opacity" values="0.7;1;0.7" dur="2s" repeatCount="indefinite"/>
         </path>
-
-        <path
-          d="M24 34 C24 39, 22 44, 24 49"
-          stroke="url(#tentacle2)"
-          strokeWidth="1.8"
-          fill="none"
-        >
-          <animate attributeName="d"
-            values="M24 34 C24 39, 22 44, 24 49;
-                    M24 34 C24 39, 26 44, 24 49;
-                    M24 34 C24 39, 22 44, 24 49"
-            dur="3.5s" repeatCount="indefinite"/>
+        <path d="M33 25 L35 23 L38 23 L40 25" stroke="url(#circuitTrace)" strokeWidth="0.4" fill="none">
+          <animate attributeName="opacity" values="1;0.7;1" dur="2s" repeatCount="indefinite"/>
         </path>
+        <circle cx="22" cy="23" r="0.8" fill="#00e5ff">
+          <animate attributeName="opacity" values="0.5;1;0.5" dur="1.5s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="25" cy="23" r="0.8" fill="#00e5ff">
+          <animate attributeName="opacity" values="1;0.5;1" dur="1.5s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="35" cy="23" r="0.8" fill="#00e5ff">
+          <animate attributeName="opacity" values="0.7;1;0.7" dur="1.5s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="38" cy="23" r="0.8" fill="#00e5ff">
+          <animate attributeName="opacity" values="1;0.7;1" dur="1.5s" repeatCount="indefinite"/>
+        </circle>
+        <path d="M30 20 L30 28" stroke="url(#circuitTrace)" strokeWidth="0.3" fill="none" opacity="0.6"/>
+        <path d="M24 24 L26 26 L30 26 L32 24" stroke="url(#circuitTrace)" strokeWidth="0.3" fill="none" opacity="0.5"/>
+        <path d="M34 26 L36 24" stroke="url(#circuitTrace)" strokeWidth="0.3" fill="none" opacity="0.5"/>
 
-        <path
-          d="M30 35 C30 40, 32 45, 30 50"
-          stroke="url(#tentacle3)"
-          strokeWidth="2"
-          fill="none"
-        >
+        {/* Visible internal organs (gastrovascular cavity) */}
+        <ellipse cx="30" cy="25" rx="8" ry="6" fill="url(#jellyInner)" opacity="0.7"/>
+        <path d="M26 25 Q28 23, 30 25 T34 25" stroke="#b3e5fc" strokeWidth="0.5" fill="none" opacity="0.6">
           <animate attributeName="d"
-            values="M30 35 C30 40, 32 45, 30 50;
-                    M30 35 C30 40, 28 45, 30 50;
-                    M30 35 C30 40, 32 45, 30 50"
+            values="M26 25 Q28 23, 30 25 T34 25;
+                    M26 25 Q28 27, 30 25 T34 25;
+                    M26 25 Q28 23, 30 25 T34 25"
             dur="3s" repeatCount="indefinite"/>
         </path>
+        <path d="M27 27 Q30 26, 33 27" stroke="#81d4fa" strokeWidth="0.4" fill="none" opacity="0.5">
+          <animate attributeName="d"
+            values="M27 27 Q30 26, 33 27;
+                    M27 27 Q30 28, 33 27;
+                    M27 27 Q30 26, 33 27"
+            dur="2.5s" repeatCount="indefinite"/>
+        </path>
+
+        {/* Bell fringe (oral arms base) */}
+        <path d="M15 33 Q18 31, 21 32" stroke="#4fc3f7" strokeWidth="1.2" fill="none" opacity="0.8"/>
+        <path d="M39 32 Q42 31, 45 33" stroke="#4fc3f7" strokeWidth="1.2" fill="none" opacity="0.8"/>
+        <path d="M23 34 Q27 32, 30 34 Q33 32, 37 34" stroke="#29b6f6" strokeWidth="1" fill="none" opacity="0.7"/>
+
+        {/* Main tentacles with enhanced gradients (10 total) */}
+        <path
+          d="M18 32 C18 37, 16 42, 18 47 C20 52, 18 54, 18 56"
+          stroke="url(#tentacle2)"
+          strokeWidth="2"
+          fill="none"
+        >
+          <animate attributeName="d"
+            values="M18 32 C18 37, 16 42, 18 47 C20 52, 18 54, 18 56;
+                    M18 32 C18 37, 20 42, 18 47 C16 52, 18 54, 18 56;
+                    M18 32 C18 37, 16 42, 18 47 C20 52, 18 54, 18 56"
+            dur="4.3s" repeatCount="indefinite"/>
+        </path>
 
         <path
-          d="M36 34 C36 39, 38 44, 36 49"
+          d="M21 33 C21 38, 19 43, 21 48 C23 52, 21 54, 21 55"
+          stroke="url(#tentacle3)"
+          strokeWidth="1.9"
+          fill="none"
+        >
+          <animate attributeName="d"
+            values="M21 33 C21 38, 19 43, 21 48 C23 52, 21 54, 21 55;
+                    M21 33 C21 38, 23 43, 21 48 C19 52, 21 54, 21 55;
+                    M21 33 C21 38, 19 43, 21 48 C23 52, 21 54, 21 55"
+            dur="3.7s" repeatCount="indefinite"/>
+        </path>
+
+        <path
+          d="M24 34 C24 39, 22 44, 24 49 C24 53, 24 54, 24 56"
           stroke="url(#tentacle4)"
           strokeWidth="1.8"
           fill="none"
         >
           <animate attributeName="d"
-            values="M36 34 C36 39, 38 44, 36 49;
-                    M36 34 C36 39, 34 44, 36 49;
-                    M36 34 C36 39, 38 44, 36 49"
+            values="M24 34 C24 39, 22 44, 24 49 C24 53, 24 54, 24 56;
+                    M24 34 C24 39, 26 44, 24 49 C24 53, 24 54, 24 56;
+                    M24 34 C24 39, 22 44, 24 49 C24 53, 24 54, 24 56"
+            dur="3.5s" repeatCount="indefinite"/>
+        </path>
+
+        <path
+          d="M27 35 C27 40, 26 45, 27 50 C27 53, 27 54, 27 55"
+          stroke="url(#tentacle5)"
+          strokeWidth="1.7"
+          fill="none"
+        >
+          <animate attributeName="d"
+            values="M27 35 C27 40, 26 45, 27 50 C27 53, 27 54, 27 55;
+                    M27 35 C27 40, 28 45, 27 50 C27 53, 27 54, 27 55;
+                    M27 35 C27 40, 26 45, 27 50 C27 53, 27 54, 27 55"
+            dur="3.2s" repeatCount="indefinite"/>
+        </path>
+
+        <path
+          d="M30 35 C30 40, 32 45, 30 50 C30 53, 30 54, 30 56"
+          stroke="url(#tentacle6)"
+          strokeWidth="2.1"
+          fill="none"
+        >
+          <animate attributeName="d"
+            values="M30 35 C30 40, 32 45, 30 50 C30 53, 30 54, 30 56;
+                    M30 35 C30 40, 28 45, 30 50 C30 53, 30 54, 30 56;
+                    M30 35 C30 40, 32 45, 30 50 C30 53, 30 54, 30 56"
+            dur="3s" repeatCount="indefinite"/>
+        </path>
+
+        <path
+          d="M33 35 C33 40, 34 45, 33 50 C33 53, 33 54, 33 55"
+          stroke="url(#tentacle1)"
+          strokeWidth="1.7"
+          fill="none"
+        >
+          <animate attributeName="d"
+            values="M33 35 C33 40, 34 45, 33 50 C33 53, 33 54, 33 55;
+                    M33 35 C33 40, 32 45, 33 50 C33 53, 33 54, 33 55;
+                    M33 35 C33 40, 34 45, 33 50 C33 53, 33 54, 33 55"
+            dur="3.3s" repeatCount="indefinite"/>
+        </path>
+
+        <path
+          d="M36 34 C36 39, 38 44, 36 49 C36 53, 36 54, 36 56"
+          stroke="url(#tentacle2)"
+          strokeWidth="1.8"
+          fill="none"
+        >
+          <animate attributeName="d"
+            values="M36 34 C36 39, 38 44, 36 49 C36 53, 36 54, 36 56;
+                    M36 34 C36 39, 34 44, 36 49 C36 53, 36 54, 36 56;
+                    M36 34 C36 39, 38 44, 36 49 C36 53, 36 54, 36 56"
             dur="3.8s" repeatCount="indefinite"/>
         </path>
 
         <path
-          d="M42 32 C42 37, 44 42, 42 47 C40 52, 42 54, 42 54"
-          stroke="url(#tentacle5)"
+          d="M39 33 C39 38, 41 43, 39 48 C37 52, 39 54, 39 55"
+          stroke="url(#tentacle3)"
+          strokeWidth="1.9"
+          fill="none"
+        >
+          <animate attributeName="d"
+            values="M39 33 C39 38, 41 43, 39 48 C37 52, 39 54, 39 55;
+                    M39 33 C39 38, 37 43, 39 48 C41 52, 39 54, 39 55;
+                    M39 33 C39 38, 41 43, 39 48 C37 52, 39 54, 39 55"
+            dur="3.6s" repeatCount="indefinite"/>
+        </path>
+
+        <path
+          d="M42 32 C42 37, 44 42, 42 47 C40 52, 42 54, 42 56"
+          stroke="url(#tentacle4)"
           strokeWidth="2"
           fill="none"
         >
           <animate attributeName="d"
-            values="M42 32 C42 37, 44 42, 42 47 C40 52, 42 54, 42 54;
-                    M42 32 C42 37, 40 42, 42 47 C44 52, 42 54, 42 54;
-                    M42 32 C42 37, 44 42, 42 47 C40 52, 42 54, 42 54"
+            values="M42 32 C42 37, 44 42, 42 47 C40 52, 42 54, 42 56;
+                    M42 32 C42 37, 40 42, 42 47 C44 52, 42 54, 42 56;
+                    M42 32 C42 37, 44 42, 42 47 C40 52, 42 54, 42 56"
             dur="4.2s" repeatCount="indefinite"/>
         </path>
 
-        {/* 추가 얇은 촉수들 */}
-        <path d="M21 33 C21 38, 20 43, 21 48" stroke="#4fc3f7" strokeWidth="1" fill="none"/>
-        <path d="M27 35 C27 40, 28 45, 27 50" stroke="#4fc3f7" strokeWidth="1" fill="none"/>
-        <path d="M33 35 C33 40, 32 45, 33 50" stroke="#4fc3f7" strokeWidth="1" fill="none"/>
-        <path d="M39 33 C39 38, 40 43, 39 48" stroke="#4fc3f7" strokeWidth="1" fill="none"/>
+        {/* Suction cups on tentacles */}
+        <circle cx="18" cy="42" r="0.7" fill="#e1f5fe" opacity="0.6"/>
+        <circle cx="21" cy="44" r="0.7" fill="#b3e5fc" opacity="0.6"/>
+        <circle cx="24" cy="46" r="0.8" fill="#b3e5fc" opacity="0.6"/>
+        <circle cx="27" cy="47" r="0.7" fill="#e1f5fe" opacity="0.6"/>
+        <circle cx="30" cy="48" r="0.8" fill="#b3e5fc" opacity="0.6"/>
+        <circle cx="33" cy="47" r="0.7" fill="#e1f5fe" opacity="0.6"/>
+        <circle cx="36" cy="46" r="0.8" fill="#b3e5fc" opacity="0.6"/>
+        <circle cx="39" cy="44" r="0.7" fill="#b3e5fc" opacity="0.6"/>
+        <circle cx="42" cy="42" r="0.7" fill="#e1f5fe" opacity="0.6"/>
 
-        {/* LED 발광 점들 - 더 선명하게 */}
-        <circle cx="24" cy="23" r="2" fill="#ffffff">
+        {/* Enhanced LED lights with glow halos */}
+        <circle cx="24" cy="23" r="3" fill="url(#ledGlow)" opacity="0.5">
+          <animate attributeName="opacity" values="0.3;0.6;0.3" dur="2s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="24" cy="23" r="2.2" fill="#ffffff">
           <animate attributeName="opacity" values="1;0.4;1" dur="2s" repeatCount="indefinite"/>
         </circle>
-        <circle cx="36" cy="23" r="2" fill="#ffffff">
+
+        <circle cx="36" cy="23" r="3" fill="url(#ledGlow)" opacity="0.5">
+          <animate attributeName="opacity" values="0.6;0.3;0.6" dur="2s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="36" cy="23" r="2.2" fill="#ffffff">
           <animate attributeName="opacity" values="0.4;1;0.4" dur="2s" repeatCount="indefinite"/>
         </circle>
-        <circle cx="30" cy="28" r="2" fill="#ffffff">
+
+        <circle cx="30" cy="28" r="2.8" fill="url(#ledGlow)" opacity="0.5">
+          <animate attributeName="opacity" values="0.4;0.7;0.4" dur="1.5s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="30" cy="28" r="2.2" fill="#ffffff">
           <animate attributeName="opacity" values="0.7;1;0.7" dur="1.5s" repeatCount="indefinite"/>
+        </circle>
+
+        <circle cx="27" cy="25" r="2" fill="url(#ledGlow)" opacity="0.4">
+          <animate attributeName="opacity" values="0.3;0.5;0.3" dur="2.5s" repeatCount="indefinite"/>
         </circle>
         <circle cx="27" cy="25" r="1.5" fill="#e1f5fe">
           <animate attributeName="opacity" values="0.8;0.3;0.8" dur="2.5s" repeatCount="indefinite"/>
         </circle>
+
+        <circle cx="33" cy="25" r="2" fill="url(#ledGlow)" opacity="0.4">
+          <animate attributeName="opacity" values="0.5;0.3;0.5" dur="2.5s" repeatCount="indefinite"/>
+        </circle>
         <circle cx="33" cy="25" r="1.5" fill="#e1f5fe">
           <animate attributeName="opacity" values="0.3;0.8;0.3" dur="2.5s" repeatCount="indefinite"/>
+        </circle>
+
+        {/* Trailing light particles */}
+        <circle cx="18" cy="48" r="0.5" fill="#80deea">
+          <animate attributeName="cy" values="48;52;48" dur="3s" repeatCount="indefinite"/>
+          <animate attributeName="opacity" values="0.8;0.2;0.8" dur="3s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="30" cy="52" r="0.6" fill="#4dd0e1">
+          <animate attributeName="cy" values="52;56;52" dur="2.5s" repeatCount="indefinite"/>
+          <animate attributeName="opacity" values="0.9;0.3;0.9" dur="2.5s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="42" cy="48" r="0.5" fill="#80deea">
+          <animate attributeName="cy" values="48;52;48" dur="3.2s" repeatCount="indefinite"/>
+          <animate attributeName="opacity" values="0.8;0.2;0.8" dur="3.2s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="24" cy="50" r="0.4" fill="#b3e5fc">
+          <animate attributeName="cy" values="50;54;50" dur="2.8s" repeatCount="indefinite"/>
+          <animate attributeName="opacity" values="0.7;0.2;0.7" dur="2.8s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="36" cy="50" r="0.4" fill="#b3e5fc">
+          <animate attributeName="cy" values="50;54;50" dur="2.7s" repeatCount="indefinite"/>
+          <animate attributeName="opacity" values="0.7;0.2;0.7" dur="2.7s" repeatCount="indefinite"/>
         </circle>
       </g>
     </svg>
@@ -1968,104 +2329,275 @@ const DecorationIcons = {
   '아틀란티스 유적': ({ size = 35 }) => (
     <svg width={size} height={size} viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
+        {/* Enhanced shadow filter */}
         <filter id="atlantis-shadow" x="-50%" y="-50%" width="200%" height="200%">
-          <feGaussianBlur in="SourceAlpha" stdDeviation="1.3"/>
-          <feOffset dx="2" dy="2" result="offsetblur"/>
-          <feFlood floodColor="#000000" floodOpacity="0.28"/>
+          <feGaussianBlur in="SourceAlpha" stdDeviation="1.8"/>
+          <feOffset dx="2" dy="2.5" result="offsetblur"/>
+          <feFlood floodColor="#000000" floodOpacity="0.35"/>
           <feComposite in2="offsetblur" operator="in"/>
           <feMerge>
             <feMergeNode/>
             <feMergeNode in="SourceGraphic"/>
           </feMerge>
         </filter>
+        {/* Weathered stone gradients */}
         <linearGradient id="atlantisMain" x1="0%" y1="100%" x2="0%" y2="0%">
-          <stop offset="0%" stopColor="#00897b" />
-          <stop offset="50%" stopColor="#26a69a" />
-          <stop offset="100%" stopColor="#4db6ac" />
-        </linearGradient>
-        <linearGradient id="atlantisTower" x1="0%" y1="100%" x2="0%" y2="0%">
-          <stop offset="0%" stopColor="#00695c" />
-          <stop offset="50%" stopColor="#00897b" />
-          <stop offset="100%" stopColor="#26a69a" />
-        </linearGradient>
-        <linearGradient id="atlantisTop" x1="0%" y1="100%" x2="0%" y2="0%">
-          <stop offset="0%" stopColor="#26a69a" />
+          <stop offset="0%" stopColor="#004d40" />
+          <stop offset="20%" stopColor="#00695c" />
+          <stop offset="40%" stopColor="#00897b" />
+          <stop offset="60%" stopColor="#26a69a" />
+          <stop offset="80%" stopColor="#4db6ac" />
           <stop offset="100%" stopColor="#80cbc4" />
         </linearGradient>
+        <linearGradient id="atlantisTower" x1="0%" y1="100%" x2="0%" y2="0%">
+          <stop offset="0%" stopColor="#00382f" />
+          <stop offset="20%" stopColor="#004d40" />
+          <stop offset="40%" stopColor="#00695c" />
+          <stop offset="60%" stopColor="#00897b" />
+          <stop offset="80%" stopColor="#26a69a" />
+          <stop offset="100%" stopColor="#4db6ac" />
+        </linearGradient>
+        <linearGradient id="atlantisTop" x1="0%" y1="100%" x2="0%" y2="0%">
+          <stop offset="0%" stopColor="#00897b" />
+          <stop offset="20%" stopColor="#26a69a" />
+          <stop offset="40%" stopColor="#4db6ac" />
+          <stop offset="60%" stopColor="#80cbc4" />
+          <stop offset="80%" stopColor="#b2dfdb" />
+          <stop offset="100%" stopColor="#e0f2f1" />
+        </linearGradient>
         <linearGradient id="atlantisSide1" x1="0%" y1="100%" x2="0%" y2="0%">
-          <stop offset="0%" stopColor="#00796b" />
+          <stop offset="0%" stopColor="#004d40" />
+          <stop offset="25%" stopColor="#00695c" />
+          <stop offset="50%" stopColor="#00796b" />
+          <stop offset="75%" stopColor="#26a69a" />
           <stop offset="100%" stopColor="#4db6ac" />
         </linearGradient>
         <linearGradient id="atlantisSide2" x1="0%" y1="100%" x2="0%" y2="0%">
-          <stop offset="0%" stopColor="#00796b" />
+          <stop offset="0%" stopColor="#004d40" />
+          <stop offset="25%" stopColor="#00695c" />
+          <stop offset="50%" stopColor="#00796b" />
+          <stop offset="75%" stopColor="#26a69a" />
           <stop offset="100%" stopColor="#4db6ac" />
         </linearGradient>
+        {/* Mystical door glow */}
         <radialGradient id="atlantisDoor">
           <stop offset="0%" stopColor="#004d40" />
-          <stop offset="70%" stopColor="#00251a" />
+          <stop offset="30%" stopColor="#00382f" />
+          <stop offset="60%" stopColor="#00251a" />
+          <stop offset="85%" stopColor="#001410" />
           <stop offset="100%" stopColor="#000000" />
         </radialGradient>
+        {/* Mystical energy glow */}
+        <radialGradient id="mysticGlow">
+          <stop offset="0%" stopColor="#80cbc4" />
+          <stop offset="40%" stopColor="#4db6ac" />
+          <stop offset="70%" stopColor="#26a69a" />
+          <stop offset="100%" stopColor="transparent" />
+        </radialGradient>
+        {/* Rune glow */}
+        <radialGradient id="runeGlow">
+          <stop offset="0%" stopColor="#a7ffeb" />
+          <stop offset="50%" stopColor="#64ffda" />
+          <stop offset="100%" stopColor="#1de9b6" />
+        </radialGradient>
+        {/* Coral growth gradient */}
+        <linearGradient id="coralGrowth" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#ff6f00" opacity="0.6" />
+          <stop offset="50%" stopColor="#ff8f00" opacity="0.7" />
+          <stop offset="100%" stopColor="#ffa726" opacity="0.5" />
+        </linearGradient>
+        {/* Stone texture pattern */}
+        <pattern id="stoneTexture" x="0" y="0" width="4" height="4" patternUnits="userSpaceOnUse">
+          <circle cx="1" cy="1" r="0.3" fill="#00695c" opacity="0.3"/>
+          <circle cx="3" cy="3" r="0.3" fill="#004d40" opacity="0.3"/>
+        </pattern>
       </defs>
       <g filter="url(#atlantis-shadow)">
-        {/* 메인 건물 - 더 웅장하게 */}
+        {/* Base platform with broken pieces */}
+        <rect x="10" y="44" width="40" height="1.5" fill="#004d40" opacity="0.7"/>
+        <rect x="8" y="45.5" width="44" height="1" fill="#00695c" opacity="0.6"/>
+
+        {/* Broken column pieces scattered */}
+        <rect x="12" y="43" width="2" height="3" fill="#00796b" opacity="0.8" transform="rotate(-15 13 44.5)"/>
+        <rect x="46" y="43" width="2.5" height="3.5" fill="#00897b" opacity="0.8" transform="rotate(20 47.25 44.75)"/>
+        <ellipse cx="14" cy="45.5" rx="1.5" ry="0.8" fill="#26a69a" opacity="0.7"/>
+        <ellipse cx="48" cy="45.5" rx="1.8" ry="0.9" fill="#26a69a" opacity="0.7"/>
+
+        {/* Main building with weathered texture */}
         <path
           d="M18 45 L18 28 L22 24 L26 21 L30 20 L34 21 L38 24 L42 28 L42 45 Z"
           fill="url(#atlantisMain)"
         />
+        <path
+          d="M18 45 L18 28 L22 24 L26 21 L30 20 L34 21 L38 24 L42 28 L42 45 Z"
+          fill="url(#stoneTexture)"
+          opacity="0.3"
+        />
 
-        {/* 중앙 탑 */}
+        {/* Water erosion marks */}
+        <path d="M19 40 Q19.5 38, 19 36" stroke="#004d40" strokeWidth="0.4" opacity="0.5"/>
+        <path d="M21 38 Q21.5 36, 21 34" stroke="#004d40" strokeWidth="0.3" opacity="0.5"/>
+        <path d="M39 38 Q39.5 36, 39 34" stroke="#004d40" strokeWidth="0.3" opacity="0.5"/>
+        <path d="M41 40 Q41.5 38, 41 36" stroke="#004d40" strokeWidth="0.4" opacity="0.5"/>
+
+        {/* Cracks in main structure */}
+        <path d="M24 43 L25 40 L24.5 37" stroke="#00382f" strokeWidth="0.5" opacity="0.7"/>
+        <path d="M35 42 L35.5 39 L36 36" stroke="#00382f" strokeWidth="0.5" opacity="0.7"/>
+        <path d="M28 35 L29 32 L28.5 29" stroke="#004d40" strokeWidth="0.4" opacity="0.6"/>
+        <path d="M32 35 L31.5 32 L32 29" stroke="#004d40" strokeWidth="0.4" opacity="0.6"/>
+
+        {/* Central tower with aged texture */}
         <rect x="27" y="15" width="6" height="30" fill="url(#atlantisTower)"/>
+        <rect x="27" y="15" width="6" height="30" fill="url(#stoneTexture)" opacity="0.4"/>
 
-        {/* 탑 꼭대기 - 피라미드 형태 */}
+        {/* Tower cracks */}
+        <line x1="28" y1="40" x2="28.5" y2="25" stroke="#00251a" strokeWidth="0.4" opacity="0.6"/>
+        <line x1="31.5" y1="38" x2="31" y2="22" stroke="#00251a" strokeWidth="0.4" opacity="0.6"/>
+
+        {/* Pyramid top with mystical glow */}
         <path
           d="M27 15 L30 8 L33 15 Z"
           fill="url(#atlantisTop)"
         />
-        <circle cx="30" cy="10" r="1.5" fill="#80cbc4"/>
 
-        {/* 옆 탑들 */}
+        {/* Mystical orb at peak */}
+        <circle cx="30" cy="10" r="2.5" fill="url(#mysticGlow)" opacity="0.6">
+          <animate attributeName="opacity" values="0.4;0.8;0.4" dur="3s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="30" cy="10" r="1.8" fill="url(#runeGlow)">
+          <animate attributeName="opacity" values="0.6;1;0.6" dur="3s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="30" cy="10" r="1.2" fill="#e0f2f1"/>
+
+        {/* Side towers with weathering */}
         <rect x="15" y="32" width="4" height="13" fill="url(#atlantisSide1)"/>
         <rect x="41" y="32" width="4" height="13" fill="url(#atlantisSide2)"/>
 
-        {/* 기둥들 */}
-        <rect x="20" y="30" width="2.5" height="15" fill="#4db6ac"/>
-        <rect x="24" y="30" width="2.5" height="15" fill="#4db6ac"/>
-        <rect x="33.5" y="30" width="2.5" height="15" fill="#4db6ac"/>
-        <rect x="37.5" y="30" width="2.5" height="15" fill="#4db6ac"/>
+        {/* Tower damage */}
+        <path d="M15 38 L16 37 L15.5 36" fill="#004d40" opacity="0.8"/>
+        <path d="M45 39 L44 38 L44.5 37" fill="#004d40" opacity="0.8"/>
 
-        {/* 아치 문 */}
+        {/* Columns with fluting and capitals */}
+        <rect x="20" y="30" width="2.5" height="15" fill="#4db6ac"/>
+        <rect x="20" y="30" width="1.2" height="15" fill="#80cbc4" opacity="0.4"/>
+        <rect x="20" y="29" width="2.5" height="1.5" fill="#80cbc4"/>
+
+        <rect x="24" y="30" width="2.5" height="15" fill="#4db6ac"/>
+        <rect x="24" y="30" width="1.2" height="15" fill="#80cbc4" opacity="0.4"/>
+        <rect x="24" y="29" width="2.5" height="1.5" fill="#80cbc4"/>
+
+        <rect x="33.5" y="30" width="2.5" height="15" fill="#4db6ac"/>
+        <rect x="33.5" y="30" width="1.2" height="15" fill="#80cbc4" opacity="0.4"/>
+        <rect x="33.5" y="29" width="2.5" height="1.5" fill="#80cbc4"/>
+
+        <rect x="37.5" y="30" width="2.5" height="15" fill="#4db6ac"/>
+        <rect x="37.5" y="30" width="1.2" height="15" fill="#80cbc4" opacity="0.4"/>
+        <rect x="37.5" y="29" width="2.5" height="1.5" fill="#80cbc4"/>
+
+        {/* Arched doorway with mystic glow */}
         <path
           d="M26 45 L26 36 C26 33, 28 31, 30 31 C32 31, 34 33, 34 36 L34 45"
           fill="url(#atlantisDoor)"
         />
+        <ellipse cx="30" cy="38" rx="3" ry="5" fill="url(#mysticGlow)" opacity="0.4">
+          <animate attributeName="opacity" values="0.3;0.6;0.3" dur="4s" repeatCount="indefinite"/>
+        </ellipse>
 
-        {/* 고대 문양들 - 더 많이 */}
-        <circle cx="30" cy="24" r="3.5" stroke="#80cbc4" strokeWidth="0.8" fill="none"/>
-        <path d="M27 24 L30 20 L33 24 L30 28 Z" fill="#80cbc4"/>
+        {/* Door frame carvings */}
+        <path d="M26 45 L26 36 C26 34, 27 33, 28 32" stroke="#80cbc4" strokeWidth="0.3" opacity="0.6"/>
+        <path d="M34 45 L34 36 C34 34, 33 33, 32 32" stroke="#80cbc4" strokeWidth="0.3" opacity="0.6"/>
 
-        <circle cx="22" cy="35" r="2" stroke="#4db6ac" strokeWidth="0.5" fill="none"/>
-        <circle cx="38" cy="35" r="2" stroke="#4db6ac" strokeWidth="0.5" fill="none"/>
+        {/* Central medallion with hieroglyphs */}
+        <circle cx="30" cy="24" r="4" stroke="#80cbc4" strokeWidth="1" fill="none" opacity="0.9"/>
+        <circle cx="30" cy="24" r="3" stroke="#b2dfdb" strokeWidth="0.5" fill="none" opacity="0.7"/>
+        <path d="M27 24 L30 20 L33 24 L30 28 Z" fill="#80cbc4" opacity="0.8"/>
+        <circle cx="30" cy="24" r="1" fill="#e0f2f1"/>
 
-        {/* 삼각형 문양 */}
-        <path d="M29 17 L30 15.5 L31 17 Z" fill="#26a69a"/>
-        <path d="M16 35 L17 33.5 L18 35 Z" fill="#26a69a"/>
-        <path d="M42 35 L43 33.5 L44 35 Z" fill="#26a69a"/>
+        {/* Inner medallion details */}
+        <circle cx="30" cy="24" r="2.2" stroke="#a7ffeb" strokeWidth="0.3" fill="none" opacity="0.6">
+          <animate attributeName="opacity" values="0.4;0.8;0.4" dur="2.5s" repeatCount="indefinite"/>
+        </circle>
 
-        {/* 부서진 부분 디테일 */}
+        {/* Glowing runes on side panels */}
+        <circle cx="22" cy="35" r="2.5" stroke="#64ffda" strokeWidth="0.7" fill="none" opacity="0.7">
+          <animate attributeName="opacity" values="0.5;0.9;0.5" dur="3s" repeatCount="indefinite"/>
+        </circle>
+        <path d="M20.5 35 L22 33.5 L23.5 35" stroke="#64ffda" strokeWidth="0.5" opacity="0.6">
+          <animate attributeName="opacity" values="0.4;0.8;0.4" dur="3s" repeatCount="indefinite"/>
+        </path>
+
+        <circle cx="38" cy="35" r="2.5" stroke="#64ffda" strokeWidth="0.7" fill="none" opacity="0.7">
+          <animate attributeName="opacity" values="0.9;0.5;0.9" dur="3s" repeatCount="indefinite"/>
+        </circle>
+        <path d="M36.5 35 L38 33.5 L39.5 35" stroke="#64ffda" strokeWidth="0.5" opacity="0.6">
+          <animate attributeName="opacity" values="0.8;0.4;0.8" dur="3s" repeatCount="indefinite"/>
+        </path>
+
+        {/* Hieroglyphic carvings */}
+        <path d="M29 17 L30 15.5 L31 17 Z" fill="#26a69a" opacity="0.9"/>
+        <rect x="29.5" y="17" width="1" height="1.5" fill="#26a69a" opacity="0.7"/>
+
+        <path d="M16 35 L17 33.5 L18 35 Z" fill="#26a69a" opacity="0.9"/>
+        <circle cx="17" cy="36" r="0.5" fill="#26a69a" opacity="0.7"/>
+
+        <path d="M42 35 L43 33.5 L44 35 Z" fill="#26a69a" opacity="0.9"/>
+        <circle cx="43" cy="36" r="0.5" fill="#26a69a" opacity="0.7"/>
+
+        {/* Additional hieroglyphic symbols */}
+        <rect x="19" y="33" width="1" height="1" fill="#4db6ac" opacity="0.6"/>
+        <circle cx="19.5" cy="35.5" r="0.4" fill="#4db6ac" opacity="0.6"/>
+        <rect x="40" y="33" width="1" height="1" fill="#4db6ac" opacity="0.6"/>
+        <circle cx="40.5" cy="35.5" r="0.4" fill="#4db6ac" opacity="0.6"/>
+
+        {/* Tower glyphs */}
+        <path d="M28.5 22 L29 21 L29.5 22" fill="#80cbc4" opacity="0.5"/>
+        <path d="M30.5 20 L31 19 L31.5 20" fill="#80cbc4" opacity="0.5"/>
+        <circle cx="29" cy="27" r="0.4" fill="#b2dfdb" opacity="0.6"/>
+        <circle cx="31" cy="26" r="0.4" fill="#b2dfdb" opacity="0.6"/>
+
+        {/* Coral growth on ruins */}
+        <ellipse cx="17" cy="42" rx="1.2" ry="1.8" fill="url(#coralGrowth)"/>
+        <circle cx="17.5" cy="41" r="0.5" fill="#ff8f00" opacity="0.7"/>
+        <circle cx="16.5" cy="42.5" r="0.6" fill="#ffa726" opacity="0.6"/>
+
+        <ellipse cx="43" cy="41" rx="1.3" ry="2" fill="url(#coralGrowth)"/>
+        <circle cx="43.5" cy="40" r="0.6" fill="#ff8f00" opacity="0.7"/>
+        <circle cx="42.5" cy="41.8" r="0.5" fill="#ffa726" opacity="0.6"/>
+
+        <ellipse cx="25" cy="44" rx="0.8" ry="1.2" fill="url(#coralGrowth)" opacity="0.8"/>
+        <ellipse cx="35" cy="44.5" rx="0.9" ry="1.3" fill="url(#coralGrowth)" opacity="0.8"/>
+
+        {/* Small coral clusters */}
+        <circle cx="20" cy="44" r="0.4" fill="#ff6f00" opacity="0.6"/>
+        <circle cx="28" cy="45" r="0.4" fill="#ff8f00" opacity="0.5"/>
+        <circle cx="32" cy="45" r="0.4" fill="#ff8f00" opacity="0.5"/>
+        <circle cx="40" cy="44" r="0.4" fill="#ff6f00" opacity="0.6"/>
+
+        {/* Damaged sections with rubble */}
         <path
           d="M18 45 L20 43 L19 41 L21 40 L18 38"
           fill="#26a69a"
+          opacity="0.8"
         />
+        <path d="M19 42 L19.5 41 L19 40" fill="#00695c" opacity="0.7"/>
+
         <path
           d="M42 45 L40 44 L41 42 L39 41 L42 39"
           fill="#26a69a"
+          opacity="0.8"
         />
+        <path d="M41 43 L40.5 42 L41 41" fill="#00695c" opacity="0.7"/>
 
-        {/* 물결 효과 */}
+        {/* Architectural reliefs */}
+        <rect x="28" y="28" width="4" height="0.5" fill="#80cbc4" opacity="0.7"/>
+        <rect x="28" y="32" width="4" height="0.5" fill="#80cbc4" opacity="0.7"/>
+        <rect x="28" y="36" width="4" height="0.5" fill="#80cbc4" opacity="0.7"/>
+
+        {/* Enhanced water effects with mystical glow */}
         <path
           d="M12 47 C18 46, 24 48, 30 47 C36 46, 42 48, 48 47"
           stroke="#4dd0e1"
-          strokeWidth="0.8"
+          strokeWidth="1"
           fill="none"
         >
           <animate attributeName="d"
@@ -2073,11 +2605,13 @@ const DecorationIcons = {
                     M12 47 C18 48, 24 46, 30 47 C36 48, 42 46, 48 47;
                     M12 47 C18 46, 24 48, 30 47 C36 46, 42 48, 48 47"
             dur="3s" repeatCount="indefinite"/>
+          <animate attributeName="opacity" values="0.6;1;0.6" dur="3s" repeatCount="indefinite"/>
         </path>
+
         <path
           d="M14 49 C20 48, 26 50, 32 49 C38 48, 44 50, 50 49"
           stroke="#29b6f6"
-          strokeWidth="0.6"
+          strokeWidth="0.8"
           fill="none"
         >
           <animate attributeName="d"
@@ -2085,7 +2619,44 @@ const DecorationIcons = {
                     M14 49 C20 50, 26 48, 32 49 C38 50, 44 48, 50 49;
                     M14 49 C20 48, 26 50, 32 49 C38 48, 44 50, 50 49"
             dur="2.5s" repeatCount="indefinite"/>
+          <animate attributeName="opacity" values="0.5;0.8;0.5" dur="2.5s" repeatCount="indefinite"/>
         </path>
+
+        <path
+          d="M16 51 C22 50, 28 52, 34 51 C40 50, 46 52, 52 51"
+          stroke="#80deea"
+          strokeWidth="0.6"
+          fill="none"
+          opacity="0.5"
+        >
+          <animate attributeName="d"
+            values="M16 51 C22 50, 28 52, 34 51 C40 50, 46 52, 52 51;
+                    M16 51 C22 52, 28 50, 34 51 C40 52, 46 50, 52 51;
+                    M16 51 C22 50, 28 52, 34 51 C40 50, 46 52, 52 51"
+            dur="3.5s" repeatCount="indefinite"/>
+        </path>
+
+        {/* Mystical energy particles rising from ruins */}
+        <circle cx="22" cy="40" r="0.6" fill="#64ffda">
+          <animate attributeName="cy" values="40;32;40" dur="4s" repeatCount="indefinite"/>
+          <animate attributeName="opacity" values="0.8;0.2;0.8" dur="4s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="38" cy="38" r="0.6" fill="#64ffda">
+          <animate attributeName="cy" values="38;30;38" dur="4.5s" repeatCount="indefinite"/>
+          <animate attributeName="opacity" values="0.8;0.2;0.8" dur="4.5s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="30" cy="36" r="0.5" fill="#a7ffeb">
+          <animate attributeName="cy" values="36;28;36" dur="3.5s" repeatCount="indefinite"/>
+          <animate attributeName="opacity" values="0.9;0.3;0.9" dur="3.5s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="26" cy="39" r="0.5" fill="#a7ffeb">
+          <animate attributeName="cy" values="39;31;39" dur="3.8s" repeatCount="indefinite"/>
+          <animate attributeName="opacity" values="0.7;0.2;0.7" dur="3.8s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="34" cy="37" r="0.5" fill="#a7ffeb">
+          <animate attributeName="cy" values="37;29;37" dur="4.2s" repeatCount="indefinite"/>
+          <animate attributeName="opacity" values="0.7;0.2;0.7" dur="4.2s" repeatCount="indefinite"/>
+        </circle>
       </g>
     </svg>
   )

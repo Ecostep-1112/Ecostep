@@ -586,7 +586,7 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
   };
 
   return (
-    <div className={`flex-1 ${bgColor} relative`}>
+    <div className={`flex-1 ${bgColor} relative flex flex-col`}>
       <div className={`${bgColor} p-4 flex items-center border-b ${borderColor}`}>
         <button onClick={() => setShowProfile(false)} className="mr-3">
           <ChevronRight className={`w-4 h-4 rotate-180 ${textColor}`} />
@@ -595,7 +595,7 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
       </div>
       
       {/* 프로필 사진 업로드 섹션 */}
-      <div className="p-4">
+      <div className="p-4 pb-24 overflow-y-auto flex-1">
         <div className="flex justify-center mb-6">
           <label htmlFor="profile-upload" className="cursor-pointer relative">
             <div className={`w-20 h-20 ${cardBg} rounded-full flex items-center justify-center border-2 ${borderColor} overflow-hidden`}>
@@ -784,7 +784,7 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
       )}
       
       {/* 계정 탈퇴 버튼 */}
-      <div className="absolute bottom-8 left-4 right-4">
+      <div className="fixed bottom-0 left-0 right-0 z-50 p-4">
         <button
           onClick={() => setShowDeleteConfirm(true)}
           className={`w-full py-2.5 text-sm font-medium text-red-500 rounded-lg border border-red-200 ${isDarkMode ? 'bg-gray-800' : 'bg-white'} hover:bg-red-50 transition-colors`}
@@ -795,7 +795,7 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
       
       {/* 탈퇴 확인 다이얼로그 */}
       {showDeleteConfirm && (
-        <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/50">
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50">
           <div className={`mx-4 w-full max-w-xs ${isDarkMode ? 'bg-gray-800' : 'bg-white'} rounded-2xl p-5 shadow-xl`}>
             <h3 className={`text-lg font-semibold text-center mb-3 ${textColor}`}>
               정말 탈퇴하시겠습니까?

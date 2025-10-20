@@ -43,7 +43,7 @@ const SettingsScreen = ({
       </div>
       
       <div className="flex-1 overflow-y-auto">
-        <div className="mx-3 mt-4 space-y-4 pb-20">
+        <div className="mx-3 mt-4 space-y-4 pb-24">
           {/* 프로필 섹션 */}
           <button 
             onClick={() => setShowProfile(true)}
@@ -155,8 +155,8 @@ const SettingsScreen = ({
       </div>
 
       {/* 로그아웃 버튼 - 하단 고정 */}
-      <div className="absolute bottom-8 left-4 right-4">
-        <button 
+      <div className="fixed bottom-0 left-0 right-0 z-50 p-4">
+        <button
           onClick={onLogout}
           className={`w-full py-2.5 text-sm font-medium text-red-500 rounded-lg border border-red-200 ${isDarkMode ? 'bg-gray-800' : 'bg-white'} hover:bg-red-50 transition-colors`}
         >

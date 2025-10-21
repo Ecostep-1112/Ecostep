@@ -85,7 +85,8 @@ const ChatBot = ({ isDarkMode, onBack }) => {
     }
 
     try {
-      const response = await fetch('http://localhost:5176/api/chatbot', {
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5176';
+      const response = await fetch(`${API_URL}/api/chatbot`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

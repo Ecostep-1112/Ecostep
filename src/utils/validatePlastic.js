@@ -4,7 +4,8 @@
 export async function validatePlasticChallenge(description) {
   try {
     // 백엔드 서버를 통해 Claude API 호출
-    const response = await fetch('http://localhost:5176/api/validate-plastic-challenge', {
+    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5176';
+    const response = await fetch(`${API_URL}/api/validate-plastic-challenge`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

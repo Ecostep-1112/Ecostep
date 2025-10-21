@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Share2, ChevronDown, ChevronUp, Book, Phone, ChevronRight, ArrowRight, Check } from 'lucide-react';
 import { generateEnvironmentalTip } from '../../services/claudeService';
+import { supabase } from '../../lib/supabase';
 
 const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, showToast, onShowChatBot }) => {
   const [expandedTip, setExpandedTip] = useState(null);
@@ -77,21 +78,77 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
     }
     return false;
   });
-  const [selectedCategory, setSelectedCategory] = useState('랜덤');
+  // 카테고리 초기화 함수
+  const initializeCategory = () => {
+    const today = new Date().toDateString();
+    const lastUpdate = localStorage.getItem('lastCategoryUpdateDate');
+
+    if (lastUpdate !== today) {
+      // 날짜가 바뀜 - nextDayCategory를 tipCategory로 이동
+      const nextCat = localStorage.getItem('nextDayCategory');
+      if (nextCat) {
+        localStorage.setItem('tipCategory', nextCat);
+        localStorage.removeItem('nextDayCategory');
+      }
+      localStorage.setItem('lastCategoryUpdateDate', today);
+    }
+
+    // 현재 카테고리 반환
+    return localStorage.getItem('tipCategory') || '랜덤';
+  };
+
+  const [selectedCategory, setSelectedCategory] = useState(initializeCategory());
   const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
   const [categoryIndices, setCategoryIndices] = useState({});
   const [userLocation, setUserLocation] = useState(null);
   const [sortedPlaces, setSortedPlaces] = useState([]);
   const [selectedPlaceCategory, setSelectedPlaceCategory] = useState('전체');
   const [showPlaceCategoryDropdown, setShowPlaceCategoryDropdown] = useState(false);
+  const [zeroWastePlaces, setZeroWastePlaces] = useState([]);
+  const [isLoadingPlaces, setIsLoadingPlaces] = useState(true);
 
   const categories = ['랜덤', '재활용 팁', '생활 습관', '에너지 절약', '제로웨이스트'];
   const placeCategories = ['전체', '리필샵', '친환경 매장', '재활용/업사이클', '무포장 가게', '비건/친환경 카페'];
+
+  // Supabase에서 장소 데이터 불러오기
+  const loadPlaces = async () => {
+    try {
+      setIsLoadingPlaces(true);
+      const { data, error } = await supabase
+        .from('places')
+        .select('*');
+
+      if (error) throw error;
+
+      // places 테이블의 데이터를 기존 형식에 맞게 변환
+      const formattedPlaces = data.map(place => ({
+        name: place.name,
+        description: place.description || '',
+        address: '', // places 테이블에 address가 없으므로 빈 문자열
+        lat: place.latitude,
+        lng: place.longitude,
+        category: place.tag || '전체'
+      }));
+
+      setZeroWastePlaces(formattedPlaces);
+    } catch (error) {
+      console.error('장소 데이터 로드 실패:', error);
+      // 에러 발생 시 기본 데이터 사용
+      setZeroWastePlaces([
+        { name: '알맹상점 서울역점', description: '리필 전문 매장', address: '서울시 용산구 한강대로 405', lat: 37.5547, lng: 126.9707, category: '리필샵' },
+        { name: '더피커 성수', description: '친환경 편집숍', address: '서울시 성동구 왕십리로 115', lat: 37.5447, lng: 127.0557, category: '친환경 매장' },
+        { name: '송파 나눔장터', description: '재활용품 거래소', address: '서울시 송파구 올림픽로 240', lat: 37.5145, lng: 127.1065, category: '재활용/업사이클' },
+      ]);
+    } finally {
+      setIsLoadingPlaces(false);
+    }
+  };
 
   // 컴포넌트 마운트 시 초기 팁 로드 및 사용자 위치 가져오기
   useEffect(() => {
     loadInitialTip();
     getUserLocation();
+    loadPlaces();
   }, []);
 
   // 사용자 위치 및 카테고리 기반으로 장소 정렬 및 필터링
@@ -138,7 +195,11 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
   const loadInitialTip = async () => {
     setIsLoadingTip(true);
     try {
-      const tip = await generateEnvironmentalTip(selectedCategory === '랜덤' ? null : selectedCategory);
+      // 현재 카테고리 가져오기
+      const currentCategory = localStorage.getItem('tipCategory') || '랜덤';
+      setSelectedCategory(currentCategory);
+
+      const tip = await generateEnvironmentalTip(currentCategory === '랜덤' ? null : currentCategory);
       setEnvironmentalTip(tip);
       setErrorMessage('');
     } catch (error) {
@@ -149,44 +210,15 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
     }
   };
 
-  const handleCategoryClick = async (category) => {
+  const handleCategoryClick = (category) => {
     setShowCategoryDropdown(false);
-    
-    if (selectedCategory === category) {
-      // 같은 카테고리 클릭 시 새로운 팁 로드
-      const currentIndex = categoryIndices[category] || 0;
-      setIsLoadingTip(true);
-      try {
-        const tip = await generateEnvironmentalTip(category === '랜덤' ? null : category, currentIndex + 1);
-        setEnvironmentalTip(tip);
-        // 팁이 변경되어도 오늘 이미 확인했다면 버튼 비활성화 유지
-        // setHasCheckedTip(false); 제거
-        
-        if (category !== '랜덤' && tip.currentIndex !== undefined) {
-          setCategoryIndices(prev => ({
-            ...prev,
-            [category]: tip.currentIndex
-          }));
-        }
-      } catch (error) {
-        console.error('팁 로드 실패:', error);
-      } finally {
-        setIsLoadingTip(false);
-      }
-    } else {
-      // 다른 카테고리 선택
-      setSelectedCategory(category);
-      setIsLoadingTip(true);
-      try {
-        const tip = await generateEnvironmentalTip(category === '랜덤' ? null : category);
-        setEnvironmentalTip(tip);
-        // 팁이 변경되어도 오늘 이미 확인했다면 버튼 비활성화 유지
-        // setHasCheckedTip(false); 제거
-      } catch (error) {
-        console.error('팁 로드 실패:', error);
-      } finally {
-        setIsLoadingTip(false);
-      }
+
+    // 다음 날부터 적용될 카테고리 저장
+    localStorage.setItem('nextDayCategory', category);
+
+    // 토스트 메시지 표시
+    if (showToast) {
+      showToast(`내일부터 "${category}" 팁이 표시됩니다`, 'success');
     }
   };
 
@@ -288,52 +320,59 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
     });
   };
   
-  // 매일 자정에 리셋되도록 체크
+  // 매일 자정에 리셋되도록 체크 (날짜 변경 시 팁도 리로드)
   useEffect(() => {
     const checkReset = () => {
       const lastChecked = localStorage.getItem('lastTipCheckedDate');
+      const lastUpdate = localStorage.getItem('lastCategoryUpdateDate');
+      const today = new Date().toDateString();
+
+      // 포인트 리셋 체크
       if (lastChecked) {
         const lastDate = new Date(lastChecked);
-        const today = new Date();
-        if (lastDate.toDateString() !== today.toDateString()) {
+        if (lastDate.toDateString() !== today) {
           setHasCheckedTip(false);
         }
       }
+
+      // 날짜 변경 체크 및 팁 리로드
+      if (lastUpdate !== today) {
+        console.log('날짜가 변경되었습니다. 팁을 리로드합니다.');
+        // 카테고리 업데이트
+        const nextCat = localStorage.getItem('nextDayCategory');
+        if (nextCat) {
+          localStorage.setItem('tipCategory', nextCat);
+          localStorage.removeItem('nextDayCategory');
+        }
+        localStorage.setItem('lastCategoryUpdateDate', today);
+
+        // 팁 리로드
+        loadInitialTip();
+      }
     };
-    
+
     checkReset();
     // 1분마다 체크
     const interval = setInterval(checkReset, 60000);
     return () => clearInterval(interval);
   }, []);
 
-  const zeroWastePlaces = [
-    { name: '알맹상점 서울역점', description: '리필 전문 매장', address: '서울시 용산구 한강대로 405', lat: 37.5547, lng: 126.9707, category: '리필샵' },
-    { name: '더피커 성수', description: '친환경 편집숍', address: '서울시 성동구 왕십리로 115', lat: 37.5447, lng: 127.0557, category: '친환경 매장' },
-    { name: '송파 나눔장터', description: '재활용품 거래소', address: '서울시 송파구 올림픽로 240', lat: 37.5145, lng: 127.1065, category: '재활용/업사이클' },
-    { name: '지구샵 홍대점', description: '플라스틱 프리 카페', address: '서울시 마포구 와우산로 29', lat: 37.5563, lng: 126.9220, category: '비건/친환경 카페' },
-    { name: '채움소 연남점', description: '세제 리필 스테이션', address: '서울시 마포구 성미산로 190', lat: 37.5665, lng: 126.9251, category: '리필샵' },
-    { name: '덕분애 제로웨이스트샵', description: '친환경 생활용품', address: '서울시 강남구 선릉로 428', lat: 37.5040, lng: 127.0492, category: '친환경 매장' },
-    { name: '허그어웨일', description: '업사이클링 매장', address: '서울시 종로구 윤보선길 35', lat: 37.5773, lng: 126.9681, category: '재활용/업사이클' },
-    { name: '보틀팩토리', description: '텀블러 전문점', address: '서울시 강남구 강남대로 390', lat: 37.4979, lng: 127.0276, category: '친환경 매장' },
-    { name: '제로그램', description: '무포장 식료품점', address: '서울시 서대문구 연세로 11길', lat: 37.5585, lng: 126.9388, category: '무포장 가게' },
-    { name: '리필리', description: '화장품 리필샵', address: '서울시 중구 을지로 281', lat: 37.5663, lng: 127.0090, category: '리필샵' },
-    { name: '동네정미소', description: '곡물 리필매장', address: '서울시 은평구 통일로 684', lat: 37.6027, lng: 126.9288, category: '무포장 가게' },
-    { name: '얼스어스', description: '비건 제로웨이스트', address: '서울시 용산구 이태원로 228', lat: 37.5340, lng: 126.9948, category: '비건/친환경 카페' }
-  ];
+  // zeroWastePlaces는 이제 state로 관리되며 Supabase에서 불러옵니다
 
   const openInNaverMap = (place) => {
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-    const encodedAddress = encodeURIComponent(place.address);
-    
+    // address가 있으면 사용하고, 없으면 name 사용
+    const searchQuery = place.address || place.name;
+    const encodedQuery = encodeURIComponent(searchQuery);
+
     if (isMobile) {
       const appUrl = `nmap://place?lat=${place.lat}&lng=${place.lng}&name=${encodeURIComponent(place.name)}&appname=com.ecostep`;
       window.location.href = appUrl;
       setTimeout(() => {
-        window.open(`https://map.naver.com/v5/search/${encodedAddress}`, '_blank');
+        window.open(`https://map.naver.com/v5/search/${encodedQuery}`, '_blank');
       }, 1000);
     } else {
-      window.open(`https://map.naver.com/v5/search/${encodedAddress}`, '_blank');
+      window.open(`https://map.naver.com/v5/search/${encodedQuery}`, '_blank');
     }
   };
 

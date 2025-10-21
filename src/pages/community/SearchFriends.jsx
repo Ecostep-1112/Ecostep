@@ -1,14 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Search, ChevronRight, X } from 'lucide-react';
+import { supabase } from '../../lib/supabase';
 
 const SearchFriends = ({ isDarkMode, onBack, userRanking = 'bronze', showToast, currentUserId = '', currentUserName = '' }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [hasSearched, setHasSearched] = useState(false);
-  const [addedFriends, setAddedFriends] = useState(() => {
-    const saved = localStorage.getItem('addedFriends');
-    return saved ? JSON.parse(saved) : [];
-  });
+  const [addedFriends, setAddedFriends] = useState([]);
+  const [allUsers, setAllUsers] = useState([]);
   
   const bgColor = isDarkMode ? 'bg-gray-900' : 'bg-white';
   const textColor = isDarkMode ? 'text-white' : 'text-gray-900';
@@ -17,51 +16,83 @@ const SearchFriends = ({ isDarkMode, onBack, userRanking = 'bronze', showToast, 
   const inputBg = isDarkMode ? 'bg-gray-700' : 'bg-gray-50';
   const placeholderColor = isDarkMode ? 'placeholder-gray-400' : 'placeholder-gray-400';
 
-  // 전체 사용자 데이터베이스 (실제로는 서버에서 관리)
-  // 현재 사용자도 포함하여 검색 가능하도록 함
-  const getAllUsers = () => {
-    // localStorage에서 프로필 이미지와 프로필 데이터 가져오기
-    const profileImage = localStorage.getItem('profileImage');
-    const savedProfileData = localStorage.getItem('profileData');
-    let savedUserId = '';
-    let savedUserName = '';
-    
-    if (savedProfileData) {
-      try {
-        const parsed = JSON.parse(savedProfileData);
-        savedUserId = parsed.userId || '';
-        savedUserName = parsed.name || '';
-      } catch (e) {
-        console.error('프로필 데이터 파싱 오류:', e);
-      }
+  // Supabase에서 사용자 목록 불러오기
+  const loadUsers = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('user_info')
+        .select('user_id, name, point_current, points_total');
+
+      if (error) throw error;
+
+      // 기본 프로필 이미지 설정
+      const formattedUsers = data.map(user => ({
+        id: user.user_id,
+        name: user.name,
+        profileImage: null,
+        plasticSaved: user.points_total || 0
+      }));
+
+      setAllUsers(formattedUsers);
+    } catch (error) {
+      console.error('사용자 목록 로드 실패:', error);
+      // 에러 발생 시 기본 데이터 사용
+      setAllUsers([
+        { id: 'songil_eco', name: '송일', profileImage: null, plasticSaved: 15500 },
+        { id: 'wonhee_nature', name: '원희', profileImage: null, plasticSaved: 27000 },
+      ]);
     }
-    
-    const baseUsers = [
-      { id: 'songil_eco', name: '송일', profileImage: null, plasticSaved: 15500 },
-      { id: 'wonhee_nature', name: '원희', profileImage: null, plasticSaved: 27000 },
-    ];
-    
-    // 현재 사용자 또는 저장된 사용자가 프로필에 등록되어 있으면 데이터베이스에 추가
-    const userId = currentUserId || savedUserId;
-    const userName = currentUserName || savedUserName;
-    
-    if (userId && userName) {
-      // 이미 존재하는 사용자인지 확인
-      const existingUser = baseUsers.find(u => u.id === userId);
-      if (!existingUser) {
-        baseUsers.unshift({ 
-          id: userId, 
-          name: userName, 
-          profileImage: profileImage, 
-          plasticSaved: 15500 
-        });
-      }
-    }
-    
-    return baseUsers;
   };
-  
-  const allUsers = getAllUsers();
+
+  // Supabase에서 친구 목록 불러오기
+  const loadFriends = async () => {
+    if (!currentUserId) {
+      // localStorage에서 프로필 데이터 확인
+      const savedProfileData = localStorage.getItem('profileData');
+      if (savedProfileData) {
+        try {
+          const parsed = JSON.parse(savedProfileData);
+          const userId = parsed.userId;
+          if (!userId) return;
+
+          const { data, error } = await supabase
+            .from('user_friend')
+            .select('friend_id')
+            .eq('user_id', userId)
+            .eq('status', 'accepted');
+
+          if (error) throw error;
+
+          const friendIds = data.map(f => f.friend_id);
+          setAddedFriends(friendIds);
+        } catch (e) {
+          console.error('친구 목록 로드 실패:', e);
+        }
+      }
+      return;
+    }
+
+    try {
+      const { data, error } = await supabase
+        .from('user_friend')
+        .select('friend_id')
+        .eq('user_id', currentUserId)
+        .eq('status', 'accepted');
+
+      if (error) throw error;
+
+      const friendIds = data.map(f => f.friend_id);
+      setAddedFriends(friendIds);
+    } catch (error) {
+      console.error('친구 목록 로드 실패:', error);
+    }
+  };
+
+  // 컴포넌트 마운트 시 데이터 로드
+  useEffect(() => {
+    loadUsers();
+    loadFriends();
+  }, [currentUserId]);
 
   // 검색 함수
   const handleSearch = () => {
@@ -143,22 +174,61 @@ const SearchFriends = ({ isDarkMode, onBack, userRanking = 'bronze', showToast, 
     }
   };
 
-  const handleAddFriend = (userId) => {
+  const handleAddFriend = async (friendId) => {
     // 이미 친구인지 확인
-    if (addedFriends.includes(userId)) {
+    if (addedFriends.includes(friendId)) {
       if (showToast) {
         showToast('이미 친구입니다!', 'warning');
       }
       return;
     }
-    
-    // 친구 추가
-    const newAddedFriends = [...addedFriends, userId];
-    setAddedFriends(newAddedFriends);
-    localStorage.setItem('addedFriends', JSON.stringify(newAddedFriends));
-    
-    if (showToast) {
-      showToast('친구가 추가되었습니다!', 'success');
+
+    // 현재 사용자 ID 가져오기
+    let userId = currentUserId;
+    if (!userId) {
+      const savedProfileData = localStorage.getItem('profileData');
+      if (savedProfileData) {
+        try {
+          const parsed = JSON.parse(savedProfileData);
+          userId = parsed.userId;
+        } catch (e) {
+          console.error('프로필 데이터 파싱 오류:', e);
+        }
+      }
+    }
+
+    if (!userId) {
+      if (showToast) {
+        showToast('먼저 설정에서 프로필을 등록해주세요', 'warning');
+      }
+      return;
+    }
+
+    try {
+      // Supabase에 친구 추가
+      const { error } = await supabase
+        .from('user_friend')
+        .insert({
+          user_id: userId,
+          friend_id: friendId,
+          status: 'accepted',
+          accepted_at: new Date().toISOString().split('T')[0]
+        });
+
+      if (error) throw error;
+
+      // 상태 업데이트
+      const newAddedFriends = [...addedFriends, friendId];
+      setAddedFriends(newAddedFriends);
+
+      if (showToast) {
+        showToast('친구가 추가되었습니다!', 'success');
+      }
+    } catch (error) {
+      console.error('친구 추가 실패:', error);
+      if (showToast) {
+        showToast('친구 추가에 실패했습니다', 'error');
+      }
     }
   };
 

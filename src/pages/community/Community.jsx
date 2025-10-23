@@ -152,11 +152,33 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
 
   // Initialize Kakao SDK when component mounts
   useEffect(() => {
-    const kakaoApiKey = import.meta.env.VITE_KAKAO_API_KEY;
-    if (window.Kakao && !window.Kakao.isInitialized() && kakaoApiKey && kakaoApiKey !== 'your-kakao-api-key-here') {
-      window.Kakao.init(kakaoApiKey);
-      console.log('Kakao SDK initialized');
-    }
+    const initKakao = () => {
+      const kakaoApiKey = import.meta.env.VITE_KAKAO_API_KEY;
+
+      if (!kakaoApiKey || kakaoApiKey === 'your-kakao-api-key-here') {
+        console.warn('Kakao API key not configured');
+        return;
+      }
+
+      if (window.Kakao) {
+        if (!window.Kakao.isInitialized()) {
+          try {
+            window.Kakao.init(kakaoApiKey);
+            console.log('Kakao SDK initialized successfully');
+          } catch (error) {
+            console.error('Failed to initialize Kakao SDK:', error);
+          }
+        } else {
+          console.log('Kakao SDK already initialized');
+        }
+      } else {
+        console.warn('Kakao SDK not loaded yet, retrying...');
+        // SDK가 아직 로드되지 않았다면 1초 후 재시도
+        setTimeout(initKakao, 1000);
+      }
+    };
+
+    initKakao();
   }, []);
 
   if (showSearchPage) {
@@ -170,43 +192,54 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
         <div className={`mx-3 mt-4 ${cardBg} border ${borderColor} rounded-xl p-4`}>
           <h3 className={`${textColor} text-sm font-medium mb-3 text-center`}>초대</h3>
           <div className="flex gap-2">
-            <button 
+            <button
               onClick={() => {
-                // KakaoTalk share with SDK if initialized
-                const inviteCode = 'ECO' + Math.random().toString(36).substr(2, 6).toUpperCase();
-                const inviteLink = `https://ecostep.app/invite?code=${inviteCode}`;
-                
-                if (window.Kakao && window.Kakao.isInitialized()) {
-                  window.Kakao.Share.sendDefault({
-                    objectType: 'feed',
-                    content: {
-                      title: 'Ecostep - 함께 지구를 지켜요!',
-                      description: '플라스틱 사용량을 줄이고 물고기를 키워보세요! 함께 환경을 보호해요.',
-                      imageUrl: 'https://ecostep.app/share-image.png',
-                      link: {
-                        mobileWebUrl: inviteLink,
-                        webUrl: inviteLink,
-                      },
-                    },
-                    buttons: [
-                      {
-                        title: '앱 시작하기',
+                try {
+                  // KakaoTalk share with SDK if initialized
+                  const inviteCode = 'ECO' + Math.random().toString(36).substr(2, 6).toUpperCase();
+                  const inviteLink = `https://ecostep.app/invite?code=${inviteCode}`;
+
+                  if (window.Kakao && window.Kakao.isInitialized()) {
+                    window.Kakao.Share.sendDefault({
+                      objectType: 'feed',
+                      content: {
+                        title: 'EcoStep',
+                        description: 'Small Steps, Big Change. Why Not?',
+                        imageUrl: 'https://via.placeholder.com/300x200?text=EcoStep',
                         link: {
                           mobileWebUrl: inviteLink,
                           webUrl: inviteLink,
                         },
                       },
-                    ],
-                  });
-                } else {
-                  // Fallback: open KakaoTalk app or web
-                  const message = encodeURIComponent('Ecostep 앱에서 함께 환경을 보호해요! https://ecostep.app/invite?code=ABC123');
-                  window.open(`kakaotalk://msg/text/${message}`, '_blank');
-                  
-                  // If KakaoTalk app doesn't open, try web version
-                  setTimeout(() => {
-                    window.open(`https://talk.kakao.com`, '_blank');
-                  }, 1000);
+                      buttons: [
+                        {
+                          title: '앱 시작하기',
+                          link: {
+                            mobileWebUrl: inviteLink,
+                            webUrl: inviteLink,
+                          },
+                        },
+                      ],
+                    });
+                    console.log('Kakao share sent successfully');
+                  } else {
+                    console.warn('Kakao SDK not initialized, using fallback');
+                    // Fallback: Copy link and show toast
+                    navigator.clipboard.writeText(inviteLink).then(() => {
+                      if (showToast) {
+                        showToast('카카오톡 SDK를 불러올 수 없어 링크가 복사되었습니다. 카카오톡에서 직접 공유해주세요.', 'info');
+                      }
+                    }).catch(() => {
+                      if (showToast) {
+                        showToast('카카오톡 공유 기능을 사용할 수 없습니다.', 'error');
+                      }
+                    });
+                  }
+                } catch (error) {
+                  console.error('Kakao share error:', error);
+                  if (showToast) {
+                    showToast('카카오톡 공유 중 오류가 발생했습니다.', 'error');
+                  }
                 }
               }}
               className={`flex-1 relative overflow-hidden py-2 rounded-xl text-sm font-medium flex items-center justify-center transition-all transform hover:scale-[1.02]`}

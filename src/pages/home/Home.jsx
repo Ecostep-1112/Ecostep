@@ -64,7 +64,7 @@ const Home = ({
   // 나무 1그루는 연간 약 12kg CO2 흡수
   // 따라서 플라스틱 4kg 절약 = 12kg CO2 감소 = 나무 1그루의 연간 효과
   const co2Reduced = parseFloat(plasticSavedInKg) * 3; // 플라스틱으로 인한 CO2 감소량 (kg 기준)
-  const treesEquivalent = Math.round(co2Reduced / 12); // 나무 그루 수
+  const treesEquivalent = Math.floor(co2Reduced / 12); // 나무 그루 수 (내림)
   
   // 랜덤 선택 로직
   useEffect(() => {

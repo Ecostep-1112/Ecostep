@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ChevronRight, ChevronLeft, X, Camera, Plus, AlertTriangle } from 'lucide-react';
 import { getUserProfile, updateUserId, deleteAccount } from '../../lib/auth';
+import { supabase } from '../../lib/supabase';
 import Toast from '../../components/Toast';
 
 const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData }) => {
@@ -72,28 +73,24 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
     }
   };
 
-  // 휴대폰 번호 포맷팅 함수
+  // 휴대폰 번호 포맷팅 함수 (입력 중 실시간 포맷팅)
   const formatPhoneNumber = (phone) => {
     if (!phone) return '';
-    
+
     // 숫자만 추출
     const numbers = phone.replace(/[^0-9]/g, '');
-    
-    // 010이 없으면 추가
-    let formatted = numbers;
-    if (!formatted.startsWith('010')) {
-      formatted = '010' + formatted;
+
+    // 최대 11자리까지만 허용
+    const limitedNumbers = numbers.slice(0, 11);
+
+    // XXX-XXXX-XXXX 형식으로 포맷팅
+    if (limitedNumbers.length <= 3) {
+      return limitedNumbers;
+    } else if (limitedNumbers.length <= 7) {
+      return `${limitedNumbers.slice(0, 3)}-${limitedNumbers.slice(3)}`;
+    } else {
+      return `${limitedNumbers.slice(0, 3)}-${limitedNumbers.slice(3, 7)}-${limitedNumbers.slice(7)}`;
     }
-    
-    // 11자리가 되도록 조정 (010 + 8자리)
-    if (formatted.length === 11) {
-      return formatted.replace(/(\d{3})(\d{4})(\d{4})/, '$1-$2-$3');
-    } else if (formatted.length === 10) {
-      // 010 + 7자리인 경우 (잘못된 입력)
-      return formatted.replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3');
-    }
-    
-    return phone; // 포맷팅 불가능한 경우 원본 반환
   };
 
   // 각 필드별 수정 화면 컴포넌트
@@ -234,17 +231,27 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
     // 휴대폰 번호 유효성 검사
     const validatePhoneNumber = (phone) => {
       const numbers = phone.replace(/[^0-9]/g, '');
-      // 빈 값이거나 10~11자리 숫자
+      // 빈 값이거나 정확히 10~11자리 숫자
       return numbers === '' || (numbers.length >= 10 && numbers.length <= 11);
     };
-    
+
     const handlePhoneSave = () => {
-      if (!validatePhoneNumber(inputValue)) {
+      const numbers = inputValue.replace(/[^0-9]/g, '');
+
+      // 빈 값은 허용
+      if (numbers === '') {
+        onSave('');
+        onClose();
+        return;
+      }
+
+      // 10~11자리가 아니면 에러
+      if (numbers.length < 10 || numbers.length > 11) {
         setError('invalid');
         return;
       }
-      const formatted = formatPhoneNumber(inputValue);
-      onSave(formatted);
+
+      onSave(inputValue); // 이미 포맷팅된 값 저장
       onClose();
     };
     
@@ -352,14 +359,22 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
               inputMode="numeric"
               value={inputValue}
               onChange={(e) => {
-                const value = e.target.value.replace(/[^0-9-]/g, '');
-                setInputValue(value);
+                const value = e.target.value;
+                // 숫자만 추출하고 자동 포맷팅
+                const formatted = formatPhoneNumber(value);
+                setInputValue(formatted);
                 setError('');
               }}
-              placeholder="휴대폰 번호를 입력하세요"
+              placeholder="010-0000-0000"
+              maxLength="13"
               className={`w-full px-4 py-2.5 text-sm ${textColor} bg-transparent rounded-lg border ${error ? 'border-red-500' : borderColor} focus:outline-none ${error ? 'focus:border-red-500' : 'focus:border-gray-400'}`}
               autoFocus
             />
+            {error && (
+              <p className="text-xs text-red-500 mt-2 text-center">
+                10~11자리 숫자를 입력해주세요
+              </p>
+            )}
             
             <button
               onClick={handlePhoneSave}
@@ -707,7 +722,32 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
           field="name"
           label="이름"
           value={profileData.name}
-          onSave={(value) => setProfileData({...profileData, name: value})}
+          onSave={async (value) => {
+            // 로컬 상태 업데이트
+            const newData = {...profileData, name: value};
+            setProfileData(newData);
+            localStorage.setItem('profileData', JSON.stringify(newData));
+
+            // Supabase에 저장
+            try {
+              const { data: { user } } = await supabase.auth.getUser();
+              if (user) {
+                const { error } = await supabase
+                  .from('user_info')
+                  .update({ name: value })
+                  .eq('user_id', user.id);
+
+                if (error) {
+                  console.error('이름 업데이트 실패:', error);
+                  setToastMessage('이름 저장에 실패했습니다.');
+                  setToastType('error');
+                  setShowToast(true);
+                }
+              }
+            } catch (error) {
+              console.error('이름 저장 에러:', error);
+            }
+          }}
           onClose={() => setEditingField(null)}
           showToast={(message, type) => {
             setToastMessage(message);
@@ -743,7 +783,37 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
           field="birthDate"
           label="생년월일"
           value={profileData.birthDate}
-          onSave={(value) => setProfileData({...profileData, birthDate: value})}
+          onSave={async (value) => {
+            // 로컬 상태 업데이트
+            const newData = {...profileData, birthDate: value};
+            setProfileData(newData);
+            localStorage.setItem('profileData', JSON.stringify(newData));
+
+            // Supabase에 저장
+            try {
+              const { data: { user } } = await supabase.auth.getUser();
+              if (user) {
+                // YYYY.MM.DD 형식을 YYYY-MM-DD 형식으로 변환 (DATE 타입)
+                const dateForDB = value ? value.replace(/\./g, '-') : null;
+
+                const { error } = await supabase
+                  .from('user_info')
+                  .update({ birthdate: dateForDB })
+                  .eq('user_id', user.id);
+
+                if (error) {
+                  console.error('생년월일 업데이트 실패:', error);
+                  setToastMessage('생년월일 저장에 실패했습니다.');
+                  setToastType('error');
+                  setShowToast(true);
+                } else {
+                  console.log('생년월일 저장 성공');
+                }
+              }
+            } catch (error) {
+              console.error('생년월일 저장 에러:', error);
+            }
+          }}
           onClose={() => setEditingField(null)}
           showToast={(message, type) => {
             setToastMessage(message);
@@ -758,7 +828,32 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
           field="phone"
           label="휴대폰 번호"
           value={profileData.phone}
-          onSave={(value) => setProfileData({...profileData, phone: value})}
+          onSave={async (value) => {
+            // 로컬 상태 업데이트
+            const newData = {...profileData, phone: value};
+            setProfileData(newData);
+            localStorage.setItem('profileData', JSON.stringify(newData));
+
+            // Supabase에 저장
+            try {
+              const { data: { user } } = await supabase.auth.getUser();
+              if (user) {
+                const { error } = await supabase
+                  .from('user_info')
+                  .update({ phone_num: value })
+                  .eq('user_id', user.id);
+
+                if (error) {
+                  console.error('휴대폰 번호 업데이트 실패:', error);
+                  setToastMessage('휴대폰 번호 저장에 실패했습니다.');
+                  setToastType('error');
+                  setShowToast(true);
+                }
+              }
+            } catch (error) {
+              console.error('휴대폰 번호 저장 에러:', error);
+            }
+          }}
           onClose={() => setEditingField(null)}
           showToast={(message, type) => {
             setToastMessage(message);
@@ -773,7 +868,32 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
           field="email"
           label="이메일 주소"
           value={profileData.email}
-          onSave={(value) => setProfileData({...profileData, email: value})}
+          onSave={async (value) => {
+            // 로컬 상태 업데이트
+            const newData = {...profileData, email: value};
+            setProfileData(newData);
+            localStorage.setItem('profileData', JSON.stringify(newData));
+
+            // Supabase에 저장
+            try {
+              const { data: { user } } = await supabase.auth.getUser();
+              if (user) {
+                const { error } = await supabase
+                  .from('user_info')
+                  .update({ email: value })
+                  .eq('user_id', user.id);
+
+                if (error) {
+                  console.error('이메일 업데이트 실패:', error);
+                  setToastMessage('이메일 저장에 실패했습니다.');
+                  setToastType('error');
+                  setShowToast(true);
+                }
+              }
+            } catch (error) {
+              console.error('이메일 저장 에러:', error);
+            }
+          }}
           onClose={() => setEditingField(null)}
           showToast={(message, type) => {
             setToastMessage(message);

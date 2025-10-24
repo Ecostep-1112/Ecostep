@@ -21,17 +21,17 @@ const checkUserIdAvailability = async (userId) => {
   try {
     console.log('중복 확인할 아이디:', userId);
     const { data, error } = await supabase
-      .from('profiles')
+      .from('user_info')
       .select('user_id')
       .eq('user_id', userId)
       .maybeSingle(); // single() 대신 maybeSingle() 사용
-    
+
     if (error) {
       console.error('중복 확인 쿼리 에러:', error);
       // 에러가 발생하면 사용 가능한 것으로 처리
       return true;
     }
-    
+
     console.log('중복 확인 결과:', data);
     // 데이터가 없으면 사용 가능
     return !data;
@@ -67,75 +67,42 @@ const generateUniqueUserId = async () => {
 export const createOrUpdateUserProfile = async (user) => {
   try {
     console.log('프로필 생성/업데이트 시작:', user.id);
-    
-    // 기존 프로필 확인
+
+    // 기존 프로필 확인 (user_info 테이블의 user_id는 auth.uid()::text)
     const { data: existingProfile, error: fetchError } = await supabase
-      .from('profiles')
+      .from('user_info')
       .select('*')
-      .eq('id', user.id)
+      .eq('user_id', user.id)
       .maybeSingle(); // single() 대신 maybeSingle() 사용
-    
+
     console.log('기존 프로필:', existingProfile);
-    
-    if (existingProfile && existingProfile.user_id) {
-      // 이미 아이디가 있으면 반환
-      console.log('기존 user_id 있음:', existingProfile.user_id);
+
+    if (existingProfile) {
+      // 이미 프로필이 있으면 반환
+      console.log('기존 프로필 있음:', existingProfile.user_id);
       return { profile: existingProfile, error: null };
     }
-    
-    // 새로운 아이디 생성
-    const newUserId = await generateUniqueUserId();
-    console.log('새로 생성된 user_id:', newUserId);
-    
-    // 프로필 데이터 준비
-    const profileData = {
-      id: user.id,
-      email: user.email,
-      user_id: newUserId,
-      username: user.user_metadata?.full_name || user.email?.split('@')[0] || 'User',
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
+
+    // user_info는 트리거를 통해 자동 생성되므로,
+    // 프로필이 없다면 아직 트리거가 실행되지 않은 것
+    // 잠시 대기 후 다시 조회
+    await new Promise(resolve => setTimeout(resolve, 500));
+
+    const { data: retryProfile, error: retryError } = await supabase
+      .from('user_info')
+      .select('*')
+      .eq('user_id', user.id)
+      .maybeSingle();
+
+    if (retryProfile) {
+      return { profile: retryProfile, error: null };
+    }
+
+    // 그래도 없으면 에러 반환
+    return {
+      profile: null,
+      error: retryError || new Error('프로필이 자동 생성되지 않았습니다.')
     };
-    
-    // 프로필이 없으면 insert, 있으면 update
-    let data, error;
-    if (!existingProfile) {
-      // 새로 생성
-      const result = await supabase
-        .from('profiles')
-        .insert(profileData)
-        .select()
-        .single();
-      data = result.data;
-      error = result.error;
-    } else {
-      // 업데이트 - user_id가 없는 경우에만 새로 생성
-      if (!existingProfile.user_id) {
-        const result = await supabase
-          .from('profiles')
-          .update({
-            user_id: newUserId,
-            username: existingProfile.username || user.user_metadata?.full_name || user.email?.split('@')[0] || 'User',
-            updated_at: new Date().toISOString()
-          })
-          .eq('id', user.id)
-          .select()
-          .single();
-        data = result.data;
-        error = result.error;
-      } else {
-        // 이미 user_id가 있으면 기존 프로필 반환
-        data = existingProfile;
-        error = null;
-      }
-    }
-    
-    if (error) {
-      console.error('프로필 저장 에러:', error);
-      throw error;
-    }
-    
-    return { profile: data, error: null };
   } catch (error) {
     console.error('프로필 생성/업데이트 에러:', error);
     return { profile: null, error };
@@ -304,53 +271,34 @@ export const updateUserId = async (newUserId) => {
 export const deleteAccount = async () => {
   try {
     const { data: { user }, error: userError } = await supabase.auth.getUser();
-    
+
     if (userError || !user) {
       throw new Error('사용자를 찾을 수 없습니다.');
     }
-    
-    // 1. profiles 테이블에서 사용자 데이터 삭제
+
+    // 1. user_info 테이블에서 사용자 데이터 삭제
+    // ON DELETE CASCADE로 인해 관련 테이블도 자동 삭제됨
     const { error: profileError } = await supabase
-      .from('profiles')
+      .from('user_info')
       .delete()
-      .eq('id', user.id);
-    
+      .eq('user_id', user.id);
+
     if (profileError) {
       console.error('프로필 삭제 에러:', profileError);
     }
-    
-    // 2. user_stats 테이블에서 데이터 삭제 (있다면)
-    const { error: statsError } = await supabase
-      .from('user_stats')
-      .delete()
-      .eq('user_id', user.id);
-    
-    if (statsError) {
-      console.error('통계 삭제 에러:', statsError);
-    }
-    
-    // 3. challenge_history 테이블에서 데이터 삭제 (있다면)
-    const { error: challengeError } = await supabase
-      .from('challenge_history')
-      .delete()
-      .eq('user_id', user.id);
-    
-    if (challengeError) {
-      console.error('챌린지 기록 삭제 에러:', challengeError);
-    }
-    
-    // 4. localStorage 데이터 모두 삭제
+
+    // 2. localStorage 데이터 모두 삭제
     localStorage.clear();
-    
-    // 5. 계정 삭제 (Supabase Auth)
+
+    // 3. 계정 삭제 (Supabase Auth)
     // 주의: Supabase는 클라이언트에서 직접 계정 삭제를 지원하지 않음
     // 대신 로그아웃 처리
     const { error: signOutError } = await supabase.auth.signOut();
-    
+
     if (signOutError) {
       throw signOutError;
     }
-    
+
     return { success: true, error: null };
   } catch (error) {
     console.error('계정 삭제 에러:', error);
@@ -362,34 +310,34 @@ export const deleteAccount = async () => {
 export const getUserProfile = async () => {
   try {
     const { data: { user }, error: userError } = await supabase.auth.getUser();
-    
+
     if (userError) {
       console.error('Auth error:', userError);
       return { profile: null, error: userError };
     }
-    
+
     if (!user) {
       console.error('No user found');
       return { profile: null, error: new Error('로그인이 필요합니다.') };
     }
-    
+
     const { data, error } = await supabase
-      .from('profiles')
+      .from('user_info')
       .select('*')
-      .eq('id', user.id)
+      .eq('user_id', user.id)
       .maybeSingle(); // single() 대신 maybeSingle() 사용
-    
-    // 프로필이 없는 경우 생성
+
+    // 프로필이 없는 경우 생성 (트리거를 통해 자동 생성 대기)
     if (!data && !error) {
       const result = await createOrUpdateUserProfile(user);
       return result;
     }
-    
+
     if (error) {
       console.error('프로필 조회 에러:', error);
       throw error;
     }
-    
+
     return { profile: data, error: null };
   } catch (error) {
     console.error('프로필 가져오기 에러:', error);

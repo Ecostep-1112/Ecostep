@@ -16,6 +16,7 @@ import Login from './pages/auth/Login';
 import fishData from './data/fishData.json';
 import { onAuthStateChange, getCurrentUser, signOut, createOrUpdateUserProfile } from './lib/auth';
 import { getUserInfo, saveUserInfo, getUserItems } from './lib/database';
+import { supabase } from './lib/supabase';
 import {
   appSettingsStorage,
   aquariumSettingsStorage,
@@ -122,10 +123,16 @@ const EcostepApp = () => {
   };
 
   // Supabase에 유저 데이터 저장
-  const saveUserDataToSupabase = async (userId) => {
-    if (!userId) return;
-
+  const saveUserDataToSupabase = async () => {
     try {
+      // Supabase Auth UUID 가져오기
+      const { data: { user }, error: authError } = await supabase.auth.getUser();
+
+      if (authError || !user) {
+        console.log('로그인된 사용자가 없습니다.');
+        return;
+      }
+
       const userInfo = {
         name: profileData.name,
         email: profileData.email,
@@ -136,7 +143,7 @@ const EcostepApp = () => {
         amount: plasticGoal || 0
       };
 
-      const { data, error } = await saveUserInfo(userId, userInfo);
+      const { data, error } = await saveUserInfo(user.id, userInfo); // Auth UUID 사용
       if (error) {
         console.error('유저 정보 저장 에러:', error);
       } else {
@@ -479,9 +486,7 @@ const EcostepApp = () => {
     localStorage.setItem('userPoints', points.toString());
     // Supabase에 저장 (디바운스 적용)
     const timeoutId = setTimeout(() => {
-      if (profileData.userId) {
-        saveUserDataToSupabase(profileData.userId);
-      }
+      saveUserDataToSupabase();
     }, 1000); // 1초 디바운스
     return () => clearTimeout(timeoutId);
   }, [points]);
@@ -495,18 +500,16 @@ const EcostepApp = () => {
     }
     // Supabase에 저장 (디바운스 적용)
     const timeoutId = setTimeout(() => {
-      if (profileData.userId) {
-        saveUserDataToSupabase(profileData.userId);
-      }
+      saveUserDataToSupabase();
     }, 1000); // 1초 디바운스
     return () => clearTimeout(timeoutId);
   }, [totalEarnedPoints]);
 
   // plasticGoal 변경 시 Supabase에 저장
   useEffect(() => {
-    if (plasticGoal !== null && profileData.userId) {
+    if (plasticGoal !== null) {
       const timeoutId = setTimeout(() => {
-        saveUserDataToSupabase(profileData.userId);
+        saveUserDataToSupabase();
       }, 1000); // 1초 디바운스
       return () => clearTimeout(timeoutId);
     }

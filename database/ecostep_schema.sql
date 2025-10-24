@@ -73,7 +73,6 @@ CREATE TABLE zero_chal_data (
     record_id VARCHAR(36) PRIMARY KEY,
     item_id VARCHAR(36),
     user_id VARCHAR(36) REFERENCES user_info(user_id) ON DELETE CASCADE,
-    item_type VARCHAR(300) NOT NULL,
     item_num INTEGER DEFAULT 1,
     created_at DATE DEFAULT CURRENT_DATE,
     tracked_date DATE DEFAULT CURRENT_DATE,

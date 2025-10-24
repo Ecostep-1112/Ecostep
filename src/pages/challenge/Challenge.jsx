@@ -513,34 +513,33 @@ const Challenge = ({
 
       // Supabase에 데일리 챌린지 기록 저장
       try {
-        // 사용자 ID 가져오기
-        let userId = null;
-        const savedProfileData = localStorage.getItem('profileData');
-        if (savedProfileData) {
-          try {
-            const parsed = JSON.parse(savedProfileData);
-            userId = parsed.userId;
-          } catch (e) {
-            console.error('프로필 데이터 파싱 오류:', e);
-          }
-        }
+        // Supabase Auth 사용자 ID 가져오기 (UUID)
+        const { data: { user }, error: userError } = await supabase.auth.getUser();
 
-        if (userId) {
+        if (userError) {
+          console.error('사용자 인증 오류:', userError);
+        } else if (user) {
           const { error } = await supabase
             .from('daily_chal_data')
             .insert({
               record_id: crypto.randomUUID(),
-              user_id: userId,
+              user_id: user.id, // Supabase Auth UUID 사용
               is_completed: true,
               total_completed: 1,
               created_at: new Date().toISOString().split('T')[0],
               content: finalChallenge
             });
 
-          if (error) throw error;
+          if (error) {
+            console.error('데일리 챌린지 기록 저장 실패:', error);
+          } else {
+            console.log('데일리 챌린지 기록 저장 성공');
+          }
+        } else {
+          console.warn('로그인된 사용자가 없습니다.');
         }
       } catch (error) {
-        console.error('데일리 챌린지 기록 저장 실패:', error);
+        console.error('데일리 챌린지 기록 저장 오류:', error);
       }
 
       // 포인트 증가 및 토스트 메시지 표시
@@ -598,21 +597,21 @@ const Challenge = ({
 
   const plasticItems = [
     // 음료 관련
-    { name: '플라스틱병', weight: 25, category: 'drink', desc: '500ml' },
-    { name: '일회용 컵', weight: 10, category: 'drink', desc: '카페' },
-    { name: '페트병(대)', weight: 45, category: 'drink', desc: '1.5L' },
-    { name: '빨대', weight: 1, category: 'drink', desc: '개당' },
+    { id: 'plastic_bottle_500ml', name: '플라스틱병', weight: 25, category: 'drink', desc: '500ml' },
+    { id: 'disposable_cup', name: '일회용 컵', weight: 10, category: 'drink', desc: '카페' },
+    { id: 'plastic_bottle_1500ml', name: '페트병(대)', weight: 45, category: 'drink', desc: '1.5L' },
+    { id: 'straw', name: '빨대', weight: 1, category: 'drink', desc: '개당' },
     // 봉투류
-    { name: '비닐봉지(소)', weight: 3, category: 'bag', desc: '편의점' },
-    { name: '비닐봉지(대)', weight: 7, category: 'bag', desc: '마트' },
+    { id: 'plastic_bag_small', name: '비닐봉지(소)', weight: 3, category: 'bag', desc: '편의점' },
+    { id: 'plastic_bag_large', name: '비닐봉지(대)', weight: 7, category: 'bag', desc: '마트' },
     // 배달/음식 관련
-    { name: '음식용기', weight: 35, category: 'food', desc: '배달용기' },
-    { name: '일회용 수저/포크', weight: 3, category: 'food', desc: '세트' },
-    { name: '일회용 접시', weight: 8, category: 'food', desc: '개당' },
+    { id: 'food_container', name: '음식용기', weight: 35, category: 'food', desc: '배달용기' },
+    { id: 'disposable_cutlery', name: '일회용 수저/포크', weight: 3, category: 'food', desc: '세트' },
+    { id: 'disposable_plate', name: '일회용 접시', weight: 8, category: 'food', desc: '개당' },
     // 기타 생활용품
-    { name: '화장품 용기', weight: 15, category: 'etc', desc: '소형' },
+    { id: 'cosmetic_container', name: '화장품 용기', weight: 15, category: 'etc', desc: '소형' },
     ...customPlasticItems,
-    { name: '기타 (직접 입력)', weight: 0, category: 'custom' }
+    { id: 'custom_input', name: '기타 (직접 입력)', weight: 0, category: 'custom' }
   ];
 
   // 기타(추가) 카테고리에 들어갈 아이템 목록
@@ -1663,11 +1662,34 @@ const Challenge = ({
                                   }
                                   return;
                                 }
-                                
-                                const newItem = { name: customPlasticItem, weight: parseInt(customPlasticWeight), desc: `추천 ${customPlasticWeight}g` };
+
+                                // 고유 ID 생성 (custom_ 접두사 + 타임스탬프)
+                                const customId = `custom_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+                                const newItem = {
+                                  id: customId,
+                                  name: customPlasticItem,
+                                  weight: parseInt(customPlasticWeight),
+                                  desc: `추천 ${customPlasticWeight}g`
+                                };
                                 const updatedItems = [...customPlasticItems2, newItem];
                                 setCustomPlasticItems2(updatedItems);
                                 customPlasticItemStorage.set(updatedItems);
+
+                                // Supabase zero_chal_item 테이블에도 추가
+                                try {
+                                  await supabase
+                                    .from('zero_chal_item')
+                                    .insert({
+                                      item_id: customId,
+                                      item_name: customPlasticItem,
+                                      tag: 'custom',
+                                      plastic_amount: parseInt(customPlasticWeight)
+                                    });
+                                  console.log('커스텀 아이템을 zero_chal_item에 추가했습니다');
+                                } catch (error) {
+                                  console.error('커스텀 아이템 추가 실패:', error);
+                                }
+
                                 setSelectedPlasticItem(customPlasticItem);
                                 setCustomPlasticItem('');
                                 setCustomPlasticWeight(10);
@@ -1700,9 +1722,31 @@ const Challenge = ({
                                 return;
                               }
                               
-                              const newItem = { name: customPlasticItem, weight: parseInt(customPlasticWeight), desc: `추천 ${customPlasticWeight}g` };
+                              // 고유 ID 생성 (custom_ 접두사 + 타임스탬프)
+                              const customId = `custom_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+                              const newItem = {
+                                id: customId,
+                                name: customPlasticItem,
+                                weight: parseInt(customPlasticWeight),
+                                desc: `추천 ${customPlasticWeight}g`
+                              };
                               setCustomPlasticItems2([...customPlasticItems2, newItem]);
                               localStorage.setItem('customPlasticItems2', JSON.stringify([...customPlasticItems2, newItem]));
+
+                              // Supabase zero_chal_item 테이블에도 추가
+                              try {
+                                await supabase
+                                  .from('zero_chal_item')
+                                  .insert({
+                                    item_id: customId,
+                                    item_name: customPlasticItem,
+                                    tag: 'custom',
+                                    plastic_amount: parseInt(customPlasticWeight)
+                                  });
+                                console.log('커스텀 아이템을 zero_chal_item에 추가했습니다');
+                              } catch (error) {
+                                console.error('커스텀 아이템 추가 실패:', error);
+                              }
                               setSelectedPlasticItem(customPlasticItem);
                               setCustomPlasticItem('');
                               setCustomPlasticWeight(10);
@@ -1927,32 +1971,34 @@ const Challenge = ({
 
                       // Supabase에 플라스틱 기록 저장
                       try {
-                        // 사용자 ID 가져오기
-                        let userId = null;
-                        const savedProfileData = localStorage.getItem('profileData');
-                        if (savedProfileData) {
-                          try {
-                            const parsed = JSON.parse(savedProfileData);
-                            userId = parsed.userId;
-                          } catch (e) {
-                            console.error('프로필 데이터 파싱 오류:', e);
-                          }
+                        // Supabase Auth 사용자 ID 가져오기 (UUID)
+                        const { data: { user }, error: userError } = await supabase.auth.getUser();
+
+                        if (userError) {
+                          console.error('사용자 인증 오류:', userError);
+                          throw userError;
                         }
 
-                        if (userId) {
+                        if (user) {
                           const { error } = await supabase
                             .from('zero_chal_data')
                             .insert({
                               record_id: crypto.randomUUID(),
-                              user_id: userId,
-                              item_type: recordItem.name,
+                              user_id: user.id, // Supabase Auth UUID 사용
+                              item_id: recordItem.id || null,
                               item_num: 1,
                               tracked_date: new Date(testDate || new Date()).toISOString().split('T')[0],
                               quantity: plasticQuantity,
                               weight: totalWeight
                             });
 
-                          if (error) throw error;
+                          if (error) {
+                            console.error('플라스틱 기록 저장 에러:', error);
+                            throw error;
+                          }
+                          console.log('플라스틱 기록 저장 성공');
+                        } else {
+                          console.warn('로그인된 사용자가 없습니다.');
                         }
                       } catch (error) {
                         console.error('플라스틱 기록 저장 실패:', error);

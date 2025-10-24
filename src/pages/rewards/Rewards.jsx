@@ -66,8 +66,9 @@ const Rewards = ({
             platinum: []
           };
           fishList.forEach(fish => {
-            if (fishByRank[fish.rank]) {
-              fishByRank[fish.rank].push({
+            const rankKey = fish.rank.toLowerCase(); // 대문자를 소문자로 변환
+            if (fishByRank[rankKey]) {
+              fishByRank[rankKey].push({
                 name: fish.item_id,
                 description: fish.item_id, // description은 없으므로 item_id 사용
                 price: fish.price
@@ -87,8 +88,9 @@ const Rewards = ({
             platinum: []
           };
           decoList.forEach(deco => {
-            if (decoByRank[deco.rank]) {
-              decoByRank[deco.rank].push({
+            const rankKey = deco.rank.toLowerCase(); // 대문자를 소문자로 변환
+            if (decoByRank[rankKey]) {
+              decoByRank[rankKey].push({
                 name: deco.item_id,
                 description: deco.item_id, // description은 없으므로 item_id 사용
                 price: deco.price

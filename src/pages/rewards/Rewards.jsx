@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Lock } from 'lucide-react';
 import FishIcons from '../../components/FishIcons';
 import DecorationIcons from '../../components/DecorationIcons';
@@ -7,6 +7,8 @@ import SilverTank from '../../components/tanks/SilverTank';
 import GoldTank from '../../components/tanks/GoldTank';
 import PlatinumTank from '../../components/tanks/PlatinumTank';
 import { BronzeIcon, SilverIcon, GoldIcon, PlatinumIcon } from '../../components/RankIcons';
+import { getStoreFish, getStoreDecorations, getUserPurchasedItems, purchaseItem } from '../../lib/database';
+import { supabase } from '../../lib/supabase';
 
 const Rewards = ({
   isDarkMode,
@@ -35,51 +37,103 @@ const Rewards = ({
   const cardBg = isDarkMode ? 'bg-gray-800' : 'bg-white';
   const inputBg = isDarkMode ? 'bg-gray-700' : 'bg-gray-50';
 
-  const fishData = {
-    bronze: [
-      { name: '코리도라스', description: '바닥 청소 요정' },
-      { name: '체리바브', description: '체리 같은 귀요미' },
-      { name: '네온테트라', description: '반짝이는 보석' }
-    ],
-    silver: [
-      { name: '아피스토그라마', description: '포켓 드래곤' },
-      { name: '람시클리드', description: '온화한 젠틀맨' },
-      { name: '구피', description: '꼬리 댄싱퀸' }
-    ],
-    gold: [
-      { name: '엔젤피쉬', description: '수중의 천사' },
-      { name: '킬리피쉬', description: '자유로운 모험가' },
-      { name: '베타', description: '실크 드레스 퀸' }
-    ],
-    platinum: [
-      { name: '디스커스', description: '수중 황제' },
-      { name: '만다린피쉬', description: '네온 아티스트' },
-      { name: '아로와나', description: '전설의 용' }
-    ]
-  };
+  // Supabase에서 상점 아이템 불러오기
+  const [fishData, setFishData] = useState({
+    bronze: [],
+    silver: [],
+    gold: [],
+    platinum: []
+  });
 
-  const decorationsData = {
-    bronze: [
-      { name: '해초', description: '자연스러운 수초', price: 200 },
-      { name: '용암석', description: '신비로운 화산석', price: 300 },
-      { name: '작은 동굴', description: '아늑한 은신처', price: 400 }
-    ],
-    silver: [
-      { name: '산호', description: '화려한 바다 정원', price: 500 },
-      { name: '드리프트 우드', description: '오래된 바다 목재', price: 600 },
-      { name: '조개 껍질', description: '바다의 보석함', price: 700 }
-    ],
-    gold: [
-      { name: '그리스 신전', description: '고대 문명의 흔적', price: 900 },
-      { name: '보물 상자', description: '해적의 황금 보물', price: 1000 },
-      { name: '해적선', description: '전설의 침몰선', price: 1100 }
-    ],
-    platinum: [
-      { name: '크리스탈 동굴', description: '신비한 크리스탈', price: 1400 },
-      { name: 'LED 해파리', description: '빛나는 수중 요정', price: 1500 },
-      { name: '아틀란티스 유적', description: '잃어버린 문명', price: 1600 }
-    ]
-  };
+  const [decorationsData, setDecorationsData] = useState({
+    bronze: [],
+    silver: [],
+    gold: [],
+    platinum: []
+  });
+
+  // 상점 데이터 로드
+  useEffect(() => {
+    const loadStoreData = async () => {
+      try {
+        // 물고기 데이터 로드
+        const { data: fishList, error: fishError } = await getStoreFish();
+        if (!fishError && fishList) {
+          const fishByRank = {
+            bronze: [],
+            silver: [],
+            gold: [],
+            platinum: []
+          };
+          fishList.forEach(fish => {
+            const rankKey = fish.rank.toLowerCase(); // 대문자를 소문자로 변환
+            if (fishByRank[rankKey]) {
+              fishByRank[rankKey].push({
+                name: fish.item_id,
+                description: fish.item_id, // description은 없으므로 item_id 사용
+                price: fish.price
+              });
+            }
+          });
+          setFishData(fishByRank);
+        }
+
+        // 장식품 데이터 로드
+        const { data: decoList, error: decoError } = await getStoreDecorations();
+        if (!decoError && decoList) {
+          const decoByRank = {
+            bronze: [],
+            silver: [],
+            gold: [],
+            platinum: []
+          };
+          decoList.forEach(deco => {
+            const rankKey = deco.rank.toLowerCase(); // 대문자를 소문자로 변환
+            if (decoByRank[rankKey]) {
+              decoByRank[rankKey].push({
+                name: deco.item_id,
+                description: deco.item_id, // description은 없으므로 item_id 사용
+                price: deco.price
+              });
+            }
+          });
+          setDecorationsData(decoByRank);
+        }
+
+        // 사용자 구매 목록 로드
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          const { data: purchasedItems, error: purchaseError } = await getUserPurchasedItems(user.id);
+
+          if (!purchaseError && purchasedItems) {
+            const fishNames = [];
+            const decoNames = [];
+
+            purchasedItems.forEach(item => {
+              const itemName = item.item_id;
+
+              // item_id로 물고기인지 장식품인지 구분
+              // fishList에서 찾기
+              const isFish = fishList?.some(fish => fish.item_id === itemName);
+
+              if (isFish) {
+                fishNames.push(itemName);
+              } else {
+                decoNames.push(itemName);
+              }
+            });
+
+            setPurchasedFish(fishNames);
+            setPurchasedDecorations(decoNames);
+          }
+        }
+      } catch (error) {
+        console.error('상점 데이터 로드 에러:', error);
+      }
+    };
+
+    loadStoreData();
+  }, []);
 
   // 랭크별 색상 정의 - 조건부 렌더링을 위한 함수
   const getRankGradient = (rank) => {
@@ -494,7 +548,7 @@ const Rewards = ({
                       key={i} 
                       className={`${isLocked ? 'bg-gray-100 cursor-not-allowed' : isPurchased ? 'bg-green-50 border-green-300' : cardBg} border ${isPurchased ? 'border-green-300' : borderColor} rounded-lg relative flex flex-col items-center justify-between h-[125px] p-2 transition-all ${!isLocked && !isPurchased ? 'hover:scale-105' : ''} overflow-hidden`}
                       disabled={isPurchased && !isLocked}
-                      onClick={() => {
+                      onClick={async () => {
                         if (isLocked) {
                           // 잠금 상태 알림
                           const rankName = rank === 'bronze' ? '브론즈' : rank === 'silver' ? '실버' : rank === 'gold' ? '골드' : '플래티넘';
@@ -510,6 +564,16 @@ const Rewards = ({
                             }
                             // 물고기 추가
                             setPurchasedFish(prev => [...prev, fish.name]);
+
+                            // Supabase에 저장
+                            const { data: { user } } = await supabase.auth.getUser();
+                            if (user) {
+                              const { error } = await purchaseItem(user.id, fish.name);
+                              if (error) {
+                                console.error('구매 저장 실패:', error);
+                              }
+                            }
+
                             // 성공 알림
                             showToast(`${fish.name} 구매 완료`, 'success');
                           } else {
@@ -605,7 +669,7 @@ const Rewards = ({
                             : cardBg
                       } border ${isPurchased ? 'border-green-300' : borderColor} rounded-lg relative flex flex-col items-center justify-between h-[125px] p-2 transition-all ${!isLocked && !isPurchased ? 'hover:scale-105' : ''} overflow-hidden`}
                       disabled={isPurchased && !isLocked}
-                      onClick={() => {
+                      onClick={async () => {
                         if (isLocked) {
                           // 잠금 상태 알림
                           const rankName = rank === 'bronze' ? '브론즈' : rank === 'silver' ? '실버' : rank === 'gold' ? '골드' : '플래티넘';
@@ -621,6 +685,16 @@ const Rewards = ({
                             }
                             // 장식품 추가
                             setPurchasedDecorations(prev => [...prev, deco.name]);
+
+                            // Supabase에 저장
+                            const { data: { user } } = await supabase.auth.getUser();
+                            if (user) {
+                              const { error } = await purchaseItem(user.id, deco.name);
+                              if (error) {
+                                console.error('구매 저장 실패:', error);
+                              }
+                            }
+
                             // 성공 알림
                             showToast(`${deco.name} 구매 완료`, 'success');
                           } else {

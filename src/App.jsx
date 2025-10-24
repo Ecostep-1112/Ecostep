@@ -15,6 +15,8 @@ import Toast from './components/Toast';
 import Login from './pages/auth/Login';
 import fishData from './data/fishData.json';
 import { onAuthStateChange, getCurrentUser, signOut, createOrUpdateUserProfile } from './lib/auth';
+import { getUserInfo, saveUserInfo, getUserItems } from './lib/database';
+import { supabase } from './lib/supabase';
 import {
   appSettingsStorage,
   aquariumSettingsStorage,
@@ -96,6 +98,61 @@ const EcostepApp = () => {
 
   // 상태 업데이트 중복 방지를 위한 ref
   const isUpdatingProfile = useRef(false);
+
+  // Supabase에서 유저 데이터 불러오기
+  const loadUserDataFromSupabase = async (userId) => {
+    try {
+      const { data, error } = await getUserInfo(userId);
+      if (error) {
+        console.log('유저 정보 없음, 새로 생성 필요');
+        return null;
+      }
+      if (data) {
+        // Supabase 데이터로 상태 업데이트
+        setPoints(data.point_current || 0);
+        setTotalEarnedPoints(data.points_total || 0);
+        setUserRanking(data.rank || 'bronze');
+        setPlasticGoal(data.amount || null);
+        console.log('Supabase에서 유저 정보 로드:', data);
+        return data;
+      }
+    } catch (error) {
+      console.error('유저 데이터 로드 에러:', error);
+      return null;
+    }
+  };
+
+  // Supabase에 유저 데이터 저장
+  const saveUserDataToSupabase = async () => {
+    try {
+      // Supabase Auth UUID 가져오기
+      const { data: { user }, error: authError } = await supabase.auth.getUser();
+
+      if (authError || !user) {
+        console.log('로그인된 사용자가 없습니다.');
+        return;
+      }
+
+      const userInfo = {
+        name: profileData.name,
+        email: profileData.email,
+        phone_num: profileData.phone,
+        point_current: points,
+        points_total: totalEarnedPoints,
+        rank: userRanking,
+        amount: plasticGoal || 0
+      };
+
+      const { data, error } = await saveUserInfo(user.id, userInfo); // Auth UUID 사용
+      if (error) {
+        console.error('유저 정보 저장 에러:', error);
+      } else {
+        console.log('Supabase에 유저 정보 저장 완료:', data);
+      }
+    } catch (error) {
+      console.error('유저 데이터 저장 에러:', error);
+    }
+  };
 
   // localStorage에도 저장하는 래퍼 함수
   const setProfileData = useCallback((newData) => {
@@ -302,6 +359,11 @@ const EcostepApp = () => {
               phone: currentData.phone || prev.phone || ''
             };
           });
+
+          // Supabase에서 유저 데이터 불러오기
+          if (profile?.user_id) {
+            loadUserDataFromSupabase(profile.user_id);
+          }
         }
       } catch (error) {
         console.error('사용자 확인 에러:', error);
@@ -419,19 +481,39 @@ const EcostepApp = () => {
     localStorage.setItem('waterQuality', waterQuality.toString());
   }, [waterQuality]);
 
-  // 포인트 변경시 localStorage에 저장
+  // 포인트 변경시 localStorage + Supabase에 저장
   useEffect(() => {
     localStorage.setItem('userPoints', points.toString());
+    // Supabase에 저장 (디바운스 적용)
+    const timeoutId = setTimeout(() => {
+      saveUserDataToSupabase();
+    }, 1000); // 1초 디바운스
+    return () => clearTimeout(timeoutId);
   }, [points]);
-  
-  // 누적 포인트 변경시 localStorage에 저장 및 랭크 업데이트
+
+  // 누적 포인트 변경시 localStorage + Supabase에 저장 및 랭크 업데이트
   useEffect(() => {
     localStorage.setItem('totalEarnedPoints', totalEarnedPoints.toString());
     const newRank = calculateRankFromPoints(totalEarnedPoints);
     if (newRank !== userRanking) {
       setUserRanking(newRank);
     }
+    // Supabase에 저장 (디바운스 적용)
+    const timeoutId = setTimeout(() => {
+      saveUserDataToSupabase();
+    }, 1000); // 1초 디바운스
+    return () => clearTimeout(timeoutId);
   }, [totalEarnedPoints]);
+
+  // plasticGoal 변경 시 Supabase에 저장
+  useEffect(() => {
+    if (plasticGoal !== null) {
+      const timeoutId = setTimeout(() => {
+        saveUserDataToSupabase();
+      }, 1000); // 1초 디바운스
+      return () => clearTimeout(timeoutId);
+    }
+  }, [plasticGoal]);
 
   // 구매한 장식품 저장
   useEffect(() => {

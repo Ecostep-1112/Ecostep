@@ -1,46 +1,66 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ChevronRight, Search } from 'lucide-react';
 import { BronzeIcon, SilverIcon, GoldIcon, PlatinumIcon } from '../../components/RankIcons';
+import { supabase } from '../../lib/supabase';
 
-const FriendsList = ({ isDarkMode, onBack, isGlobalRanking = false, totalPlasticSaved = 0 }) => {
+const FriendsList = ({ isDarkMode, onBack, isGlobalRanking = false, totalPlasticSaved = 0, currentUserId = '', currentUserNickname = '' }) => {
   const [searchQuery, setSearchQuery] = useState('');
-  
-  // localStorage에서 추가된 친구 목록 가져오기
-  const addedFriends = JSON.parse(localStorage.getItem('addedFriends') || '[]');
-  
+  const [allUsers, setAllUsers] = useState([]);
+  const [addedFriends, setAddedFriends] = useState([]);
+
   // 프로필 데이터 가져오기
   const profileData = JSON.parse(localStorage.getItem('profileData') || '{}');
-  const currentUserId = profileData.userId || '';
   const currentUserName = profileData.name || '';
-  
-  // 전체 사용자 데이터베이스 (SearchFriends와 동일)
-  const getAllUsers = () => {
-    // localStorage에서 프로필 이미지 가져오기
-    const profileImage = localStorage.getItem('profileImage');
-    
-    const baseUsers = [
-      { id: 'songil_eco', name: '송일', profileImage: null, plasticSaved: 15500 },
-      { id: 'wonhee_nature', name: '원희', profileImage: null, plasticSaved: 27000 },
-    ];
-    
-    // 현재 사용자가 프로필에 등록되어 있으면 데이터베이스에 추가
-    if (currentUserId && currentUserName) {
-      // 이미 존재하는 사용자인지 확인
-      const existingUser = baseUsers.find(u => u.id === currentUserId);
-      if (!existingUser) {
-        baseUsers.unshift({ 
-          id: currentUserId, 
-          name: currentUserName, 
-          profileImage: profileImage, 
-          plasticSaved: totalPlasticSaved || 15500 
-        });
-      }
+
+  // Supabase에서 사용자 목록 불러오기
+  const loadUsers = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('user_info')
+        .select('user_id, name, points_total');
+
+      if (error) throw error;
+
+      const formattedUsers = data.map(user => ({
+        id: user.user_id,
+        name: user.name,
+        profileImage: null,
+        plasticSaved: user.points_total || 0
+      }));
+
+      setAllUsers(formattedUsers);
+    } catch (error) {
+      console.error('사용자 목록 로드 실패:', error);
+      setAllUsers([]);
     }
-    
-    return baseUsers;
   };
-  
-  const allUsers = getAllUsers();
+
+  // Supabase에서 친구 목록 불러오기
+  const loadFriends = async () => {
+    if (!currentUserId) return;
+
+    try {
+      const { data, error } = await supabase
+        .from('user_friend')
+        .select('friend_id')
+        .eq('user_id', currentUserId)
+        .eq('status', 'accepted');
+
+      if (error) throw error;
+
+      const friendIds = data.map(f => f.friend_id);
+      setAddedFriends(friendIds);
+    } catch (error) {
+      console.error('친구 목록 로드 실패:', error);
+      setAddedFriends([]);
+    }
+  };
+
+  // 컴포넌트 마운트 시 데이터 로드
+  useEffect(() => {
+    loadUsers();
+    loadFriends();
+  }, [currentUserId]);
   
   // 나의 실제 플라스틱 절약량 반영
   const getDisplayScore = (grams) => {
@@ -52,26 +72,43 @@ const FriendsList = ({ isDarkMode, onBack, isGlobalRanking = false, totalPlastic
   };
   
   const myScore = getDisplayScore(totalPlasticSaved);
-  
-  // 전체 랭킹 데이터 생성 (플라스틱 절약량 포함)
-  let globalRankingDataRaw = [
-    { name: 'PlasticZero', id: 'plastic_zero', score: '45.2kg', grams: 45200 },
-    { name: 'EcoMaster', id: 'eco_master', score: '42.1kg', grams: 42100 },
-    { name: 'GreenWarrior', id: 'green_warrior', score: '38.9kg', grams: 38900 },
-    { name: '나', id: currentUserId, score: myScore, grams: totalPlasticSaved },
-  ];
-  
-  // 더 많은 사용자 추가
-  for (let i = 4; i <= 200; i++) {
-    const grams = Math.max(500, 50000 - i * 200); // 50kg부터 점진적으로 감소
+
+  // 전체 랭킹 데이터 생성 - 실제 DB 데이터 사용
+  let globalRankingDataRaw = [];
+  let currentUserFound = false;
+
+  // 실제 DB에서 가져온 사용자들 추가
+  allUsers.forEach(user => {
+    if (user.id === currentUserId) {
+      // 현재 사용자는 props의 totalPlasticSaved 사용
+      globalRankingDataRaw.push({
+        name: '나',
+        id: currentUserId,
+        score: myScore,
+        grams: totalPlasticSaved
+      });
+      currentUserFound = true;
+    } else {
+      // 다른 사용자는 DB 데이터 사용
+      globalRankingDataRaw.push({
+        name: user.name,
+        id: user.id,
+        score: getDisplayScore(user.plasticSaved),
+        grams: user.plasticSaved
+      });
+    }
+  });
+
+  // DB에 현재 사용자가 없으면 추가
+  if (!currentUserFound) {
     globalRankingDataRaw.push({
-      name: `User${i}`,
-      id: `user_${i}`,
-      score: getDisplayScore(grams),
-      grams: grams
+      name: '나',
+      id: currentUserId,
+      score: myScore,
+      grams: totalPlasticSaved
     });
   }
-  
+
   // 플라스틱 절약량으로 정렬 (내림차순)
   globalRankingDataRaw.sort((a, b) => b.grams - a.grams);
   
@@ -83,42 +120,39 @@ const FriendsList = ({ isDarkMode, onBack, isGlobalRanking = false, totalPlastic
   
   // 친구 목록 데이터 생성 - 실제 추가된 친구들 사용
   let friendsRankingDataRaw = [];
-  
+  let currentUserInFriends = false;
+
   // 추가된 친구들의 데이터 가져오기
   addedFriends.forEach(friendId => {
     const friend = allUsers.find(u => u.id === friendId);
     if (friend) {
-      friendsRankingDataRaw.push({
-        name: friend.name,
-        id: friend.id,
-        score: getDisplayScore(friend.plasticSaved),
-        grams: friend.plasticSaved
-      });
+      if (friend.id === currentUserId) {
+        // 현재 사용자는 props의 totalPlasticSaved 사용
+        friendsRankingDataRaw.push({
+          name: '나',
+          id: currentUserId,
+          score: myScore,
+          grams: totalPlasticSaved
+        });
+        currentUserInFriends = true;
+      } else {
+        friendsRankingDataRaw.push({
+          name: friend.name,
+          id: friend.id,
+          score: getDisplayScore(friend.plasticSaved),
+          grams: friend.plasticSaved
+        });
+      }
     }
   });
-  
-  // 나 자신 추가
-  friendsRankingDataRaw.push({
-    name: '나',
-    id: currentUserId,
-    score: myScore,
-    grams: totalPlasticSaved
-  });
-  
-  // 친구가 없거나 적을 경우 기본 친구 데이터 추가
-  if (friendsRankingDataRaw.length < 10) {
-    const defaultFriends = [
-      { name: '일이', id: 'eco_friend1', score: '27.0kg', grams: 27000 },
-      { name: '이이', id: 'eco_friend2', score: '24.0kg', grams: 24000 },
-      { name: '삼이', id: 'eco_friend3', score: '21.0kg', grams: 21000 },
-      { name: '사이', id: 'eco_friend4', score: '18.0kg', grams: 18000 },
-    ];
-    
-    defaultFriends.forEach(friend => {
-      // 중복 체크
-      if (!friendsRankingDataRaw.some(f => f.name === friend.name)) {
-        friendsRankingDataRaw.push(friend);
-      }
+
+  // 친구 목록에 나 자신이 없으면 추가
+  if (!currentUserInFriends) {
+    friendsRankingDataRaw.push({
+      name: '나',
+      id: currentUserId,
+      score: myScore,
+      grams: totalPlasticSaved
     });
   }
   
@@ -244,7 +278,7 @@ const FriendsList = ({ isDarkMode, onBack, isGlobalRanking = false, totalPlastic
                       </div>
                       <div className="flex-1 flex flex-col items-start">
                         <span className={`${friend.rank === 1 ? 'text-sm' : friend.rank === 2 ? 'text-[13px]' : 'text-xs'} ${isMe ? `font-medium ${textColor}` : isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>{friend.name}</span>
-                        {friend.id && <span className={`${friend.rank === 1 ? 'text-[10px]' : friend.rank === 2 ? 'text-[9px]' : 'text-[8px]'} ${isDarkMode ? 'text-gray-500' : 'text-gray-400'} ${friend.rank === 1 ? '-mt-[1.5px]' : friend.rank === 2 ? '-mt-[3px]' : '-mt-[1px]'}`}>@{friend.id}</span>}
+                        {friend.id && <span className={`${friend.rank === 1 ? 'text-[10px]' : friend.rank === 2 ? 'text-[9px]' : 'text-[8px]'} ${isDarkMode ? 'text-gray-500' : 'text-gray-400'} ${friend.rank === 1 ? '-mt-[1.5px]' : friend.rank === 2 ? '-mt-[3px]' : '-mt-[1px]'}`}>@{isMe ? currentUserNickname : friend.id}</span>}
                       </div>
                     </div>
                     <span className={`${friend.rank === 1 ? 'text-xs' : friend.rank === 2 ? 'text-[11px]' : 'text-[10px]'} ${isMe ? `font-medium ${textColor}` : isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>{friend.score}</span>

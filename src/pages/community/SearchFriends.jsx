@@ -36,41 +36,13 @@ const SearchFriends = ({ isDarkMode, onBack, userRanking = 'bronze', showToast, 
       setAllUsers(formattedUsers);
     } catch (error) {
       console.error('사용자 목록 로드 실패:', error);
-      // 에러 발생 시 기본 데이터 사용
-      setAllUsers([
-        { id: 'songil_eco', name: '송일', profileImage: null, plasticSaved: 15500 },
-        { id: 'wonhee_nature', name: '원희', profileImage: null, plasticSaved: 27000 },
-      ]);
+      setAllUsers([]);
     }
   };
 
   // Supabase에서 친구 목록 불러오기
   const loadFriends = async () => {
-    if (!currentUserId) {
-      // localStorage에서 프로필 데이터 확인
-      const savedProfileData = localStorage.getItem('profileData');
-      if (savedProfileData) {
-        try {
-          const parsed = JSON.parse(savedProfileData);
-          const userId = parsed.userId;
-          if (!userId) return;
-
-          const { data, error } = await supabase
-            .from('user_friend')
-            .select('friend_id')
-            .eq('user_id', userId)
-            .eq('status', 'accepted');
-
-          if (error) throw error;
-
-          const friendIds = data.map(f => f.friend_id);
-          setAddedFriends(friendIds);
-        } catch (e) {
-          console.error('친구 목록 로드 실패:', e);
-        }
-      }
-      return;
-    }
+    if (!currentUserId) return;
 
     try {
       const { data, error } = await supabase

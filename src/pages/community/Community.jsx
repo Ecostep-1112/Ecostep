@@ -4,7 +4,7 @@ import SearchFriends from './SearchFriends';
 import { BronzeIcon, SilverIcon, GoldIcon, PlatinumIcon } from '../../components/RankIcons';
 import { supabase } from '../../lib/supabase';
 
-const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast, userRanking, totalPlasticSaved = 0, currentUserId = '', currentUserName = '' }) => {
+const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast, userRanking, totalPlasticSaved = 0, currentUserId = '', currentUserName = '', currentUserNickname = '' }) => {
   const [showSearchPage, setShowSearchPage] = useState(false);
   const [addedFriends, setAddedFriends] = useState([]);
   const [allUsers, setAllUsers] = useState([]);
@@ -25,26 +25,43 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
   };
   
   const myScore = getDisplayScore(totalPlasticSaved);
-  
-  // 전체 랭킹 데이터 생성 (FriendsList와 동일한 로직)
-  let globalRankingDataRaw = [
-    { name: 'PlasticZero', id: 'plastic_zero', score: '45.2kg', grams: 45200 },
-    { name: 'EcoMaster', id: 'eco_master', score: '42.1kg', grams: 42100 },
-    { name: 'GreenWarrior', id: 'green_warrior', score: '38.9kg', grams: 38900 },
-    { name: '나', id: currentUserId, score: myScore, grams: totalPlasticSaved },
-  ];
-  
-  // 더 많은 사용자 추가 (전체 200명)
-  for (let i = 4; i <= 200; i++) {
-    const grams = Math.max(500, 50000 - i * 200);
+
+  // 전체 랭킹 데이터 생성 - 실제 DB 데이터 사용
+  let globalRankingDataRaw = [];
+  let currentUserFound = false;
+
+  // 실제 DB에서 가져온 사용자들 추가
+  allUsers.forEach(user => {
+    if (user.id === currentUserId) {
+      // 현재 사용자는 props의 totalPlasticSaved 사용
+      globalRankingDataRaw.push({
+        name: '나',
+        id: currentUserId,
+        score: myScore,
+        grams: totalPlasticSaved
+      });
+      currentUserFound = true;
+    } else {
+      // 다른 사용자는 DB 데이터 사용
+      globalRankingDataRaw.push({
+        name: user.name,
+        id: user.id,
+        score: getDisplayScore(user.plasticSaved),
+        grams: user.plasticSaved
+      });
+    }
+  });
+
+  // DB에 현재 사용자가 없으면 추가
+  if (!currentUserFound) {
     globalRankingDataRaw.push({
-      name: `User${i}`,
-      id: `user_${i}`,
-      score: getDisplayScore(grams),
-      grams: grams
+      name: '나',
+      id: currentUserId,
+      score: myScore,
+      grams: totalPlasticSaved
     });
   }
-  
+
   // 플라스틱 절약량으로 정렬
   globalRankingDataRaw.sort((a, b) => b.grams - a.grams);
   
@@ -84,11 +101,7 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
       setAllUsers(formattedUsers);
     } catch (error) {
       console.error('사용자 목록 로드 실패:', error);
-      // 에러 발생 시 기본 데이터 사용
-      setAllUsers([
-        { id: 'songil_eco', name: '송일', profileImage: null, plasticSaved: 15500 },
-        { id: 'wonhee_nature', name: '원희', profileImage: null, plasticSaved: 27000 },
-      ]);
+      setAllUsers([]);
     }
   };
 
@@ -135,42 +148,39 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
   
   // 친구 목록 데이터 생성 - 실제 추가된 친구들 사용
   let friendsListRaw = [];
-  
+  let currentUserInFriends = false;
+
   // 추가된 친구들의 데이터 가져오기
   addedFriends.forEach(friendId => {
     const friend = allUsers.find(u => u.id === friendId);
     if (friend) {
-      friendsListRaw.push({
-        name: friend.name,
-        id: friend.id,
-        score: getDisplayScore(friend.plasticSaved),
-        grams: friend.plasticSaved
-      });
+      if (friend.id === currentUserId) {
+        // 현재 사용자는 props의 totalPlasticSaved 사용
+        friendsListRaw.push({
+          name: '나',
+          id: currentUserId,
+          score: myScore,
+          grams: totalPlasticSaved
+        });
+        currentUserInFriends = true;
+      } else {
+        friendsListRaw.push({
+          name: friend.name,
+          id: friend.id,
+          score: getDisplayScore(friend.plasticSaved),
+          grams: friend.plasticSaved
+        });
+      }
     }
   });
-  
-  // 나 자신 추가
-  friendsListRaw.push({
-    name: '나',
-    id: currentUserId,
-    score: myScore,
-    grams: totalPlasticSaved
-  });
-  
-  // 친구가 없거나 적을 경우 기본 친구 데이터 추가
-  if (friendsListRaw.length < 5) {
-    const defaultFriends = [
-      { name: '일이', id: 'eco_friend1', score: '27.0kg', grams: 27000 },
-      { name: '이이', id: 'eco_friend2', score: '24.0kg', grams: 24000 },
-      { name: '삼이', id: 'eco_friend3', score: '21.0kg', grams: 21000 },
-      { name: '사이', id: 'eco_friend4', score: '18.0kg', grams: 18000 },
-    ];
-    
-    defaultFriends.forEach(friend => {
-      // 중복 체크
-      if (!friendsListRaw.some(f => f.name === friend.name)) {
-        friendsListRaw.push(friend);
-      }
+
+  // 친구 목록에 나 자신이 없으면 추가
+  if (!currentUserInFriends) {
+    friendsListRaw.push({
+      name: '나',
+      id: currentUserId,
+      score: myScore,
+      grams: totalPlasticSaved
     });
   }
   
@@ -410,7 +420,7 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
                       </div>
                       <div className="flex-1 flex flex-col items-start">
                         <span className={`${displayRank === 1 ? 'text-sm' : displayRank === 2 ? 'text-[13px]' : 'text-xs'} ${isMe ? `font-medium ${textColor}` : isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>{friend.name}</span>
-                        {friend.id && <span className={`${displayRank === 1 ? 'text-[10px]' : displayRank === 2 ? 'text-[9px]' : 'text-[8px]'} ${isDarkMode ? 'text-gray-500' : 'text-gray-400'} ${displayRank === 1 ? '-mt-[1.5px]' : displayRank === 2 ? '-mt-[3px]' : '-mt-[1px]'}`}>@{friend.id}</span>}
+                        {friend.id && <span className={`${displayRank === 1 ? 'text-[10px]' : displayRank === 2 ? 'text-[9px]' : 'text-[8px]'} ${isDarkMode ? 'text-gray-500' : 'text-gray-400'} ${displayRank === 1 ? '-mt-[1.5px]' : displayRank === 2 ? '-mt-[3px]' : '-mt-[1px]'}`}>@{isMe ? currentUserNickname : friend.id}</span>}
                       </div>
                     </div>
                     <span className={`${displayRank === 1 ? 'text-xs' : displayRank === 2 ? 'text-[11px]' : 'text-[10px]'} ${isMe ? `font-medium ${textColor}` : isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>{friend.score}</span>
@@ -438,7 +448,7 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
                     </div>
                     <div className="flex-1 flex flex-col items-start">
                       <span className={`text-xs font-medium ${textColor}`}>나</span>
-                      {currentUserId && <span className={`text-[8px] ${isDarkMode ? 'text-gray-500' : 'text-gray-400'} -mt-[1px]`}>@{currentUserId}</span>}
+                      {currentUserNickname && <span className={`text-[8px] ${isDarkMode ? 'text-gray-500' : 'text-gray-400'} -mt-[1px]`}>@{currentUserNickname}</span>}
                     </div>
                   </div>
                   <span className={`text-[10px] font-medium ${textColor}`}>{myScore}</span>
@@ -495,7 +505,7 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
                       </div>
                       <div className="flex-1 flex flex-col items-start">
                         <span className={`${actualRank === 1 ? 'text-sm' : actualRank === 2 ? 'text-[13px]' : 'text-xs'} ${isMe ? `font-medium ${textColor}` : isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>{user.name}</span>
-                        {user.id && <span className={`${actualRank === 1 ? 'text-[10px]' : actualRank === 2 ? 'text-[9px]' : 'text-[8px]'} ${isDarkMode ? 'text-gray-500' : 'text-gray-400'} ${actualRank === 1 ? '-mt-[1.5px]' : actualRank === 2 ? '-mt-[3px]' : '-mt-[1px]'}`}>@{user.id}</span>}
+                        {user.id && <span className={`${actualRank === 1 ? 'text-[10px]' : actualRank === 2 ? 'text-[9px]' : 'text-[8px]'} ${isDarkMode ? 'text-gray-500' : 'text-gray-400'} ${actualRank === 1 ? '-mt-[1.5px]' : actualRank === 2 ? '-mt-[3px]' : '-mt-[1px]'}`}>@{isMe ? currentUserNickname : user.id}</span>}
                       </div>
                     </div>
                     <span className={`${actualRank === 1 ? 'text-xs' : actualRank === 2 ? 'text-[11px]' : 'text-[10px]'} ${isMe ? `font-medium ${textColor}` : isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>{user.score}</span>
@@ -524,7 +534,7 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
                     </div>
                     <div className="flex-1 flex flex-col items-start">
                       <span className={`text-xs font-medium ${textColor}`}>나</span>
-                      {currentUserId && <span className={`text-[8px] ${isDarkMode ? 'text-gray-500' : 'text-gray-400'} -mt-[1px]`}>@{currentUserId}</span>}
+                      {currentUserNickname && <span className={`text-[8px] ${isDarkMode ? 'text-gray-500' : 'text-gray-400'} -mt-[1px]`}>@{currentUserNickname}</span>}
                     </div>
                   </div>
                   <span className={`text-[10px] font-medium ${textColor}`}>

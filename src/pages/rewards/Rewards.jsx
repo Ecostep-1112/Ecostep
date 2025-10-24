@@ -59,6 +59,7 @@ const Rewards = ({
         // 물고기 데이터 로드
         const { data: fishList, error: fishError } = await getStoreFish();
         if (!fishError && fishList) {
+          console.log('물고기 데이터:', fishList); // 디버깅용
           const fishByRank = {
             bronze: [],
             silver: [],
@@ -69,8 +70,9 @@ const Rewards = ({
             const rankKey = fish.rank.toLowerCase(); // 대문자를 소문자로 변환
             if (fishByRank[rankKey]) {
               fishByRank[rankKey].push({
-                name: fish.item_id,
-                description: fish.item_id, // description은 없으므로 item_id 사용
+                id: fish.item_id, // database ID
+                name: fish.item_name, // 아이콘 매칭용 이름
+                description: fish.item_name,
                 price: fish.price
               });
             }
@@ -81,6 +83,7 @@ const Rewards = ({
         // 장식품 데이터 로드
         const { data: decoList, error: decoError } = await getStoreDecorations();
         if (!decoError && decoList) {
+          console.log('장식품 데이터:', decoList); // 디버깅용
           const decoByRank = {
             bronze: [],
             silver: [],
@@ -91,8 +94,9 @@ const Rewards = ({
             const rankKey = deco.rank.toLowerCase(); // 대문자를 소문자로 변환
             if (decoByRank[rankKey]) {
               decoByRank[rankKey].push({
-                name: deco.item_id,
-                description: deco.item_id, // description은 없으므로 item_id 사용
+                id: deco.item_id, // database ID
+                name: deco.item_name, // 아이콘 매칭용 이름
+                description: deco.item_name,
                 price: deco.price
               });
             }
@@ -110,16 +114,16 @@ const Rewards = ({
             const decoNames = [];
 
             purchasedItems.forEach(item => {
-              const itemName = item.item_id;
+              const itemId = item.item_id;
 
-              // item_id로 물고기인지 장식품인지 구분
-              // fishList에서 찾기
-              const isFish = fishList?.some(fish => fish.item_id === itemName);
+              // item_id로 물고기인지 장식품인지 구분하고 item_name 찾기
+              const foundFish = fishList?.find(fish => fish.item_id === itemId);
+              const foundDeco = decoList?.find(deco => deco.item_id === itemId);
 
-              if (isFish) {
-                fishNames.push(itemName);
-              } else {
-                decoNames.push(itemName);
+              if (foundFish) {
+                fishNames.push(foundFish.item_name); // item_name으로 저장
+              } else if (foundDeco) {
+                decoNames.push(foundDeco.item_name); // item_name으로 저장
               }
             });
 
@@ -496,7 +500,7 @@ const Rewards = ({
                   ) : userRanking === 'platinum' ? (
                     <p className="text-xs font-medium text-center bg-gradient-to-r from-cyan-500 via-blue-500 to-blue-600 bg-clip-text text-transparent">수령 가능</p>
                   ) : (
-                    <p className="text-xs text-gray-400 text-center">플래티넘 도닼</p>
+                    <p className="text-xs text-gray-400 text-center">플래티넘 도달</p>
                   )}
                 </div>
               </div>
@@ -533,15 +537,9 @@ const Rewards = ({
                   const userRankIndex = rankOrder.indexOf(userRanking);
                   const itemRankIndex = rankOrder.indexOf(rank);
                   const isLocked = itemRankIndex > userRankIndex;
-                  
-                  // 새로운 물고기 가격 체계
-                  const fishPrices = {
-                    bronze: [200, 300, 400],
-                    silver: [500, 600, 700],
-                    gold: [1000, 1100, 1200],
-                    platinum: [1500, 1600, 1700]
-                  };
-                  const fishPrice = fishPrices[rank][i];
+
+                  // database에서 받은 가격 사용
+                  const fishPrice = fish.price;
                   
                   return (
                     <button 
@@ -568,7 +566,7 @@ const Rewards = ({
                             // Supabase에 저장
                             const { data: { user } } = await supabase.auth.getUser();
                             if (user) {
-                              const { error } = await purchaseItem(user.id, fish.name);
+                              const { error } = await purchaseItem(user.id, fish.id);
                               if (error) {
                                 console.error('구매 저장 실패:', error);
                               }
@@ -586,7 +584,15 @@ const Rewards = ({
                       {/* 물고기 SVG 아이콘 - 더 크게, 중앙 정렬 */}
                       <div className={`h-[42px] w-full flex items-center justify-center ${isLocked ? 'blur-sm' : ''}`}>
                         {!isLocked && (() => {
-                          const FishIcon = FishIcons[fish.name.replace(' ', '')];
+                          // fish.name에서 공백 제거하여 FishIcons의 key와 매칭
+                          const fishKey = fish.name;
+                          const FishIcon = FishIcons[fishKey];
+
+                          // 디버깅용 로그
+                          if (!FishIcon) {
+                            console.log('물고기 아이콘을 찾을 수 없음:', fishKey, 'FishIcons 키:', Object.keys(FishIcons));
+                          }
+
                           // 특정 물고기는 더 크게 표시
                           const iconSize = ['네온테트라', '아피스토그라마', '킬리피쉬'].includes(fish.name) ? 48 : 36;
                           return FishIcon ? <FishIcon size={iconSize} isMoving={true} /> : null;
@@ -689,7 +695,7 @@ const Rewards = ({
                             // Supabase에 저장
                             const { data: { user } } = await supabase.auth.getUser();
                             if (user) {
-                              const { error } = await purchaseItem(user.id, deco.name);
+                              const { error } = await purchaseItem(user.id, deco.id);
                               if (error) {
                                 console.error('구매 저장 실패:', error);
                               }
@@ -708,7 +714,17 @@ const Rewards = ({
                       <div className={`w-full h-full flex flex-col items-center justify-between ${isLocked ? 'filter blur-[1px]' : ''}`}>
                         {/* 아이콘 - 고정 높이 영역 */}
                         <div className="h-[45px] w-full flex items-center justify-center">
-                          {!isLocked && DecorationIcons[deco.name] && React.createElement(DecorationIcons[deco.name])}
+                          {!isLocked && (() => {
+                            const decoKey = deco.name;
+                            const DecoIcon = DecorationIcons[decoKey];
+
+                            // 디버깅용 로그
+                            if (!DecoIcon) {
+                              console.log('장식품 아이콘을 찾을 수 없음:', decoKey, 'DecorationIcons 키:', Object.keys(DecorationIcons));
+                            }
+
+                            return DecoIcon ? React.createElement(DecoIcon) : null;
+                          })()}
                         </div>
                         
                         {/* 텍스트 영역 - 중앙 정렬 */}

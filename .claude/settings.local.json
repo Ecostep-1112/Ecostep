@@ -50,7 +50,8 @@
       "Bash(gh api:*)",
       "Bash(cat:*)",
       "Read(//c/**)",
-      "Bash(start http://localhost:5175/)"
+      "Bash(start http://localhost:5175/)",
+      "Bash(timeout:*)"
     ],
     "deny": [],
     "ask": [],

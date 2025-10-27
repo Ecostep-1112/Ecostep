@@ -13,7 +13,6 @@ import NotificationsScreen from './pages/settings/NotificationsScreen';
 import { ThemeSettings, RankThemeSettings, LanguageSettings, NotificationSettings, LocationSettings, AquariumSettings } from './pages/settings/Settings';
 import Toast from './components/Toast';
 import Login from './pages/auth/Login';
-import fishData from './data/fishData.json';
 import { onAuthStateChange, getCurrentUser, signOut, createOrUpdateUserProfile } from './lib/auth';
 import { getUserInfo, saveUserInfo, getUserItems } from './lib/database';
 import { supabase } from './lib/supabase';
@@ -25,8 +24,21 @@ import {
   getLocalStorage,
   setLocalStorage
 } from './utils/localStorage';
+import { DataProvider, useData } from './services/DataContext';
+import { App as CapacitorApp } from '@capacitor/app';
+import { Capacitor } from '@capacitor/core';
 
-const EcostepApp = () => {
+const EcostepAppContent = () => {
+  // 전역 데이터 컨텍스트 사용
+  const {
+    preloadAllData,
+    isLoading: isDataLoading,
+    purchasedFish,
+    setPurchasedFish,
+    purchasedDecorations,
+    setPurchasedDecorations
+  } = useData();
+
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const [currentUser, setCurrentUser] = useState(null);
@@ -194,10 +206,6 @@ const EcostepApp = () => {
   const [isRandomDecorations, setIsRandomDecorations] = useState(false);
   const [selectedFish, setSelectedFish] = useState(aquariumSettings.selectedFish);
   const [selectedDecorations, setSelectedDecorations] = useState(aquariumSettings.selectedDecorations.length > 0 ? aquariumSettings.selectedDecorations : ['해초']);
-  const [purchasedFish, setPurchasedFish] = useState(() => {
-    const saved = localStorage.getItem('purchasedFish');
-    return saved ? JSON.parse(saved) : [];
-  });
 
   // 앱 설정 변경 시 로컬 스토리지에 저장
   useEffect(() => {
@@ -248,11 +256,6 @@ const EcostepApp = () => {
   const [showFriendsList, setShowFriendsList] = useState(false);
   const [rankingInitialTab, setRankingInitialTab] = useState('friends');
   const [showGlobalList, setShowGlobalList] = useState(false);
-  const [purchasedDecorations, setPurchasedDecorations] = useState(() => {
-    const saved = localStorage.getItem('purchasedDecorations');
-    // 장식품이 없으면 테스트용으로 몇 개 추가
-    return saved ? JSON.parse(saved) : [];
-  });
   const [waterQuality, setWaterQuality] = useState(85);
   const [lastChallengeDate, setLastChallengeDate] = useState(null);
   const [daysWithoutChallenge, setDaysWithoutChallenge] = useState(0);
@@ -363,6 +366,8 @@ const EcostepApp = () => {
           // Supabase에서 유저 데이터 불러오기
           if (profile?.user_id) {
             loadUserDataFromSupabase(profile.user_id);
+            // 전역 데이터 프리로딩
+            preloadAllData(profile.user_id);
           }
         }
       } catch (error) {
@@ -404,6 +409,11 @@ const EcostepApp = () => {
               phone: currentData.phone || prev.phone || ''
             };
           });
+
+          // 전역 데이터 프리로딩
+          if (profile?.user_id) {
+            preloadAllData(profile.user_id);
+          }
         }).catch(error => {
           console.error('프로필 생성 실패:', error);
         });
@@ -416,6 +426,51 @@ const EcostepApp = () => {
     return () => {
       subscription?.unsubscribe();
     };
+  }, []);
+
+  // Deep link 처리 (모바일 앱에서 OAuth callback 처리)
+  useEffect(() => {
+    const platform = Capacitor.getPlatform();
+
+    if (platform === 'android' || platform === 'ios') {
+      // 앱 URL 리스너 설정 (OAuth callback 처리)
+      const listener = CapacitorApp.addListener('appUrlOpen', async (data) => {
+        console.log('App opened with URL:', data.url);
+
+        // com.ecostep.app://callback?... 형태의 URL 처리
+        if (data.url.includes('callback')) {
+          // Supabase가 URL에서 자동으로 세션을 처리하도록 URL 전달
+          const url = new URL(data.url);
+
+          // URL의 hash 부분에 access_token이 있는 경우
+          if (url.hash) {
+            const hashParams = new URLSearchParams(url.hash.substring(1));
+            const accessToken = hashParams.get('access_token');
+            const refreshToken = hashParams.get('refresh_token');
+
+            if (accessToken) {
+              console.log('Deep link에서 토큰 발견, 세션 설정 중...');
+
+              // Supabase 세션 설정
+              const { data: sessionData, error } = await supabase.auth.setSession({
+                access_token: accessToken,
+                refresh_token: refreshToken || ''
+              });
+
+              if (error) {
+                console.error('세션 설정 에러:', error);
+              } else {
+                console.log('세션 설정 성공:', sessionData);
+              }
+            }
+          }
+        }
+      });
+
+      return () => {
+        listener.remove();
+      };
+    }
   }, []);
 
   useEffect(() => {
@@ -514,16 +569,6 @@ const EcostepApp = () => {
       return () => clearTimeout(timeoutId);
     }
   }, [plasticGoal]);
-
-  // 구매한 장식품 저장
-  useEffect(() => {
-    localStorage.setItem('purchasedDecorations', JSON.stringify(purchasedDecorations));
-  }, [purchasedDecorations]);
-
-  // 구매한 물고기 저장
-  useEffect(() => {
-    localStorage.setItem('purchasedFish', JSON.stringify(purchasedFish));
-  }, [purchasedFish]);
 
   // 프로필 데이터 변경 감지 (디버깅용)
   useEffect(() => {
@@ -812,7 +857,6 @@ const EcostepApp = () => {
               tankName={tankName}
               setTankName={setTankName}
               purchasedDecorations={purchasedDecorations}
-              fishData={fishData}
               decorationsData={decorationsData}
               isRandomDecorations={isRandomDecorations}
               setIsRandomDecorations={setIsRandomDecorations}
@@ -878,7 +922,6 @@ const EcostepApp = () => {
                 isDarkMode={isDarkMode}
                 purchasedFish={purchasedFish}
                 setPurchasedFish={setPurchasedFish}
-                fishData={fishData}
                 userRanking={userRanking}
                 setUserRanking={setUserRanking}
                 claimedTanks={claimedTanks}
@@ -951,6 +994,15 @@ const EcostepApp = () => {
           rankTheme={rankTheme}
         />
       </div>
+  );
+};
+
+// DataProvider로 감싸서 export
+const EcostepApp = () => {
+  return (
+    <DataProvider>
+      <EcostepAppContent />
+    </DataProvider>
   );
 };
 

@@ -1,0 +1,36 @@
+// Supabase item_name → item_id 매핑
+// FishIcons와 DecorationIcons는 item_id를 키로 사용합니다
+
+export const fishNameToId = {
+  '코리도라스': 'fish_1',
+  '체리바브': 'fish_2',
+  '네온테트라': 'fish_3',
+  '아피스토그라마': 'fish_4',
+  '람시클리드': 'fish_5',
+  '구피': 'fish_6',
+  '엔젤피쉬': 'fish_7',
+  '킬리피쉬': 'fish_8',
+  '베타': 'fish_9',
+  '디스커스': 'fish_10',
+  '만다린피쉬': 'fish_11',
+  '아로와나': 'fish_12'
+};
+
+export const decorationNameToId = {
+  '해초': 'decoration_1',
+  '용암석': 'decoration_2',
+  '작은 동굴': 'decoration_3',
+  '산호': 'decoration_4',
+  '드리프트 우드': 'decoration_5',
+  '조개 껍질': 'decoration_6',
+  '그리스 신전': 'decoration_7',
+  '보물 상자': 'decoration_8',
+  '해적선': 'decoration_9',
+  '크리스탈 동굴': 'decoration_10',
+  'LED 해파리': 'decoration_11',
+  '아틀란티스 유적': 'decoration_12'
+};
+
+// 헬퍼 함수
+export const getFishId = (name) => fishNameToId[name] || name;
+export const getDecorationId = (name) => decorationNameToId[name] || name;

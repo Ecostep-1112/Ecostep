@@ -3,7 +3,8 @@ import { ChevronRight, Sun, Moon, Check } from 'lucide-react';
 import { BronzeIcon, SilverIcon, GoldIcon, PlatinumIcon } from '../../components/RankIcons';
 import FishIcons from '../../components/FishIcons';
 import DecorationIcons from '../../components/DecorationIcons';
-import fishData from '../../data/fishData.json';
+import { getFishId, getDecorationId } from '../../utils/itemMapping';
+import { useData } from '../../services/DataContext';
 import BasicTank from '../../components/tanks/BasicTank';
 import SilverTank from '../../components/tanks/SilverTank';
 import GoldTank from '../../components/tanks/GoldTank';
@@ -400,17 +401,17 @@ export const LocationSettings = ({ isDarkMode, locationSharing, setLocationShari
   );
 };
 
-export const AquariumSettings = ({ 
-  isDarkMode, 
-  setShowAquariumSettings, 
-  fishCount, 
-  setFishCount, 
-  isRandomFish, 
-  setIsRandomFish, 
-  selectedFish, 
-  setSelectedFish, 
-  selectedDecorations, 
-  setSelectedDecorations, 
+export const AquariumSettings = ({
+  isDarkMode,
+  setShowAquariumSettings,
+  fishCount,
+  setFishCount,
+  isRandomFish,
+  setIsRandomFish,
+  selectedFish,
+  setSelectedFish,
+  selectedDecorations,
+  setSelectedDecorations,
   purchasedFish,
   currentTank,
   setCurrentTank,
@@ -418,12 +419,13 @@ export const AquariumSettings = ({
   tankName,
   setTankName,
   purchasedDecorations,
-  fishData,
   decorationsData,
   isRandomDecorations,
   setIsRandomDecorations,
   claimedTanks
 }) => {
+  // DataContext에서 fishData 가져오기
+  const { fishData } = useData();
   const bgColor = isDarkMode ? 'bg-gray-900' : 'bg-white';
   const textColor = isDarkMode ? 'text-white' : 'text-gray-900';
   const borderColor = isDarkMode ? 'border-gray-700' : 'border-gray-200';
@@ -593,7 +595,8 @@ export const AquariumSettings = ({
                             {/* 물고기 아이콘 */}
                             <div className="flex items-center justify-center mb-1">
                               {(() => {
-                                const FishIcon = FishIcons[fish.name.replace(' ', '')];
+                                const fishId = getFishId(fish.name);
+                                const FishIcon = FishIcons[fishId];
                                 return FishIcon ? <FishIcon size={32} /> : null;
                               })()}
                             </div>

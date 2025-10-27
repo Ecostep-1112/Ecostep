@@ -1,4 +1,18 @@
 import { supabase } from './supabase';
+import { Capacitor } from '@capacitor/core';
+
+// 플랫폼에 따른 redirect URL 반환
+const getRedirectUrl = () => {
+  const platform = Capacitor.getPlatform();
+
+  if (platform === 'android' || platform === 'ios') {
+    // 모바일 앱: custom URL scheme 사용
+    return 'com.ecostep.app://callback';
+  } else {
+    // 웹: 현재 origin 사용
+    return `${window.location.origin}/`;
+  }
+};
 
 // 친환경 관련 단어 목록 (1~10글자)
 const ecoWords = [
@@ -115,16 +129,16 @@ export const signInWithGoogle = async () => {
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${window.location.origin}/`,
+        redirectTo: getRedirectUrl(),
         queryParams: {
           access_type: 'offline',
           prompt: 'consent',
         },
       },
     });
-    
+
     if (error) throw error;
-    
+
     // 로그인 성공 후 프로필 생성은 onAuthStateChange에서 처리
     return { data, error: null };
   } catch (error) {
@@ -140,12 +154,12 @@ export const signInWithKakao = async () => {
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'kakao',
       options: {
-        redirectTo: `${window.location.origin}/`,
+        redirectTo: getRedirectUrl(),
       },
     });
-    
+
     if (error) throw error;
-    
+
     // 로그인 성공 후 프로필 생성은 onAuthStateChange에서 처리
     return { data, error: null };
   } catch (error) {
@@ -160,12 +174,12 @@ export const signInWithApple = async () => {
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'apple',
       options: {
-        redirectTo: `${window.location.origin}/`,
+        redirectTo: getRedirectUrl(),
       },
     });
-    
+
     if (error) throw error;
-    
+
     // 로그인 성공 후 프로필 생성은 onAuthStateChange에서 처리
     return { data, error: null };
   } catch (error) {

@@ -3,11 +3,13 @@ import { MessageCircle, Link, UserSearch, ChevronDown } from 'lucide-react';
 import SearchFriends from './SearchFriends';
 import { BronzeIcon, SilverIcon, GoldIcon, PlatinumIcon } from '../../components/RankIcons';
 import { supabase } from '../../lib/supabase';
+import { useData } from '../../services/DataContext';
 
 const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast, userRanking, totalPlasticSaved = 0, currentUserId = '', currentUserName = '' }) => {
+  // 전역 데이터 컨텍스트에서 데이터 가져오기
+  const { allUsers, friendsList: addedFriends } = useData();
+
   const [showSearchPage, setShowSearchPage] = useState(false);
-  const [addedFriends, setAddedFriends] = useState([]);
-  const [allUsers, setAllUsers] = useState([]);
 
   const bgColor = isDarkMode ? 'bg-gray-900' : 'bg-white';
   const textColor = isDarkMode ? 'text-white' : 'text-gray-900';
@@ -64,74 +66,6 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
     }
     return 0;
   };
-  
-  // Supabase에서 사용자 목록 불러오기
-  const loadUsers = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('user_info')
-        .select('user_id, name, points_total');
-
-      if (error) throw error;
-
-      const formattedUsers = data.map(user => ({
-        id: user.user_id,
-        name: user.name,
-        profileImage: null,
-        plasticSaved: user.points_total || 0
-      }));
-
-      setAllUsers(formattedUsers);
-    } catch (error) {
-      console.error('사용자 목록 로드 실패:', error);
-      // 에러 발생 시 기본 데이터 사용
-      setAllUsers([
-        { id: 'songil_eco', name: '송일', profileImage: null, plasticSaved: 15500 },
-        { id: 'wonhee_nature', name: '원희', profileImage: null, plasticSaved: 27000 },
-      ]);
-    }
-  };
-
-  // Supabase에서 친구 목록 불러오기
-  const loadFriends = async () => {
-    let userId = currentUserId;
-    if (!userId) {
-      const savedProfileData = localStorage.getItem('profileData');
-      if (savedProfileData) {
-        try {
-          const parsed = JSON.parse(savedProfileData);
-          userId = parsed.userId;
-        } catch (e) {
-          console.error('프로필 데이터 파싱 오류:', e);
-        }
-      }
-    }
-
-    if (!userId) return;
-
-    try {
-      const { data, error } = await supabase
-        .from('user_friend')
-        .select('friend_id')
-        .eq('user_id', userId)
-        .eq('status', 'accepted');
-
-      if (error) throw error;
-
-      const friendIds = data.map(f => f.friend_id);
-      setAddedFriends(friendIds);
-    } catch (error) {
-      console.error('친구 목록 로드 실패:', error);
-    }
-  };
-
-  // 컴포넌트 마운트 시 데이터 로드
-  useEffect(() => {
-    if (!showSearchPage) {
-      loadUsers();
-      loadFriends();
-    }
-  }, [currentUserId, showSearchPage]);
   
   // 친구 목록 데이터 생성 - 실제 추가된 친구들 사용
   let friendsListRaw = [];

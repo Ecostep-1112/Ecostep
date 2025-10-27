@@ -2,7 +2,7 @@ import React from 'react';
 
 const DecorationIcons = {
   // 브론즈 랭크 장식품
-  decoration_01: ({ size = 35 }) => (
+  해초: ({ size = 35 }) => (
     <svg width={size} height={size} viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <filter id="seaweed-shadow" x="-50%" y="-50%" width="200%" height="200%">
@@ -269,7 +269,7 @@ const DecorationIcons = {
     </svg>
   ),
 
-  decoration_02: ({ size = 35 }) => (
+  용암석: ({ size = 35 }) => (
     <svg width={size} height={size} viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <filter id="lava-shadow" x="-50%" y="-50%" width="200%" height="200%">
@@ -848,7 +848,7 @@ const DecorationIcons = {
   ),
 
   // 실버 랭크 장식품
-  decoration_04: ({ size = 35 }) => (
+  산호: ({ size = 35 }) => (
     <svg width={size} height={size} viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <filter id="coral-shadow" x="-50%" y="-50%" width="200%" height="200%">
@@ -2153,7 +2153,7 @@ const DecorationIcons = {
     </svg>
   ),
 
-  decoration_09: ({ size = 35 }) => (
+  해적선: ({ size = 35 }) => (
     <svg width={size} height={size} viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <filter id="ship-shadow" x="-50%" y="-50%" width="200%" height="200%">

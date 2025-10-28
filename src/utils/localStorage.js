@@ -1,4 +1,5 @@
 // 로컬 스토리지 유틸리티 함수들
+import { defaultDailyChallenges, defaultZeroItems } from '../data/defaultChallenges';
 
 /**
  * 로컬 스토리지에서 데이터를 가져오는 함수
@@ -79,6 +80,8 @@ const STORAGE_KEYS = {
   CUSTOM_CHALLENGES: 'ecostep_custom_challenges',
   CUSTOM_PLASTIC_ITEMS: 'ecostep_custom_plastic_items',
   SELECTED_CHALLENGE: 'ecostep_selected_challenge',
+  CUSTOM_DAILY_CHALLENGES: 'ecostep_custom_daily_challenges', // 유저가 추가한 데일리 챌린지
+  CUSTOM_ZERO_ITEMS: 'ecostep_custom_zero_items', // 유저가 추가한 제로 챌린지 아이템
 
   // 어항 설정 관련
   AQUARIUM_SETTINGS: 'ecostep_aquarium_settings',
@@ -175,4 +178,86 @@ export const appSettingsStorage = {
 export const selectedChallengeStorage = {
   get: () => getLocalStorage(STORAGE_KEYS.SELECTED_CHALLENGE, '플라스틱 빨대 안쓰기'),
   set: (challenge) => setLocalStorage(STORAGE_KEYS.SELECTED_CHALLENGE, challenge)
+};
+
+/**
+ * 데일리 챌린지 목록 관리 (기본 + 커스텀)
+ * 기본 제공 챌린지 + 유저가 추가한 커스텀 챌린지를 함께 반환
+ */
+export const dailyChallengeListStorage = {
+  // 모든 챌린지 가져오기 (기본 + 커스텀)
+  getAll: () => {
+    const customChallenges = getLocalStorage(STORAGE_KEYS.CUSTOM_DAILY_CHALLENGES, []);
+    return [...defaultDailyChallenges, ...customChallenges];
+  },
+
+  // 커스텀 챌린지만 가져오기
+  getCustom: () => getLocalStorage(STORAGE_KEYS.CUSTOM_DAILY_CHALLENGES, []),
+
+  // 커스텀 챌린지 추가
+  addCustom: (challenge) => {
+    const customChallenges = getLocalStorage(STORAGE_KEYS.CUSTOM_DAILY_CHALLENGES, []);
+    const newId = Date.now(); // 유니크 ID 생성
+    const newChallenge = { ...challenge, id: newId, isCustom: true };
+    const updated = [...customChallenges, newChallenge];
+    setLocalStorage(STORAGE_KEYS.CUSTOM_DAILY_CHALLENGES, updated);
+    return newChallenge;
+  },
+
+  // 커스텀 챌린지 삭제
+  removeCustom: (id) => {
+    const customChallenges = getLocalStorage(STORAGE_KEYS.CUSTOM_DAILY_CHALLENGES, []);
+    const updated = customChallenges.filter(c => c.id !== id);
+    return setLocalStorage(STORAGE_KEYS.CUSTOM_DAILY_CHALLENGES, updated);
+  },
+
+  // 커스텀 챌린지 수정
+  updateCustom: (id, updates) => {
+    const customChallenges = getLocalStorage(STORAGE_KEYS.CUSTOM_DAILY_CHALLENGES, []);
+    const updated = customChallenges.map(c =>
+      c.id === id ? { ...c, ...updates } : c
+    );
+    return setLocalStorage(STORAGE_KEYS.CUSTOM_DAILY_CHALLENGES, updated);
+  }
+};
+
+/**
+ * 제로 챌린지 아이템 목록 관리 (기본 + 커스텀)
+ * 기본 제공 아이템 + 유저가 추가한 커스텀 아이템을 함께 반환
+ */
+export const zeroItemListStorage = {
+  // 모든 아이템 가져오기 (기본 + 커스텀)
+  getAll: () => {
+    const customItems = getLocalStorage(STORAGE_KEYS.CUSTOM_ZERO_ITEMS, []);
+    return [...defaultZeroItems, ...customItems];
+  },
+
+  // 커스텀 아이템만 가져오기
+  getCustom: () => getLocalStorage(STORAGE_KEYS.CUSTOM_ZERO_ITEMS, []),
+
+  // 커스텀 아이템 추가
+  addCustom: (item) => {
+    const customItems = getLocalStorage(STORAGE_KEYS.CUSTOM_ZERO_ITEMS, []);
+    const newId = Date.now(); // 유니크 ID 생성
+    const newItem = { ...item, id: newId, isCustom: true };
+    const updated = [...customItems, newItem];
+    setLocalStorage(STORAGE_KEYS.CUSTOM_ZERO_ITEMS, updated);
+    return newItem;
+  },
+
+  // 커스텀 아이템 삭제
+  removeCustom: (id) => {
+    const customItems = getLocalStorage(STORAGE_KEYS.CUSTOM_ZERO_ITEMS, []);
+    const updated = customItems.filter(item => item.id !== id);
+    return setLocalStorage(STORAGE_KEYS.CUSTOM_ZERO_ITEMS, updated);
+  },
+
+  // 커스텀 아이템 수정
+  updateCustom: (id, updates) => {
+    const customItems = getLocalStorage(STORAGE_KEYS.CUSTOM_ZERO_ITEMS, []);
+    const updated = customItems.map(item =>
+      item.id === id ? { ...item, ...updates } : item
+    );
+    return setLocalStorage(STORAGE_KEYS.CUSTOM_ZERO_ITEMS, updated);
+  }
 };

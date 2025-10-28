@@ -940,8 +940,8 @@ const EcostepAppContent = () => {
                 isActive={activeTab === 'reward'}
               />}
               {activeTab === 'community' && !showFriendsList && !showGlobalList && <CommunityPage isDarkMode={isDarkMode} onShowFriendsList={() => setShowFriendsList(true)} onShowGlobalList={() => setShowGlobalList(true)} showToast={showToast} userRanking={rankTheme} totalPlasticSaved={testPlasticSaved > 0 ? testPlasticSaved : totalPlasticSaved} currentUserId={profileData.userId} currentUserName={profileData.name} />}
-              {activeTab === 'community' && showFriendsList && <FriendsList isDarkMode={isDarkMode} onBack={() => setShowFriendsList(false)} isGlobalRanking={false} totalPlasticSaved={testPlasticSaved > 0 ? testPlasticSaved : totalPlasticSaved} />}
-              {activeTab === 'community' && showGlobalList && <FriendsList isDarkMode={isDarkMode} onBack={() => setShowGlobalList(false)} isGlobalRanking={true} totalPlasticSaved={testPlasticSaved > 0 ? testPlasticSaved : totalPlasticSaved} />}
+              {activeTab === 'community' && showFriendsList && <FriendsList isDarkMode={isDarkMode} onBack={() => setShowFriendsList(false)} isGlobalRanking={false} totalPlasticSaved={testPlasticSaved > 0 ? testPlasticSaved : totalPlasticSaved} currentUserId={profileData.userId} currentUserName={profileData.name} />}
+              {activeTab === 'community' && showGlobalList && <FriendsList isDarkMode={isDarkMode} onBack={() => setShowGlobalList(false)} isGlobalRanking={true} totalPlasticSaved={testPlasticSaved > 0 ? testPlasticSaved : totalPlasticSaved} currentUserId={profileData.userId} currentUserName={profileData.name} />}
               {activeTab === 'more' && !showChatBot && <MorePage isDarkMode={isDarkMode} userPoints={points} setUserPoints={setPoints} onShowChatBot={() => setShowChatBot(true)} earnPoints={earnPoints} rankTheme={rankTheme} showToast={showToast} />}
               {activeTab === 'more' && showChatBot && <ChatBot isDarkMode={isDarkMode} onBack={() => setShowChatBot(false)} />}
             </>

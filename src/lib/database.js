@@ -1,4 +1,5 @@
 import { supabase } from './supabase';
+import { dailyChallengeListStorage, zeroItemListStorage } from '../utils/localStorage';
 
 // 사용자 프로필 생성 또는 업데이트 (user_info 테이블 사용)
 export const upsertUserProfile = async (userId, profileData) => {
@@ -122,18 +123,36 @@ export const getUserStats = async (userId) => {
 
 // ======================== 데일리 챌린지 관련 함수 ========================
 
-// 데일리 챌린지 리스트 가져오기
+// 데일리 챌린지 리스트 가져오기 (localStorage 기반)
+// 기본 제공 챌린지 + 유저 커스텀 챌린지를 함께 반환
 export const getDailyChallengeList = async () => {
   try {
-    const { data, error } = await supabase
-      .from('daily_chal_list')
-      .select('*')
-      .order('id', { ascending: true });
-
-    if (error) throw error;
+    const data = dailyChallengeListStorage.getAll();
     return { data, error: null };
   } catch (error) {
     console.error('데일리 챌린지 리스트 가져오기 에러:', error);
+    return { data: null, error };
+  }
+};
+
+// 커스텀 데일리 챌린지 추가
+export const addCustomDailyChallenge = (challenge) => {
+  try {
+    const newChallenge = dailyChallengeListStorage.addCustom(challenge);
+    return { data: newChallenge, error: null };
+  } catch (error) {
+    console.error('커스텀 챌린지 추가 에러:', error);
+    return { data: null, error };
+  }
+};
+
+// 커스텀 데일리 챌린지 삭제
+export const removeCustomDailyChallenge = (id) => {
+  try {
+    const success = dailyChallengeListStorage.removeCustom(id);
+    return { data: success, error: null };
+  } catch (error) {
+    console.error('커스텀 챌린지 삭제 에러:', error);
     return { data: null, error };
   }
 };
@@ -179,18 +198,36 @@ export const getDailyChallengeData = async (userId) => {
 
 // ======================== 제로 챌린지 관련 함수 ========================
 
-// 제로 챌린지 아이템 가져오기
+// 제로 챌린지 아이템 가져오기 (localStorage 기반)
+// 기본 제공 아이템 + 유저 커스텀 아이템을 함께 반환
 export const getZeroChallengeItems = async () => {
   try {
-    const { data, error } = await supabase
-      .from('zero_chal_item')
-      .select('*')
-      .order('id', { ascending: true });
-
-    if (error) throw error;
+    const data = zeroItemListStorage.getAll();
     return { data, error: null };
   } catch (error) {
     console.error('제로 챌린지 아이템 가져오기 에러:', error);
+    return { data: null, error };
+  }
+};
+
+// 커스텀 제로 챌린지 아이템 추가
+export const addCustomZeroItem = (item) => {
+  try {
+    const newItem = zeroItemListStorage.addCustom(item);
+    return { data: newItem, error: null };
+  } catch (error) {
+    console.error('커스텀 아이템 추가 에러:', error);
+    return { data: null, error };
+  }
+};
+
+// 커스텀 제로 챌린지 아이템 삭제
+export const removeCustomZeroItem = (id) => {
+  try {
+    const success = zeroItemListStorage.removeCustom(id);
+    return { data: success, error: null };
+  } catch (error) {
+    console.error('커스텀 아이템 삭제 에러:', error);
     return { data: null, error };
   }
 };

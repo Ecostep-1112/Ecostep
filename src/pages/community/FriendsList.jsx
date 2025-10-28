@@ -1,46 +1,13 @@
 import React, { useState } from 'react';
 import { ChevronRight, Search } from 'lucide-react';
 import { BronzeIcon, SilverIcon, GoldIcon, PlatinumIcon } from '../../components/RankIcons';
+import { useData } from '../../services/DataContext';
 
-const FriendsList = ({ isDarkMode, onBack, isGlobalRanking = false, totalPlasticSaved = 0 }) => {
+const FriendsList = ({ isDarkMode, onBack, isGlobalRanking = false, totalPlasticSaved = 0, currentUserId = '', currentUserName = '' }) => {
   const [searchQuery, setSearchQuery] = useState('');
-  
-  // localStorage에서 추가된 친구 목록 가져오기
-  const addedFriends = JSON.parse(localStorage.getItem('addedFriends') || '[]');
-  
-  // 프로필 데이터 가져오기
-  const profileData = JSON.parse(localStorage.getItem('profileData') || '{}');
-  const currentUserId = profileData.userId || '';
-  const currentUserName = profileData.name || '';
-  
-  // 전체 사용자 데이터베이스 (SearchFriends와 동일)
-  const getAllUsers = () => {
-    // localStorage에서 프로필 이미지 가져오기
-    const profileImage = localStorage.getItem('profileImage');
-    
-    const baseUsers = [
-      { id: 'songil_eco', name: '송일', profileImage: null, plasticSaved: 15500 },
-      { id: 'wonhee_nature', name: '원희', profileImage: null, plasticSaved: 27000 },
-    ];
-    
-    // 현재 사용자가 프로필에 등록되어 있으면 데이터베이스에 추가
-    if (currentUserId && currentUserName) {
-      // 이미 존재하는 사용자인지 확인
-      const existingUser = baseUsers.find(u => u.id === currentUserId);
-      if (!existingUser) {
-        baseUsers.unshift({ 
-          id: currentUserId, 
-          name: currentUserName, 
-          profileImage: profileImage, 
-          plasticSaved: totalPlasticSaved || 15500 
-        });
-      }
-    }
-    
-    return baseUsers;
-  };
-  
-  const allUsers = getAllUsers();
+
+  // 전역 데이터 컨텍스트에서 데이터 가져오기
+  const { allUsers, friendsList: friendsData } = useData();
   
   // 나의 실제 플라스틱 절약량 반영
   const getDisplayScore = (grams) => {
@@ -50,81 +17,57 @@ const FriendsList = ({ isDarkMode, onBack, isGlobalRanking = false, totalPlastic
       return `${(grams / 1000).toFixed(1)}kg`;
     }
   };
-  
+
   const myScore = getDisplayScore(totalPlasticSaved);
-  
-  // 전체 랭킹 데이터 생성 (플라스틱 절약량 포함)
-  let globalRankingDataRaw = [
-    { name: 'PlasticZero', id: 'plastic_zero', score: '45.2kg', grams: 45200 },
-    { name: 'EcoMaster', id: 'eco_master', score: '42.1kg', grams: 42100 },
-    { name: 'GreenWarrior', id: 'green_warrior', score: '38.9kg', grams: 38900 },
-    { name: '나', id: currentUserId, score: myScore, grams: totalPlasticSaved },
-  ];
-  
-  // 더 많은 사용자 추가
-  for (let i = 4; i <= 200; i++) {
-    const grams = Math.max(500, 50000 - i * 200); // 50kg부터 점진적으로 감소
+
+  // 전체 랭킹 데이터 - 데이터베이스에서 가져온 상위 50명 사용
+  let globalRankingDataRaw = allUsers.map(user => ({
+    name: user.name,
+    id: user.id,
+    score: getDisplayScore(user.plasticSaved),
+    grams: user.plasticSaved
+  }));
+
+  // 현재 사용자가 상위 50명에 없다면 추가
+  const currentUserInList = globalRankingDataRaw.find(u => u.id === currentUserId);
+  if (!currentUserInList && currentUserId) {
     globalRankingDataRaw.push({
-      name: `User${i}`,
-      id: `user_${i}`,
-      score: getDisplayScore(grams),
-      grams: grams
+      name: currentUserName || '나',
+      id: currentUserId,
+      score: myScore,
+      grams: totalPlasticSaved
     });
+    // 다시 정렬
+    globalRankingDataRaw.sort((a, b) => b.grams - a.grams);
   }
-  
-  // 플라스틱 절약량으로 정렬 (내림차순)
-  globalRankingDataRaw.sort((a, b) => b.grams - a.grams);
-  
+
   // 정렬 후 순위 부여
   const globalRankingData = globalRankingDataRaw.map((user, index) => ({
     ...user,
     rank: index + 1
   }));
-  
-  // 친구 목록 데이터 생성 - 실제 추가된 친구들 사용
-  let friendsRankingDataRaw = [];
-  
-  // 추가된 친구들의 데이터 가져오기
-  addedFriends.forEach(friendId => {
-    const friend = allUsers.find(u => u.id === friendId);
-    if (friend) {
-      friendsRankingDataRaw.push({
-        name: friend.name,
-        id: friend.id,
-        score: getDisplayScore(friend.plasticSaved),
-        grams: friend.plasticSaved
-      });
-    }
-  });
-  
-  // 나 자신 추가
-  friendsRankingDataRaw.push({
-    name: '나',
-    id: currentUserId,
-    score: myScore,
-    grams: totalPlasticSaved
-  });
-  
-  // 친구가 없거나 적을 경우 기본 친구 데이터 추가
-  if (friendsRankingDataRaw.length < 10) {
-    const defaultFriends = [
-      { name: '일이', id: 'eco_friend1', score: '27.0kg', grams: 27000 },
-      { name: '이이', id: 'eco_friend2', score: '24.0kg', grams: 24000 },
-      { name: '삼이', id: 'eco_friend3', score: '21.0kg', grams: 21000 },
-      { name: '사이', id: 'eco_friend4', score: '18.0kg', grams: 18000 },
-    ];
-    
-    defaultFriends.forEach(friend => {
-      // 중복 체크
-      if (!friendsRankingDataRaw.some(f => f.name === friend.name)) {
-        friendsRankingDataRaw.push(friend);
-      }
+
+  // 친구 목록 데이터 - 데이터베이스에서 가져온 친구들 사용
+  let friendsRankingDataRaw = friendsData.map(friend => ({
+    name: friend.name,
+    id: friend.id,
+    score: getDisplayScore(friend.plasticSaved),
+    grams: friend.plasticSaved
+  }));
+
+  // 나 자신 추가 (친구 목록에 없는 경우)
+  const meInFriends = friendsRankingDataRaw.find(f => f.id === currentUserId);
+  if (!meInFriends && currentUserId) {
+    friendsRankingDataRaw.push({
+      name: currentUserName || '나',
+      id: currentUserId,
+      score: myScore,
+      grams: totalPlasticSaved
     });
+    // 다시 정렬
+    friendsRankingDataRaw.sort((a, b) => b.grams - a.grams);
   }
-  
-  // 플라스틱 절약량으로 정렬 (내림차순)
-  friendsRankingDataRaw.sort((a, b) => b.grams - a.grams);
-  
+
   // 정렬 후 순위 부여
   const friendsRankingData = friendsRankingDataRaw.map((friend, index) => ({
     ...friend,
@@ -134,26 +77,26 @@ const FriendsList = ({ isDarkMode, onBack, isGlobalRanking = false, totalPlastic
   // 친구 목록에서는 최대 99명 + 나의 순위만 표시
   let displayFriends;
   if (!isGlobalRanking) {
-    const myRankInFriends = friendsRankingData.findIndex(f => f.name === '나') + 1;
-    
+    const myRankInFriends = friendsRankingData.findIndex(f => f.id === currentUserId) + 1;
+
     if (myRankInFriends <= 99) {
       // 내가 99등 이내면 상위 99명만 표시
       displayFriends = friendsRankingData.slice(0, 99);
     } else {
       // 내가 100등 이상이면 상위 99명 + 나 표시
       const top99 = friendsRankingData.slice(0, 99);
-      const myData = friendsRankingData.find(f => f.name === '나');
+      const myData = friendsRankingData.find(f => f.id === currentUserId);
       displayFriends = [...top99, myData].filter(Boolean);
     }
   } else {
     // 전체 랭킹도 동일하게 처리
-    const myRankInGlobal = globalRankingData.findIndex(f => f.name === '나') + 1;
-    
+    const myRankInGlobal = globalRankingData.findIndex(f => f.id === currentUserId) + 1;
+
     if (myRankInGlobal <= 99) {
       displayFriends = globalRankingData.slice(0, 99);
     } else {
       const top99 = globalRankingData.slice(0, 99);
-      const myData = globalRankingData.find(f => f.name === '나');
+      const myData = globalRankingData.find(f => f.id === currentUserId);
       displayFriends = [...top99, myData].filter(Boolean);
     }
   }
@@ -212,7 +155,7 @@ const FriendsList = ({ isDarkMode, onBack, isGlobalRanking = false, totalPlastic
             {filteredFriends.map((friend, index) => {
               // 1등: 플래티넘, 2등: 골드, 3등: 실버
               const rankColor = friend.rank === 1 ? '#c084fc' : friend.rank === 2 ? '#facc15' : friend.rank === 3 ? '#14b8a6' : '';
-              const isMe = friend.name === '나';
+              const isMe = friend.id === currentUserId;
               
               return (
                 <div key={friend.rank}>

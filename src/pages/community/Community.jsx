@@ -7,7 +7,7 @@ import { useData } from '../../services/DataContext';
 
 const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast, userRanking, totalPlasticSaved = 0, currentUserId = '', currentUserName = '' }) => {
   // 전역 데이터 컨텍스트에서 데이터 가져오기
-  const { allUsers, friendsList: addedFriends } = useData();
+  const { allUsers, friendsList: friendsData } = useData();
 
   const [showSearchPage, setShowSearchPage] = useState(false);
 
@@ -16,7 +16,7 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
   const borderColor = isDarkMode ? 'border-gray-700' : 'border-gray-200';
   const cardBg = isDarkMode ? 'bg-gray-800' : 'bg-white';
   const inputBg = isDarkMode ? 'bg-gray-700' : 'bg-gray-50';
-  
+
   // 나의 실제 플라스틱 절약량 (g 단위를 kg 또는 g으로 표시)
   const getDisplayScore = (grams) => {
     if (grams < 1000) {
@@ -25,104 +25,65 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
       return `${(grams / 1000).toFixed(1)}kg`;
     }
   };
-  
+
   const myScore = getDisplayScore(totalPlasticSaved);
-  
-  // 전체 랭킹 데이터 생성 (FriendsList와 동일한 로직)
-  let globalRankingDataRaw = [
-    { name: 'PlasticZero', id: 'plastic_zero', score: '45.2kg', grams: 45200 },
-    { name: 'EcoMaster', id: 'eco_master', score: '42.1kg', grams: 42100 },
-    { name: 'GreenWarrior', id: 'green_warrior', score: '38.9kg', grams: 38900 },
-    { name: '나', id: currentUserId, score: myScore, grams: totalPlasticSaved },
-  ];
-  
-  // 더 많은 사용자 추가 (전체 200명)
-  for (let i = 4; i <= 200; i++) {
-    const grams = Math.max(500, 50000 - i * 200);
+
+  // 전체 랭킹 데이터 - 데이터베이스에서 가져온 상위 50명 사용
+  let globalRankingDataRaw = allUsers.map(user => ({
+    name: user.name,
+    id: user.id,
+    score: getDisplayScore(user.plasticSaved),
+    grams: user.plasticSaved
+  }));
+
+  // 현재 사용자가 상위 50명에 없다면 추가
+  const currentUserInList = globalRankingDataRaw.find(u => u.id === currentUserId);
+  if (!currentUserInList && currentUserId) {
     globalRankingDataRaw.push({
-      name: `User${i}`,
-      id: `user_${i}`,
-      score: getDisplayScore(grams),
-      grams: grams
+      name: '나',
+      id: currentUserId,
+      score: myScore,
+      grams: totalPlasticSaved
     });
+    // 다시 정렬
+    globalRankingDataRaw.sort((a, b) => b.grams - a.grams);
   }
-  
-  // 플라스틱 절약량으로 정렬
-  globalRankingDataRaw.sort((a, b) => b.grams - a.grams);
-  
+
   // 나의 전체 순위 찾기
-  const myGlobalRank = globalRankingDataRaw.findIndex(u => u.name === '나') + 1;
+  const myGlobalRank = globalRankingDataRaw.findIndex(u => u.id === currentUserId) + 1;
   const totalUsers = globalRankingDataRaw.length;
-  const topPercentage = Math.round((myGlobalRank / totalUsers) * 100);
-  
-  // kg로 변환하는 함수 (정렬을 위해 숫자로 반환)
-  const parseScoreToGrams = (score) => {
-    if (typeof score === 'string') {
-      if (score.includes('kg')) {
-        return parseFloat(score) * 1000;
-      } else if (score.includes('g')) {
-        return parseFloat(score);
-      }
-    }
-    return 0;
-  };
-  
-  // 친구 목록 데이터 생성 - 실제 추가된 친구들 사용
-  let friendsListRaw = [];
-  
-  // 추가된 친구들의 데이터 가져오기
-  addedFriends.forEach(friendId => {
-    const friend = allUsers.find(u => u.id === friendId);
-    if (friend) {
-      friendsListRaw.push({
-        name: friend.name,
-        id: friend.id,
-        score: getDisplayScore(friend.plasticSaved),
-        grams: friend.plasticSaved
-      });
-    }
-  });
-  
-  // 나 자신 추가
-  friendsListRaw.push({
-    name: '나',
-    id: currentUserId,
-    score: myScore,
-    grams: totalPlasticSaved
-  });
-  
-  // 친구가 없거나 적을 경우 기본 친구 데이터 추가
-  if (friendsListRaw.length < 5) {
-    const defaultFriends = [
-      { name: '일이', id: 'eco_friend1', score: '27.0kg', grams: 27000 },
-      { name: '이이', id: 'eco_friend2', score: '24.0kg', grams: 24000 },
-      { name: '삼이', id: 'eco_friend3', score: '21.0kg', grams: 21000 },
-      { name: '사이', id: 'eco_friend4', score: '18.0kg', grams: 18000 },
-    ];
-    
-    defaultFriends.forEach(friend => {
-      // 중복 체크
-      if (!friendsListRaw.some(f => f.name === friend.name)) {
-        friendsListRaw.push(friend);
-      }
+  const topPercentage = myGlobalRank > 0 ? Math.round((myGlobalRank / totalUsers) * 100) : 0;
+
+  // 친구 목록 데이터 - 데이터베이스에서 가져온 친구들 사용
+  let friendsListRaw = friendsData.map(friend => ({
+    name: friend.name,
+    id: friend.id,
+    score: getDisplayScore(friend.plasticSaved),
+    grams: friend.plasticSaved
+  }));
+
+  // 나 자신 추가 (친구 목록에 없는 경우)
+  const meInFriends = friendsListRaw.find(f => f.id === currentUserId);
+  if (!meInFriends && currentUserId) {
+    friendsListRaw.push({
+      name: '나',
+      id: currentUserId,
+      score: myScore,
+      grams: totalPlasticSaved
     });
+    // 다시 정렬
+    friendsListRaw.sort((a, b) => b.grams - a.grams);
   }
-  
-  // 점수로 정렬 (내림차순) - 플라스틱 절약량이 많을수록 상위
-  friendsListRaw.sort((a, b) => {
-    // grams 값으로 비교 (큰 값이 먼저 오도록)
-    return b.grams - a.grams;
-  });
-  
+
   // 랭킹 부여
   const friendsList = friendsListRaw.map((friend, index) => ({
     ...friend,
     rank: index + 1
   }));
-  
+
   // 나의 친구 중 랭킹 찾기
-  const myRank = friendsList.findIndex(f => f.name === '나') + 1;
-  const isInTop3 = myRank <= 3;
+  const myRank = friendsList.findIndex(f => f.id === currentUserId) + 1;
+  const isInTop3 = myRank <= 3 && myRank > 0;
 
   // Initialize Kakao SDK when component mounts
   useEffect(() => {

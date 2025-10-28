@@ -45,12 +45,14 @@ export const DataProvider = ({ children }) => {
   // 에러 상태
   const [error, setError] = useState(null);
 
-  // 전체 사용자 목록 로드
+  // 전체 사용자 목록 로드 (상위 50명, amount 기준 내림차순)
   const loadUsers = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from('user_info')
-        .select('user_id, name, points_total');
+        .select('user_id, name, amount')
+        .order('amount', { ascending: false })
+        .limit(50);
 
       if (error) throw error;
 
@@ -58,24 +60,20 @@ export const DataProvider = ({ children }) => {
         id: user.user_id,
         name: user.name,
         profileImage: null,
-        plasticSaved: user.points_total || 0
+        plasticSaved: user.amount || 0
       }));
 
       setAllUsers(formattedUsers);
       return formattedUsers;
     } catch (error) {
       console.error('사용자 목록 로드 실패:', error);
-      // 에러 발생 시 기본 데이터 사용
-      const defaultUsers = [
-        { id: 'songil_eco', name: '송일', profileImage: null, plasticSaved: 15500 },
-        { id: 'wonhee_nature', name: '원희', profileImage: null, plasticSaved: 27000 },
-      ];
-      setAllUsers(defaultUsers);
-      return defaultUsers;
+      // 에러 발생 시 빈 배열 반환
+      setAllUsers([]);
+      return [];
     }
   }, []);
 
-  // 친구 목록 로드
+  // 친구 목록 로드 (양방향 확인 및 user_info 조인하여 정보 가져오기)
   const loadFriends = useCallback(async (userId) => {
     if (!userId) {
       setFriendsList([]);
@@ -83,17 +81,44 @@ export const DataProvider = ({ children }) => {
     }
 
     try {
-      const { data, error } = await supabase
+      // user_id가 현재 사용자인 친구 관계
+      const { data: friendsAsUser, error: error1 } = await supabase
         .from('user_friend')
         .select('friend_id')
-        .eq('user_id', userId)
-        .eq('status', 'accepted');
+        .eq('user_id', userId);
 
-      if (error) throw error;
+      // friend_id가 현재 사용자인 친구 관계
+      const { data: friendsAsFriend, error: error2 } = await supabase
+        .from('user_friend')
+        .select('user_id')
+        .eq('friend_id', userId);
 
-      const friendIds = data.map(f => f.friend_id);
-      setFriendsList(friendIds);
-      return friendIds;
+      if (error1 || error2) throw error1 || error2;
+
+      // 친구 ID 목록 합치기 (중복 제거)
+      const friendIds = new Set([
+        ...(friendsAsUser || []).map(f => f.friend_id),
+        ...(friendsAsFriend || []).map(f => f.user_id)
+      ]);
+
+      // 친구들의 정보를 user_info에서 가져오기 (amount 기준 내림차순)
+      const { data: friendsInfo, error: error3 } = await supabase
+        .from('user_info')
+        .select('user_id, name, amount')
+        .in('user_id', Array.from(friendIds))
+        .order('amount', { ascending: false });
+
+      if (error3) throw error3;
+
+      const formattedFriends = (friendsInfo || []).map(friend => ({
+        id: friend.user_id,
+        name: friend.name,
+        profileImage: null,
+        plasticSaved: friend.amount || 0
+      }));
+
+      setFriendsList(formattedFriends);
+      return formattedFriends;
     } catch (error) {
       console.error('친구 목록 로드 실패:', error);
       setFriendsList([]);

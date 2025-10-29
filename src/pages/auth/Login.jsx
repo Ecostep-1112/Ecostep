@@ -174,12 +174,12 @@ function Login({ onLogin }) {
             ))}
             
             {/* 지구본 - 상단과 구글 버튼 사이 중앙 */}
-            <div className="absolute top-[35%] left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
-              <EarthStructure size={180} angle={108} />
+            <div className="absolute top-[33%] left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
+              <EarthStructure size={250} angle={108} />
             </div>
             
             {/* 하단 영역 - 로그인 버튼들 */}
-            <div className="mt-auto w-full">
+            <div className="mt-[65vh] w-full">
               {/* 에러 메시지 */}
               {error && (
                 <div className="w-full mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg text-sm">
@@ -192,7 +192,7 @@ function Login({ onLogin }) {
               <button
                 onClick={() => handleLogin('Google')}
                 disabled={isLoading}
-                className="w-[237px] flex items-center justify-between bg-white/90 border border-gray-200 rounded-xl py-2 pl-[15px] pr-3 hover:bg-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-[260px] flex items-center justify-between bg-white/90 border border-gray-200 rounded-xl py-2 pl-[15px] pr-3 hover:bg-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <div className="flex items-center">
                   <FcGoogle className="text-[18px] flex-shrink-0" />
@@ -207,7 +207,7 @@ function Login({ onLogin }) {
               <button
                 onClick={() => handleLogin('Kakao')}
                 disabled={isLoading}
-                className="w-[237px] flex items-center justify-between bg-[#FEE500] rounded-xl py-2 pl-[15px] pr-3 hover:bg-[#FDD835] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-[260px] flex items-center justify-between bg-[#FEE500] rounded-xl py-2 pl-[15px] pr-3 hover:bg-[#FDD835] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <div className="flex items-center">
                   <RiKakaoTalkFill className="text-[18px] text-gray-800 flex-shrink-0" />
@@ -222,7 +222,7 @@ function Login({ onLogin }) {
               <button
                 onClick={() => handleLogin('Apple')}
                 disabled={isLoading}
-                className="w-[237px] flex items-center justify-between bg-black rounded-xl py-2 pl-[15px] pr-3 hover:bg-gray-900 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-[260px] flex items-center justify-between bg-black rounded-xl py-2 pl-[15px] pr-3 hover:bg-gray-900 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <div className="flex items-center">
                   <FaApple className="text-[18px] text-white flex-shrink-0" />

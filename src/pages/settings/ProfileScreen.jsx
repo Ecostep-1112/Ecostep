@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { ChevronRight, ChevronLeft, X, Camera, Plus, AlertTriangle } from 'lucide-react';
-import { getUserProfile, updateUserId, deleteAccount } from '../../lib/auth';
+import { updateUserId, deleteAccount } from '../../lib/auth';
 import { supabase } from '../../lib/supabase';
 import Toast from '../../components/Toast';
 
@@ -20,38 +20,8 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
   const [editingField, setEditingField] = useState(null);
   const [isUpdating, setIsUpdating] = useState(false);
 
-  // 컴포넌트 마운트 시 프로필 데이터 로드
-  useEffect(() => {
-    loadUserProfile();
-  }, []);
-  
-  const loadUserProfile = async () => {
-    try {
-      const { profile, error } = await getUserProfile();
-      if (profile && !error) {
-        // localStorage에서 현재 값 확인
-        const savedData = localStorage.getItem('profileData');
-        const parsedData = savedData ? JSON.parse(savedData) : {};
-
-        // 데이터베이스에서 가져온 user_id를 userId로 설정
-        setProfileData(prev => {
-          const newData = {
-            ...prev,
-            userId: parsedData.userId || prev.userId || profile.user_id || '',
-            name: parsedData.name || prev.name || '',
-            email: profile.email || prev.email || '',
-            birthDate: parsedData.birthDate || prev.birthDate || '',
-            phone: parsedData.phone || prev.phone || ''
-          };
-          // localStorage에 저장
-          localStorage.setItem('profileData', JSON.stringify(newData));
-          return newData;
-        });
-      }
-    } catch (err) {
-      console.error('프로필 로드 에러:', err);
-    }
-  };
+  // 프로필 데이터는 부모 컴포넌트(App.jsx)에서 이미 Supabase로부터 로드되어 전달됨
+  // 여기서 다시 로드하면 덮어쓰기 문제가 발생하므로 제거
   
   // 프로필 사진 상태 관리 - localStorage에서 초기값 로드
   const [profileImage, setProfileImage] = useState(() => {

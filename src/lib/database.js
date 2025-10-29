@@ -30,7 +30,7 @@ export const getUserProfile = async (userId) => {
       .from('user_info')
       .select('*')
       .eq('user_id', userId)
-      .single();
+      .maybeSingle(); // single() 대신 maybeSingle() 사용 - 데이터 없어도 에러 안남
 
     if (error) throw error;
     return { data, error: null };
@@ -73,7 +73,7 @@ export const getUserStats = async (userId) => {
       .from('user_info')
       .select('*')
       .eq('user_id', userId)
-      .single();
+      .maybeSingle(); // single() 대신 maybeSingle() 사용 - 데이터 없어도 에러 안남
 
     if (error) throw error;
     return { data, error: null };
@@ -365,7 +365,7 @@ export const getUserInfo = async (userId) => {
       .from('user_info')
       .select('*')
       .eq('user_id', userId)
-      .single();
+      .maybeSingle(); // single() 대신 maybeSingle() 사용 - 데이터 없어도 에러 안남
 
     if (error) throw error;
     return { data, error: null };

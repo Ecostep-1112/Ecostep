@@ -125,6 +125,16 @@ const EcostepAppContent = () => {
         setTotalEarnedPoints(data.points_total || 0);
         setUserRanking(data.rank || 'bronze');
         setPlasticGoal(data.amount || null);
+
+        // 프로필 데이터도 Supabase 데이터로 업데이트
+        setProfileData(prev => ({
+          ...prev,
+          name: data.name || prev.name,
+          email: data.email || prev.email,
+          phone: data.phone_num || prev.phone || '',
+          userId: data.user_id || prev.userId
+        }));
+
         console.log('Supabase에서 유저 정보 로드:', data);
         return data;
       }
@@ -338,34 +348,14 @@ const EcostepAppContent = () => {
         if (user) {
           setCurrentUser(user);
           setIsLoggedIn(true);
-          
+
           // 프로필 생성 또는 업데이트 (아이디가 없을 때만 새로 생성)
           const { profile } = await createOrUpdateUserProfile(user);
           console.log('App.jsx - 프로필 생성 결과:', profile);
-          
-          // 수파베이스 사용자 정보로 프로필 업데이트
-          // localStorage에서 최신 데이터 확인
-          const savedData = localStorage.getItem('profileData');
-          const currentData = savedData ? JSON.parse(savedData) : {};
 
-          setProfileData(prev => {
-            // localStorage의 userId를 우선적으로 사용
-            const finalUserId = currentData.userId || prev.userId || profile?.user_id || '';
-            console.log('App.jsx - finalUserId:', finalUserId, 'currentData.userId:', currentData.userId, 'prev.userId:', prev.userId, 'profile?.user_id:', profile?.user_id);
-
-            return {
-              ...prev,
-              email: user.email || prev.email,
-              name: user.user_metadata?.full_name || user.user_metadata?.name || currentData.name || prev.name,
-              userId: finalUserId,
-              birthDate: currentData.birthDate || prev.birthDate || '',
-              phone: currentData.phone || prev.phone || ''
-            };
-          });
-
-          // Supabase에서 유저 데이터 불러오기
+          // Supabase에서 유저 데이터 불러오기 (프로필 정보 포함)
           if (profile?.user_id) {
-            loadUserDataFromSupabase(profile.user_id);
+            await loadUserDataFromSupabase(profile.user_id);
             // 전역 데이터 프리로딩
             preloadAllData(profile.user_id);
           }
@@ -382,44 +372,22 @@ const EcostepAppContent = () => {
     // 인증 상태 변경 리스너 설정
     const { data: { subscription } } = onAuthStateChange((event, session) => {
       if (event === 'SIGNED_IN' && session?.user) {
+        console.log('인증 상태 변경: SIGNED_IN - checkUser에서 이미 처리했으므로 중복 호출 방지');
+        // checkUser()에서 이미 처리했으므로 여기서는 상태만 업데이트
         setCurrentUser(session.user);
         setIsLoggedIn(true);
-        
-        // 프로필 생성 또는 업데이트를 비동기로 처리
-        createOrUpdateUserProfile(session.user).then(({ profile }) => {
-          // 로그인 시 프로필 업데이트
-          // localStorage에서 최신 데이터 확인
-          const savedData = localStorage.getItem('profileData');
-          const currentData = savedData ? JSON.parse(savedData) : {};
-
-          setProfileData(prev => {
-            // localStorage의 userId를 우선적으로 사용
-            const finalUserId = currentData.userId || prev.userId || profile?.user_id || '';
-
-            return {
-              ...prev,
-              email: session.user.email || prev.email || '',
-              name: currentData.name || session.user.user_metadata?.full_name ||
-                     session.user.user_metadata?.name ||
-                     session.user.user_metadata?.nickname ||
-                     session.user.user_metadata?.kakao_account?.profile?.nickname ||
-                     prev.name || '사용자',
-              userId: finalUserId,
-              birthDate: currentData.birthDate || prev.birthDate || '',
-              phone: currentData.phone || prev.phone || ''
-            };
-          });
-
-          // 전역 데이터 프리로딩
-          if (profile?.user_id) {
-            preloadAllData(profile.user_id);
-          }
-        }).catch(error => {
-          console.error('프로필 생성 실패:', error);
-        });
       } else if (event === 'SIGNED_OUT') {
+        console.log('인증 상태 변경: SIGNED_OUT');
         setCurrentUser(null);
         setIsLoggedIn(false);
+        // 로그아웃 시 프로필 데이터 초기화
+        setProfileData({
+          name: '',
+          userId: '',
+          birthDate: '',
+          phone: '',
+          email: ''
+        });
       }
     });
     

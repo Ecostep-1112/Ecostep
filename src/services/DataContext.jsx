@@ -101,6 +101,12 @@ export const DataProvider = ({ children }) => {
         ...(friendsAsFriend || []).map(f => f.user_id)
       ]);
 
+      // 친구가 없으면 빈 배열 반환
+      if (friendIds.size === 0) {
+        setFriendsList([]);
+        return [];
+      }
+
       // 친구들의 정보를 user_info에서 가져오기 (amount 기준 내림차순)
       const { data: friendsInfo, error: error3 } = await supabase
         .from('user_info')

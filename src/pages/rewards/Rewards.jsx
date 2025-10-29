@@ -9,7 +9,6 @@ import PlatinumTank from '../../components/tanks/PlatinumTank';
 import { BronzeIcon, SilverIcon, GoldIcon, PlatinumIcon } from '../../components/RankIcons';
 import { getStoreFish, getStoreDecorations, getUserPurchasedItems, purchaseItem } from '../../lib/database';
 import { supabase } from '../../lib/supabase';
-import { useData } from '../../services/DataContext';
 
 const Rewards = ({
   isDarkMode,
@@ -32,14 +31,115 @@ const Rewards = ({
   spendPoints,
   isActive = true
 }) => {
-  // 전역 데이터 컨텍스트에서 데이터 가져오기
-  const { fishData, decorationsData } = useData();
-
   const bgColor = isDarkMode ? 'bg-gray-900' : 'bg-white';
   const textColor = isDarkMode ? 'text-white' : 'text-gray-900';
   const borderColor = isDarkMode ? 'border-gray-700' : 'border-gray-200';
   const cardBg = isDarkMode ? 'bg-gray-800' : 'bg-white';
   const inputBg = isDarkMode ? 'bg-gray-700' : 'bg-gray-50';
+
+  // Supabase에서 상점 아이템 불러오기
+  const [fishData, setFishData] = useState({
+    bronze: [],
+    silver: [],
+    gold: [],
+    platinum: []
+  });
+
+  const [decorationsData, setDecorationsData] = useState({
+    bronze: [],
+    silver: [],
+    gold: [],
+    platinum: []
+  });
+
+  // 상점 데이터 로드
+  useEffect(() => {
+    const loadStoreData = async () => {
+      try {
+        // 물고기 데이터 로드
+        const { data: fishList, error: fishError } = await getStoreFish();
+        if (!fishError && fishList) {
+          console.log('물고기 데이터:', fishList); // 디버깅용
+          console.log('물고기 item_id 목록:', fishList.map(f => f.item_id));
+          const fishByRank = {
+            bronze: [],
+            silver: [],
+            gold: [],
+            platinum: []
+          };
+          fishList.forEach(fish => {
+            const rankKey = fish.rank.toLowerCase(); // 대문자를 소문자로 변환
+            if (fishByRank[rankKey]) {
+              fishByRank[rankKey].push({
+                id: fish.item_id, // database ID
+                name: fish.item_name, // 아이콘 매칭용 이름
+                description: fish.item_name,
+                price: fish.price
+              });
+            }
+          });
+          setFishData(fishByRank);
+        }
+
+        // 장식품 데이터 로드
+        const { data: decoList, error: decoError } = await getStoreDecorations();
+        if (!decoError && decoList) {
+          console.log('장식품 데이터:', decoList); // 디버깅용
+          console.log('장식품 item_id 목록:', decoList.map(d => d.item_id));
+          const decoByRank = {
+            bronze: [],
+            silver: [],
+            gold: [],
+            platinum: []
+          };
+          decoList.forEach(deco => {
+            const rankKey = deco.rank.toLowerCase(); // 대문자를 소문자로 변환
+            if (decoByRank[rankKey]) {
+              decoByRank[rankKey].push({
+                id: deco.item_id, // database ID
+                name: deco.item_name, // 아이콘 매칭용 이름
+                description: deco.item_name,
+                price: deco.price
+              });
+            }
+          });
+          setDecorationsData(decoByRank);
+        }
+
+        // 사용자 구매 목록 로드
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          const { data: purchasedItems, error: purchaseError } = await getUserPurchasedItems(user.id);
+
+          if (!purchaseError && purchasedItems) {
+            const fishNames = [];
+            const decoNames = [];
+
+            purchasedItems.forEach(item => {
+              const itemId = item.item_id;
+
+              // item_id로 물고기인지 장식품인지 구분하고 item_name 찾기
+              const foundFish = fishList?.find(fish => fish.item_id === itemId);
+              const foundDeco = decoList?.find(deco => deco.item_id === itemId);
+
+              if (foundFish) {
+                fishNames.push(foundFish.item_name); // item_name으로 저장
+              } else if (foundDeco) {
+                decoNames.push(foundDeco.item_name); // item_name으로 저장
+              }
+            });
+
+            setPurchasedFish(fishNames);
+            setPurchasedDecorations(decoNames);
+          }
+        }
+      } catch (error) {
+        console.error('상점 데이터 로드 에러:', error);
+      }
+    };
+
+    loadStoreData();
+  }, []);
 
   // 랭크별 색상 정의 - 조건부 렌더링을 위한 함수
   const getRankGradient = (rank) => {
@@ -492,9 +592,9 @@ const Rewards = ({
                       {/* 물고기 SVG 아이콘 - 더 크게, 중앙 정렬 */}
                       <div className={`h-[42px] w-full flex items-center justify-center ${isLocked ? 'blur-sm' : ''}`}>
                         {!isLocked && (() => {
-                          const FishIcon = FishIcons[fish.id];  // item_id로 직접 접근
-                          // 특정 물고기는 더 크게 표시 (item_id 기준)
-                          const iconSize = ['fish_3', 'fish_4', 'fish_8'].includes(fish.id) ? 48 : 36;
+                          const FishIcon = FishIcons[fish.name];  // item_name으로 직접 접근
+                          // 특정 물고기는 더 크게 표시 (item_name 기준)
+                          const iconSize = ['네온테트라', '아피스토그라마', '킬리피쉬'].includes(fish.name) ? 48 : 36;
                           return FishIcon ? <FishIcon size={iconSize} isMoving={true} /> : null;
                         })()}
                       </div>
@@ -504,11 +604,6 @@ const Rewards = ({
                         {/* 물고기 이름 - 더 크게 */}
                         <p className={`text-[11px] leading-tight ${isLocked ? 'text-gray-400' : isPurchased ? 'text-green-600' : isDarkMode ? 'text-gray-300' : 'text-gray-700'} text-center font-medium`}>
                           {fish.name}
-                        </p>
-                        
-                        {/* 설명 - 더 크게 */}
-                        <p className={`text-[9px] ${isDarkMode ? 'text-gray-500' : 'text-gray-400'} mt-0.5 text-center leading-tight`}>
-                          {fish.description}
                         </p>
                       </div>
                       
@@ -614,7 +709,7 @@ const Rewards = ({
                       <div className={`w-full h-full flex flex-col items-center justify-between ${isLocked ? 'filter blur-[1px]' : ''}`}>
                         {/* 아이콘 - 고정 높이 영역 */}
                         <div className="h-[45px] w-full flex items-center justify-center">
-                          {!isLocked && DecorationIcons[deco.id] && React.createElement(DecorationIcons[deco.id])}
+                          {!isLocked && DecorationIcons[deco.name] && React.createElement(DecorationIcons[deco.name])}
                         </div>
                         
                         {/* 텍스트 영역 - 중앙 정렬 */}

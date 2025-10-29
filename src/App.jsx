@@ -930,7 +930,7 @@ const EcostepApp = () => {
               <div className="flex justify-around py-2" style={{
                 paddingLeft: 'env(safe-area-inset-left)',
                 paddingRight: 'env(safe-area-inset-right)',
-                paddingBottom: 'max(1rem, env(safe-area-inset-bottom))'
+                paddingBottom: 'calc(0.75rem + max(0.5rem, env(safe-area-inset-bottom)))'
               }}>
                 {[
                   { id: 'home', icon: Home, label: '홈' },

@@ -738,7 +738,7 @@ const EcostepApp = () => {
                 setShowNotifications(true);
                 setNotificationsList(prev => prev.map(n => ({ ...n, read: true })));
               }}>
-                <Bell className={`w-5 h-5 ${
+                <Bell className={`w-[19px] h-[19px] ${
                   notificationsList.some(n => !n.read)
                     ? 'text-purple-500'
                     : isDarkMode ? 'text-white' : 'text-gray-700'
@@ -757,7 +757,7 @@ const EcostepApp = () => {
                 setShowLocationSettings(false);
                 setShowSettings(true);
               }}>
-                <Settings className={`w-5 h-5 ${isDarkMode ? 'text-white' : 'text-gray-700'}`} />
+                <Settings className={`w-[19px] h-[19px] ${isDarkMode ? 'text-white' : 'text-gray-700'}`} />
               </button>
             </div>
             {/* 그라데이션 테두리 */}

@@ -50,7 +50,14 @@
       "Bash(gh api:*)",
       "Bash(cat:*)",
       "Read(//c/**)",
-      "Bash(start http://localhost:5175/)"
+      "Bash(start http://localhost:5175/)",
+      "Bash(timeout:*)",
+      "Bash(netstat:*)",
+      "Bash(findstr:*)",
+      "Bash(exit 0)",
+      "Bash(python fix_fonts.py:*)",
+      "Bash(for file in src/pages/rewards/Rewards.jsx src/pages/community/Community.jsx src/pages/community/RankingList.jsx src/pages/community/FriendsList.jsx src/pages/community/SearchFriends.jsx src/pages/more/More.jsx src/pages/more/ChatBot.jsx src/pages/settings/Settings.jsx src/pages/settings/SettingsScreen.jsx src/pages/settings/ProfileScreen.jsx src/pages/settings/NotificationsScreen.jsx)",
+      "Bash(done)"
     ],
     "deny": [],
     "ask": [],

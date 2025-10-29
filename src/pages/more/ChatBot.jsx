@@ -163,8 +163,8 @@ const ChatBot = ({ isDarkMode, onBack }) => {
             <ChevronRight className={`w-5 h-5 rotate-180 ${textColor}`} />
           </button>
           <div>
-            <h1 className={`text-lg font-semibold ${textColor}`}>고객센터 챗봇</h1>
-            <p className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+            <h1 className={`text-[19px] font-medium ${textColor}`}>고객센터 챗봇</h1>
+            <p className={`text-[13px] ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
               24시간 언제든 문의하세요
             </p>
           </div>
@@ -174,7 +174,7 @@ const ChatBot = ({ isDarkMode, onBack }) => {
           className={`px-2 py-1 rounded-lg border ${isDarkMode ? 'border-gray-600 hover:bg-gray-700' : 'border-gray-300 hover:bg-gray-100'}`}
           title="대화 초기화"
         >
-          <div className={`text-xs leading-tight ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+          <div className={`text-[13px] leading-tight ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
             <div>새로</div>
             <div>고침</div>
           </div>
@@ -196,7 +196,7 @@ const ChatBot = ({ isDarkMode, onBack }) => {
                     : `${messageBgBot} ${messageTextBot} border ${borderColor}`
                 }`}
               >
-                <p className={`text-[13px] whitespace-pre-wrap break-words text-left`} style={{
+                <p className={`text-[14px] whitespace-pre-wrap break-words text-left`} style={{
                   wordBreak: 'break-word',
                   overflowWrap: 'break-word'
                 }}>{message.text}</p>
@@ -217,7 +217,7 @@ const ChatBot = ({ isDarkMode, onBack }) => {
             onChange={(e) => setInputMessage(e.target.value)}
             onKeyPress={handleKeyPress}
             placeholder="메시지를 입력하세요"
-            className={`flex-1 px-3 py-1.5 rounded-2xl ${inputBg} ${textColor} border ${borderColor} focus:outline-none resize-none overflow-hidden scrollbar-hide text-[13px] placeholder:text-[13px]`}
+            className={`flex-1 px-3 py-1.5 rounded-2xl ${inputBg} ${textColor} border ${borderColor} focus:outline-none resize-none overflow-hidden scrollbar-hide text-[14px] placeholder:text-[14px]`}
             disabled={false}
             rows={1}
             style={{ minHeight: '30px', maxHeight: '120px', lineHeight: '1.2rem' }}

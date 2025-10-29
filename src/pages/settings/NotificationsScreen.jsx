@@ -82,7 +82,7 @@ const NotificationsScreen = ({ isDarkMode, setShowNotifications, notifications, 
             >
               <ChevronRight className="w-5 h-5 rotate-180" />
             </button>
-            <h2 className={`text-base font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+            <h2 className={`text-[17px] font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
               알림
             </h2>
           </div>
@@ -90,7 +90,7 @@ const NotificationsScreen = ({ isDarkMode, setShowNotifications, notifications, 
           {notifications.length > 0 && notifications.filter(n => !n.read).length > 0 && (
             <button
               onClick={handleMarkAllAsRead}
-              className={`text-xs ${isDarkMode ? 'text-cyan-400 hover:text-cyan-300' : 'text-cyan-600 hover:text-cyan-700'}`}
+              className={`text-[13px] ${isDarkMode ? 'text-cyan-400 hover:text-cyan-300' : 'text-cyan-600 hover:text-cyan-700'}`}
             >
               읽음
             </button>
@@ -102,7 +102,7 @@ const NotificationsScreen = ({ isDarkMode, setShowNotifications, notifications, 
       <div className="flex-1 overflow-y-auto flex flex-col">
         {notifications.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full py-12">
-            <p className={`${isDarkMode ? 'text-gray-500' : 'text-gray-500'} text-sm`}>
+            <p className={`${isDarkMode ? 'text-gray-500' : 'text-gray-500'} text-[15px]`}>
               새로운 알림이 없습니다
             </p>
           </div>
@@ -129,12 +129,12 @@ const NotificationsScreen = ({ isDarkMode, setShowNotifications, notifications, 
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
                           <div className="flex items-start justify-between">
-                            <p className={`text-sm font-medium ${
+                            <p className={`text-[15px] font-medium ${
                               !notification.read ? 'text-green-500' : isDarkMode ? 'text-white' : 'text-gray-900'
                             }`}>
                               {notification.title}
                             </p>
-                            <p className={`text-xs ml-2 ${
+                            <p className={`text-[13px] ml-2 ${
                               isDarkMode ? 'text-gray-500' : 'text-gray-400'
                             }`}>
                               {getTimeDisplay(notification.timestamp)}
@@ -142,7 +142,7 @@ const NotificationsScreen = ({ isDarkMode, setShowNotifications, notifications, 
                           </div>
                           {(expandedItems.includes(notification.id) || isRewardNotification) && (
                             <div>
-                              <p className={`text-xs mt-1 ${
+                              <p className={`text-[13px] mt-1 ${
                                 isDarkMode ? 'text-gray-400' : 'text-gray-600'
                               }`}>
                                 {notification.message}
@@ -166,7 +166,7 @@ const NotificationsScreen = ({ isDarkMode, setShowNotifications, notifications, 
                                       )
                                     );
                                   }}
-                                  className="mt-2 px-3 py-1.5 text-xs font-medium rounded-lg bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white transition-all shadow-lg hover:shadow-xl"
+                                  className="mt-2 px-3 py-1.5 text-[13px] font-medium rounded-lg bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white transition-all shadow-lg hover:shadow-xl"
                                 >
                                   {notification.pointsAmount}P 수령하기
                                 </button>
@@ -183,7 +183,7 @@ const NotificationsScreen = ({ isDarkMode, setShowNotifications, notifications, 
             
             {/* 하단 안내 문구 */}
             <div className="px-4 py-2 text-center">
-              <p className={`text-[10px] ${isDarkMode ? 'text-gray-600' : 'text-gray-400'}`}>
+              <p className={`text-[12px] ${isDarkMode ? 'text-gray-600' : 'text-gray-400'}`}>
                 1주일 이후의 알림은 자동으로 삭제됩니다
               </p>
             </div>

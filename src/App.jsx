@@ -725,9 +725,18 @@ const EcostepAppContent = () => {
     <div className={`h-screen w-full ${bgColor}`}>
         {/* 화면 영역 */}
         <div className="w-full h-full flex flex-col">
+          {/* 상단 Safe Area 배경 */}
+          <div className={`fixed top-0 left-0 right-0 z-40 ${isDarkMode ? 'bg-gray-900' : 'bg-white'}`} style={{
+            height: 'max(1.5rem, env(safe-area-inset-top))'
+          }}></div>
+
           {/* 상태바 */}
-          <div className={`fixed top-0 left-0 right-0 z-50 ${isDarkMode ? 'bg-gray-900' : 'bg-white'} px-3 py-3 flex justify-between items-center`}>
-            <h1 className={`${isDarkMode ? 'text-white' : 'text-gray-800'} text-sm font-medium`}>
+          <div className={`fixed left-0 right-0 z-50 ${isDarkMode ? 'bg-gray-900' : 'bg-white'} px-3 py-3 flex justify-between items-center`} style={{
+            top: 'max(1.5rem, env(safe-area-inset-top))',
+            paddingLeft: 'calc(0.75rem + env(safe-area-inset-left))',
+            paddingRight: 'calc(0.75rem + env(safe-area-inset-right))'
+          }}>
+            <h1 className={`${isDarkMode ? 'text-white' : 'text-gray-800'} text-[17px] font-medium`}>
               {activeTab === 'home' && '홈'}
               {activeTab === 'challenge' && '챌린지'}
               {activeTab === 'reward' && '보상'}
@@ -735,16 +744,16 @@ const EcostepAppContent = () => {
               {activeTab === 'more' && '기타'}
             </h1>
             <div className="flex items-center gap-3">
-              <div className={`flex items-center px-2 py-0.5 rounded border ${isDarkMode ? 'border-gray-600' : 'border-gray-300'}`}>
-                <span className={`${isDarkMode ? 'text-white' : 'text-gray-700'} text-xs font-medium`}>{points}P</span>
+              <div className={`flex items-center px-2 py-0.5 rounded border mr-1 ${isDarkMode ? 'border-gray-600' : 'border-gray-300'}`}>
+                <span className={`${isDarkMode ? 'text-white' : 'text-gray-700'} text-[15px] font-normal`}>{points}P</span>
               </div>
               <button className="relative" onClick={() => {
                 setShowNotifications(true);
                 setNotificationsList(prev => prev.map(n => ({ ...n, read: true })));
               }}>
-                <Bell className={`w-[18px] h-[18px] ${
-                  notificationsList.some(n => !n.read) 
-                    ? 'text-purple-500' 
+                <Bell className={`w-[19px] h-[19px] ${
+                  notificationsList.some(n => !n.read)
+                    ? 'text-purple-500'
                     : isDarkMode ? 'text-white' : 'text-gray-700'
                 }`} />
               </button>
@@ -761,7 +770,7 @@ const EcostepAppContent = () => {
                 setShowLocationSettings(false);
                 setShowSettings(true);
               }}>
-                <Settings className={`w-4 h-4 ${isDarkMode ? 'text-white' : 'text-gray-700'}`} />
+                <Settings className={`w-[19px] h-[19px] ${isDarkMode ? 'text-white' : 'text-gray-700'}`} />
               </button>
             </div>
             {/* 그라데이션 테두리 */}
@@ -771,7 +780,10 @@ const EcostepAppContent = () => {
           </div>
 
           {/* 메인 콘텐츠 */}
-          <div className={`flex-1 overflow-y-auto pt-12 pb-16 ${bgColor}`}>
+          <div className={`flex-1 overflow-y-auto ${bgColor}`} style={{
+            paddingTop: 'max(4.5rem, calc(3rem + env(safe-area-inset-top)))',
+            paddingBottom: 'calc(4.5rem + max(1rem, env(safe-area-inset-bottom)))'
+          }}>
           {showNotifications ? (
             <NotificationsScreen 
               isDarkMode={isDarkMode} 
@@ -907,9 +919,9 @@ const EcostepAppContent = () => {
                 spendPoints={spendPoints}
                 isActive={activeTab === 'reward'}
               />}
-              {activeTab === 'community' && !showFriendsList && !showGlobalList && <CommunityPage isDarkMode={isDarkMode} onShowFriendsList={() => setShowFriendsList(true)} onShowGlobalList={() => setShowGlobalList(true)} showToast={showToast} userRanking={rankTheme} totalPlasticSaved={testPlasticSaved > 0 ? testPlasticSaved : totalPlasticSaved} currentUserId={profileData.userId} currentUserName={profileData.name} />}
-              {activeTab === 'community' && showFriendsList && <FriendsList isDarkMode={isDarkMode} onBack={() => setShowFriendsList(false)} isGlobalRanking={false} totalPlasticSaved={testPlasticSaved > 0 ? testPlasticSaved : totalPlasticSaved} currentUserId={profileData.userId} currentUserName={profileData.name} />}
-              {activeTab === 'community' && showGlobalList && <FriendsList isDarkMode={isDarkMode} onBack={() => setShowGlobalList(false)} isGlobalRanking={true} totalPlasticSaved={testPlasticSaved > 0 ? testPlasticSaved : totalPlasticSaved} currentUserId={profileData.userId} currentUserName={profileData.name} />}
+              {activeTab === 'community' && !showFriendsList && !showGlobalList && <CommunityPage isDarkMode={isDarkMode} onShowFriendsList={() => setShowFriendsList(true)} onShowGlobalList={() => setShowGlobalList(true)} showToast={showToast} userRanking={rankTheme} totalPlasticSaved={testPlasticSaved > 0 ? testPlasticSaved : totalPlasticSaved} currentUserId={currentUser?.id} currentUserName={profileData.name} currentUserNickname={profileData.userId} />}
+              {activeTab === 'community' && showFriendsList && <FriendsList isDarkMode={isDarkMode} onBack={() => setShowFriendsList(false)} isGlobalRanking={false} totalPlasticSaved={testPlasticSaved > 0 ? testPlasticSaved : totalPlasticSaved} currentUserId={currentUser?.id} currentUserNickname={profileData.userId} />}
+              {activeTab === 'community' && showGlobalList && <FriendsList isDarkMode={isDarkMode} onBack={() => setShowGlobalList(false)} isGlobalRanking={true} totalPlasticSaved={testPlasticSaved > 0 ? testPlasticSaved : totalPlasticSaved} currentUserId={currentUser?.id} currentUserNickname={profileData.userId} />}
               {activeTab === 'more' && !showChatBot && <MorePage isDarkMode={isDarkMode} userPoints={points} setUserPoints={setPoints} onShowChatBot={() => setShowChatBot(true)} earnPoints={earnPoints} rankTheme={rankTheme} showToast={showToast} />}
               {activeTab === 'more' && showChatBot && <ChatBot isDarkMode={isDarkMode} onBack={() => setShowChatBot(false)} />}
             </>
@@ -918,14 +930,19 @@ const EcostepAppContent = () => {
 
           {/* 하단 네비게이션 - 글래스모피즘 효과 */}
           {!showNotifications && !showSettings && !showProfile && !showAquariumSettings && !showThemeSettings && !showRankThemeSettings && !showLanguageSettings && !showNotificationSettings && !showLocationSettings && !showFriendsList && !showGlobalList && (
-            <div className="fixed bottom-0 left-0 right-0 z-50" style={{
+            <div className="fixed left-0 right-0 bottom-0 z-50" style={{
               backgroundColor: isDarkMode ? 'rgba(55, 65, 81, 0.3)' : 'rgba(255, 255, 255, 0.3)',
               backdropFilter: isDarkMode ? 'blur(20px) saturate(1.5)' : 'blur(20px) saturate(2.5)',
               WebkitBackdropFilter: isDarkMode ? 'blur(20px) saturate(1.5)' : 'blur(20px) saturate(2.5)',
               borderTop: isDarkMode ? '1px solid rgba(107, 114, 128, 0.3)' : '1px solid rgba(209, 213, 219, 0.8)',
-              boxShadow: '0 -4px 30px rgba(0, 0, 0, 0.05)'
+              boxShadow: '0 -4px 30px rgba(0, 0, 0, 0.05)',
+              paddingTop: '1px'
             }}>
-              <div className="flex justify-around py-2">
+              <div className="flex justify-around py-2" style={{
+                paddingLeft: 'env(safe-area-inset-left)',
+                paddingRight: 'env(safe-area-inset-right)',
+                paddingBottom: 'calc(0.75rem + max(0.5rem, env(safe-area-inset-bottom)))'
+              }}>
                 {[
                   { id: 'home', icon: Home, label: '홈' },
                   { id: 'challenge', icon: Target, label: '챌린지' },
@@ -943,7 +960,7 @@ const EcostepAppContent = () => {
                       } ${activeTab === tab.id ? 'opacity-100' : 'opacity-50'}`}
                     >
                       <Icon className="w-5 h-5 mb-0.5" fill={activeTab === tab.id ? 'currentColor' : 'none'} />
-                      <span className="text-xs">{tab.label}</span>
+                      <span className="text-[13px] font-normal">{tab.label}</span>
                     </button>
                   );
                 })}

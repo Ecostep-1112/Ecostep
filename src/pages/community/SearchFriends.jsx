@@ -36,41 +36,13 @@ const SearchFriends = ({ isDarkMode, onBack, userRanking = 'bronze', showToast, 
       setAllUsers(formattedUsers);
     } catch (error) {
       console.error('사용자 목록 로드 실패:', error);
-      // 에러 발생 시 기본 데이터 사용
-      setAllUsers([
-        { id: 'songil_eco', name: '송일', profileImage: null, plasticSaved: 15500 },
-        { id: 'wonhee_nature', name: '원희', profileImage: null, plasticSaved: 27000 },
-      ]);
+      setAllUsers([]);
     }
   };
 
   // Supabase에서 친구 목록 불러오기
   const loadFriends = async () => {
-    if (!currentUserId) {
-      // localStorage에서 프로필 데이터 확인
-      const savedProfileData = localStorage.getItem('profileData');
-      if (savedProfileData) {
-        try {
-          const parsed = JSON.parse(savedProfileData);
-          const userId = parsed.userId;
-          if (!userId) return;
-
-          const { data, error } = await supabase
-            .from('user_friend')
-            .select('friend_id')
-            .eq('user_id', userId)
-            .eq('status', 'accepted');
-
-          if (error) throw error;
-
-          const friendIds = data.map(f => f.friend_id);
-          setAddedFriends(friendIds);
-        } catch (e) {
-          console.error('친구 목록 로드 실패:', e);
-        }
-      }
-      return;
-    }
+    if (!currentUserId) return;
 
     try {
       const { data, error } = await supabase
@@ -239,7 +211,7 @@ const SearchFriends = ({ isDarkMode, onBack, userRanking = 'bronze', showToast, 
         <button onClick={onBack} className="mr-3">
           <ChevronRight className={`w-5 h-5 rotate-180 ${textColor}`} />
         </button>
-        <h2 className={`text-base font-medium ${textColor}`}>아이디</h2>
+        <h2 className={`text-[17px] font-medium ${textColor}`}>아이디</h2>
       </div>
 
       <div className="p-4 pb-20">
@@ -252,7 +224,7 @@ const SearchFriends = ({ isDarkMode, onBack, userRanking = 'bronze', showToast, 
               onChange={(e) => setSearchTerm(e.target.value)}
               onKeyPress={handleKeyPress}
               placeholder="이름 또는 아이디 검색" 
-              className={`w-full h-full bg-transparent ${textColor} ${placeholderColor} rounded-xl pl-4 ${searchTerm ? 'pr-10' : 'pr-4'} text-sm focus:outline-none border ${borderColor}`}
+              className={`w-full h-full bg-transparent ${textColor} ${placeholderColor} rounded-xl pl-4 ${searchTerm ? 'pr-10' : 'pr-4'} text-[15px] focus:outline-none border ${borderColor}`}
             />
             {searchTerm && (
               <button
@@ -269,7 +241,7 @@ const SearchFriends = ({ isDarkMode, onBack, userRanking = 'bronze', showToast, 
           </div>
           <button 
             onClick={handleSearch}
-            className={`bg-transparent ${textColor} w-10 h-10 rounded-xl text-sm font-medium hover:opacity-80 transition-opacity flex items-center justify-center border ${borderColor}`}
+            className={`bg-transparent ${textColor} w-10 h-10 rounded-xl text-[15px] font-medium hover:opacity-80 transition-opacity flex items-center justify-center border ${borderColor}`}
           >
             <Search className={`w-4 h-4 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`} />
           </button>
@@ -286,20 +258,20 @@ const SearchFriends = ({ isDarkMode, onBack, userRanking = 'bronze', showToast, 
                     {user.profileImage ? (
                       <img src={user.profileImage} alt={user.name} className="w-full h-full object-cover" />
                     ) : (
-                      <span className={`font-medium text-sm ${isDarkMode ? 'text-gray-100' : 'text-gray-700'}`}>
+                      <span className={`font-medium text-[15px] ${isDarkMode ? 'text-gray-100' : 'text-gray-700'}`}>
                         {user.name?.charAt(0)?.toUpperCase() || 'U'}
                       </span>
                     )}
                   </div>
                   <div className="flex-1 text-left">
-                    <p className={`text-sm font-medium ${textColor}`}>{user.name}</p>
-                    <p className={`text-[11px] ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>@{user.id}</p>
+                    <p className={`text-[15px] font-medium ${textColor}`}>{user.name}</p>
+                    <p className={`text-[12px] ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>@{user.id}</p>
                   </div>
                   <div className="flex items-center">
                     {addedFriends.includes(user.id) ? (
                       <button 
                         onClick={() => handleAddFriend(user.id)}
-                        className={`px-4 py-1.5 rounded-full text-xs font-medium transition-colors border ${isDarkMode ? 'bg-gray-700' : 'bg-gray-100'} ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} ${isDarkMode ? 'border-gray-600' : 'border-gray-300'}`}
+                        className={`px-4 py-1.5 rounded-full text-[13px] font-medium transition-colors border ${isDarkMode ? 'bg-gray-700' : 'bg-gray-100'} ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} ${isDarkMode ? 'border-gray-600' : 'border-gray-300'}`}
                         disabled={true}
                       >
                         친구
@@ -307,7 +279,7 @@ const SearchFriends = ({ isDarkMode, onBack, userRanking = 'bronze', showToast, 
                     ) : (
                       <button 
                         onClick={() => handleAddFriend(user.id)}
-                        className={`px-4 py-1.5 rounded-full text-xs font-medium transition-colors relative ${isDarkMode ? 'bg-gray-900' : 'bg-white'}`}
+                        className={`px-4 py-1.5 rounded-full text-[13px] font-medium transition-colors relative ${isDarkMode ? 'bg-gray-900' : 'bg-white'}`}
                         style={{
                           border: '1px solid transparent',
                           backgroundImage: `linear-gradient(${isDarkMode ? '#111827' : '#ffffff'}, ${isDarkMode ? '#111827' : '#ffffff'}), linear-gradient(135deg, #06b6d4 0%, #3b82f6 50%, #2563eb 100%)`,
@@ -332,7 +304,7 @@ const SearchFriends = ({ isDarkMode, onBack, userRanking = 'bronze', showToast, 
               ))
             ) : (
               <div className={`text-center py-8 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                <p className="text-sm">찾은 결과 없음</p>
+                <p className="text-[15px]">찾은 결과 없음</p>
               </div>
             )}
           </div>

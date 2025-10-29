@@ -687,10 +687,10 @@ const Home = ({
                 {/* 수질 정보 영역 */}
                 <div className="flex-1 px-3 py-1.5 bg-white/5 rounded-lg">
                   <div className="flex justify-between items-center mb-1">
-                    <span className="text-white text-xs">
+                    <span className="text-white text-[14px] font-normal">
                       {tankName}
                     </span>
-                    <span className="text-xs font-medium text-white">{waterQuality}%</span>
+                    <span className="text-[14px] font-medium text-white">{waterQuality}%</span>
                   </div>
                   <div className="w-full bg-white/20 rounded-full h-1.5">
                     <div className={`h-1.5 rounded-full transition-all duration-500 ${
@@ -705,11 +705,11 @@ const Home = ({
                 <div className="w-[1px] bg-white/20 self-stretch"></div>
                 
                 {/* 설정 버튼 */}
-                <button 
+                <button
                   onClick={() => setShowAquariumSettings(true)}
-                  className="px-2 bg-white/20 hover:bg-white/30 transition-colors rounded-lg flex items-center justify-center"
+                  className="px-2.5 py-1.5 bg-white/20 hover:bg-white/30 transition-colors rounded-lg flex items-center justify-center"
                 >
-                  <Settings className="w-3 h-3 text-white" />
+                  <Settings className="w-[16px] h-[16px] text-white" />
                 </button>
               </div>
             </div>
@@ -741,8 +741,8 @@ const Home = ({
                 </linearGradient>
               </defs>
             </svg>
-            
-            <span className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+
+            <span className={`text-[16px] font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
               챌린지 {consecutiveDays.toString().padStart(2, '0')}일 연속 달성!
             </span>
             
@@ -775,7 +775,7 @@ const Home = ({
         <div className="mx-4 mt-4 mb-4">
           <div className={`${isDarkMode ? 'bg-gray-800 border border-gray-700' : 'bg-gray-50 border border-gray-200'} rounded-xl p-6`}>
             <div className="flex flex-col items-center">
-              <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} text-xs mb-3`}>플라스틱 절약량</span>
+              <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} text-[14px] font-normal mb-3`}>플라스틱 절약량</span>
               
               {/* 초록색 그라데이션 원 - 입체감 강화 */}
               <div className="relative w-28 h-28 mb-3">
@@ -784,12 +784,12 @@ const Home = ({
                 <div className="absolute top-2 left-2 w-8 h-8 bg-white/30 rounded-full blur-xl"></div>
                 <div className="absolute bottom-2 right-2 w-16 h-16 bg-green-700/30 rounded-full blur-2xl"></div>
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <p className="text-2xl font-bold text-white drop-shadow-lg">{plasticSavedDisplay}</p>
+                  <p className="text-[26px] font-medium text-white drop-shadow-lg">{plasticSavedDisplay}</p>
                 </div>
               </div>
-              
+
               {treesEquivalent > 0 && (
-                <p className={`${isDarkMode ? 'text-gray-400' : 'text-gray-500'} text-xs text-center`}>
+                <p className={`${isDarkMode ? 'text-gray-400' : 'text-gray-500'} text-[14px] font-normal text-center`}>
                   나무 {treesEquivalent}그루가 1년간 흡수하는 CO₂ 양
                 </p>
               )}
@@ -842,10 +842,10 @@ const Home = ({
                     );
                   })}
                 </div>
-                
+
                 {/* 나무가 없을 때 메시지 */}
                 {treesEquivalent === 0 && (
-                  <p className={`text-center text-xs ${isDarkMode ? 'text-gray-500' : 'text-gray-400'} mt-2`}>
+                  <p className={`text-center text-[14px] font-normal ${isDarkMode ? 'text-gray-500' : 'text-gray-400'} mt-2`}>
                     챌린지를 완료하면 나무가 자랍니다
                   </p>
                 )}
@@ -857,10 +857,10 @@ const Home = ({
         {/* 플라스틱 절약량 테스트 슬라이더 (개발용) */}
         <div className={`mx-4 mt-4 mb-4 p-4 ${isDarkMode ? 'bg-gray-800 border border-gray-700' : 'bg-gray-50 border border-gray-200'} rounded-xl`}>
           <div className="flex items-center justify-between mb-2">
-            <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} text-xs font-medium`}>
+            <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} text-[14px] font-normal`}>
               테스트용 플라스틱 절약량 조절
             </span>
-            <span className={`text-xs font-bold ${
+            <span className={`text-[14px] font-medium ${
               parseFloat(testPlasticSaved) >= 15000 ? 'text-green-500' : 
               parseFloat(testPlasticSaved) >= 7000 ? 'text-blue-500' : 
               parseFloat(testPlasticSaved) >= 3500 ? 'text-yellow-500' : 
@@ -898,12 +898,12 @@ const Home = ({
             }}
           />
           <div className="flex justify-between mt-1">
-            <span className={`text-[10px] ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>0g</span>
-            <span className={`text-[10px] ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>25kg</span>
-            <span className={`text-[10px] ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>50kg</span>
+            <span className={`text-[12px] font-normal ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>0g</span>
+            <span className={`text-[12px] font-normal ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>25kg</span>
+            <span className={`text-[12px] font-normal ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>50kg</span>
           </div>
           <div className="mt-2 text-center">
-            <span className={`text-[11px] ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+            <span className={`text-[13px] font-normal ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>
               CO₂ {co2Reduced.toFixed(1)}kg 감소 = 나무 {treesEquivalent}그루의 연간 효과
             </span>
           </div>
@@ -912,10 +912,10 @@ const Home = ({
         {/* 수질 테스트 슬라이더 (개발용) */}
         <div className={`mx-4 mt-4 mb-4 p-4 ${isDarkMode ? 'bg-gray-800 border border-gray-700' : 'bg-gray-50 border border-gray-200'} rounded-xl`}>
           <div className="flex items-center justify-between mb-2">
-            <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} text-xs font-medium`}>
+            <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} text-[14px] font-normal`}>
               테스트용 수질 조절
             </span>
-            <span className={`text-xs font-bold ${
+            <span className={`text-[14px] font-medium ${
               waterQuality >= 80 ? 'text-blue-500' : 
               waterQuality >= 50 ? 'text-yellow-500' : 
               'text-red-500'
@@ -946,9 +946,9 @@ const Home = ({
             }}
           />
           <div className="flex justify-between mt-1">
-            <span className={`text-[10px] ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>0% (탁함)</span>
-            <span className={`text-[10px] ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>50%</span>
-            <span className={`text-[10px] ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>100% (맑음)</span>
+            <span className={`text-[12px] font-normal ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>0% (탁함)</span>
+            <span className={`text-[12px] font-normal ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>50%</span>
+            <span className={`text-[12px] font-normal ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>100% (맑음)</span>
           </div>
         </div>
       </div>
@@ -962,7 +962,7 @@ const Home = ({
           }}
         >
           <div className="flex items-center justify-between mb-1.5">
-            <h3 className={`text-xs font-medium ${textColor}`}>
+            <h3 className={`text-[14px] font-medium ${textColor}`}>
               {selectedDecoration} 설정
             </h3>
             <button
@@ -970,7 +970,7 @@ const Home = ({
                 setShowSettingsPanel(false);
                 setSelectedDecoration(null);
               }}
-              className={`text-xs px-2 py-1 rounded-md ${isDarkMode ? 'bg-gray-700 text-gray-300 hover:bg-gray-600' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'} transition-colors`}
+              className={`text-[14px] font-normal px-2 py-1 rounded-md ${isDarkMode ? 'bg-gray-700 text-gray-300 hover:bg-gray-600' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'} transition-colors`}
             >
               닫기
             </button>
@@ -980,10 +980,10 @@ const Home = ({
             {/* 크기 조절 */}
             <div>
               <div className="flex items-center justify-between mb-0">
-                <label className={`text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                <label className={`text-[14px] font-normal ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                   크기
                 </label>
-                <span className={`text-xs font-bold ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                <span className={`text-[14px] font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                   {decorationSettings[selectedDecoration]?.size || 100}%
                 </span>
               </div>
@@ -1003,19 +1003,19 @@ const Home = ({
                 }}
               />
               <div className="flex justify-between mt-1">
-                <span className={`text-[10px] ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>50%</span>
-                <span className={`text-[10px] ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>100%</span>
-                <span className={`text-[10px] ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>150%</span>
+                <span className={`text-[12px] font-normal ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>50%</span>
+                <span className={`text-[12px] font-normal ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>100%</span>
+                <span className={`text-[12px] font-normal ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>150%</span>
               </div>
             </div>
 
             {/* 회전 조절 */}
             <div>
               <div className="flex items-center justify-between mb-0">
-                <label className={`text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                <label className={`text-[14px] font-normal ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                   회전
                 </label>
-                <span className={`text-xs font-bold ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                <span className={`text-[14px] font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                   {decorationSettings[selectedDecoration]?.rotation || 0}°
                 </span>
               </div>
@@ -1035,9 +1035,9 @@ const Home = ({
                 }}
               />
               <div className="flex justify-between mt-1">
-                <span className={`text-[10px] ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>0°</span>
-                <span className={`text-[10px] ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>180°</span>
-                <span className={`text-[10px] ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>360°</span>
+                <span className={`text-[12px] font-normal ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>0°</span>
+                <span className={`text-[12px] font-normal ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>180°</span>
+                <span className={`text-[12px] font-normal ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>360°</span>
               </div>
             </div>
 
@@ -1054,7 +1054,7 @@ const Home = ({
                     }
                   }));
                 }}
-                className={`flex-1 py-1.5 text-xs font-medium rounded-md transition-colors ${isDarkMode ? 'bg-gray-700 text-gray-300 hover:bg-gray-600 border border-gray-600' : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-300'}`}
+                className={`flex-1 py-1.5 text-[14px] font-medium rounded-md transition-colors ${isDarkMode ? 'bg-gray-700 text-gray-300 hover:bg-gray-600 border border-gray-600' : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-300'}`}
               >
                 기본값으로 리셋
               </button>
@@ -1074,7 +1074,7 @@ const Home = ({
                     showToast('장식품 설정이 저장되었습니다', 'success');
                   }
                 }}
-                className={`flex-1 py-1.5 text-xs font-medium rounded-md transition-colors ${isDarkMode ? 'bg-gray-700 text-gray-300 hover:bg-gray-600 border border-gray-600' : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-300'}`}
+                className={`flex-1 py-1.5 text-[14px] font-medium rounded-md transition-colors ${isDarkMode ? 'bg-gray-700 text-gray-300 hover:bg-gray-600 border border-gray-600' : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-300'}`}
               >
                 장식품 위치 저장
               </button>
@@ -1082,7 +1082,7 @@ const Home = ({
 
             {/* 안내 메시지 */}
             <div className="mt-2 text-center">
-              <p className={`text-xs italic ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} opacity-70`}>
+              <p className={`text-[14px] font-normal italic ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} opacity-70`}>
                 장식품을 터치하여 움직일 수 있습니다
               </p>
             </div>

@@ -1,13 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ChevronRight, Search } from 'lucide-react';
 import { BronzeIcon, SilverIcon, GoldIcon, PlatinumIcon } from '../../components/RankIcons';
 import { useData } from '../../services/DataContext';
 
-const FriendsList = ({ isDarkMode, onBack, isGlobalRanking = false, totalPlasticSaved = 0, currentUserId = '', currentUserName = '' }) => {
+const FriendsList = ({ isDarkMode, onBack, isGlobalRanking = false, totalPlasticSaved = 0, currentUserId = '', currentUserNickname = '' }) => {
   const [searchQuery, setSearchQuery] = useState('');
 
   // 전역 데이터 컨텍스트에서 데이터 가져오기
   const { allUsers, friendsList: friendsData } = useData();
+
+  // 프로필 데이터 가져오기
+  const profileData = JSON.parse(localStorage.getItem('profileData') || '{}');
+  const currentUserName = profileData.name || '';
   
   // 나의 실제 플라스틱 절약량 반영
   const getDisplayScore = (grams) => {
@@ -119,7 +123,7 @@ const FriendsList = ({ isDarkMode, onBack, isGlobalRanking = false, totalPlastic
         <button onClick={onBack} className="mr-3">
           <ChevronRight className={`w-5 h-5 rotate-180 ${textColor}`} />
         </button>
-        <h2 className={`text-base font-medium ${textColor}`}>{isGlobalRanking ? '전체' : '친구'}</h2>
+        <h2 className={`text-[17px] font-medium ${textColor}`}>{isGlobalRanking ? '전체' : '친구'}</h2>
       </div>
       
       {/* Search Bar */}
@@ -131,7 +135,7 @@ const FriendsList = ({ isDarkMode, onBack, isGlobalRanking = false, totalPlastic
             placeholder={isGlobalRanking ? "검색" : "친구 검색"}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className={`w-full pl-10 pr-4 py-2 ${inputBg} rounded-lg text-sm ${textColor} placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400`}
+            className={`w-full pl-10 pr-4 py-2 ${inputBg} rounded-lg text-[15px] ${textColor} placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400`}
           />
         </div>
         <div 
@@ -146,7 +150,7 @@ const FriendsList = ({ isDarkMode, onBack, isGlobalRanking = false, totalPlastic
       <div className={`flex-1 overflow-y-auto custom-scrollbar scrollbar-hide px-3 py-4 pb-20`}>
         {filteredFriends.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-8">
-            <p className={`${isDarkMode ? 'text-gray-400' : 'text-gray-500'} text-sm`}>
+            <p className={`${isDarkMode ? 'text-gray-400' : 'text-gray-500'} text-[15px]`}>
               검색 결과가 없습니다
             </p>
           </div>
@@ -174,7 +178,7 @@ const FriendsList = ({ isDarkMode, onBack, isGlobalRanking = false, totalPlastic
                           <SilverIcon size={24} />
                         ) : (
                           <div 
-                            className={`w-[20px] h-[20px] rounded-full border flex items-center justify-center text-[11px] font-medium ${
+                            className={`w-[20px] h-[20px] rounded-full border flex items-center justify-center text-[12px] font-medium ${
                               isMe ? (isDarkMode ? 'text-white' : 'text-gray-900') : (isDarkMode ? 'text-gray-300' : 'text-gray-700')
                             }`}
                             style={{ 
@@ -186,11 +190,11 @@ const FriendsList = ({ isDarkMode, onBack, isGlobalRanking = false, totalPlastic
                         )}
                       </div>
                       <div className="flex-1 flex flex-col items-start">
-                        <span className={`${friend.rank === 1 ? 'text-sm' : friend.rank === 2 ? 'text-[13px]' : 'text-xs'} ${isMe ? `font-medium ${textColor}` : isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>{friend.name}</span>
-                        {friend.id && <span className={`${friend.rank === 1 ? 'text-[10px]' : friend.rank === 2 ? 'text-[9px]' : 'text-[8px]'} ${isDarkMode ? 'text-gray-500' : 'text-gray-400'} ${friend.rank === 1 ? '-mt-[1.5px]' : friend.rank === 2 ? '-mt-[3px]' : '-mt-[1px]'}`}>@{friend.id}</span>}
+                        <span className={`${friend.rank === 1 ? 'text-sm' : friend.rank === 2 ? 'text-[14px]' : 'text-[13px]'} ${isMe ? `font-medium ${textColor}` : isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>{friend.name}</span>
+                        {friend.id && <span className={`${friend.rank === 1 ? 'text-[12px]' : friend.rank === 2 ? 'text-[12px]' : 'text-[12px]'} ${isDarkMode ? 'text-gray-500' : 'text-gray-400'} ${friend.rank === 1 ? '-mt-[1.5px]' : friend.rank === 2 ? '-mt-[3px]' : '-mt-[1px]'}`}>@{isMe ? currentUserNickname : friend.id}</span>}
                       </div>
                     </div>
-                    <span className={`${friend.rank === 1 ? 'text-xs' : friend.rank === 2 ? 'text-[11px]' : 'text-[10px]'} ${isMe ? `font-medium ${textColor}` : isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>{friend.score}</span>
+                    <span className={`${friend.rank === 1 ? 'text-xs' : friend.rank === 2 ? 'text-[12px]' : 'text-[12px]'} ${isMe ? `font-medium ${textColor}` : isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>{friend.score}</span>
                   </div>
                   {index < filteredFriends.length - 1 && <div className={`border-b ${borderColor}`}></div>}
                 </div>

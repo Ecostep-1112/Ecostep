@@ -865,7 +865,7 @@ const Challenge = ({
               e.stopPropagation();
               setActiveSubTab('habit');
             }}
-            className={`flex-1 py-2 text-sm font-bold transition-all duration-300 ease-out text-center border relative z-10 ${
+            className={`flex-1 py-2 text-[16px] font-medium transition-all duration-300 ease-out text-center border relative z-10 ${
               activeSubTab === 'habit' 
                 ? isDarkMode 
                   ? 'text-gray-900 border-gray-100' 
@@ -882,7 +882,7 @@ const Challenge = ({
               e.stopPropagation();
               setActiveSubTab('tracking');
             }}
-            className={`flex-1 py-2 text-sm font-bold transition-all duration-300 ease-out text-center border relative z-10 ${
+            className={`flex-1 py-2 text-[16px] font-medium transition-all duration-300 ease-out text-center border relative z-10 ${
               activeSubTab === 'tracking' 
                 ? isDarkMode 
                   ? 'text-gray-900 border-gray-100' 
@@ -901,7 +901,7 @@ const Challenge = ({
             {/* 챌린지 */}
             <div className={`${cardBg} border-[0.3px] ${borderColor} rounded-xl p-5 relative`}>
               <div className="flex justify-between items-center mb-4">
-                <h3 className={`${textColor} text-sm font-medium`}>챌린지</h3>
+                <h3 className={`${textColor} text-[16px] font-medium`}>챌린지</h3>
                 {/* 랭크 아이콘 - 실제 랭킹 기준 */}
                 {actualRanking === 'bronze' && <BronzeIcon size={20} />}
                 {actualRanking === 'silver' && <SilverIcon size={20} />}
@@ -919,7 +919,7 @@ const Challenge = ({
                   style={{
                     '--gradient': getThemeGradient()
                   }}>
-                  <span className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                  <span className={`text-[16px] ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                     {weeklyProgress[currentWeekStart].challenge || '챌린지를 선택해 주세요'}
                   </span>
                 </div>
@@ -929,7 +929,7 @@ const Challenge = ({
                   onClick={() => setShowChallengeSelect(!showChallengeSelect)}
                   className={`w-full h-full ${inputBg} rounded-lg px-2 flex justify-between items-center`}
                 >
-                  <span className={`text-sm flex-1 text-center ${selectedChallenge ? (isDarkMode ? 'text-gray-300' : 'text-gray-700') : (isDarkMode ? 'text-gray-500' : 'text-gray-400')}`}>
+                  <span className={`text-[16px] flex-1 text-center ${selectedChallenge ? (isDarkMode ? 'text-gray-300' : 'text-gray-700') : (isDarkMode ? 'text-gray-500' : 'text-gray-400')}`}>
                     {selectedChallenge || '챌린지를 선택해 주세요'}
                   </span>
                   <ChevronDown className={`w-4 h-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
@@ -992,7 +992,7 @@ const Challenge = ({
                         }
                       }}
                         placeholder="챌린지 이름 입력"
-                        className={`w-full ${inputBg} rounded-lg p-2 pr-8 text-sm ${textColor}`}
+                        className={`w-full ${inputBg} rounded-lg p-2 pr-8 text-[16px] ${textColor}`}
                         autoFocus
                       />
                     </div>
@@ -1047,7 +1047,7 @@ const Challenge = ({
                         setShowCustomChallenge(false);
                       }
                     }}
-                    className={`w-9 h-9 rounded-lg text-xs font-medium transition-colors flex items-center justify-center ${
+                    className={`w-9 h-9 rounded-lg text-[14px] font-medium transition-colors flex items-center justify-center ${
                       `${getButtonTextColor()} hover:opacity-90`
                     }`}
                     style={{
@@ -1081,7 +1081,7 @@ const Challenge = ({
                               setShowChallengeSelect(false);
                             }
                           }}
-                          className={`flex-1 text-left text-sm ${textColor}`}
+                          className={`flex-1 text-left text-[16px] ${textColor}`}
                         >
                           {challenge}
                         </button>
@@ -1159,8 +1159,8 @@ const Challenge = ({
                   return (
                     <div key={idx} className="flex flex-col items-center">
                       {isToday ? (
-                        <span 
-                          className="text-xs mb-1 font-bold bg-clip-text text-transparent"
+                        <span
+                          className="text-[13px] mb-1 font-medium bg-clip-text text-transparent"
                           style={{
                             backgroundImage: getThemeGradient(),
                             WebkitBackgroundClip: 'text',
@@ -1170,7 +1170,7 @@ const Challenge = ({
                           {dayName}
                         </span>
                       ) : (
-                        <span className={`text-xs mb-1 ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                        <span className={`text-[14px] mb-1 ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>
                           {dayName}
                         </span>
                       )}
@@ -1181,7 +1181,7 @@ const Challenge = ({
                             style={{ background: getThemeGradient() }}
                           >
                             <div className={`w-full h-full rounded-full flex items-center justify-center ${isDarkMode ? 'bg-gray-900' : 'bg-white'}`}>
-                              <span className="text-sm font-bold" style={{
+                              <span className="text-[17px] font-medium" style={{
                                 backgroundImage: getThemeGradient(),
                                 WebkitBackgroundClip: 'text',
                                 WebkitTextFillColor: 'transparent'
@@ -1215,10 +1215,10 @@ const Challenge = ({
 
               {/* 진행률 표시 */}
               <div className="flex justify-between mb-2">
-                <span className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                <span className={`text-[14px] ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
                   진행률
                 </span>
-                <span className={`text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                <span className={`text-[14px] font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                   {currentWeekStart && weeklyProgress[currentWeekStart] 
                     ? Math.round((weeklyProgress[currentWeekStart].days.filter(d => d === true).length / 7) * 100)
                     : 0}%
@@ -1237,10 +1237,10 @@ const Challenge = ({
                 />
               </div>
 
-              <button 
+              <button
                 onClick={handleCompleteToday}
                 disabled={todayCompleted || (!weeklyProgress[currentWeekStart]?.challenge && !selectedChallenge)}
-                className={`w-full h-9 rounded-lg text-sm font-medium transition-all ${
+                className={`w-full h-9 rounded-lg text-[16px] font-medium transition-all ${
                   todayCompleted || (!weeklyProgress[currentWeekStart]?.challenge && !selectedChallenge)
                     ? 'bg-gray-400 text-gray-200 cursor-not-allowed' 
                     : `${getButtonTextColor()} hover:opacity-90`
@@ -1257,9 +1257,9 @@ const Challenge = ({
 
             {/* 지난 챌린지 */}
             <div className={`${cardBg} border-[0.3px] ${borderColor} rounded-xl p-4`}>
-              <h3 className={`${textColor} text-sm font-medium mb-3`}>지난 챌린지</h3>
+              <h3 className={`${textColor} text-[16px] font-medium mb-3`}>지난 챌린지</h3>
               {completedChallenges.length === 0 ? (
-                <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} text-center py-4`}>
+                <p className={`text-[16px] ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} text-center py-4`}>
                   아직 완료된 챌린지가 없습니다
                 </p>
               ) : (
@@ -1269,11 +1269,11 @@ const Challenge = ({
                       <div key={index}>
                         <div className="py-3">
                           <div className="flex justify-between items-center mb-2">
-                            <span className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                            <span className={`text-[16px] ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                               {challenge.challenge}
                             </span>
-                            <span 
-                              className={`text-xs font-medium`}
+                            <span
+                              className={`text-[14px] font-medium`}
                               style={challenge.progress === 100 ? {
                                 background: 'linear-gradient(135deg, #10b981, #22c55e)',
                                 WebkitBackgroundClip: 'text',
@@ -1344,7 +1344,7 @@ const Challenge = ({
                 // 초기화 성공 메시지 (선택사항)
                 // alert('습관 챌린지 기록이 초기화되었습니다.');
               }}
-              className="w-full py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg text-sm font-medium transition-colors mt-3"
+              className="w-full py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg text-[16px] font-medium transition-colors mt-3"
             >
               🔄 테스트용 초기화 (습관 챌린지 기록 삭제)
             </button>
@@ -1354,9 +1354,9 @@ const Challenge = ({
             {/* 목표 설정 및 현황 통합 */}
             <div className={`${cardBg} border-[0.3px] ${borderColor} rounded-xl p-5`}>
               <div className="flex justify-between items-center mb-4">
-                <h3 className={`${textColor} text-sm font-medium`}>플라스틱 사용 한도 설정</h3>
+                <h3 className={`${textColor} text-[16px] font-medium`}>플라스틱 사용 한도 설정</h3>
                 {goalSetDate && !canChangeGoal() && (
-                  <span className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                  <span className={`text-[14px] ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
                     월요일 변경 가능
                   </span>
                 )}
@@ -1371,7 +1371,7 @@ const Challenge = ({
                     '--gradient': getThemeGradient()
                   }}
                 >
-                  <div className={`${textColor} text-sm font-medium`}>
+                  <div className={`${textColor} text-[16px] font-medium`}>
                     이번 주 목표: {formatWeight(plasticGoal)}
                   </div>
                 </div>
@@ -1384,7 +1384,7 @@ const Challenge = ({
                       // 다른 드롭다운 닫기
                       setShowPlasticSelect(false);
                     }}
-                    className={`w-full flex justify-between items-center rounded-lg px-3 py-2 text-sm ${tempPlasticGoal ? 'gradient-border' : ''} ${isDarkMode ? 'bg-gray-700' : 'bg-white'}`}
+                    className={`w-full flex justify-between items-center rounded-lg px-3 py-2 text-[16px] ${tempPlasticGoal ? 'gradient-border' : ''} ${isDarkMode ? 'bg-gray-700' : 'bg-white'}`}
                     style={{
                       '--gradient': tempPlasticGoal ? getThemeGradient() : 'transparent'
                     }}
@@ -1420,7 +1420,7 @@ const Challenge = ({
                           onChange={(e) => setCustomGoalInput(e.target.value)}
                           className={`flex-1 ${
                             isDarkMode ? 'bg-gray-700 text-white placeholder-gray-400' : 'bg-gray-50 text-gray-900 placeholder-gray-500'
-                          } rounded px-2 py-1 text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none transition-all focus:outline-none`}
+                          } rounded px-2 py-1 text-[16px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none transition-all focus:outline-none`}
                           style={{
                             boxShadow: `inset 0 0 0 1px ${getThemeColor()}30`
                           }}
@@ -1435,7 +1435,7 @@ const Challenge = ({
                         />
                         <button 
                           onClick={addCustomGoal}
-                          className={`px-3 py-1 rounded text-xs font-medium transition-colors ${getButtonTextColor()}`}
+                          className={`px-3 py-1 rounded text-[13px] font-medium transition-colors ${getButtonTextColor()}`}
                           style={{
                             background: getThemeGradient()
                           }}
@@ -1459,9 +1459,9 @@ const Challenge = ({
                                       setTempPlasticGoal(goal);
                                       handleSetGoal(goal);
                                     }}
-                                    className={`flex-1 text-left px-3 py-2 text-sm transition-colors ${
-                                      tempPlasticGoal == goal ? 
-                                      (isDarkMode ? 'bg-gray-700 text-white' : 'bg-gray-100 text-gray-900') : 
+                                    className={`flex-1 text-left px-3 py-2 text-[16px] transition-colors ${
+                                      tempPlasticGoal == goal ?
+                                      (isDarkMode ? 'bg-gray-700 text-white' : 'bg-gray-100 text-gray-900') :
                                       (isDarkMode ? 'text-gray-200 hover:bg-gray-700' : 'text-gray-900 hover:bg-gray-50')
                                     }`}
                                   >
@@ -1507,7 +1507,7 @@ const Challenge = ({
 
                   return (
                     <>
-                      <div className="flex justify-between text-xs mb-2">
+                      <div className="flex justify-between text-[14px] mb-2">
                         <span className={`${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
                           남은 한도
                         </span>
@@ -1527,7 +1527,7 @@ const Challenge = ({
                   // 목표가 설정되지 않은 경우 - 사용량만 표시
                   return (
                     <>
-                      <div className="flex justify-between text-xs mb-2">
+                      <div className="flex justify-between text-[14px] mb-2">
                         <span className={`${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
                           이번 주 사용량
                         </span>
@@ -1549,7 +1549,7 @@ const Challenge = ({
 
             {/* 플라스틱 사용 기록하기 */}
             <div className={`${cardBg} border-[0.3px] ${borderColor} rounded-xl p-4`}>
-              <h3 className={`${textColor} text-sm font-medium mb-3`}>플라스틱 사용 기록하기</h3>
+              <h3 className={`${textColor} text-[16px] font-medium mb-3`}>플라스틱 사용 기록하기</h3>
               <div className="space-y-3">
                 <div className="relative dropdown-container">
                   {!showCustomPlastic ? (
@@ -1565,7 +1565,7 @@ const Challenge = ({
                         }}
                         className={`w-full ${inputBg} rounded-lg p-2 flex justify-between items-center`}
                       >
-                        <span className={`text-sm flex-1 text-center ${selectedPlasticItem ? (isDarkMode ? 'text-gray-300' : 'text-gray-700') : (isDarkMode ? 'text-gray-500' : 'text-gray-400')}`}>
+                        <span className={`text-[16px] flex-1 text-center ${selectedPlasticItem ? (isDarkMode ? 'text-gray-300' : 'text-gray-700') : (isDarkMode ? 'text-gray-500' : 'text-gray-400')}`}>
                           {selectedPlasticItem || '아이템을 선택해 주세요'}
                         </span>
                         <ChevronDown className={`w-4 h-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
@@ -1621,7 +1621,7 @@ const Challenge = ({
                               }
                             }}
                               placeholder="항목 이름 입력"
-                              className={`w-full ${inputBg} rounded-lg p-2 pr-8 text-sm ${textColor}`}
+                              className={`w-full ${inputBg} rounded-lg p-2 pr-8 text-[16px] ${textColor}`}
                               autoFocus
                             />
                           </div>
@@ -1701,11 +1701,11 @@ const Challenge = ({
                               }
                             }}
                               placeholder={isLoadingWeight ? "추천 중..." : "개당 무게"}
-                              className={`w-full ${inputBg} rounded-lg p-2 pr-8 text-sm ${textColor} [
+                              className={`w-full ${inputBg} rounded-lg p-2 pr-8 text-[16px] ${textColor} [
                                 appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
                               disabled={isLoadingWeight}
                             />
-                            <span className={`absolute right-3 top-1/2 -translate-y-1/2 text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                            <span className={`absolute right-3 top-1/2 -translate-y-1/2 text-[16px] ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
                               g
                             </span>
                           </div>
@@ -1758,7 +1758,7 @@ const Challenge = ({
                             }
                           }}
                           disabled={!customPlasticItem || !customPlasticWeight || isLoadingWeight}
-                          className={`flex-1 h-9 rounded-lg text-xs font-medium transition-colors flex items-center justify-center ${
+                          className={`flex-1 h-9 rounded-lg text-[14px] font-medium transition-colors flex items-center justify-center ${
                             (!customPlasticItem || !customPlasticWeight || isLoadingWeight)
                               ? 'bg-gray-400 text-gray-200 cursor-not-allowed'
                               : `${getButtonTextColor()} hover:opacity-90`
@@ -1779,7 +1779,7 @@ const Challenge = ({
                       {/* 배경 블러 오버레이 - 카드 영역만 */}
                       <div className="absolute inset-0 backdrop-blur-[1px] bg-black/[0.02] z-10 rounded-xl" onClick={() => setShowPlasticSelect(false)} />
                       <div className={`absolute z-20 w-full mt-1 ${inputBg} rounded-lg p-2 max-h-60 overflow-y-auto scrollbar-hide shadow-lg border ${borderColor}`}>
-                      <div className={`text-xs px-2 py-1 ${isDarkMode ? 'text-gray-500' : 'text-gray-400'} text-center italic`}>
+                      <div className={`text-[14px] px-2 py-1 ${isDarkMode ? 'text-gray-500' : 'text-gray-400'} text-center italic`}>
                         아이템이 없거나 무게가 맞지 않는 경우<br />
                         아래 '기타'를 클릭해서 직접 추가하세요
                       </div>
@@ -1812,7 +1812,7 @@ const Challenge = ({
                           return (
                             <div key={key}>
                               {(key !== 'custom' || category.items.length > 0) && (
-                                <div className={`px-2 py-1 text-xs font-medium ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                                <div className={`px-2 py-1 text-[14px] font-medium ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
                                   {category.label}
                                 </div>
                               )}
@@ -1832,7 +1832,7 @@ const Challenge = ({
                                         setShowPlasticSelect(false);
                                       }
                                     }}
-                                    className={`flex-1 text-left text-sm ${textColor}`}
+                                    className={`flex-1 text-left text-[16px] ${textColor}`}
                                   >
                                     <span>{item.name}</span>
                                     {item.desc && (
@@ -1897,28 +1897,28 @@ const Challenge = ({
 
                 <div className="flex gap-2">
                   <div className="flex-1">
-                    <label className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} text-xs text-center block`}>수량</label>
+                    <label className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} text-[14px] text-center block`}>수량</label>
                     <div className={`flex items-center justify-center gap-1 mt-1 h-9 ${isDarkMode ? 'bg-gray-700' : 'bg-white'} rounded-lg px-1`}>
                       <button
                         onClick={() => setPlasticQuantity(Math.max(1, plasticQuantity - 1))}
-                        className={`flex-1 h-7 rounded-md ${isDarkMode ? 'bg-gray-600 hover:bg-gray-500 text-white' : 'bg-gray-50 hover:bg-gray-100'} flex items-center justify-center text-lg font-medium transition-colors`}
+                        className={`flex-1 h-7 rounded-md ${isDarkMode ? 'bg-gray-600 hover:bg-gray-500 text-white' : 'bg-gray-50 hover:bg-gray-100'} flex items-center justify-center text-[19px] font-medium transition-colors`}
                       >
                         -
                       </button>
-                      <div className={`flex-1 h-7 flex items-center justify-center text-sm font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                      <div className={`flex-1 h-7 flex items-center justify-center text-[16px] font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
                         {plasticQuantity}
                       </div>
                       <button
                         onClick={() => setPlasticQuantity(plasticQuantity + 1)}
-                        className={`flex-1 h-7 rounded-md ${isDarkMode ? 'bg-gray-600 hover:bg-gray-500 text-white' : 'bg-gray-50 hover:bg-gray-100'} flex items-center justify-center text-lg font-medium transition-colors`}
+                        className={`flex-1 h-7 rounded-md ${isDarkMode ? 'bg-gray-600 hover:bg-gray-500 text-white' : 'bg-gray-50 hover:bg-gray-100'} flex items-center justify-center text-[19px] font-medium transition-colors`}
                       >
                         +
                       </button>
                     </div>
                   </div>
                   <div className="flex-1">
-                    <label className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} text-xs text-center block`}>총 무게</label>
-                    <div className={`h-9 mt-1 ${isDarkMode ? 'bg-gray-700' : 'bg-white'} rounded-lg flex items-center justify-center text-sm font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                    <label className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} text-[14px] text-center block`}>총 무게</label>
+                    <div className={`h-9 mt-1 ${isDarkMode ? 'bg-gray-700' : 'bg-white'} rounded-lg flex items-center justify-center text-[16px] font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
                       {(() => {
                         let totalWeight = 0;
                         if (showCustomPlastic && customPlasticWeight) {
@@ -2009,7 +2009,7 @@ const Challenge = ({
                       setPlasticQuantity(1);
                     }
                   }}
-                  className={`w-full py-2 rounded-lg text-sm font-medium transition-colors ${
+                  className={`w-full py-2 rounded-lg text-[16px] font-medium transition-colors ${
                     isDarkMode ? 'bg-white text-gray-900 hover:bg-gray-100' : 'bg-gray-900 text-white hover:bg-gray-800'
                   }`}
                 >
@@ -2020,7 +2020,7 @@ const Challenge = ({
 
             {/* 사용량 분석 */}
             <div className={`${cardBg} border-[0.3px] ${borderColor} rounded-xl p-4`}>
-              <h3 className={`${textColor} text-sm font-medium mb-3`}>사용량 분석</h3>
+              <h3 className={`${textColor} text-[16px] font-medium mb-3`}>사용량 분석</h3>
               <div className="space-y-2">
                 {(() => {
                   // 아이템별로 그룹핑 및 정렬
@@ -2046,9 +2046,9 @@ const Challenge = ({
                       count: data.count,
                       percentage: totalWeight > 0 ? Math.round((data.weight / totalWeight) * 100) : 0
                     }));
-                  
+
                   if (sortedItems.length === 0) {
-                    return <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} text-center`}>아직 기록된 데이터가 없습니다</p>;
+                    return <p className={`text-[16px] ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} text-center`}>아직 기록된 데이터가 없습니다</p>;
                   }
                   
                   // 색상 테마 함수
@@ -2088,7 +2088,7 @@ const Challenge = ({
                   };
                   
                   return (
-                    <div className={`${sortedItems.length > 4 ? 'max-h-[135px] overflow-y-auto' : ''}`} style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+                    <div className={`${sortedItems.length > 4 ? 'max-h-[145px] overflow-y-auto' : ''}`} style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
                       <style>{`
                         div::-webkit-scrollbar {
                           display: none;
@@ -2096,7 +2096,7 @@ const Challenge = ({
                       `}</style>
                       {sortedItems.map((item, index) => (
                         <div key={item.name} className="mb-2">
-                          <div className="flex justify-between text-xs mb-1">
+                          <div className="flex justify-between text-[14px] mb-1">
                             <span className={`${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                               {item.name} ({item.count}개, {formatWeight(item.weight)})
                             </span>
@@ -2118,8 +2118,8 @@ const Challenge = ({
 
             {/* 주간 사용량 그래프 */}
             <div className={`${cardBg} border-[0.3px] ${borderColor} rounded-xl p-4`}>
-              <h3 className={`${textColor} text-sm font-medium mb-3`}>주간 사용량(지난 7일)</h3>
-              <div className="flex justify-between items-end" style={{ height: '135px' }}>
+              <h3 className={`${textColor} text-[16px] font-medium mb-3`}>주간 사용량(지난 7일)</h3>
+              <div className="flex justify-between items-end" style={{ height: '145px' }}>
                 {(() => {
                   // 지난 7일간의 데이터 계산
                   const today = new Date(testDate || new Date());
@@ -2194,7 +2194,7 @@ const Challenge = ({
                         {/* 사용량 텍스트를 그래프 위에 표시 */}
                         {data.usage > 0 && (
                           <span 
-                            className={`text-[10px] font-medium absolute left-1/2 -translate-x-1/2 whitespace-nowrap ${
+                            className={`text-[13px] font-medium absolute left-1/2 -translate-x-1/2 whitespace-nowrap ${
                               isDarkMode ? 'text-gray-300' : 'text-gray-700'
                             }`}
                             style={{
@@ -2205,10 +2205,10 @@ const Challenge = ({
                           </span>
                         )}
                       </div>
-                      <span className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} mt-1`}>
+                      <span className={`text-[14px] ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} mt-1`}>
                         {data.day}
                       </span>
-                      <span className={`text-[10px] ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                      <span className={`text-[13px] ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>
                         {data.date}
                       </span>
                     </div>
@@ -2218,8 +2218,8 @@ const Challenge = ({
             </div>
 
             {/* 이번 주 기록 */}
-            <div className={`${cardBg} border-[0.3px] ${borderColor} rounded-xl p-3 h-[280px] flex flex-col`}>
-              <h3 className={`${textColor} text-sm font-medium mb-1.5`}>이번 주 기록</h3>
+            <div className={`${cardBg} border-[0.3px] ${borderColor} rounded-xl p-3 h-[300px] flex flex-col`}>
+              <h3 className={`${textColor} text-[16px] font-medium mb-1.5`}>이번 주 기록</h3>
               <div className="flex-1 overflow-y-auto scrollbar-hide">
                 {(() => {
                   // 이번 주 시작일 (월요일) 계산
@@ -2289,28 +2289,28 @@ const Challenge = ({
                     
                     return (
                       <div key={index} className={`border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-100'} last:border-b-0`}>
-                        <div 
+                        <div
                           className="py-[0.3rem] cursor-pointer hover:bg-opacity-5 hover:bg-gray-500 transition-colors"
                           onClick={() => toggleDay(index)}
                         >
                           <div className="flex justify-between items-center">
                             <div className="flex items-center gap-1.5">
-                              <span className={`text-[10px] transition-transform inline-block w-2 ${
-                                dayData.records.length > 0 
+                              <span className={`text-[13px] transition-transform inline-block w-2 ${
+                                dayData.records.length > 0
                                   ? `${textColor} ${isExpanded ? 'rotate-90' : ''}`
                                   : isDarkMode ? 'text-gray-600' : 'text-gray-300'
                               }`}>
                                 {dayData.records.length > 0 ? '▶' : '▷'}
                               </span>
-                              <span className={`text-xs ${textColor}`}>
+                              <span className={`text-[14px] ${textColor}`}>
                                 {dayData.day}요일
-                                <span className={`text-[10px] ${isDarkMode ? 'text-gray-500' : 'text-gray-400'} ml-1`}>
+                                <span className={`text-[13px] ${isDarkMode ? 'text-gray-500' : 'text-gray-400'} ml-1`}>
                                   ({dayData.date.toLocaleDateString('ko-KR', { month: 'numeric', day: 'numeric' })})
                                 </span>
                               </span>
                             </div>
                             {dayData.totalWeight > 0 && (
-                              <span className={`text-[10px] ${textColor}`}>
+                              <span className={`text-[13px] ${textColor}`}>
                                 {formatWeight(dayData.totalWeight)}
                               </span>
                             )}
@@ -2321,7 +2321,7 @@ const Challenge = ({
                         {isExpanded && dayData.records.length > 0 && (
                           <div className={`px-4 pb-0.5 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
                             {groupedItems.map((item, idx) => (
-                              <div key={idx} className="text-[10px] py-0 pl-3">
+                              <div key={idx} className="text-[13px] py-0 pl-3">
                                 - {item.item} ({item.quantity}개, {formatWeight(item.totalWeight)})
                               </div>
                             ))}
@@ -2334,8 +2334,8 @@ const Challenge = ({
               </div>
               <div className={`mt-1.5 pt-1.5 border-t ${borderColor}`}>
                 <div className="flex justify-between items-center">
-                  <span className={`text-sm font-medium ${textColor}`}>주간 총계</span>
-                  <span className={`text-xs ${textColor}`}>
+                  <span className={`text-[16px] font-medium ${textColor}`}>주간 총계</span>
+                  <span className={`text-[14px] ${textColor}`}>
                     {(() => {
                       const today = new Date(testDate || new Date());
                       const dayOfWeek = today.getDay();
@@ -2362,9 +2362,9 @@ const Challenge = ({
             </div>
 
             {/* 사용량 섹션 */}
-            <div className={`${cardBg} border-[0.3px] ${borderColor} rounded-xl p-3 h-[280px] flex flex-col`}>
+            <div className={`${cardBg} border-[0.3px] ${borderColor} rounded-xl p-3 h-[300px] flex flex-col`}>
               <div className="flex justify-between items-center mb-1.5">
-                <h3 className={`${textColor} text-sm font-medium`}>사용량</h3>
+                <h3 className={`${textColor} text-[16px] font-medium`}>사용량</h3>
                 <div className="relative dropdown-container">
                   <button
                     onClick={(e) => {
@@ -2374,7 +2374,7 @@ const Challenge = ({
                       setShowGoalDropdown(false);
                       setShowPlasticSelect(false);
                     }}
-                    className={`flex items-center gap-1 px-2 py-1 text-xs ${
+                    className={`flex items-center gap-1 px-2 py-1 text-[14px] ${
                       isDarkMode ? 'bg-gray-700 text-gray-300 hover:bg-gray-600' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                     } rounded transition-colors`}
                   >
@@ -2393,8 +2393,8 @@ const Challenge = ({
                               setUsagePeriod(period);
                               setShowUsagePeriodDropdown(false);
                             }}
-                            className={`w-full text-left px-2 py-1.5 text-xs transition-colors whitespace-nowrap ${
-                              usagePeriod === period 
+                            className={`w-full text-left px-2 py-1.5 text-[14px] transition-colors whitespace-nowrap ${
+                              usagePeriod === period
                                 ? (isDarkMode ? 'bg-gray-700 text-white' : 'bg-gray-100 text-gray-900')
                                 : (isDarkMode ? 'text-gray-200 hover:bg-gray-700' : 'text-gray-900 hover:bg-gray-50')
                             }`}
@@ -2417,7 +2417,7 @@ const Challenge = ({
                     if (data.length === 0) {
                       return (
                         <div className="flex items-center justify-center w-full h-full">
-                          <span className={`text-xs ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                          <span className={`text-[14px] ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>
                             데이터가 없습니다
                           </span>
                         </div>
@@ -2440,6 +2440,63 @@ const Challenge = ({
                       <>
                         {/* 점과 점 사이 개별 연결선 - 0이 아닌 값만 연결 */}
                         <svg className="absolute inset-0 pointer-events-none" style={{ height: `${graphHeight}px`, width: '100%' }}>
+                          {/* 그라데이션 정의 */}
+                          <defs>
+                            <linearGradient id="usageGraphGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                              {(() => {
+                                // 랭크별 그라데이션 색상 정의
+                                if (userRanking === 'basic') {
+                                  const color = isDarkMode ? '#e5e7eb' : '#374151';
+                                  return (
+                                    <>
+                                      <stop offset="0%" stopColor={color} />
+                                      <stop offset="100%" stopColor={color} />
+                                    </>
+                                  );
+                                } else if (userRanking === 'bronze') {
+                                  return (
+                                    <>
+                                      <stop offset="0%" stopColor="#06b6d4" />
+                                      <stop offset="50%" stopColor="#3b82f6" />
+                                      <stop offset="100%" stopColor="#2563eb" />
+                                    </>
+                                  );
+                                } else if (userRanking === 'silver') {
+                                  return (
+                                    <>
+                                      <stop offset="0%" stopColor="#14b8a6" />
+                                      <stop offset="50%" stopColor="#10b981" />
+                                      <stop offset="100%" stopColor="#059669" />
+                                    </>
+                                  );
+                                } else if (userRanking === 'gold') {
+                                  return (
+                                    <>
+                                      <stop offset="0%" stopColor="#fbbf24" />
+                                      <stop offset="50%" stopColor="#f59e0b" />
+                                      <stop offset="100%" stopColor="#f97316" />
+                                    </>
+                                  );
+                                } else if (userRanking === 'platinum') {
+                                  return (
+                                    <>
+                                      <stop offset="0%" stopColor="#e879f9" />
+                                      <stop offset="50%" stopColor="#d946ef" />
+                                      <stop offset="100%" stopColor="#c026d3" />
+                                    </>
+                                  );
+                                }
+                                // default
+                                return (
+                                  <>
+                                    <stop offset="0%" stopColor="#06b6d4" />
+                                    <stop offset="50%" stopColor="#3b82f6" />
+                                    <stop offset="100%" stopColor="#2563eb" />
+                                  </>
+                                );
+                              })()}
+                            </linearGradient>
+                          </defs>
                           {data.length >= 1 && (() => {
                             const lines = [];
                             const dots = [];
@@ -2475,7 +2532,7 @@ const Challenge = ({
                                       y1={y1}
                                       x2={`${x2}%`}
                                       y2={y2}
-                                      stroke={getThemeColor()}
+                                      stroke="url(#usageGraphGradient)"
                                       strokeWidth="0.5"
                                       strokeLinecap="round"
                                     />
@@ -2493,7 +2550,7 @@ const Challenge = ({
                                     cx={`${x}%`}
                                     cy={y}
                                     r="2.5"
-                                    fill={getThemeColor()}
+                                    fill="url(#usageGraphGradient)"
                                   />
                                 );
                                 
@@ -2515,7 +2572,7 @@ const Challenge = ({
                                   y={avgY}
                                   dominantBaseline="middle"
                                   textAnchor="start"
-                                  className={`text-[10px] ${isDarkMode ? 'fill-white' : 'fill-black'}`}
+                                  className={`text-[13px] ${isDarkMode ? 'fill-white' : 'fill-black'}`}
                                 >
                                   평균
                                 </text>
@@ -2534,7 +2591,7 @@ const Challenge = ({
                                   y={avgY}
                                   dominantBaseline="middle"
                                   textAnchor="end"
-                                  className={`text-[10px] ${isDarkMode ? 'fill-white' : 'fill-black'}`}
+                                  className={`text-[13px] ${isDarkMode ? 'fill-white' : 'fill-black'}`}
                                 >
                                   {formatWeight(Math.round(avgValue))}
                                 </text>
@@ -2559,8 +2616,8 @@ const Challenge = ({
                                 {/* 데이터 포인트 제거 - 선만 표시 */}
                                 {/* 최대값과 최소값만 표시 */}
                                 {isMax && item.value > 0 && (
-                                  <span 
-                                    className={`text-[11px] font-medium absolute left-1/2 -translate-x-1/2 whitespace-nowrap ${
+                                  <span
+                                    className={`text-[13px] font-medium absolute left-1/2 -translate-x-1/2 whitespace-nowrap ${
                                       isDarkMode ? 'text-gray-300' : 'text-gray-700'
                                     }`}
                                     style={{
@@ -2571,8 +2628,8 @@ const Challenge = ({
                                   </span>
                                 )}
                                 {isMin && item.value > 0 && (
-                                  <span 
-                                    className={`text-[11px] font-medium absolute left-1/2 -translate-x-1/2 whitespace-nowrap ${
+                                  <span
+                                    className={`text-[13px] font-medium absolute left-1/2 -translate-x-1/2 whitespace-nowrap ${
                                       isDarkMode ? 'text-gray-300' : 'text-gray-700'
                                     }`}
                                     style={{
@@ -2583,7 +2640,7 @@ const Challenge = ({
                                   </span>
                                 )}
                               </div>
-                              <span className={`text-[11px] ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} mt-1`}>
+                              <span className={`text-[13px] ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} mt-4`}>
                                 {usagePeriod === '1년' ? item.label.replace('월', '') : item.label}
                               </span>
                             </div>
@@ -2598,7 +2655,7 @@ const Challenge = ({
               {/* 기간 선택 안 된 경우 */}
               {!usagePeriod && (
                 <div className="flex-1 flex items-center justify-center">
-                  <span className={`text-xs ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                  <span className={`text-[14px] ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>
                     기간을 선택해주세요
                   </span>
                 </div>
@@ -2611,7 +2668,7 @@ const Challenge = ({
                 onClick={resetTestData}
                 className={`w-full py-3 ${
                   isDarkMode ? 'bg-red-600 hover:bg-red-700' : 'bg-red-500 hover:bg-red-600'
-                } text-white rounded-lg text-sm font-medium transition-colors`}
+                } text-white rounded-lg text-[16px] font-medium transition-colors`}
               >
                 🔄 테스트용 기록 리셋
               </button>
@@ -2620,7 +2677,7 @@ const Challenge = ({
             {/* 테스트용 날짜 변경 컨트롤 - 제로 챌린지 하단에 배치 */}
             <div className={`mt-4 mx-3 p-3 ${cardBg} border-[0.3px] ${borderColor} rounded-xl`}>
               <div className="flex items-center justify-center gap-3">
-                <span className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                <span className={`text-[14px] ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
                   테스트 날짜: {testDate ? testDate.toLocaleDateString('ko-KR') : new Date().toLocaleDateString('ko-KR')}
                 </span>
                 <button
@@ -2629,7 +2686,7 @@ const Challenge = ({
                     setTestDate(newDate);
                     showToast('오늘 날짜로 변경됨', 'info');
                   }}
-                  className={`px-3 py-1 rounded text-xs font-medium ${
+                  className={`px-3 py-1 rounded text-[14px] font-medium ${
                     isDarkMode ? 'bg-gray-700 text-white hover:bg-gray-600' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                   } transition-colors`}
                 >
@@ -2642,7 +2699,7 @@ const Challenge = ({
                     setTestDate(newDate);
                     showToast(`날짜 변경: ${newDate.toLocaleDateString('ko-KR')}`, 'info');
                   }}
-                  className={`px-3 py-1 rounded text-xs font-medium ${
+                  className={`px-3 py-1 rounded text-[14px] font-medium ${
                     isDarkMode ? 'bg-gray-700 text-white hover:bg-gray-600' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                   } transition-colors`}
                 >

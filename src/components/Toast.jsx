@@ -32,7 +32,7 @@ const Toast = ({ message, type = 'success', isVisible, onClose, isDarkMode, rank
   return (
     <div className="fixed top-20 left-1/2 transform -translate-x-1/2 z-50 animate-slide-down">
       <div className={`${bgColor} ${textColor} rounded-xl shadow-2xl pl-4 pr-3 py-2 flex items-center justify-center whitespace-nowrap inline-flex`}>
-        <p className="text-xs font-medium text-center">{message}</p>
+        <p className="text-[13px] font-normal text-center">{message}</p>
         <button 
           onClick={onClose}
           className="hover:bg-white/20 rounded-full p-0.5 transition-colors ml-2 flex items-center justify-center"

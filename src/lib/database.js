@@ -295,7 +295,7 @@ export const getStoreFish = async () => {
   try {
     const { data, error } = await supabase
       .from('store')
-      .select('*')
+      .select('item_id, item_name, price, rank, category')
       .eq('category', 'Fish')
       .order('rank', { ascending: true });
 
@@ -312,7 +312,7 @@ export const getStoreDecorations = async () => {
   try {
     const { data, error } = await supabase
       .from('store')
-      .select('*')
+      .select('item_id, item_name, price, rank, category')
       .eq('category', 'Decoration')
       .order('rank', { ascending: true });
 

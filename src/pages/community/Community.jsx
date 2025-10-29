@@ -240,7 +240,7 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
       <div className="min-h-full">
         {/* 친구 초대 */}
         <div className={`mx-3 mt-4 ${cardBg} border ${borderColor} rounded-xl p-4`}>
-          <h3 className={`${textColor} text-[15px] font-medium mb-3 text-center`}>초대</h3>
+          <h3 className={`${textColor} text-[16px] font-medium mb-3 text-center`}>초대</h3>
           <div className="flex gap-2">
             <button
               onClick={() => {
@@ -292,7 +292,7 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
                   }
                 }
               }}
-              className={`flex-1 relative overflow-hidden py-2 rounded-xl text-[15px] font-medium flex items-center justify-center transition-all transform hover:scale-[1.02]`}
+              className={`flex-1 relative overflow-hidden py-2 rounded-xl text-[16px] font-medium flex items-center justify-center transition-all transform hover:scale-[1.02]`}
               style={{
                 background: isDarkMode
                   ? 'rgba(255,255,255,0.07)'
@@ -333,7 +333,7 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
                   }
                 });
               }}
-              className={`flex-1 relative overflow-hidden py-2 rounded-xl text-[15px] font-medium flex items-center justify-center transition-all transform hover:scale-[1.02]`}
+              className={`flex-1 relative overflow-hidden py-2 rounded-xl text-[16px] font-medium flex items-center justify-center transition-all transform hover:scale-[1.02]`}
               style={{
                 background: isDarkMode
                   ? 'rgba(255,255,255,0.07)'
@@ -352,7 +352,7 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
             </button>
             <button
               onClick={() => setShowSearchPage(true)}
-              className={`flex-1 relative overflow-hidden py-2 rounded-xl text-[15px] font-medium flex items-center justify-center transition-all transform hover:scale-[1.02]`}
+              className={`flex-1 relative overflow-hidden py-2 rounded-xl text-[16px] font-medium flex items-center justify-center transition-all transform hover:scale-[1.02]`}
               style={{
                 background: isDarkMode 
                   ? 'rgba(255,255,255,0.07)'
@@ -375,10 +375,10 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
         {/* 친구 랭킹 */}
         <div className={`mx-3 mt-4 ${cardBg} border ${borderColor} rounded-xl p-4`}>
           <div className="flex items-center justify-between mb-3">
-            <h3 className={`${textColor} text-[15px] font-medium`}>친구</h3>
+            <h3 className={`${textColor} text-[16px] font-medium`}>친구</h3>
             <button
               onClick={onShowFriendsList}
-              className={`text-[13px] ${textColor} hover:opacity-70 transition-opacity flex items-center gap-0.5`}
+              className={`text-[14px] ${textColor} hover:opacity-70 transition-opacity flex items-center gap-0.5`}
             >
               더보기
               <ChevronDown className="w-3 h-3" />
@@ -407,7 +407,7 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
                           <SilverIcon size={24} />
                         ) : (
                           <div 
-                            className={`w-[20px] h-[20px] rounded-full border flex items-center justify-center text-[11px] font-medium ${
+                            className={`w-[20px] h-[20px] rounded-full border flex items-center justify-center text-[12px] font-medium ${
                               isMe ? (isDarkMode ? 'text-white' : 'text-gray-900') : (isDarkMode ? 'text-gray-300' : 'text-gray-700')
                             }`}
                             style={{ 
@@ -419,11 +419,11 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
                         )}
                       </div>
                       <div className="flex-1 flex flex-col items-start">
-                        <span className={`${displayRank === 1 ? 'text-[15px]' : displayRank === 2 ? 'text-[14px]' : 'text-[13px]'} ${isMe ? `font-medium ${textColor}` : isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>{friend.name}</span>
-                        {friend.id && <span className={`${displayRank === 1 ? 'text-[11px]' : displayRank === 2 ? 'text-[10px]' : 'text-[9px]'} ${isDarkMode ? 'text-gray-500' : 'text-gray-400'} ${displayRank === 1 ? '-mt-[1.5px]' : displayRank === 2 ? '-mt-[3px]' : '-mt-[1px]'}`}>@{isMe ? currentUserNickname : friend.id}</span>}
+                        <span className={`${displayRank === 1 ? 'text-[16px]' : displayRank === 2 ? 'text-[15px]' : 'text-[14px]'} ${isMe ? `font-medium ${textColor}` : isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>{friend.name}</span>
+                        {friend.id && <span className={`${displayRank === 1 ? 'text-[12px]' : displayRank === 2 ? 'text-[12px]' : 'text-[12px]'} ${isDarkMode ? 'text-gray-500' : 'text-gray-400'} ${displayRank === 1 ? '-mt-[1.5px]' : displayRank === 2 ? '-mt-[3px]' : '-mt-[1px]'}`}>@{isMe ? currentUserNickname : friend.id}</span>}
                       </div>
                     </div>
-                    <span className={`${displayRank === 1 ? 'text-[13px]' : displayRank === 2 ? 'text-[12px]' : 'text-[11px]'} ${isMe ? `font-medium ${textColor}` : isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>{friend.score}</span>
+                    <span className={`${displayRank === 1 ? 'text-[14px]' : displayRank === 2 ? 'text-[13px]' : 'text-[12px]'} ${isMe ? `font-medium ${textColor}` : isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>{friend.score}</span>
                   </div>
                   {index < 2 && <div className={`border-b ${borderColor}`}></div>}
                 </div>
@@ -440,18 +440,18 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
                       marginRight: '8px'
                     }}>
                       <div 
-                        className={`w-[20px] h-[20px] rounded-full border flex items-center justify-center text-[11px] font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
+                        className={`w-[20px] h-[20px] rounded-full border flex items-center justify-center text-[12px] font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
                         style={{ borderColor: isDarkMode ? '#9ca3af' : '#6b7280' }}
                       >
                         {myRank}
                       </div>
                     </div>
                     <div className="flex-1 flex flex-col items-start">
-                      <span className={`text-[13px] font-medium ${textColor}`}>나</span>
-                      {currentUserNickname && <span className={`text-[9px] ${isDarkMode ? 'text-gray-500' : 'text-gray-400'} -mt-[1px]`}>@{currentUserNickname}</span>}
+                      <span className={`text-[14px] font-medium ${textColor}`}>나</span>
+                      {currentUserNickname && <span className={`text-[12px] ${isDarkMode ? 'text-gray-500' : 'text-gray-400'} -mt-[1px]`}>@{currentUserNickname}</span>}
                     </div>
                   </div>
-                  <span className={`text-[11px] font-medium ${textColor}`}>{myScore}</span>
+                  <span className={`text-[12px] font-medium ${textColor}`}>{myScore}</span>
                 </div>
               </>
             )}
@@ -461,10 +461,10 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
         {/* 전체 랭킹 */}
         <div className={`mx-3 mt-4 ${cardBg} border ${borderColor} rounded-xl p-4`}>
           <div className="flex items-center justify-between mb-3">
-            <h3 className={`${textColor} text-[15px] font-medium`}>전체</h3>
+            <h3 className={`${textColor} text-[16px] font-medium`}>전체</h3>
             <button
               onClick={onShowGlobalList}
-              className={`text-[13px] ${textColor} hover:opacity-70 transition-opacity flex items-center gap-0.5`}
+              className={`text-[14px] ${textColor} hover:opacity-70 transition-opacity flex items-center gap-0.5`}
             >
               더보기
               <ChevronDown className="w-3 h-3" />
@@ -494,7 +494,7 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
                           <SilverIcon size={24} />
                         ) : (
                           <div 
-                            className={`w-[20px] h-[20px] rounded-full border flex items-center justify-center text-[11px] font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}
+                            className={`w-[20px] h-[20px] rounded-full border flex items-center justify-center text-[12px] font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}
                             style={{ 
                               borderColor: isDarkMode ? '#4b5563' : '#d1d5db'
                             }}
@@ -504,11 +504,11 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
                         )}
                       </div>
                       <div className="flex-1 flex flex-col items-start">
-                        <span className={`${actualRank === 1 ? 'text-[15px]' : actualRank === 2 ? 'text-[14px]' : 'text-[13px]'} ${isMe ? `font-medium ${textColor}` : isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>{user.name}</span>
-                        {user.id && <span className={`${actualRank === 1 ? 'text-[11px]' : actualRank === 2 ? 'text-[10px]' : 'text-[9px]'} ${isDarkMode ? 'text-gray-500' : 'text-gray-400'} ${actualRank === 1 ? '-mt-[1.5px]' : actualRank === 2 ? '-mt-[3px]' : '-mt-[1px]'}`}>@{isMe ? currentUserNickname : user.id}</span>}
+                        <span className={`${actualRank === 1 ? 'text-[16px]' : actualRank === 2 ? 'text-[15px]' : 'text-[14px]'} ${isMe ? `font-medium ${textColor}` : isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>{user.name}</span>
+                        {user.id && <span className={`${actualRank === 1 ? 'text-[12px]' : actualRank === 2 ? 'text-[12px]' : 'text-[12px]'} ${isDarkMode ? 'text-gray-500' : 'text-gray-400'} ${actualRank === 1 ? '-mt-[1.5px]' : actualRank === 2 ? '-mt-[3px]' : '-mt-[1px]'}`}>@{isMe ? currentUserNickname : user.id}</span>}
                       </div>
                     </div>
-                    <span className={`${actualRank === 1 ? 'text-[13px]' : actualRank === 2 ? 'text-[12px]' : 'text-[11px]'} ${isMe ? `font-medium ${textColor}` : isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>{user.score}</span>
+                    <span className={`${actualRank === 1 ? 'text-[14px]' : actualRank === 2 ? 'text-[13px]' : 'text-[12px]'} ${isMe ? `font-medium ${textColor}` : isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>{user.score}</span>
                   </div>
                   {index < 2 && <div className={`border-b ${borderColor}`}></div>}
                 </div>
@@ -526,18 +526,18 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
                       marginRight: '8px'
                     }}>
                       <div 
-                        className={`w-[20px] h-[20px] rounded-full border flex items-center justify-center text-[11px] font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
+                        className={`w-[20px] h-[20px] rounded-full border flex items-center justify-center text-[12px] font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
                         style={{ borderColor: isDarkMode ? '#9ca3af' : '#6b7280' }}
                       >
                         {myGlobalRank <= 99 ? myGlobalRank : '···'}
                       </div>
                     </div>
                     <div className="flex-1 flex flex-col items-start">
-                      <span className={`text-[13px] font-medium ${textColor}`}>나</span>
-                      {currentUserNickname && <span className={`text-[9px] ${isDarkMode ? 'text-gray-500' : 'text-gray-400'} -mt-[1px]`}>@{currentUserNickname}</span>}
+                      <span className={`text-[14px] font-medium ${textColor}`}>나</span>
+                      {currentUserNickname && <span className={`text-[12px] ${isDarkMode ? 'text-gray-500' : 'text-gray-400'} -mt-[1px]`}>@{currentUserNickname}</span>}
                     </div>
                   </div>
-                  <span className={`text-[11px] font-medium ${textColor}`}>
+                  <span className={`text-[12px] font-medium ${textColor}`}>
                     상위 {topPercentage}%
                   </span>
                 </div>

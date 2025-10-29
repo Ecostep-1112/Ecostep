@@ -197,7 +197,7 @@ const Rewards = ({
       <div className="min-h-full">
         {/* 현재 랭크 */}
         <div className={`mx-3 mt-4 ${cardBg} border ${borderColor} rounded-xl p-6`}>
-          <h3 className={`text-center text-[15px] font-medium mb-4 ${isDarkMode ? 'text-white' : 'text-black'}`}>현재 랭크</h3>
+          <h3 className={`text-center text-[18px] font-medium mb-4 ${isDarkMode ? 'text-white' : 'text-black'}`}>현재 랭크</h3>
           
           {/* 랭크 표시 직사각형 */}
           <div className="relative mb-4">
@@ -228,7 +228,7 @@ const Rewards = ({
                 <div className="absolute top-15 left-20 w-0.5 h-0.5 bg-white rounded-full opacity-40"></div>
                 <div className="absolute bottom-2 left-2/3 w-0.5 h-0.5 bg-white rounded-full opacity-70"></div>
               </div>
-              <span className="text-white font-bold text-[21px] relative z-10">{rankNames[userRanking]}</span>
+              <span className="text-white font-medium text-[22px] relative z-10">{rankNames[userRanking]}</span>
               
               {/* 훈장 스타일 랭크 아이콘 - 박스 내부 */}
               <div className="absolute top-1 right-2 z-10">
@@ -259,7 +259,7 @@ const Rewards = ({
               />
             </div>
 
-            <p className={`text-center ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} text-[13px] mt-1`}>
+            <p className={`text-center ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} text-[17px] mt-1`}>
               {(() => {
                 const progress = calculateRankProgress ? calculateRankProgress(totalEarnedPoints || 0) : 0;
                 const nextRank = userRanking === 'bronze' ? '실버' : 
@@ -296,7 +296,7 @@ const Rewards = ({
           </div>
 
           {/* 랭크 아이콘 표시 */}
-          <div className="flex justify-between text-[13px] px-2">
+          <div className="flex justify-between text-[17px] px-2">
             <div className="flex flex-col items-center gap-1">
               <div className={`${userRanking === 'bronze' || userRanking === 'silver' || userRanking === 'gold' || userRanking === 'platinum' ? '' : 'opacity-20 grayscale'}`}>
                 <BronzeIcon size={28} />
@@ -358,7 +358,7 @@ const Rewards = ({
 
         {/* 랭킹 보상 - 어항 */}
         <div className="mx-3 mt-4">
-          <h3 className={`${textColor} text-[15px] font-medium mb-3`}>랭킹 보상</h3>
+          <h3 className={`${textColor} text-[18px] font-medium mb-3`}>랭킹 보상</h3>
           <div className="grid grid-cols-3 gap-1.5">
             {/* 실버 어항 */}
             <button
@@ -382,21 +382,21 @@ const Rewards = ({
                 </div>
                 
                 <div className="flex-1 flex flex-col items-center justify-center w-full px-1">
-                  <p className={`text-[12px] leading-tight ${claimedTanks.includes('silver') ? 'text-green-700' : (userRanking === 'silver' || userRanking === 'gold' || userRanking === 'platinum') ? (isDarkMode ? 'text-gray-300' : 'text-gray-700') : 'text-gray-500'} text-center font-medium`}>
+                  <p className={`text-[15px] leading-tight ${claimedTanks.includes('silver') ? 'text-green-700' : (userRanking === 'silver' || userRanking === 'gold' || userRanking === 'platinum') ? (isDarkMode ? 'text-gray-300' : 'text-gray-700') : 'text-gray-500'} text-center font-medium`}>
                     실버 어항
                   </p>
-                  <p className={`text-[9px] ${isDarkMode ? 'text-gray-500' : 'text-gray-400'} mt-0.5 text-center leading-tight`}>
+                  <p className={`text-[13px] ${isDarkMode ? 'text-gray-500' : 'text-gray-400'} mt-0.5 text-center leading-tight`}>
                     실버 랭킹 보상
                   </p>
                 </div>
                 
                 <div className="h-[20px] flex items-center justify-center w-full">
                   {claimedTanks.includes('silver') ? (
-                    <p className="text-[13px] text-green-500 font-medium text-center">수령 완료</p>
+                    <p className="text-[17px] text-green-500 font-medium text-center">수령 완료</p>
                   ) : (userRanking === 'silver' || userRanking === 'gold' || userRanking === 'platinum') ? (
-                    <p className="text-[13px] font-medium text-center bg-gradient-to-r from-cyan-500 via-blue-500 to-blue-600 bg-clip-text text-transparent">수령 가능</p>
+                    <p className="text-[17px] font-medium text-center bg-gradient-to-r from-cyan-500 via-blue-500 to-blue-600 bg-clip-text text-transparent">수령 가능</p>
                   ) : (
-                    <p className="text-[13px] text-gray-400 text-center">실버 도달</p>
+                    <p className="text-[17px] text-gray-400 text-center">실버 도달</p>
                   )}
                 </div>
               </div>
@@ -434,21 +434,21 @@ const Rewards = ({
                 </div>
                 
                 <div className="flex-1 flex flex-col items-center justify-center w-full px-1">
-                  <p className={`text-[12px] leading-tight ${claimedTanks.includes('gold') ? 'text-green-700' : (userRanking === 'gold' || userRanking === 'platinum') ? (isDarkMode ? 'text-gray-300' : 'text-gray-700') : 'text-gray-500'} text-center font-medium`}>
+                  <p className={`text-[15px] leading-tight ${claimedTanks.includes('gold') ? 'text-green-700' : (userRanking === 'gold' || userRanking === 'platinum') ? (isDarkMode ? 'text-gray-300' : 'text-gray-700') : 'text-gray-500'} text-center font-medium`}>
                     골드 어항
                   </p>
-                  <p className={`text-[9px] ${isDarkMode ? 'text-gray-500' : 'text-gray-400'} mt-0.5 text-center leading-tight`}>
+                  <p className={`text-[13px] ${isDarkMode ? 'text-gray-500' : 'text-gray-400'} mt-0.5 text-center leading-tight`}>
                     골드 랭킹 보상
                   </p>
                 </div>
                 
                 <div className="h-[20px] flex items-center justify-center w-full">
                   {claimedTanks.includes('gold') ? (
-                    <p className="text-[13px] text-green-500 font-medium text-center">수령 완료</p>
+                    <p className="text-[17px] text-green-500 font-medium text-center">수령 완료</p>
                   ) : (userRanking === 'gold' || userRanking === 'platinum') ? (
-                    <p className="text-[13px] font-medium text-center bg-gradient-to-r from-cyan-500 via-blue-500 to-blue-600 bg-clip-text text-transparent">수령 가능</p>
+                    <p className="text-[17px] font-medium text-center bg-gradient-to-r from-cyan-500 via-blue-500 to-blue-600 bg-clip-text text-transparent">수령 가능</p>
                   ) : (
-                    <p className="text-[13px] text-gray-400 text-center">골드 도달</p>
+                    <p className="text-[17px] text-gray-400 text-center">골드 도달</p>
                   )}
                 </div>
               </div>
@@ -486,21 +486,21 @@ const Rewards = ({
                 </div>
                 
                 <div className="flex-1 flex flex-col items-center justify-center w-full px-1">
-                  <p className={`text-[12px] leading-tight ${claimedTanks.includes('platinum') ? 'text-green-700' : userRanking === 'platinum' ? (isDarkMode ? 'text-gray-300' : 'text-gray-700') : 'text-gray-500'} text-center font-medium`}>
+                  <p className={`text-[15px] leading-tight ${claimedTanks.includes('platinum') ? 'text-green-700' : userRanking === 'platinum' ? (isDarkMode ? 'text-gray-300' : 'text-gray-700') : 'text-gray-500'} text-center font-medium`}>
                     플래티넘 어항
                   </p>
-                  <p className={`text-[9px] ${isDarkMode ? 'text-gray-500' : 'text-gray-400'} mt-0.5 text-center leading-tight`}>
+                  <p className={`text-[13px] ${isDarkMode ? 'text-gray-500' : 'text-gray-400'} mt-0.5 text-center leading-tight`}>
                     플래티넘 랭킹 보상
                   </p>
                 </div>
                 
                 <div className="h-[20px] flex items-center justify-center w-full">
                   {claimedTanks.includes('platinum') ? (
-                    <p className="text-[13px] text-green-500 font-medium text-center">수령 완료</p>
+                    <p className="text-[17px] text-green-500 font-medium text-center">수령 완료</p>
                   ) : userRanking === 'platinum' ? (
-                    <p className="text-[13px] font-medium text-center bg-gradient-to-r from-cyan-500 via-blue-500 to-blue-600 bg-clip-text text-transparent">수령 가능</p>
+                    <p className="text-[17px] font-medium text-center bg-gradient-to-r from-cyan-500 via-blue-500 to-blue-600 bg-clip-text text-transparent">수령 가능</p>
                   ) : (
-                    <p className="text-[13px] text-gray-400 text-center">플래티넘 도달</p>
+                    <p className="text-[17px] text-gray-400 text-center">플래티넘 도달</p>
                   )}
                 </div>
               </div>
@@ -522,11 +522,11 @@ const Rewards = ({
 
         {/* 물고기 */}
         <div className="mx-3 mt-4">
-          <h3 className={`${textColor} text-[15px] font-medium mb-3`}>물고기</h3>
+          <h3 className={`${textColor} text-[18px] font-medium mb-3`}>물고기</h3>
 
           {Object.entries(fishData).map(([rank, fishes]) => (
             <div key={rank} className="mb-4">
-              <h4 className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} text-[13px] mb-2 capitalize`}>
+              <h4 className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} text-[17px] mb-2 capitalize`}>
                 {rank === 'bronze' ? '브론즈' : rank === 'silver' ? '실버' : rank === 'gold' ? '골드' : '플래티넘'}
               </h4>
               <div className="grid grid-cols-3 gap-1.5">
@@ -602,7 +602,7 @@ const Rewards = ({
                       {/* 텍스트 영역 - 중앙 정렬 */}
                       <div className="flex-1 flex flex-col items-center justify-center w-full px-1">
                         {/* 물고기 이름 */}
-                        <p className={`text-[12px] leading-tight ${isLocked ? 'text-gray-400' : isPurchased ? 'text-green-600' : isDarkMode ? 'text-gray-300' : 'text-gray-700'} text-center font-medium`}>
+                        <p className={`text-[15px] leading-tight ${isLocked ? 'text-gray-400' : isPurchased ? 'text-green-600' : isDarkMode ? 'text-gray-300' : 'text-gray-700'} text-center font-medium`}>
                           {fish.name}
                         </p>
                       </div>
@@ -611,11 +611,11 @@ const Rewards = ({
                       <div className="h-[20px] flex items-center justify-center w-full">
                         {!isLocked && (
                           isPurchased ? (
-                            <p className="text-[13px] text-green-500 font-medium text-center">
+                            <p className="text-[17px] text-green-500 font-medium text-center">
                               구매완료
                             </p>
                           ) : (
-                            <p className="text-[13px] font-medium text-center bg-gradient-to-r from-cyan-500 via-blue-500 to-blue-600 bg-clip-text text-transparent">
+                            <p className="text-[17px] font-medium text-center bg-gradient-to-r from-cyan-500 via-blue-500 to-blue-600 bg-clip-text text-transparent">
                               {fishPrice}P
                             </p>
                           )
@@ -643,11 +643,11 @@ const Rewards = ({
 
         {/* 장식품 */}
         <div className="mx-3 mt-4">
-          <h3 className={`${textColor} text-[15px] font-medium mb-3`}>장식품</h3>
+          <h3 className={`${textColor} text-[18px] font-medium mb-3`}>장식품</h3>
 
           {Object.entries(decorationsData).map(([rank, decorations]) => (
             <div key={rank} className="mb-4">
-              <h4 className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} text-[13px] mb-2 capitalize`}>
+              <h4 className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} text-[17px] mb-2 capitalize`}>
                 {rank === 'bronze' ? '브론즈' : rank === 'silver' ? '실버' : rank === 'gold' ? '골드' : '플래티넘'}
               </h4>
               <div className="grid grid-cols-3 gap-1.5">
@@ -724,7 +724,7 @@ const Rewards = ({
                         
                         {/* 텍스트 영역 - 중앙 정렬 */}
                         <div className="flex-1 flex flex-col items-center justify-center w-full">
-                          <p className={`text-[12px] ${
+                          <p className={`text-[15px] ${
                             isLocked
                               ? 'text-gray-500'
                               : isPurchased
@@ -739,11 +739,11 @@ const Rewards = ({
                         <div className="h-[20px] flex items-center justify-center w-full">
                           {!isLocked && (
                             isPurchased ? (
-                              <p className="text-[13px] text-green-500 font-medium text-center">
+                              <p className="text-[17px] text-green-500 font-medium text-center">
                                 구매완료
                               </p>
                             ) : (
-                              <p className="text-[13px] font-medium text-center bg-gradient-to-r from-cyan-500 via-blue-500 to-blue-600 bg-clip-text text-transparent">
+                              <p className="text-[17px] font-medium text-center bg-gradient-to-r from-cyan-500 via-blue-500 to-blue-600 bg-clip-text text-transparent">
                                 {deco.price}P
                               </p>
                             )
@@ -771,7 +771,7 @@ const Rewards = ({
         {/* 테스트용 랭크 변경 */}
         <div className="mx-3 mt-8 mb-4">
           <div className={`${cardBg} border ${borderColor} rounded-xl p-4`}>
-            <h4 className={`text-[15px] font-medium ${textColor} mb-3 text-center`}>테스트용 랭크 변경</h4>
+            <h4 className={`text-[18px] font-medium ${textColor} mb-3 text-center`}>테스트용 랭크 변경</h4>
             <div className="grid grid-cols-4 gap-2">
               <button
                 onClick={() => {
@@ -785,7 +785,7 @@ const Rewards = ({
                     : isDarkMode
                       ? 'bg-gray-700 hover:bg-gray-600 text-gray-300'
                       : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
-                } transition-colors text-[13px] font-medium`}
+                } transition-colors text-[17px] font-medium`}
               >
                 브론즈
               </button>
@@ -801,7 +801,7 @@ const Rewards = ({
                     : isDarkMode
                       ? 'bg-gray-700 hover:bg-gray-600 text-gray-300'
                       : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
-                } transition-colors text-[13px] font-medium`}
+                } transition-colors text-[17px] font-medium`}
               >
                 실버
               </button>
@@ -817,7 +817,7 @@ const Rewards = ({
                     : isDarkMode
                       ? 'bg-gray-700 hover:bg-gray-600 text-gray-300'
                       : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
-                } transition-colors text-[13px] font-medium`}
+                } transition-colors text-[17px] font-medium`}
               >
                 골드
               </button>
@@ -833,7 +833,7 @@ const Rewards = ({
                     : isDarkMode
                       ? 'bg-gray-700 hover:bg-gray-600 text-gray-300'
                       : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
-                } transition-colors text-[13px] font-medium`}
+                } transition-colors text-[17px] font-medium`}
               >
                 플래티넘
               </button>
@@ -861,12 +861,12 @@ const Rewards = ({
               isDarkMode
                 ? 'bg-gray-800 hover:bg-gray-700 text-gray-400 border border-gray-700'
                 : 'bg-gray-100 hover:bg-gray-200 text-gray-600 border border-gray-300'
-            } transition-colors flex items-center justify-center gap-2 text-[15px] font-medium`}
+            } transition-colors flex items-center justify-center gap-2 text-[18px] font-medium`}
           >
             <span>🔄</span>
             <span>구매내역 초기화</span>
           </button>
-          <p className={`text-[13px] ${isDarkMode ? 'text-gray-500' : 'text-gray-400'} text-center mt-2`}>
+          <p className={`text-[17px] ${isDarkMode ? 'text-gray-500' : 'text-gray-400'} text-center mt-2`}>
             구매 이력만 초기화합니다 (포인트는 유지)
           </p>
         </div>

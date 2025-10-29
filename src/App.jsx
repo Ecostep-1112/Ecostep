@@ -723,7 +723,7 @@ const EcostepApp = () => {
             paddingLeft: 'calc(0.75rem + env(safe-area-inset-left))',
             paddingRight: 'calc(0.75rem + env(safe-area-inset-right))'
           }}>
-            <h1 className={`${isDarkMode ? 'text-white' : 'text-gray-800'} text-base font-medium`}>
+            <h1 className={`${isDarkMode ? 'text-white' : 'text-gray-800'} text-[17px] font-medium`}>
               {activeTab === 'home' && '홈'}
               {activeTab === 'challenge' && '챌린지'}
               {activeTab === 'reward' && '보상'}
@@ -732,7 +732,7 @@ const EcostepApp = () => {
             </h1>
             <div className="flex items-center gap-3">
               <div className={`flex items-center px-2 py-0.5 rounded border mr-1 ${isDarkMode ? 'border-gray-600' : 'border-gray-300'}`}>
-                <span className={`${isDarkMode ? 'text-white' : 'text-gray-700'} text-sm font-medium`}>{points}P</span>
+                <span className={`${isDarkMode ? 'text-white' : 'text-gray-700'} text-[15px] font-normal`}>{points}P</span>
               </div>
               <button className="relative" onClick={() => {
                 setShowNotifications(true);
@@ -949,7 +949,7 @@ const EcostepApp = () => {
                       } ${activeTab === tab.id ? 'opacity-100' : 'opacity-50'}`}
                     >
                       <Icon className="w-5 h-5 mb-0.5" fill={activeTab === tab.id ? 'currentColor' : 'none'} />
-                      <span className="text-xs">{tab.label}</span>
+                      <span className="text-[13px] font-normal">{tab.label}</span>
                     </button>
                   );
                 })}

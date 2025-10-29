@@ -279,7 +279,7 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
             <button onClick={onClose} className="mr-3">
               <ChevronLeft className={`w-4 h-4 ${textColor}`} />
             </button>
-            <h2 className={`text-sm font-medium ${textColor}`}>{label}</h2>
+            <h2 className={`text-[15px] font-medium ${textColor}`}>{label}</h2>
           </div>
           
           <div className="p-4 max-w-md mx-auto">
@@ -296,7 +296,7 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
                   }}
                   placeholder="년도"
                   maxLength="4"
-                  className={`w-full px-3 py-2 text-sm text-center ${textColor} bg-transparent rounded-lg border ${birthDateErrors.year ? 'border-red-500' : borderColor} focus:outline-none ${birthDateErrors.year ? 'focus:border-red-500' : 'focus:border-gray-400'} placeholder:text-gray-400`}
+                  className={`w-full px-3 py-2 text-[15px] text-center ${textColor} bg-transparent rounded-lg border ${birthDateErrors.year ? 'border-red-500' : borderColor} focus:outline-none ${birthDateErrors.year ? 'focus:border-red-500' : 'focus:border-gray-400'} placeholder:text-gray-400`}
                   autoFocus
                 />
               </div>
@@ -312,7 +312,7 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
                   }}
                   placeholder="월"
                   maxLength="2"
-                  className={`w-full px-3 py-2 text-sm text-center ${textColor} bg-transparent rounded-lg border ${birthDateErrors.month ? 'border-red-500' : borderColor} focus:outline-none ${birthDateErrors.month ? 'focus:border-red-500' : 'focus:border-gray-400'} placeholder:text-gray-400`}
+                  className={`w-full px-3 py-2 text-[15px] text-center ${textColor} bg-transparent rounded-lg border ${birthDateErrors.month ? 'border-red-500' : borderColor} focus:outline-none ${birthDateErrors.month ? 'focus:border-red-500' : 'focus:border-gray-400'} placeholder:text-gray-400`}
                 />
               </div>
               <div className="flex-1">
@@ -327,14 +327,14 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
                   }}
                   placeholder="일"
                   maxLength="2"
-                  className={`w-full px-3 py-2 text-sm text-center ${textColor} bg-transparent rounded-lg border ${birthDateErrors.day ? 'border-red-500' : borderColor} focus:outline-none ${birthDateErrors.day ? 'focus:border-red-500' : 'focus:border-gray-400'} placeholder:text-gray-400`}
+                  className={`w-full px-3 py-2 text-[15px] text-center ${textColor} bg-transparent rounded-lg border ${birthDateErrors.day ? 'border-red-500' : borderColor} focus:outline-none ${birthDateErrors.day ? 'focus:border-red-500' : 'focus:border-gray-400'} placeholder:text-gray-400`}
                 />
               </div>
             </div>
             
             <button
               onClick={handleBirthDateSave}
-              className="w-full py-2.5 text-sm text-white rounded-lg font-medium bg-gradient-to-r from-cyan-500 via-blue-500 to-blue-600 hover:opacity-90 transition-opacity"
+              className="w-full py-2.5 text-[15px] text-white rounded-lg font-medium bg-gradient-to-r from-cyan-500 via-blue-500 to-blue-600 hover:opacity-90 transition-opacity"
             >
               저장
             </button>
@@ -350,7 +350,7 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
             <button onClick={onClose} className="mr-3">
               <ChevronLeft className={`w-4 h-4 ${textColor}`} />
             </button>
-            <h2 className={`text-sm font-medium ${textColor}`}>{label}</h2>
+            <h2 className={`text-[15px] font-medium ${textColor}`}>{label}</h2>
           </div>
           
           <div className="p-4 max-w-md mx-auto">
@@ -367,18 +367,18 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
               }}
               placeholder="010-0000-0000"
               maxLength="13"
-              className={`w-full px-4 py-2.5 text-sm ${textColor} bg-transparent rounded-lg border ${error ? 'border-red-500' : borderColor} focus:outline-none ${error ? 'focus:border-red-500' : 'focus:border-gray-400'}`}
+              className={`w-full px-4 py-2.5 text-[15px] ${textColor} bg-transparent rounded-lg border ${error ? 'border-red-500' : borderColor} focus:outline-none ${error ? 'focus:border-red-500' : 'focus:border-gray-400'}`}
               autoFocus
             />
             {error && (
-              <p className="text-xs text-red-500 mt-2 text-center">
+              <p className="text-[13px] text-red-500 mt-2 text-center">
                 10~11자리 숫자를 입력해주세요
               </p>
             )}
             
             <button
               onClick={handlePhoneSave}
-              className="w-full mt-4 py-2.5 text-sm text-white rounded-lg font-medium bg-gradient-to-r from-cyan-500 via-blue-500 to-blue-600 hover:opacity-90 transition-opacity"
+              className="w-full mt-4 py-2.5 text-[15px] text-white rounded-lg font-medium bg-gradient-to-r from-cyan-500 via-blue-500 to-blue-600 hover:opacity-90 transition-opacity"
             >
               저장
             </button>
@@ -511,7 +511,7 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
           <button onClick={onClose} className="mr-3">
             <ChevronLeft className={`w-4 h-4 ${textColor}`} />
           </button>
-          <h2 className={`text-sm font-medium ${textColor}`}>{label}</h2>
+          <h2 className={`text-[15px] font-medium ${textColor}`}>{label}</h2>
         </div>
         
         <div className="p-4 max-w-md mx-auto">
@@ -550,14 +550,14 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
               setError('');
             }}
             placeholder={getPlaceholder(field)}
-            className={`w-full px-4 py-2.5 text-sm ${textColor} bg-transparent rounded-lg border ${error ? 'border-red-500' : borderColor} focus:outline-none ${error ? 'focus:border-red-500' : 'focus:border-gray-400'}`}
+            className={`w-full px-4 py-2.5 text-[15px] ${textColor} bg-transparent rounded-lg border ${error ? 'border-red-500' : borderColor} focus:outline-none ${error ? 'focus:border-red-500' : 'focus:border-gray-400'}`}
             autoFocus
             disabled={isLoading}
             maxLength={field === 'name' ? 10 : field === 'userId' ? 15 : undefined}
           />
           
           {field === 'userId' && (
-            <p className={`text-xs ${secondaryText} mt-2 text-center`}>
+            <p className={`text-[13px] ${secondaryText} mt-2 text-center`}>
               영문, 숫자, 언더스코어만 사용 가능 (1~15자)
             </p>
           )}
@@ -589,7 +589,7 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
               }
             }}
             disabled={isLoading}
-            className={`w-full mt-4 py-2.5 text-sm text-white rounded-lg font-medium bg-gradient-to-r from-cyan-500 via-blue-500 to-blue-600 hover:opacity-90 transition-opacity ${
+            className={`w-full mt-4 py-2.5 text-[15px] text-white rounded-lg font-medium bg-gradient-to-r from-cyan-500 via-blue-500 to-blue-600 hover:opacity-90 transition-opacity ${
               isLoading ? 'opacity-50 cursor-not-allowed' : ''
             }`}
           >
@@ -606,7 +606,7 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
         <button onClick={() => setShowProfile(false)} className="mr-3">
           <ChevronRight className={`w-4 h-4 rotate-180 ${textColor}`} />
         </button>
-        <h2 className={`text-sm font-medium ${textColor}`}>프로필</h2>
+        <h2 className={`text-[15px] font-medium ${textColor}`}>프로필</h2>
       </div>
       
       {/* 프로필 사진 업로드 섹션 */}
@@ -641,9 +641,9 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
             onClick={() => setEditingField('name')}
             className={`w-full px-4 py-3 flex items-center justify-between`}
           >
-            <span className={`${textColor} text-sm`}>이름</span>
+            <span className={`${textColor} text-[15px]`}>이름</span>
             <div className="flex items-center">
-              <span className={`${secondaryText} text-sm mr-2`}>
+              <span className={`${secondaryText} text-[15px] mr-2`}>
                 {profileData.name || '없음'}
               </span>
               <ChevronRight className={`w-4 h-4 ${secondaryText}`} />
@@ -657,9 +657,9 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
             onClick={() => setEditingField('userId')}
             className={`w-full px-4 py-3 flex items-center justify-between`}
           >
-            <span className={`${textColor} text-sm`}>아이디</span>
+            <span className={`${textColor} text-[15px]`}>아이디</span>
             <div className="flex items-center">
-              <span className={`${secondaryText} text-sm mr-2`}>
+              <span className={`${secondaryText} text-[15px] mr-2`}>
                 {profileData.userId || '없음'}
               </span>
               <ChevronRight className={`w-4 h-4 ${secondaryText}`} />
@@ -673,9 +673,9 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
             onClick={() => setEditingField('birthDate')}
             className={`w-full px-4 py-3 flex items-center justify-between`}
           >
-            <span className={`${textColor} text-sm`}>생년월일</span>
+            <span className={`${textColor} text-[15px]`}>생년월일</span>
             <div className="flex items-center">
-              <span className={`${secondaryText} text-sm mr-2`}>
+              <span className={`${secondaryText} text-[15px] mr-2`}>
                 {profileData.birthDate || '없음'}
               </span>
               <ChevronRight className={`w-4 h-4 ${secondaryText}`} />
@@ -689,9 +689,9 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
             onClick={() => setEditingField('phone')}
             className={`w-full px-4 py-3 flex items-center justify-between`}
           >
-            <span className={`${textColor} text-sm`}>휴대폰 번호</span>
+            <span className={`${textColor} text-[15px]`}>휴대폰 번호</span>
             <div className="flex items-center">
-              <span className={`${secondaryText} text-sm mr-2`}>
+              <span className={`${secondaryText} text-[15px] mr-2`}>
                 {profileData.phone || '없음'}
               </span>
               <ChevronRight className={`w-4 h-4 ${secondaryText}`} />
@@ -705,9 +705,9 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
             onClick={() => setEditingField('email')}
             className={`w-full px-4 py-3 flex items-center justify-between`}
           >
-            <span className={`${textColor} text-sm`}>이메일 주소</span>
+            <span className={`${textColor} text-[15px]`}>이메일 주소</span>
             <div className="flex items-center">
-              <span className={`${secondaryText} text-sm mr-2`}>
+              <span className={`${secondaryText} text-[15px] mr-2`}>
                 {profileData.email || '없음'}
               </span>
               <ChevronRight className={`w-4 h-4 ${secondaryText}`} />
@@ -907,7 +907,7 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
       <div className="fixed bottom-0 left-0 right-0 z-50 p-4">
         <button
           onClick={() => setShowDeleteConfirm(true)}
-          className={`w-full py-2.5 text-sm font-medium text-red-500 rounded-lg border border-red-200 ${isDarkMode ? 'bg-gray-800' : 'bg-white'} hover:bg-red-50 transition-colors`}
+          className={`w-full py-2.5 text-[15px] font-medium text-red-500 rounded-lg border border-red-200 ${isDarkMode ? 'bg-gray-800' : 'bg-white'} hover:bg-red-50 transition-colors`}
         >
           계정 탈퇴
         </button>
@@ -917,11 +917,11 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
       {showDeleteConfirm && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50">
           <div className={`mx-4 w-full max-w-xs ${isDarkMode ? 'bg-gray-800' : 'bg-white'} rounded-2xl p-5 shadow-xl`}>
-            <h3 className={`text-lg font-semibold text-center mb-3 ${textColor}`}>
+            <h3 className={`text-[19px] font-medium text-center mb-3 ${textColor}`}>
               정말 탈퇴하시겠습니까?
             </h3>
             
-            <p className={`text-xs text-center mb-5 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+            <p className={`text-[13px] text-center mb-5 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
               계정을 탈퇴하시면 모든 데이터가<br />
               영구적으로 삭제되며, 복구할 수 없습니다.
             </p>
@@ -929,7 +929,7 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
             <div className="flex gap-3">
               <button
                 onClick={() => setShowDeleteConfirm(false)}
-                className={`flex-1 py-2 text-sm font-medium rounded-lg border ${borderColor} ${textColor} hover:bg-gray-50 transition-colors`}
+                className={`flex-1 py-2 text-[15px] font-medium rounded-lg border ${borderColor} ${textColor} hover:bg-gray-50 transition-colors`}
               >
                 아니요
               </button>
@@ -953,7 +953,7 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
                     setShowDeleteConfirm(false);
                   }
                 }}
-                className="flex-1 py-2 text-sm font-medium text-white bg-red-500 rounded-lg hover:bg-red-600 transition-colors"
+                className="flex-1 py-2 text-[15px] font-medium text-white bg-red-500 rounded-lg hover:bg-red-600 transition-colors"
               >
                 네, 탈퇴합니다
               </button>

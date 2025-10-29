@@ -389,13 +389,13 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
         <div className={`mx-3 mt-4 ${cardBg} border ${borderColor} rounded-xl px-4 pt-4 pb-0`}>
           <div className="flex justify-between items-center mb-3">
             <div className="flex items-center">
-              <h3 className={`${textColor} text-sm font-medium`}>오늘의 환경 상식</h3>
+              <h3 className={`${textColor} text-[15px] font-medium`}>오늘의 환경 상식</h3>
             </div>
             <div className="flex items-center gap-2">
               <div className="relative">
                 <button
                   onClick={() => setShowCategoryDropdown(!showCategoryDropdown)}
-                  className={`flex items-center gap-1 px-2 py-1 text-xs rounded-lg border ${
+                  className={`flex items-center gap-1 px-2 py-1 text-[13px] rounded-lg border ${
                     isDarkMode ? 'border-gray-600 text-gray-300' : 'border-gray-300 text-gray-700'
                   } hover:opacity-80 transition-opacity bg-transparent`}
                 >
@@ -414,7 +414,7 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
                       <button
                         key={category}
                         onClick={() => handleCategoryClick(category)}
-                        className={`block w-full text-left px-3 py-2 text-xs whitespace-nowrap first:rounded-t-lg last:rounded-b-lg ${
+                        className={`block w-full text-left px-3 py-2 text-[13px] whitespace-nowrap first:rounded-t-lg last:rounded-b-lg ${
                           selectedCategory === category
                             ? isDarkMode ? 'bg-gray-600 text-white' : 'bg-gray-100 text-gray-900'
                             : isDarkMode ? 'text-gray-300 hover:bg-gray-600' : 'text-gray-700 hover:bg-gray-50'
@@ -445,10 +445,10 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
                   onClick={() => setExpandedTip(expandedTip === environmentalTip.id ? null : environmentalTip.id)}
                 >
                   <div className="flex flex-col">
-                    <p className={`text-sm font-medium ${isDarkMode ? 'text-gray-200' : 'text-gray-800'} mb-1`}>
+                    <p className={`text-[15px] font-medium ${isDarkMode ? 'text-gray-200' : 'text-gray-800'} mb-1`}>
                       {environmentalTip.title}
                     </p>
-                    <p className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                    <p className={`text-[13px] ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
                       {environmentalTip.preview}
                       {expandedTip === environmentalTip.id ? (
                         <ChevronUp className={`inline w-3 h-3 ml-1 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
@@ -464,13 +464,13 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
                   expandedTip === environmentalTip.id ? 'max-h-96 opacity-100 mt-3' : 'max-h-0 opacity-0'
                 }`}>
                   <div className="px-3 pt-2 pb-0">
-                    <p className={`text-sm leading-relaxed text-justify ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                    <p className={`text-[15px] leading-relaxed text-justify ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                       {environmentalTip.content}
                     </p>
                     <div className={`flex items-center justify-between mt-2 pt-2 border-t ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
-                      <button 
+                      <button
                         onClick={handleShareTip}
-                        className="px-3 py-1.5 rounded-lg text-xs font-medium flex items-center transition-all bg-gradient-to-r from-cyan-500 via-blue-500 to-blue-600 text-white hover:opacity-90"
+                        className="px-3 py-1.5 rounded-lg text-[13px] font-medium flex items-center transition-all bg-gradient-to-r from-cyan-500 via-blue-500 to-blue-600 text-white hover:opacity-90"
                       >
                         <Share2 className="w-3 h-3 mr-1" />
                         공유하기
@@ -481,7 +481,7 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
                           hasCheckedTip
                             ? isDarkMode ? 'bg-gray-700 text-gray-400 cursor-not-allowed' : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                             : 'bg-gradient-to-r from-cyan-500 via-blue-500 to-blue-600 text-white hover:opacity-90'
-                        } px-3 py-1.5 rounded-lg text-xs font-medium flex items-center transition-colors`}
+                        } px-3 py-1.5 rounded-lg text-[13px] font-medium flex items-center transition-colors`}
                         disabled={hasCheckedTip}
                       >
                         {hasCheckedTip ? (
@@ -496,7 +496,7 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
                     </div>
                     <div className="mt-2 -mb-1.5">
                       <div className={`h-[1px] mb-2 bg-gradient-to-r from-transparent ${isDarkMode ? 'via-gray-700' : 'via-gray-200'} to-transparent`}></div>
-                      <p className={`text-xs m-0 pb-2 ${isDarkMode ? 'text-gray-500' : 'text-gray-400'} text-center italic leading-none`}>
+                      <p className={`text-[13px] m-0 pb-2 ${isDarkMode ? 'text-gray-500' : 'text-gray-400'} text-center italic leading-none`}>
                         매일 새로운 환경 팁을 확인하세요
                       </p>
                     </div>
@@ -516,11 +516,11 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
         {/* 제로웨이스트 맵 */}
         <div className={`mx-3 mt-4 ${cardBg} border ${borderColor} rounded-xl p-4`}>
           <div className="flex justify-between items-center mb-3">
-            <h3 className={`${textColor} text-sm font-medium`}>제로웨이스트 맵</h3>
+            <h3 className={`${textColor} text-[15px] font-medium`}>제로웨이스트 맵</h3>
             <div className="relative">
               <button
                 onClick={() => setShowPlaceCategoryDropdown(!showPlaceCategoryDropdown)}
-                className={`flex items-center gap-1 px-2 py-1 text-xs rounded-lg border ${
+                className={`flex items-center gap-1 px-2 py-1 text-[13px] rounded-lg border ${
                   isDarkMode ? 'border-gray-600 text-gray-300' : 'border-gray-300 text-gray-700'
                 } hover:opacity-80 transition-opacity bg-transparent`}
               >
@@ -542,7 +542,7 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
                         setSelectedPlaceCategory(category);
                         setShowPlaceCategoryDropdown(false);
                       }}
-                      className={`block w-full text-left px-3 py-2 text-xs whitespace-nowrap first:rounded-t-lg last:rounded-b-lg ${
+                      className={`block w-full text-left px-3 py-2 text-[13px] whitespace-nowrap first:rounded-t-lg last:rounded-b-lg ${
                         selectedPlaceCategory === category
                           ? isDarkMode ? 'bg-gray-600 text-white' : 'bg-gray-100 text-gray-900'
                           : isDarkMode ? 'text-gray-300 hover:bg-gray-600' : 'text-gray-700 hover:bg-gray-50'
@@ -561,18 +561,18 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
               <div key={index} className={`border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-100'} pb-3 min-h-[60px]`}>
                 <div className="flex justify-between">
                   <div className="flex-1 pr-3">
-                    <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} mb-1`}>{place.name}</p>
-                    <span className={`text-xs ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>{place.description}</span>
+                    <p className={`text-[15px] ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} mb-1`}>{place.name}</p>
+                    <span className={`text-[13px] ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>{place.description}</span>
                   </div>
                   <div className="relative min-w-[60px] min-h-[20px]">
-                    <button 
+                    <button
                       onClick={() => openInNaverMap(place)}
-                      className="absolute top-[1px] right-0 mb-1 text-[13px] font-medium bg-gradient-to-r from-cyan-500 via-blue-500 to-blue-600 bg-clip-text text-transparent"
+                      className="absolute top-[1px] right-0 mb-1 text-[15px] font-medium bg-gradient-to-r from-cyan-500 via-blue-500 to-blue-600 bg-clip-text text-transparent"
                     >
                       이동
                     </button>
                     {place.distance !== null && (
-                      <span className={`absolute bottom-1 right-0 text-xs font-medium ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                      <span className={`absolute bottom-1 right-0 text-[13px] font-medium ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
                         {place.distance < 1 ? 
                           `${Math.round(place.distance * 1000)}m` : 
                           `${place.distance.toFixed(1)}km`
@@ -589,18 +589,18 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
                   <div key={index + 4} className={`border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-100'} pb-3 mb-2 min-h-[60px]`}>
                     <div className="flex justify-between">
                       <div className="flex-1 pr-3">
-                        <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} mb-1`}>{place.name}</p>
-                        <span className={`text-xs ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>{place.description}</span>
+                        <p className={`text-[15px] ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} mb-1`}>{place.name}</p>
+                        <span className={`text-[13px] ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>{place.description}</span>
                       </div>
                       <div className="relative min-w-[60px] min-h-[20px]">
-                        <button 
+                        <button
                           onClick={() => openInNaverMap(place)}
-                          className="absolute top-0 right-0 mb-1 text-sm font-medium bg-gradient-to-r from-cyan-500 via-blue-500 to-blue-600 bg-clip-text text-transparent"
+                          className="absolute top-0 right-0 mb-1 text-[15px] font-medium bg-gradient-to-r from-cyan-500 via-blue-500 to-blue-600 bg-clip-text text-transparent"
                         >
                           이동
                         </button>
                         {place.distance !== null && (
-                          <span className={`absolute bottom-1 right-0 text-xs font-medium ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                          <span className={`absolute bottom-1 right-0 text-[13px] font-medium ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
                             {place.distance < 1 ? 
                               `${Math.round(place.distance * 1000)}m` : 
                               `${place.distance.toFixed(1)}km`
@@ -618,12 +618,12 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
 
         {/* 도움말 */}
         <div className={`mx-3 mt-4 ${cardBg} border ${borderColor} rounded-xl p-3`}>
-          <h3 className={`${textColor} text-sm font-medium mb-2`}>도움말</h3>
+          <h3 className={`${textColor} text-[15px] font-medium mb-2`}>도움말</h3>
           <div className="space-y-2">
             <button className={`w-full flex items-center justify-between p-2.5 ${inputBg} rounded-lg`}>
               <div className="flex items-center">
                 <Book className={`w-4 h-4 mr-2 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
-                <span className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>앱 사용 방법</span>
+                <span className={`text-[15px] ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>앱 사용 방법</span>
               </div>
               <ChevronRight className={`w-4 h-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
             </button>
@@ -633,7 +633,7 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
             >
               <div className="flex items-center">
                 <Phone className={`w-4 h-4 mr-2 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
-                <span className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>고객 센터</span>
+                <span className={`text-[15px] ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>고객 센터</span>
               </div>
               <ChevronRight className={`w-4 h-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
             </button>

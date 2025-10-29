@@ -31,7 +31,7 @@ export const RankThemeSettings = ({ isDarkMode, userRanking, setUserRanking, set
         <button onClick={() => setShowRankThemeSettings(false)} className="mr-3">
           <ChevronRight className={`w-5 h-5 rotate-180 ${textColor}`} />
         </button>
-        <h2 className={`text-base font-medium ${textColor}`}>색상</h2>
+        <h2 className={`text-[17px] font-medium ${textColor}`}>색상</h2>
       </div>
       
       <div className="mx-3 mt-4 space-y-2">
@@ -87,12 +87,12 @@ export const RankThemeSettings = ({ isDarkMode, userRanking, setUserRanking, set
                   </div>
                 )}
                 <div className="flex items-center">
-                  <span 
-                    className={`text-sm ${isLocked ? 'opacity-50' : ''}`}
+                  <span
+                    className={`text-[15px] ${isLocked ? 'opacity-50' : ''}`}
                     style={{ color: isSelected && !isLocked ? rank.color : isDarkMode ? '#ffffff' : '#1f2937' }}
                   >{rank.name}</span>
-                  <span 
-                    className={`text-xs ml-1 ${isLocked ? 'opacity-50' : ''}`}
+                  <span
+                    className={`text-[13px] ml-1 ${isLocked ? 'opacity-50' : ''}`}
                     style={{ color: isSelected && !isLocked ? rank.color : isDarkMode ? '#9ca3af' : '#6b7280' }}
                   >{rank.subName}</span>
                 </div>
@@ -172,7 +172,7 @@ export const ThemeSettings = ({ isDarkMode, setIsDarkMode, setShowThemeSettings 
         <button onClick={() => setShowThemeSettings(false)} className="mr-3">
           <ChevronRight className={`w-5 h-5 rotate-180 ${textColor}`} />
         </button>
-        <h2 className={`text-base font-medium ${textColor}`}>화면</h2>
+        <h2 className={`text-[17px] font-medium ${textColor}`}>화면</h2>
       </div>
       
       <div className="mx-3 mt-4 space-y-2">
@@ -197,7 +197,7 @@ export const ThemeSettings = ({ isDarkMode, setIsDarkMode, setShowThemeSettings 
               <circle cx="12" cy="12" r="4" stroke="url(#sunGradient)" strokeWidth="1.5" fill="none" />
               <path d="M12 1v4M12 19v4M23 12h-4M5 12H1M20.5 3.5l-3 3M6.5 17.5l-3 3M20.5 20.5l-3-3M6.5 6.5l-3-3" stroke="url(#sunGradient)" strokeWidth="2" strokeLinecap="round" />
             </svg>
-            <span className={`text-sm ${textColor}`}>라이트 모드</span>
+            <span className={`text-[15px] ${textColor}`}>라이트 모드</span>
           </div>
           {!isDarkMode && (
             <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none">
@@ -234,7 +234,7 @@ export const ThemeSettings = ({ isDarkMode, setIsDarkMode, setShowThemeSettings 
               </defs>
               <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" stroke="url(#moonGradient)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none" />
             </svg>
-            <span className={`text-sm ${textColor}`}>다크 모드</span>
+            <span className={`text-[15px] ${textColor}`}>다크 모드</span>
           </div>
           {isDarkMode && (
             <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none">
@@ -272,7 +272,7 @@ export const LanguageSettings = ({ isDarkMode, language, setLanguage, setShowLan
         <button onClick={() => setShowLanguageSettings(false)} className="mr-3">
           <ChevronRight className={`w-5 h-5 rotate-180 ${textColor}`} />
         </button>
-        <h2 className={`text-base font-medium ${textColor}`}>언어</h2>
+        <h2 className={`text-[17px] font-medium ${textColor}`}>언어</h2>
       </div>
       
       <div className="mx-3 mt-4 space-y-2">
@@ -280,7 +280,7 @@ export const LanguageSettings = ({ isDarkMode, language, setLanguage, setShowLan
           onClick={() => setLanguage('ko')}
           className={`w-full ${cardBg} border ${borderColor} rounded-xl p-3 flex items-center justify-between ${language === 'ko' ? 'border-cyan-500' : ''}`}
         >
-          <span className={`text-sm ${textColor}`}>한국어</span>
+          <span className={`text-[15px] ${textColor}`}>한국어</span>
           {language === 'ko' && (
             <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none">
               <defs>
@@ -305,7 +305,7 @@ export const LanguageSettings = ({ isDarkMode, language, setLanguage, setShowLan
           onClick={() => setLanguage('en')}
           className={`w-full ${cardBg} border ${borderColor} rounded-xl p-3 flex items-center justify-between ${language === 'en' ? 'border-cyan-500' : ''}`}
         >
-          <span className={`text-sm ${textColor}`}>English</span>
+          <span className={`text-[15px] ${textColor}`}>English</span>
           {language === 'en' && (
             <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none">
               <defs>
@@ -342,12 +342,12 @@ export const NotificationSettings = ({ isDarkMode, notifications, setNotificatio
         <button onClick={() => setShowNotificationSettings(false)} className="mr-3">
           <ChevronRight className={`w-5 h-5 rotate-180 ${textColor}`} />
         </button>
-        <h2 className={`text-base font-medium ${textColor}`}>알림</h2>
+        <h2 className={`text-[17px] font-medium ${textColor}`}>알림</h2>
       </div>
       
       <div className="mx-3 mt-4">
         <div className={`${cardBg} border ${borderColor} rounded-xl p-3 flex items-center justify-between`}>
-          <span className={`text-sm ${textColor}`}>알림 받기</span>
+          <span className={`text-[15px] ${textColor}`}>알림 받기</span>
           <button 
             onClick={() => setNotifications(!notifications)}
             className={`w-11 h-6 rounded-full relative transition-all`}
@@ -377,12 +377,12 @@ export const LocationSettings = ({ isDarkMode, locationSharing, setLocationShari
         <button onClick={() => setShowLocationSettings(false)} className="mr-3">
           <ChevronRight className={`w-5 h-5 rotate-180 ${textColor}`} />
         </button>
-        <h2 className={`text-base font-medium ${textColor}`}>위치</h2>
+        <h2 className={`text-[17px] font-medium ${textColor}`}>위치</h2>
       </div>
       
       <div className="mx-3 mt-4">
         <div className={`${cardBg} border ${borderColor} rounded-xl p-3 flex items-center justify-between`}>
-          <span className={`text-sm ${textColor}`}>위치 공유 동의</span>
+          <span className={`text-[15px] ${textColor}`}>위치 공유 동의</span>
           <button 
             onClick={() => setLocationSharing(!locationSharing)}
             className={`w-11 h-6 rounded-full relative transition-all`}
@@ -441,12 +441,12 @@ export const AquariumSettings = ({
         <button onClick={() => setShowAquariumSettings(false)} className="mr-3">
           <ChevronRight className={`w-5 h-5 rotate-180 ${textColor}`} />
         </button>
-        <h2 className={`text-base font-medium ${textColor}`}>어항 설정</h2>
+        <h2 className={`text-[17px] font-medium ${textColor}`}>어항 설정</h2>
       </div>
       
       <div className="flex-1 overflow-y-auto custom-scrollbar scrollbar-hide px-3 pb-24">
         <div className="mt-4">
-          <h3 className={`text-sm font-medium mb-3 ${textColor}`}>어항 선택</h3>
+          <h3 className={`text-[15px] font-medium mb-3 ${textColor}`}>어항 선택</h3>
           <div className="flex gap-3 mb-6">
             {['basic', 'silver', 'gold', 'platinum'].map((type) => {
               const isUnlocked = type === 'basic' || claimedTanks.includes(type);
@@ -481,10 +481,10 @@ export const AquariumSettings = ({
           {/* 구분선 */}
           <div className={`border-t ${borderColor} my-6`}></div>
 
-          <h3 className={`text-sm font-medium mb-3 ${textColor}`}>물고기</h3>
+          <h3 className={`text-[15px] font-medium mb-3 ${textColor}`}>물고기</h3>
           <div className={`${inputBg} rounded-lg p-3 mb-3`}>
             <div className="flex items-center justify-between mb-3">
-              <span className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>물고기: {isRandomFish ? fishCount : selectedFish.length}마리</span>
+              <span className={`text-[15px] ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>물고기: {isRandomFish ? fishCount : selectedFish.length}마리</span>
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => {
@@ -501,7 +501,7 @@ export const AquariumSettings = ({
                   }}
                   className={`w-8 h-8 ${cardBg} border ${borderColor} rounded flex items-center justify-center ${textColor}`}
                 >-</button>
-                <span className={`text-sm font-medium px-3 ${textColor}`}>{isRandomFish ? fishCount : selectedFish.length}</span>
+                <span className={`text-[15px] font-medium px-3 ${textColor}`}>{isRandomFish ? fishCount : selectedFish.length}</span>
                 <button
                   onClick={() => {
                     if (isRandomFish) {
@@ -552,14 +552,14 @@ export const AquariumSettings = ({
                     </svg>
                   )}
                 </div>
-                <span className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>랜덤 선택</span>
+                <span className={`text-[15px] ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>랜덤 선택</span>
               </button>
             </div>
           </div>
 
           {!isRandomFish && (
             <div className="mb-6">
-              <h4 className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} mb-2`}>물고기 선택 ({selectedFish.length}/{purchasedFish.length})</h4>
+              <h4 className={`text-[13px] ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} mb-2`}>물고기 선택 ({selectedFish.length}/{purchasedFish.length})</h4>
               {Object.entries(fishData).map(([rank, fishes]) => {
                 const purchasedInRank = fishes.filter(fish => purchasedFish.includes(fish.name));
                 if (purchasedInRank.length === 0) return null;
@@ -615,10 +615,10 @@ export const AquariumSettings = ({
           {/* 구분선 */}
           <div className={`border-t ${borderColor} my-6`}></div>
 
-          <h3 className={`text-sm font-medium mb-3 ${textColor}`}>장식품</h3>
+          <h3 className={`text-[15px] font-medium mb-3 ${textColor}`}>장식품</h3>
           <div className={`${inputBg} rounded-lg p-3 mb-3`}>
             <div className="flex items-center justify-between">
-              <span className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>장식품: {selectedDecorations.length}개</span>
+              <span className={`text-[15px] ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>장식품: {selectedDecorations.length}개</span>
               <button
                 onClick={() => setSelectedDecorations([])}
                 className={`flex items-center border ${isDarkMode ? 'border-gray-600' : 'border-gray-300'} rounded-lg px-3 py-1.5 ${isDarkMode ? 'hover:bg-gray-800' : 'hover:bg-gray-50'} transition-colors`}
@@ -630,21 +630,21 @@ export const AquariumSettings = ({
                     </svg>
                   )}
                 </div>
-                <span className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>장식품 없애기</span>
+                <span className={`text-[15px] ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>장식품 없애기</span>
               </button>
             </div>
           </div>
 
           {availableDecorations.length > 0 ? (
               <div className="mb-6">
-                <h4 className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} mb-2`}>장식품 선택 ({selectedDecorations.length}/{availableDecorations.length})</h4>
+                <h4 className={`text-[13px] ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} mb-2`}>장식품 선택 ({selectedDecorations.length}/{availableDecorations.length})</h4>
                 {Object.entries(decorationsData).map(([rank, decorations]) => {
                   const purchasedInRank = decorations.filter(deco => purchasedDecorations.includes(deco.name));
                   if (purchasedInRank.length === 0) return null;
                   
                   return (
                     <div key={rank} className="mb-3">
-                      <h5 className={`text-xs ${isDarkMode ? 'text-gray-500' : 'text-gray-400'} mb-1`}>
+                      <h5 className={`text-[13px] ${isDarkMode ? 'text-gray-500' : 'text-gray-400'} mb-1`}>
                         {rank === 'bronze' ? '브론즈' : rank === 'silver' ? '실버' : rank === 'gold' ? '골드' : '플래티넘'}
                       </h5>
                       <div className="grid grid-cols-3 gap-2">
@@ -686,7 +686,7 @@ export const AquariumSettings = ({
               </div>
             ) : (
               <div className={`${inputBg} rounded-lg p-4 mb-6 text-center`}>
-                <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                <p className={`text-[15px] ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
                   보상 탭에서 장식품을 구매해주세요
                 </p>
               </div>
@@ -701,7 +701,7 @@ export const AquariumSettings = ({
             // 설정 저장
             setShowAquariumSettings(false);
           }}
-          className={`w-full py-2.5 rounded-lg text-sm font-medium text-white transition-all hover:opacity-90`}
+          className={`w-full py-2.5 rounded-lg text-[15px] font-medium text-white transition-all hover:opacity-90`}
           style={{
             background: 'linear-gradient(135deg, #06b6d4 0%, #3b82f6 50%, #2563eb 100%)'
           }}

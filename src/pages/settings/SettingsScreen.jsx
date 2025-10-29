@@ -39,7 +39,7 @@ const SettingsScreen = ({
         <button onClick={() => setShowSettings(false)} className="mr-3">
           <ChevronRight className={`w-5 h-5 rotate-180 ${textColor}`} />
         </button>
-        <h2 className={`text-base font-medium ${textColor}`}>설정</h2>
+        <h2 className={`text-[17px] font-medium ${textColor}`}>설정</h2>
       </div>
       
       <div className="flex-1 overflow-y-auto">
@@ -59,13 +59,13 @@ const SettingsScreen = ({
               )}
             </div>
             <div className="flex-1 text-left">
-              <p className={`text-sm font-medium ${textColor}`}>{userProfile?.name || 'Eco User'}</p>
+              <p className={`text-[15px] font-medium ${textColor}`}>{userProfile?.name || 'Eco User'}</p>
               {userProfile?.userId && (
                 <p className={`text-[11px] ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>@{userProfile.userId}</p>
               )}
             </div>
             <div className="flex items-center">
-              <span className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} mr-2`}>
+              <span className={`text-[13px] ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} mr-2`}>
                 내 정보
               </span>
               <ChevronRight className={`w-4 h-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-400'}`} />
@@ -74,77 +74,77 @@ const SettingsScreen = ({
 
           {/* 설정 섹션 - 하나의 박스로 통합 */}
           <div className={`${cardBg} border ${borderColor} rounded-xl overflow-hidden`}>
-            <button 
+            <button
               onClick={() => setShowLanguageSettings(true)}
               className={`w-full p-3 flex justify-between items-center`}
             >
-              <span className={`text-sm ${textColor}`}>언어</span>
+              <span className={`text-[15px] ${textColor}`}>언어</span>
               <div className="flex items-center">
-                <span className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} mr-2`}>
+                <span className={`text-[13px] ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} mr-2`}>
                   {language === 'ko' ? '한국어' : 'English'}
                 </span>
                 <ChevronRight className={`w-4 h-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-400'}`} />
               </div>
             </button>
-            
+
             <div className={`border-t ${borderColor} mx-4`}></div>
-            
-            <button 
+
+            <button
               onClick={() => setShowNotificationSettings(true)}
               className={`w-full p-3 flex justify-between items-center`}
             >
-              <span className={`text-sm ${textColor}`}>알림</span>
+              <span className={`text-[15px] ${textColor}`}>알림</span>
               <div className="flex items-center">
-                <span className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} mr-2`}>
+                <span className={`text-[13px] ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} mr-2`}>
                   {notifications ? '켜짐' : '꺼짐'}
                 </span>
                 <ChevronRight className={`w-4 h-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-400'}`} />
               </div>
             </button>
-            
+
             <div className={`border-t ${borderColor} mx-4`}></div>
-            
-            <button 
+
+            <button
               onClick={() => setShowLocationSettings(true)}
               className={`w-full p-3 flex justify-between items-center`}
             >
-              <span className={`text-sm ${textColor}`}>위치</span>
+              <span className={`text-[15px] ${textColor}`}>위치</span>
               <div className="flex items-center">
-                <span className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} mr-2`}>
+                <span className={`text-[13px] ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} mr-2`}>
                   {locationSharing ? '켜짐' : '꺼짐'}
                 </span>
                 <ChevronRight className={`w-4 h-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-400'}`} />
               </div>
             </button>
-            
+
             <div className={`border-t ${borderColor} mx-4`}></div>
-            
-            <button 
+
+            <button
               onClick={() => setShowThemeSettings(true)}
               className={`w-full p-3 flex justify-between items-center`}
             >
-              <span className={`text-sm ${textColor}`}>화면</span>
+              <span className={`text-[15px] ${textColor}`}>화면</span>
               <div className="flex items-center">
-                <span className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} mr-2`}>
+                <span className={`text-[13px] ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} mr-2`}>
                   {isDarkMode ? '다크' : '라이트'}
                 </span>
                 <ChevronRight className={`w-4 h-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-400'}`} />
               </div>
             </button>
-            
+
             <div className={`border-t ${borderColor} mx-4`}></div>
-            
-            <button 
+
+            <button
               onClick={() => setShowRankThemeSettings(true)}
               className={`w-full p-3 flex justify-between items-center`}
             >
-              <span className={`text-sm ${textColor}`}>색상</span>
+              <span className={`text-[15px] ${textColor}`}>색상</span>
               <div className="flex items-center">
-                <span className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} mr-2`}>
+                <span className={`text-[13px] ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} mr-2`}>
                   {userRanking === 'basic' ? '기본' :
-                   userRanking === 'bronze' ? '브론즈' : 
-                   userRanking === 'silver' ? '실버' : 
-                   userRanking === 'gold' ? '골드' : 
+                   userRanking === 'bronze' ? '브론즈' :
+                   userRanking === 'silver' ? '실버' :
+                   userRanking === 'gold' ? '골드' :
                    '플래티넘'}
                 </span>
                 <ChevronRight className={`w-4 h-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-400'}`} />
@@ -158,7 +158,7 @@ const SettingsScreen = ({
       <div className="fixed bottom-0 left-0 right-0 z-50 p-4">
         <button
           onClick={onLogout}
-          className={`w-full py-2.5 text-sm font-medium text-red-500 rounded-lg border border-red-200 ${isDarkMode ? 'bg-gray-800' : 'bg-white'} hover:bg-red-50 transition-colors`}
+          className={`w-full py-2.5 text-[15px] font-medium text-red-500 rounded-lg border border-red-200 ${isDarkMode ? 'bg-gray-800' : 'bg-white'} hover:bg-red-50 transition-colors`}
         >
           로그아웃
         </button>

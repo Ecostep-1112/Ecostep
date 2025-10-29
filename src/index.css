@@ -2,6 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Safe area support for iOS and Android */
+:root {
+  --sat: env(safe-area-inset-top);
+  --sar: env(safe-area-inset-right);
+  --sab: env(safe-area-inset-bottom);
+  --sal: env(safe-area-inset-left);
+}
+
 /* 슬라이드 업 애니메이션 */
 @keyframes slideUp {
   from {

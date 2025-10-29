@@ -51,7 +51,10 @@
       "Bash(cat:*)",
       "Read(//c/**)",
       "Bash(start http://localhost:5175/)",
-      "Bash(timeout:*)"
+      "Bash(timeout:*)",
+      "Bash(netstat:*)",
+      "Bash(findstr:*)",
+      "Bash(exit 0)"
     ],
     "deny": [],
     "ask": [],

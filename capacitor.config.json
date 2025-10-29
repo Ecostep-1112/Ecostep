@@ -1,5 +1,11 @@
 {
   "appId": "com.ecostep.app",
   "appName": "ecostep",
-  "webDir": "dist"
+  "webDir": "dist",
+  "ios": {
+    "contentInset": "always"
+  },
+  "android": {
+    "backgroundColor": "#ffffff"
+  }
 }

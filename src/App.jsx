@@ -712,8 +712,17 @@ const EcostepApp = () => {
     <div className={`h-screen w-full ${bgColor}`}>
         {/* 화면 영역 */}
         <div className="w-full h-full flex flex-col">
+          {/* 상단 Safe Area 배경 */}
+          <div className={`fixed top-0 left-0 right-0 z-40 ${isDarkMode ? 'bg-gray-900' : 'bg-white'}`} style={{
+            height: 'max(1.5rem, env(safe-area-inset-top))'
+          }}></div>
+
           {/* 상태바 */}
-          <div className={`fixed top-0 left-0 right-0 z-50 ${isDarkMode ? 'bg-gray-900' : 'bg-white'} px-3 py-3 flex justify-between items-center`}>
+          <div className={`fixed left-0 right-0 z-50 ${isDarkMode ? 'bg-gray-900' : 'bg-white'} px-3 py-3 flex justify-between items-center`} style={{
+            top: 'max(1.5rem, env(safe-area-inset-top))',
+            paddingLeft: 'calc(0.75rem + env(safe-area-inset-left))',
+            paddingRight: 'calc(0.75rem + env(safe-area-inset-right))'
+          }}>
             <h1 className={`${isDarkMode ? 'text-white' : 'text-gray-800'} text-sm font-medium`}>
               {activeTab === 'home' && '홈'}
               {activeTab === 'challenge' && '챌린지'}
@@ -758,7 +767,10 @@ const EcostepApp = () => {
           </div>
 
           {/* 메인 콘텐츠 */}
-          <div className={`flex-1 overflow-y-auto pt-12 pb-16 ${bgColor}`}>
+          <div className={`flex-1 overflow-y-auto ${bgColor}`} style={{
+            paddingTop: 'max(4.5rem, calc(3rem + env(safe-area-inset-top)))',
+            paddingBottom: 'calc(4.5rem + max(1rem, env(safe-area-inset-bottom)))'
+          }}>
           {showNotifications ? (
             <NotificationsScreen 
               isDarkMode={isDarkMode} 
@@ -907,14 +919,19 @@ const EcostepApp = () => {
 
           {/* 하단 네비게이션 - 글래스모피즘 효과 */}
           {!showNotifications && !showSettings && !showProfile && !showAquariumSettings && !showThemeSettings && !showRankThemeSettings && !showLanguageSettings && !showNotificationSettings && !showLocationSettings && !showFriendsList && !showGlobalList && (
-            <div className="fixed bottom-0 left-0 right-0 z-50" style={{
+            <div className="fixed left-0 right-0 bottom-0 z-50" style={{
               backgroundColor: isDarkMode ? 'rgba(55, 65, 81, 0.3)' : 'rgba(255, 255, 255, 0.3)',
               backdropFilter: isDarkMode ? 'blur(20px) saturate(1.5)' : 'blur(20px) saturate(2.5)',
               WebkitBackdropFilter: isDarkMode ? 'blur(20px) saturate(1.5)' : 'blur(20px) saturate(2.5)',
               borderTop: isDarkMode ? '1px solid rgba(107, 114, 128, 0.3)' : '1px solid rgba(209, 213, 219, 0.8)',
-              boxShadow: '0 -4px 30px rgba(0, 0, 0, 0.05)'
+              boxShadow: '0 -4px 30px rgba(0, 0, 0, 0.05)',
+              paddingTop: '1px'
             }}>
-              <div className="flex justify-around py-2">
+              <div className="flex justify-around py-2" style={{
+                paddingLeft: 'env(safe-area-inset-left)',
+                paddingRight: 'env(safe-area-inset-right)',
+                paddingBottom: 'max(1rem, env(safe-area-inset-bottom))'
+              }}>
                 {[
                   { id: 'home', icon: Home, label: '홈' },
                   { id: 'challenge', icon: Target, label: '챌린지' },

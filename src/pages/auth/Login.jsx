@@ -179,7 +179,7 @@ function Login({ onLogin }) {
             </div>
             
             {/* 하단 영역 - 로그인 버튼들 */}
-            <div className="mt-auto w-full">
+            <div className="mt-auto w-full mb-8">
               {/* 에러 메시지 */}
               {error && (
                 <div className="w-full mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg text-sm">

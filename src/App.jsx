@@ -754,12 +754,12 @@ const EcostepAppContent = () => {
   }
 
   return (
-    <div className={`h-screen w-full ${bgColor}`}>
+    <div className={`h-screen w-full ${bgColor} overflow-hidden`}>
         {/* 화면 영역 */}
-        <div className="w-full h-full flex flex-col">
+        <div className="w-full h-full flex flex-col overflow-hidden">
           {/* 상태바 */}
-          <div className={`fixed top-0 left-0 right-0 z-50 ${isDarkMode ? 'bg-gray-900' : 'bg-white'} px-3 py-3 flex justify-between items-center`}>
-            <h1 className={`${isDarkMode ? 'text-white' : 'text-gray-800'} text-sm font-medium`}>
+          <div className={`fixed top-0 left-0 right-0 z-50 ${isDarkMode ? 'bg-gray-900' : 'bg-white'} px-3 pt-10 pb-3 flex justify-between items-center`}>
+            <h1 className={`${isDarkMode ? 'text-white' : 'text-gray-800'} font-medium`} style={{ fontSize: '14.5px' }}>
               {activeTab === 'home' && '홈'}
               {activeTab === 'challenge' && '챌린지'}
               {activeTab === 'reward' && '보상'}
@@ -768,17 +768,17 @@ const EcostepAppContent = () => {
             </h1>
             <div className="flex items-center gap-3">
               <div className={`flex items-center px-2 py-0.5 rounded border ${isDarkMode ? 'border-gray-600' : 'border-gray-300'}`}>
-                <span className={`${isDarkMode ? 'text-white' : 'text-gray-700'} text-xs font-medium`}>{points}P</span>
+                <span className={`${isDarkMode ? 'text-white' : 'text-gray-700'} font-medium`} style={{ fontSize: '12.5px' }}>{points}P</span>
               </div>
               <button className="relative" onClick={() => {
                 setShowNotifications(true);
                 setNotificationsList(prev => prev.map(n => ({ ...n, read: true })));
               }}>
-                <Bell className={`w-[18px] h-[18px] ${
-                  notificationsList.some(n => !n.read) 
-                    ? 'text-purple-500' 
+                <Bell className={`${
+                  notificationsList.some(n => !n.read)
+                    ? 'text-purple-500'
                     : isDarkMode ? 'text-white' : 'text-gray-700'
-                }`} />
+                }`} style={{ width: '18.5px', height: '18.5px' }} />
               </button>
               <button onClick={() => {
                 if (showNotifications) {
@@ -793,7 +793,7 @@ const EcostepAppContent = () => {
                 setShowLocationSettings(false);
                 setShowSettings(true);
               }}>
-                <Settings className={`w-4 h-4 ${isDarkMode ? 'text-white' : 'text-gray-700'}`} />
+                <Settings className={`${isDarkMode ? 'text-white' : 'text-gray-700'}`} style={{ width: '18.5px', height: '18.5px' }} />
               </button>
             </div>
             {/* 그라데이션 테두리 */}
@@ -803,7 +803,7 @@ const EcostepAppContent = () => {
           </div>
 
           {/* 메인 콘텐츠 */}
-          <div className={`flex-1 overflow-y-auto pt-12 pb-16 ${bgColor}`}>
+          <div className={`flex-1 overflow-y-auto pt-[72px] pb-24 ${bgColor} scrollbar-hide`}>
           {showNotifications ? (
             <NotificationsScreen 
               isDarkMode={isDarkMode} 
@@ -957,7 +957,7 @@ const EcostepAppContent = () => {
               borderTop: isDarkMode ? '1px solid rgba(107, 114, 128, 0.3)' : '1px solid rgba(209, 213, 219, 0.8)',
               boxShadow: '0 -4px 30px rgba(0, 0, 0, 0.05)'
             }}>
-              <div className="flex justify-around py-2">
+              <div className="flex justify-around pt-2 pb-6">
                 {[
                   { id: 'home', icon: Home, label: '홈' },
                   { id: 'challenge', icon: Target, label: '챌린지' },

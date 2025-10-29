@@ -703,11 +703,11 @@ const Home = ({
                 <div className="w-[1px] bg-white/20 self-stretch"></div>
                 
                 {/* 설정 버튼 */}
-                <button 
+                <button
                   onClick={() => setShowAquariumSettings(true)}
-                  className="px-2 bg-white/20 hover:bg-white/30 transition-colors rounded-lg flex items-center justify-center"
+                  className="px-3 py-2 bg-white/20 hover:bg-white/30 transition-colors rounded-lg flex items-center justify-center"
                 >
-                  <Settings className="w-3 h-3 text-white" />
+                  <Settings className="w-4 h-4 text-white" />
                 </button>
               </div>
             </div>

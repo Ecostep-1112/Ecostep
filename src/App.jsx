@@ -723,7 +723,7 @@ const EcostepApp = () => {
             paddingLeft: 'calc(0.75rem + env(safe-area-inset-left))',
             paddingRight: 'calc(0.75rem + env(safe-area-inset-right))'
           }}>
-            <h1 className={`${isDarkMode ? 'text-white' : 'text-gray-800'} text-sm font-medium`}>
+            <h1 className={`${isDarkMode ? 'text-white' : 'text-gray-800'} text-base font-medium`}>
               {activeTab === 'home' && '홈'}
               {activeTab === 'challenge' && '챌린지'}
               {activeTab === 'reward' && '보상'}
@@ -731,16 +731,16 @@ const EcostepApp = () => {
               {activeTab === 'more' && '기타'}
             </h1>
             <div className="flex items-center gap-3">
-              <div className={`flex items-center px-2 py-0.5 rounded border ${isDarkMode ? 'border-gray-600' : 'border-gray-300'}`}>
-                <span className={`${isDarkMode ? 'text-white' : 'text-gray-700'} text-xs font-medium`}>{points}P</span>
+              <div className={`flex items-center px-2 py-0.5 rounded border mr-1 ${isDarkMode ? 'border-gray-600' : 'border-gray-300'}`}>
+                <span className={`${isDarkMode ? 'text-white' : 'text-gray-700'} text-sm font-medium`}>{points}P</span>
               </div>
               <button className="relative" onClick={() => {
                 setShowNotifications(true);
                 setNotificationsList(prev => prev.map(n => ({ ...n, read: true })));
               }}>
-                <Bell className={`w-[18px] h-[18px] ${
-                  notificationsList.some(n => !n.read) 
-                    ? 'text-purple-500' 
+                <Bell className={`w-5 h-5 ${
+                  notificationsList.some(n => !n.read)
+                    ? 'text-purple-500'
                     : isDarkMode ? 'text-white' : 'text-gray-700'
                 }`} />
               </button>
@@ -757,7 +757,7 @@ const EcostepApp = () => {
                 setShowLocationSettings(false);
                 setShowSettings(true);
               }}>
-                <Settings className={`w-4 h-4 ${isDarkMode ? 'text-white' : 'text-gray-700'}`} />
+                <Settings className={`w-5 h-5 ${isDarkMode ? 'text-white' : 'text-gray-700'}`} />
               </button>
             </div>
             {/* 그라데이션 테두리 */}

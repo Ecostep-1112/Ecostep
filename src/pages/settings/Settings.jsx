@@ -587,19 +587,23 @@ export const AquariumSettings = ({
                             }}
                             className={`rounded-lg border ${
                               isSelected ? 'border-cyan-500 bg-cyan-50' : borderColor
-                            } ${cardBg} flex flex-col items-center justify-center h-[85px] p-2`}
+                            } ${cardBg} flex flex-col items-center justify-center p-2`}
+                            style={{ height: 'clamp(85px, 5.3125rem, 93px)' }}
                             disabled={!isSelected && selectedFish.length >= purchasedFish.length}
                           >
                             {/* 물고기 아이콘 */}
-                            <div className="flex items-center justify-center mb-1">
+                            <div className="w-full flex items-center justify-center mb-1" style={{ height: 'clamp(45px, 2.8125rem, 49px)' }}>
                               {(() => {
                                 const FishIcon = FishIcons[fish.name.replace(' ', '')];
                                 return FishIcon ? <FishIcon size={32} /> : null;
                               })()}
                             </div>
-                            
+
                             {/* 물고기 이름 */}
-                            <p className={`text-[10px] ${isSelected ? 'text-cyan-600 font-medium' : isDarkMode ? 'text-gray-300' : 'text-gray-700'} text-center`}>
+                            <p
+                              className={`${isSelected ? 'text-cyan-600 font-medium' : isDarkMode ? 'text-gray-300' : 'text-gray-700'} text-center`}
+                              style={{ fontSize: 'clamp(11px, 0.6875rem, 12px)' }}
+                            >
                               {fish.name}
                             </p>
                           </button>
@@ -664,16 +668,20 @@ export const AquariumSettings = ({
                               }}
                               className={`rounded-lg border ${
                                 isSelected ? 'border-cyan-500 bg-cyan-50' : borderColor
-                              } ${cardBg} flex flex-col items-center justify-center h-[85px] p-2`}
+                              } ${cardBg} flex flex-col items-center justify-center p-2`}
+                              style={{ height: 'clamp(85px, 5.3125rem, 93px)' }}
                               disabled={!isSelected && selectedDecorations.length >= availableDecorations.length}
                             >
                               {/* 장식품 아이콘 */}
-                              <div className="h-[45px] w-full flex items-center justify-center mb-1">
+                              <div className="w-full flex items-center justify-center mb-1" style={{ height: 'clamp(45px, 2.8125rem, 49px)' }}>
                                 {DecoIcon && React.createElement(DecoIcon)}
                               </div>
-                              
+
                               {/* 장식품 이름 */}
-                              <p className={`text-[10px] ${isSelected ? 'text-cyan-600 font-medium' : isDarkMode ? 'text-gray-300' : 'text-gray-700'} text-center`}>
+                              <p
+                                className={`${isSelected ? 'text-cyan-600 font-medium' : isDarkMode ? 'text-gray-300' : 'text-gray-700'} text-center`}
+                                style={{ fontSize: 'clamp(11px, 0.6875rem, 12px)' }}
+                              >
                                 {deco.name}
                               </p>
                             </button>

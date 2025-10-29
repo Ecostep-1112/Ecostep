@@ -366,9 +366,9 @@ const EcostepAppContent = () => {
         setIsCheckingAuth(false);
       }
     };
-    
+
     checkUser();
-    
+
     // 인증 상태 변경 리스너 설정
     const { data: { subscription } } = onAuthStateChange((event, session) => {
       if (event === 'SIGNED_IN' && session?.user) {
@@ -390,11 +390,20 @@ const EcostepAppContent = () => {
         });
       }
     });
-    
+
     return () => {
       subscription?.unsubscribe();
     };
   }, []);
+
+  // 로그인 없이 둘러보기 시 Store 데이터 로드
+  useEffect(() => {
+    if (isLoggedIn && !currentUser && !isCheckingAuth) {
+      // 로그인 없이 둘러보기 (currentUser가 null)
+      console.log('로그인 없이 둘러보기 - Store 데이터 로드');
+      preloadAllData(null);
+    }
+  }, [isLoggedIn, currentUser, isCheckingAuth]);
 
   // Deep link 처리 (모바일 앱에서 OAuth callback 처리)
   useEffect(() => {
@@ -922,7 +931,7 @@ const EcostepAppContent = () => {
               {activeTab === 'community' && !showFriendsList && !showGlobalList && <CommunityPage isDarkMode={isDarkMode} onShowFriendsList={() => setShowFriendsList(true)} onShowGlobalList={() => setShowGlobalList(true)} showToast={showToast} userRanking={rankTheme} totalPlasticSaved={testPlasticSaved > 0 ? testPlasticSaved : totalPlasticSaved} currentUserId={currentUser?.id} currentUserName={profileData.name} currentUserNickname={profileData.userId} />}
               {activeTab === 'community' && showFriendsList && <FriendsList isDarkMode={isDarkMode} onBack={() => setShowFriendsList(false)} isGlobalRanking={false} totalPlasticSaved={testPlasticSaved > 0 ? testPlasticSaved : totalPlasticSaved} currentUserId={currentUser?.id} currentUserNickname={profileData.userId} />}
               {activeTab === 'community' && showGlobalList && <FriendsList isDarkMode={isDarkMode} onBack={() => setShowGlobalList(false)} isGlobalRanking={true} totalPlasticSaved={testPlasticSaved > 0 ? testPlasticSaved : totalPlasticSaved} currentUserId={currentUser?.id} currentUserNickname={profileData.userId} />}
-              {activeTab === 'more' && !showChatBot && <MorePage isDarkMode={isDarkMode} userPoints={points} setUserPoints={setPoints} onShowChatBot={() => setShowChatBot(true)} earnPoints={earnPoints} rankTheme={rankTheme} showToast={showToast} />}
+              {activeTab === 'more' && !showChatBot && <MorePage isDarkMode={isDarkMode} userPoints={points} setUserPoints={setPoints} onShowChatBot={() => setShowChatBot(true)} earnPoints={earnPoints} rankTheme={rankTheme} showToast={showToast} locationSharing={locationSharing} />}
               {activeTab === 'more' && showChatBot && <ChatBot isDarkMode={isDarkMode} onBack={() => setShowChatBot(false)} />}
             </>
           )}

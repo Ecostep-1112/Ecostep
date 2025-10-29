@@ -372,6 +372,33 @@ export const LocationSettings = ({ isDarkMode, locationSharing, setLocationShari
   const borderColor = isDarkMode ? 'border-gray-700' : 'border-gray-200';
   const cardBg = isDarkMode ? 'bg-gray-800' : 'bg-white';
 
+  const handleLocationToggle = () => {
+    if (!locationSharing) {
+      // 위치를 켜려고 할 때 → 권한 요청
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            // 권한 허용됨
+            console.log('위치 권한 허용됨:', position);
+            setLocationSharing(true);
+          },
+          (error) => {
+            // 권한 거부됨
+            console.error('위치 권한 거부됨:', error);
+            alert('위치 권한이 거부되었습니다. 브라우저 설정에서 위치 권한을 허용해주세요.');
+            setLocationSharing(false);
+          }
+        );
+      } else {
+        alert('이 브라우저는 위치 서비스를 지원하지 않습니다.');
+        setLocationSharing(false);
+      }
+    } else {
+      // 위치를 끄려고 할 때 → 그냥 끔
+      setLocationSharing(false);
+    }
+  };
+
   return (
     <div className={`flex-1 ${bgColor}`}>
       <div className={`${bgColor} p-4 flex items-center border-b ${borderColor}`}>
@@ -380,15 +407,15 @@ export const LocationSettings = ({ isDarkMode, locationSharing, setLocationShari
         </button>
         <h2 className={`text-[18px] font-medium ${textColor}`}>위치</h2>
       </div>
-      
+
       <div className="mx-3 mt-4">
         <div className={`${cardBg} border ${borderColor} rounded-xl p-3 flex items-center justify-between`}>
           <span className={`text-[16px] ${textColor}`}>위치 공유 동의</span>
-          <button 
-            onClick={() => setLocationSharing(!locationSharing)}
+          <button
+            onClick={handleLocationToggle}
             className={`w-11 h-6 rounded-full relative transition-all`}
             style={{
-              background: locationSharing 
+              background: locationSharing
                 ? 'linear-gradient(135deg, #06b6d4 0%, #3b82f6 50%, #2563eb 100%)'
                 : isDarkMode ? '#4b5563' : '#d1d5db'
             }}

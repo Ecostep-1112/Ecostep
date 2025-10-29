@@ -4,6 +4,8 @@ import SearchFriends from './SearchFriends';
 import { BronzeIcon, SilverIcon, GoldIcon, PlatinumIcon } from '../../components/RankIcons';
 import { supabase } from '../../lib/supabase';
 import { useData } from '../../services/DataContext';
+import { Capacitor } from '@capacitor/core';
+import { Share } from '@capacitor/share';
 
 const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast, userRanking, totalPlasticSaved = 0, currentUserId = '', currentUserName = '', currentUserNickname = '' }) => {
   // 전역 데이터 컨텍스트에서 데이터 가져오기
@@ -128,52 +130,83 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
           <h3 className={`${textColor} text-[16px] font-medium mb-3 text-center`}>초대</h3>
           <div className="flex gap-2">
             <button
-              onClick={() => {
+              onClick={async () => {
                 try {
-                  // KakaoTalk share with SDK if initialized
                   const inviteCode = 'ECO' + Math.random().toString(36).substr(2, 6).toUpperCase();
                   const inviteLink = `https://ecostep.app/invite?code=${inviteCode}`;
+                  const shareText = '🌱 EcoStep - Small Steps, Big Change. Why Not?\n\n함께 환경을 지켜요!';
 
-                  if (window.Kakao && window.Kakao.isInitialized()) {
-                    window.Kakao.Share.sendDefault({
-                      objectType: 'feed',
-                      content: {
+                  // Capacitor 모바일 앱 환경인지 확인
+                  const isNative = Capacitor.isNativePlatform();
+
+                  if (isNative) {
+                    // 모바일 앱: Capacitor Share API 사용 (네이티브 공유 기능)
+                    try {
+                      await Share.share({
                         title: 'EcoStep',
-                        description: 'Small Steps, Big Change. Why Not?',
-                        imageUrl: 'https://via.placeholder.com/300x200?text=EcoStep',
-                        link: {
-                          mobileWebUrl: inviteLink,
-                          webUrl: inviteLink,
-                        },
-                      },
-                      buttons: [
-                        {
-                          title: '앱 시작하기',
+                        text: shareText,
+                        url: inviteLink,
+                        dialogTitle: '친구 초대하기',
+                      });
+                      console.log('Native share successful');
+                    } catch (error) {
+                      console.error('Native share error:', error);
+                      if (showToast) {
+                        showToast('공유 기능을 사용할 수 없습니다.', 'error');
+                      }
+                    }
+                  } else {
+                    // 웹 환경: Kakao SDK 사용
+                    if (window.Kakao && window.Kakao.isInitialized()) {
+                      window.Kakao.Share.sendDefault({
+                        objectType: 'feed',
+                        content: {
+                          title: 'EcoStep',
+                          description: 'Small Steps, Big Change. Why Not?',
+                          imageUrl: 'https://via.placeholder.com/300x200?text=EcoStep',
                           link: {
                             mobileWebUrl: inviteLink,
                             webUrl: inviteLink,
                           },
                         },
-                      ],
-                    });
-                    console.log('Kakao share sent successfully');
-                  } else {
-                    console.warn('Kakao SDK not initialized, using fallback');
-                    // Fallback: Copy link and show toast
-                    navigator.clipboard.writeText(inviteLink).then(() => {
-                      if (showToast) {
-                        showToast('카카오톡 SDK를 불러올 수 없어 링크가 복사되었습니다. 카카오톡에서 직접 공유해주세요.', 'info');
+                        buttons: [
+                          {
+                            title: '앱 시작하기',
+                            link: {
+                              mobileWebUrl: inviteLink,
+                              webUrl: inviteLink,
+                            },
+                          },
+                        ],
+                      });
+                      console.log('Kakao share sent successfully');
+                    } else {
+                      console.warn('Kakao SDK not initialized, using Web Share API');
+                      // Web Share API 사용
+                      if (navigator.share) {
+                        await navigator.share({
+                          title: 'EcoStep',
+                          text: shareText,
+                          url: inviteLink,
+                        });
+                      } else {
+                        // 최종 대안: 링크 복사
+                        navigator.clipboard.writeText(inviteLink).then(() => {
+                          if (showToast) {
+                            showToast('링크가 복사되었습니다. 카카오톡에서 직접 공유해주세요.', 'info');
+                          }
+                        }).catch(() => {
+                          if (showToast) {
+                            showToast('공유 기능을 사용할 수 없습니다.', 'error');
+                          }
+                        });
                       }
-                    }).catch(() => {
-                      if (showToast) {
-                        showToast('카카오톡 공유 기능을 사용할 수 없습니다.', 'error');
-                      }
-                    });
+                    }
                   }
                 } catch (error) {
-                  console.error('Kakao share error:', error);
+                  console.error('Share error:', error);
                   if (showToast) {
-                    showToast('카카오톡 공유 중 오류가 발생했습니다.', 'error');
+                    showToast('공유 중 오류가 발생했습니다.', 'error');
                   }
                 }
               }}

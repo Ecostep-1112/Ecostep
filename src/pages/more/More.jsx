@@ -3,7 +3,7 @@ import { Share2, ChevronDown, ChevronUp, Book, Phone, ChevronRight, ArrowRight, 
 import { generateEnvironmentalTip } from '../../services/claudeService';
 import { supabase } from '../../lib/supabase';
 
-const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, showToast, onShowChatBot }) => {
+const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, showToast, onShowChatBot, locationSharing }) => {
   const [expandedTip, setExpandedTip] = useState(null);
   
   // 카카오톡 API 초기화
@@ -106,6 +106,7 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
   const [showPlaceCategoryDropdown, setShowPlaceCategoryDropdown] = useState(false);
   const [zeroWastePlaces, setZeroWastePlaces] = useState([]);
   const [isLoadingPlaces, setIsLoadingPlaces] = useState(true);
+  const [locationPermissionDenied, setLocationPermissionDenied] = useState(true); // 기본값: 위치 꺼짐
 
   const categories = ['랜덤', '재활용 팁', '생활 습관', '에너지 절약', '제로웨이스트'];
   const placeCategories = ['전체', '리필샵', '친환경 매장', '재활용/업사이클', '무포장 가게', '비건/친환경 카페'];
@@ -144,12 +145,23 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
     }
   };
 
-  // 컴포넌트 마운트 시 초기 팁 로드 및 사용자 위치 가져오기
+  // 컴포넌트 마운트 시 초기 팁 로드 및 장소 데이터 로드
   useEffect(() => {
     loadInitialTip();
-    getUserLocation();
     loadPlaces();
   }, []);
+
+  // locationSharing 설정에 따라 위치 정보 가져오기
+  useEffect(() => {
+    if (locationSharing) {
+      // 위치 설정이 켜져있으면 위치 정보 요청
+      getUserLocation();
+    } else {
+      // 위치 설정이 꺼져있으면 위치 거부 상태로 설정
+      setLocationPermissionDenied(true);
+      setUserLocation(null);
+    }
+  }, [locationSharing]);
 
   // 사용자 위치 및 카테고리 기반으로 장소 정렬 및 필터링
   useEffect(() => {
@@ -179,16 +191,19 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
         (position) => {
           const { latitude, longitude } = position.coords;
           setUserLocation({ lat: latitude, lng: longitude });
+          setLocationPermissionDenied(false);
         },
         (error) => {
           console.error('위치 정보를 가져올 수 없습니다:', error);
-          // 기본 위치 (서울) 사용
-          setUserLocation({ lat: 37.5665, lng: 126.9780 });
+          // 위치 권한이 거부된 경우
+          setLocationPermissionDenied(true);
+          setUserLocation(null);
         }
       );
     } else {
-      // Geolocation을 지원하지 않는 경우 기본 위치
-      setUserLocation({ lat: 37.5665, lng: 126.9780 });
+      // Geolocation을 지원하지 않는 경우
+      setLocationPermissionDenied(true);
+      setUserLocation(null);
     }
   };
 
@@ -557,7 +572,13 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
           </div>
           
           <div className="space-y-3 max-h-52 overflow-y-auto custom-scrollbar">
-            {sortedPlaces.slice(0, 4).map((place, index) => (
+            {locationPermissionDenied ? (
+              <div className="flex flex-col items-center justify-center py-8">
+                <p className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} text-[15px] text-center`}>
+                  설정에서 위치 권한을 허락해 주세요
+                </p>
+              </div>
+            ) : sortedPlaces.slice(0, 4).map((place, index) => (
               <div key={index} className={`border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-100'} pb-3 min-h-[60px]`}>
                 <div className="flex justify-between">
                   <div className="flex-1 pr-3">
@@ -583,7 +604,7 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
                 </div>
               </div>
             ))}
-            {sortedPlaces.length > 4 && (
+            {!locationPermissionDenied && sortedPlaces.length > 4 && (
               <div className="pt-2">
                 {sortedPlaces.slice(4).map((place, index) => (
                   <div key={index + 4} className={`border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-100'} pb-3 mb-2 min-h-[60px]`}>

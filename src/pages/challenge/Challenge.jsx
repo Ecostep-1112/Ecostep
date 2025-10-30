@@ -1027,8 +1027,8 @@ const Challenge = ({
               
               <div className="relative mb-4 h-9">
               {/* 챌린지가 이미 시작되었는지 확인 */}
-              {currentWeekStart && weeklyProgress[currentWeekStart] && 
-               weeklyProgress[currentWeekStart].days.some(day => day !== null) ? (
+              {currentWeekStart && weeklyProgress[currentWeekStart] &&
+               weeklyProgress[currentWeekStart].days?.some(day => day !== null) ? (
                 // 챌린지가 시작됨 - 변경 불가, 가운데 정렬
                 <div 
                   className={`w-full h-full ${inputBg} rounded-lg flex items-center justify-center gradient-border`}
@@ -1266,8 +1266,8 @@ const Challenge = ({
               
               <div className="flex justify-between mb-4">
                 {['월', '화', '수', '목', '금', '토', '일'].map((dayName, idx) => {
-                  const dayStatus = currentWeekStart && weeklyProgress[currentWeekStart] 
-                    ? weeklyProgress[currentWeekStart].days[idx] 
+                  const dayStatus = currentWeekStart && weeklyProgress[currentWeekStart]?.days
+                    ? weeklyProgress[currentWeekStart].days[idx]
                     : null;
                   const isToday = idx === currentDayIndex;
                   const isPast = idx < currentDayIndex;
@@ -1335,7 +1335,7 @@ const Challenge = ({
                   진행률
                 </span>
                 <span className={`text-[14px] font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                  {currentWeekStart && weeklyProgress[currentWeekStart] 
+                  {currentWeekStart && weeklyProgress[currentWeekStart]?.days
                     ? Math.round((weeklyProgress[currentWeekStart].days.filter(d => d === true).length / 7) * 100)
                     : 0}%
                 </span>
@@ -1345,7 +1345,7 @@ const Challenge = ({
                 <div 
                   className="h-1.5 rounded-full transition-all duration-300"
                   style={{ 
-                    width: `${currentWeekStart && weeklyProgress[currentWeekStart] 
+                    width: `${currentWeekStart && weeklyProgress[currentWeekStart]?.days
                       ? (weeklyProgress[currentWeekStart].days.filter(d => d === true).length / 7 * 100) 
                       : 0}%`,
                     background: getThemeGradient()

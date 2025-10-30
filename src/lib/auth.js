@@ -223,7 +223,7 @@ export const onAuthStateChange = (callback) => {
   return supabase.auth.onAuthStateChange(callback);
 };
 
-// 사용자 아이디 업데이트 함수
+// 사용자 아이디(닉네임) 업데이트 함수
 export const updateUserId = async (newUserId) => {
   try {
     console.log('아이디 업데이트 시작:', newUserId);
@@ -235,38 +235,25 @@ export const updateUserId = async (newUserId) => {
 
     const trimmedUserId = newUserId.trim();
 
-    // profileData에서 현재 프로필 정보 가져오기
-    const profileData = JSON.parse(localStorage.getItem('profileData') || '{}');
-    const userProfile = JSON.parse(localStorage.getItem('userProfile') || '{}');
-
-    // 아이디 중복 체크 (로컬에서만)
-    const existingIds = JSON.parse(localStorage.getItem('allUserIds') || '[]');
-
-    // 현재 사용자의 이전 아이디는 목록에서 제거
-    const filteredIds = existingIds.filter(id => id !== profileData.userId && id !== userProfile.userId);
-
-    // 새 아이디가 이미 사용 중인지 확인
-    if (filteredIds.includes(trimmedUserId)) {
-      console.log('중복된 아이디:', trimmedUserId);
-      return { success: false, error: '이미 사용 중인 아이디입니다.' };
+    // 현재 로그인한 사용자 가져오기
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user) {
+      return { success: false, error: '로그인이 필요합니다.' };
     }
 
-    // userProfile 업데이트
-    userProfile.userId = trimmedUserId;
-    localStorage.setItem('userProfile', JSON.stringify(userProfile));
+    // profileData에서 현재 프로필 정보 가져오기
+    const profileData = JSON.parse(localStorage.getItem('profileData') || '{}');
 
-    // profileData 업데이트
+    // localStorage 업데이트
     profileData.userId = trimmedUserId;
     localStorage.setItem('profileData', JSON.stringify(profileData));
 
-    // 전체 아이디 목록 업데이트
-    filteredIds.push(trimmedUserId);
-    localStorage.setItem('allUserIds', JSON.stringify(filteredIds));
-
-    console.log('로컬 저장 성공:', {
-      userId: trimmedUserId,
-      allUserIds: filteredIds
+    console.log('localStorage 저장 성공:', {
+      userId: trimmedUserId
     });
+
+    // 참고: DB 스키마에 nickname 필드가 없어서 localStorage에만 저장됩니다.
+    // 중복 체크는 클라이언트 측에서만 수행됩니다.
 
     return { success: true, data: { user_id: trimmedUserId }, error: null };
   } catch (error) {

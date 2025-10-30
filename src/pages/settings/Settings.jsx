@@ -465,7 +465,7 @@ export const AquariumSettings = ({
         const { data: { user } } = await supabase.auth.getUser();
         if (user) {
           const { data } = await getUserPurchasedItems(user.id);
-          const backgrounds = data?.filter(item => item.startsWith('background_')) || [];
+          const backgrounds = data?.filter(item => item.item_id?.startsWith('background_')).map(item => item.item_id) || [];
           setPurchasedBackgrounds(backgrounds);
         }
       } catch (error) {

@@ -43,17 +43,37 @@ export const getUserProfile = async (userId) => {
 // 사용자 정보 저장 (user_info 테이블 사용)
 export const saveUserStats = async (userId, stats) => {
   try {
+    // name 필드가 undefined일 경우 제외하여 DB not-null constraint 위반 방지
+    const updateData = {
+      user_id: userId,
+      point_current: stats.point_current || stats.points || 0,
+      points_total: stats.points_total || stats.totalPoints || 0,
+      rank: stats.rank || 'bronze',
+      amount: stats.amount || stats.plasticGoal || 0,
+    };
+
+    // undefined가 아닌 필드만 추가
+    if (stats.consecutive_days !== undefined) {
+      updateData.consecutive_days = stats.consecutive_days;
+    }
+    if (stats.profile_image_url !== undefined) {
+      updateData.profile_image_url = stats.profile_image_url;
+    }
+    if (stats.name !== undefined) {
+      updateData.name = stats.name;
+    }
+    if (stats.email !== undefined) {
+      updateData.email = stats.email;
+    }
+    if (stats.phone_num !== undefined) {
+      updateData.phone_num = stats.phone_num;
+    }
+
     const { data, error } = await supabase
       .from('user_info')
-      .upsert({
-        user_id: userId,
-        point_current: stats.point_current || stats.points || 0,
-        points_total: stats.points_total || stats.totalPoints || 0,
-        rank: stats.rank || 'bronze',
-        amount: stats.amount || stats.plasticGoal || 0,
-        ...stats
-      }, {
-        onConflict: 'user_id' // PRIMARY KEY 명시
+      .upsert(updateData, {
+        onConflict: 'user_id', // PRIMARY KEY 명시
+        ignoreDuplicates: false // upsert로 업데이트
       })
       .select()
       .single();
@@ -552,6 +572,20 @@ export const getUserPurchasedItems = async (userId) => {
 // 아이템 구매 (user_item에 추가)
 export const purchaseItem = async (userId, itemId) => {
   try {
+    // 이미 구매한 아이템인지 먼저 확인 (중복 방지)
+    const { data: existingItem } = await supabase
+      .from('user_item')
+      .select('item_id')
+      .eq('user_id', userId)
+      .eq('item_id', itemId)
+      .maybeSingle();
+
+    if (existingItem) {
+      console.log('이미 구매한 아이템:', itemId);
+      return { data: existingItem, error: null, alreadyPurchased: true };
+    }
+
+    // 구매하지 않은 아이템만 insert
     const { data, error } = await supabase
       .from('user_item')
       .insert({
@@ -563,7 +597,7 @@ export const purchaseItem = async (userId, itemId) => {
       .single();
 
     if (error) throw error;
-    return { data, error: null };
+    return { data, error: null, alreadyPurchased: false };
   } catch (error) {
     console.error('아이템 구매 에러:', error);
     return { data: null, error };

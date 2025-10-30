@@ -130,7 +130,6 @@ export const signInWithGoogle = async () => {
       provider: 'google',
       options: {
         redirectTo: getRedirectUrl(),
-        skipBrowserRedirect: true,
         queryParams: {
           access_type: 'offline',
           prompt: 'consent',
@@ -139,21 +138,6 @@ export const signInWithGoogle = async () => {
     });
 
     if (error) throw error;
-
-    // Open OAuth URL in a popup window
-    if (data?.url) {
-      const width = 500;
-      const height = 600;
-      const left = window.screen.width / 2 - width / 2;
-      const top = window.screen.height / 2 - height / 2;
-
-      window.open(
-        data.url,
-        'Google Login',
-        `width=${width},height=${height},left=${left},top=${top}`
-      );
-    }
-
     return { data, error: null };
   } catch (error) {
     console.error('구글 로그인 에러:', error);
@@ -169,26 +153,10 @@ export const signInWithKakao = async () => {
       provider: 'kakao',
       options: {
         redirectTo: getRedirectUrl(),
-        skipBrowserRedirect: true,
       },
     });
 
     if (error) throw error;
-
-    // Open OAuth URL in a popup window
-    if (data?.url) {
-      const width = 500;
-      const height = 600;
-      const left = window.screen.width / 2 - width / 2;
-      const top = window.screen.height / 2 - height / 2;
-
-      window.open(
-        data.url,
-        'Kakao Login',
-        `width=${width},height=${height},left=${left},top=${top}`
-      );
-    }
-
     return { data, error: null };
   } catch (error) {
     console.error('카카오 로그인 에러:', error);
@@ -203,26 +171,10 @@ export const signInWithApple = async () => {
       provider: 'apple',
       options: {
         redirectTo: getRedirectUrl(),
-        skipBrowserRedirect: true,
       },
     });
 
     if (error) throw error;
-
-    // Open OAuth URL in a popup window
-    if (data?.url) {
-      const width = 500;
-      const height = 600;
-      const left = window.screen.width / 2 - width / 2;
-      const top = window.screen.height / 2 - height / 2;
-
-      window.open(
-        data.url,
-        'Apple Login',
-        `width=${width},height=${height},left=${left},top=${top}`
-      );
-    }
-
     return { data, error: null };
   } catch (error) {
     console.error('애플 로그인 에러:', error);

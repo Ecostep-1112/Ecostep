@@ -11,8 +11,16 @@ import {
   selectedChallengeStorage
 } from '../../utils/localStorage';
 import { supabase } from '../../lib/supabase';
+import {
+  getUserDailyChallengeRecords,
+  saveDailyChallengeData,
+  getUserZeroChallengeRecords,
+  saveZeroChallengeRecord,
+  saveUserStats,
+  getUserStats
+} from '../../lib/database';
 
-const Challenge = ({ 
+const Challenge = ({
   isDarkMode,
   activeSubTab,
   setActiveSubTab,
@@ -41,7 +49,8 @@ const Challenge = ({
   setTotalPlasticSaved,
   testDate,
   setTestDate,
-  setNotificationsList
+  setNotificationsList,
+  currentUser // 추가: DB 작업을 위한 currentUser
 }) => {
   const [customChallenge, setCustomChallenge] = useState('');
   const [showCustomChallenge, setShowCustomChallenge] = useState(false);
@@ -69,16 +78,10 @@ const Challenge = ({
     const saved = localStorage.getItem('goalSetDate');
     return saved ? new Date(saved) : null;
   });
-  const [plasticRecords, setPlasticRecords] = useState(() => {
-    const saved = localStorage.getItem('plasticRecords');
-    return saved ? JSON.parse(saved) : [];
-  });
-  
+  const [plasticRecords, setPlasticRecords] = useState([]);
+
   // 주간 챌린지 관리
-  const [weeklyProgress, setWeeklyProgress] = useState(() => {
-    const saved = localStorage.getItem('weeklyProgress');
-    return saved ? JSON.parse(saved) : {};
-  });
+  const [weeklyProgress, setWeeklyProgress] = useState({});
   const [currentWeekStart, setCurrentWeekStart] = useState('');
   const [currentDayIndex, setCurrentDayIndex] = useState(0);
   const [todayCompleted, setTodayCompleted] = useState(false);
@@ -250,6 +253,112 @@ const Challenge = ({
     // 실제 완료된 챌린지만 반환 (예시 데이터 제거)
     return [];
   });
+
+  // DB에서 데이터 로드
+  useEffect(() => {
+    const loadDataFromDB = async () => {
+      if (!currentUser?.id) return;
+
+      try {
+        // 플라스틱 기록 로드
+        const { data: plasticData } = await getUserZeroChallengeRecords(currentUser.id);
+        if (plasticData) {
+          setPlasticRecords(plasticData);
+        }
+
+        // 데일리 챌린지 기록 로드 (주간 진행률로 변환)
+        const { data: challengeData } = await getUserDailyChallengeRecords(currentUser.id);
+        if (challengeData) {
+          // challengeData를 weeklyProgress 형식으로 변환
+          const progressMap = {};
+          challengeData.forEach(record => {
+            const date = record.created_at;
+            if (!progressMap[date]) {
+              progressMap[date] = [];
+            }
+            progressMap[date].push({
+              challenge: record.content,
+              completed: record.is_completed,
+              totalCompleted: record.total_completed
+            });
+          });
+          setWeeklyProgress(progressMap);
+        }
+      } catch (error) {
+        console.error('DB 데이터 로드 에러:', error);
+      }
+    };
+
+    loadDataFromDB();
+  }, [currentUser]);
+
+  // weeklyProgress 변경 시 DB에 저장
+  useEffect(() => {
+    const saveWeeklyProgressToDB = async () => {
+      if (!currentUser?.id || Object.keys(weeklyProgress).length === 0) return;
+
+      try {
+        // 각 주차의 각 요일별로 DB에 저장
+        for (const [weekKey, week] of Object.entries(weeklyProgress)) {
+          if (week.challenge) {
+            week.days.forEach(async (dayStatus, dayIndex) => {
+              if (dayStatus !== null) {
+                const recordId = `${currentUser.id}_${weekKey}_${dayIndex}`;
+                await saveDailyChallengeData(currentUser.id, {
+                  record_id: recordId,
+                  chal_id: null, // 챌린지 ID가 있다면 사용
+                  content: week.challenge,
+                  is_completed: dayStatus === true,
+                  total_completed: week.days.filter(d => d === true).length,
+                  created_at: weekKey
+                });
+              }
+            });
+          }
+        }
+      } catch (error) {
+        console.error('주간 진행률 DB 저장 에러:', error);
+      }
+    };
+
+    // debounce를 위해 약간의 딜레이 추가
+    const timeoutId = setTimeout(saveWeeklyProgressToDB, 1000);
+    return () => clearTimeout(timeoutId);
+  }, [weeklyProgress, currentUser]);
+
+  // plasticRecords 변경 시 DB에 저장
+  useEffect(() => {
+    const savePlasticRecordsToDB = async () => {
+      if (!currentUser?.id || plasticRecords.length === 0) return;
+
+      try {
+        // 마지막으로 추가된 레코드만 저장 (중복 방지)
+        const lastRecord = plasticRecords[plasticRecords.length - 1];
+        if (lastRecord && !lastRecord.record_id) {
+          // item_id가 유효한 경우에만 저장 (DB foreign key constraint 준수)
+          const itemId = lastRecord.item_id || lastRecord.item;
+          // item_id가 없거나 'item_'로 시작하지 않으면 저장하지 않음
+          if (!itemId || (typeof itemId === 'string' && !itemId.startsWith('item_'))) {
+            console.log('유효하지 않은 item_id, DB 저장 건너뜀:', itemId);
+            return;
+          }
+
+          // DB에 아직 저장되지 않은 레코드만 저장
+          await saveZeroChallengeRecord(currentUser.id, {
+            item_id: itemId,
+            item_num: lastRecord.quantity || 1,
+            tracked_date: lastRecord.date,
+            quantity: lastRecord.quantity || 1,
+            weight: lastRecord.weight || 0
+          });
+        }
+      } catch (error) {
+        console.error('플라스틱 기록 DB 저장 에러:', error);
+      }
+    };
+
+    savePlasticRecordsToDB();
+  }, [plasticRecords, currentUser]);
 
   // 드롭다운 외부 클릭 감지
   useEffect(() => {
@@ -509,6 +618,13 @@ const Challenge = ({
         const newTotal = currentTotal + plasticSaved;
         localStorage.setItem('totalPlasticSaved', newTotal.toString());
         setTotalPlasticSaved(newTotal);
+
+        // DB에도 저장
+        if (currentUser?.id) {
+          saveUserStats(currentUser.id, {
+            amount: Math.round(newTotal)
+          }).catch(error => console.error('플라스틱 절약량 DB 저장 에러:', error));
+        }
       }
 
       // Supabase에 데일리 챌린지 기록 저장

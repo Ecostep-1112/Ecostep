@@ -22,16 +22,8 @@ const SettingsScreen = ({
   const borderColor = isDarkMode ? 'border-gray-700' : 'border-gray-200';
   const cardBg = isDarkMode ? 'bg-gray-800' : 'bg-white';
   
-  // 프로필 이미지 상태
-  const [profileImage, setProfileImage] = useState(null);
-  
-  // localStorage에서 프로필 이미지 로드
-  useEffect(() => {
-    const savedImage = localStorage.getItem('profileImage');
-    if (savedImage) {
-      setProfileImage(savedImage);
-    }
-  }, []);
+  // 프로필 이미지는 userProfile에서 가져옴 (DB에서 로드됨)
+  const profileImage = userProfile?.profileImage || null;
 
   return (
     <div className={`flex-1 ${bgColor} relative flex flex-col`}>

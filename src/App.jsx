@@ -14,7 +14,7 @@ import { ThemeSettings, RankThemeSettings, LanguageSettings, NotificationSetting
 import Toast from './components/Toast';
 import Login from './pages/auth/Login';
 import { onAuthStateChange, getCurrentUser, signOut, createOrUpdateUserProfile } from './lib/auth';
-import { getUserInfo, saveUserInfo, getUserItems } from './lib/database';
+import { getUserInfo, saveUserInfo, getUserItems, saveUserStats, getUserPurchasedItems, purchaseItem } from './lib/database';
 import { supabase } from './lib/supabase';
 import {
   appSettingsStorage,
@@ -104,7 +104,8 @@ const EcostepAppContent = () => {
       userId: '',
       birthDate: '',
       phone: '',
-      email: ''
+      email: '',
+      profileImage: ''
     };
   });
 
@@ -125,6 +126,7 @@ const EcostepAppContent = () => {
         setTotalEarnedPoints(data.points_total || 0);
         setUserRanking(data.rank || 'bronze');
         setPlasticGoal(data.amount || null);
+        setConsecutiveDays(data.consecutive_days || 0);
 
         // 프로필 데이터도 Supabase 데이터로 업데이트
         setProfileData(prev => ({
@@ -132,7 +134,8 @@ const EcostepAppContent = () => {
           name: data.name || prev.name,
           email: data.email || prev.email,
           phone: data.phone_num || prev.phone || '',
-          userId: data.user_id || prev.userId
+          userId: data.user_id || prev.userId,
+          profileImage: data.profile_image_url || prev.profileImage || ''
         }));
 
         console.log('Supabase에서 유저 정보 로드:', data);
@@ -257,10 +260,6 @@ const EcostepAppContent = () => {
     // 저장된 값이 없으면 기본값은 'basic'
     return 'basic';
   }); // 색상 테마 (색상만 변경)
-  const [claimedTanks, setClaimedTanks] = useState(() => {
-    const saved = localStorage.getItem('claimedTanks');
-    return saved ? JSON.parse(saved) : [];
-  }); // 수령 완료한 어항 목록
   const [tankName, setTankName] = useState('수질');
   const [isEditingTankName, setIsEditingTankName] = useState(false);
   const [showFriendsList, setShowFriendsList] = useState(false);
@@ -269,10 +268,7 @@ const EcostepAppContent = () => {
   const [waterQuality, setWaterQuality] = useState(85);
   const [lastChallengeDate, setLastChallengeDate] = useState(null);
   const [daysWithoutChallenge, setDaysWithoutChallenge] = useState(0);
-  const [consecutiveDays, setConsecutiveDays] = useState(() => {
-    const saved = localStorage.getItem('consecutiveDays');
-    return saved ? parseInt(saved) : 0;
-  });
+  const [consecutiveDays, setConsecutiveDays] = useState(0);
   const [challengeHistory, setChallengeHistory] = useState(() => {
     const saved = localStorage.getItem('challengeHistory');
     return saved ? JSON.parse(saved) : [];
@@ -358,6 +354,18 @@ const EcostepAppContent = () => {
             await loadUserDataFromSupabase(profile.user_id);
             // 전역 데이터 프리로딩
             preloadAllData(profile.user_id);
+
+            // 신규 사용자에게 기본 어항 추가
+            try {
+              const { data: purchasedItems } = await getUserPurchasedItems(user.id);
+              const hasBackground = purchasedItems?.some(item => item.item_id?.startsWith('background_'));
+              if (!hasBackground) {
+                console.log('신규 사용자: 기본 어항 추가');
+                await purchaseItem(user.id, 'background_01');
+              }
+            } catch (error) {
+              console.error('기본 어항 추가 에러:', error);
+            }
           }
         }
       } catch (error) {
@@ -404,6 +412,29 @@ const EcostepAppContent = () => {
       preloadAllData(null);
     }
   }, [isLoggedIn, currentUser, isCheckingAuth]);
+
+  // 사용자 통계 자동 동기화 (상태 변경 시 DB에 저장)
+  useEffect(() => {
+    const syncUserStatsToDB = async () => {
+      if (!currentUser?.id) return;
+
+      try {
+        await saveUserStats(currentUser.id, {
+          point_current: points,
+          points_total: totalEarnedPoints,
+          amount: Math.round(totalPlasticSaved),
+          consecutive_days: consecutiveDays
+        });
+        console.log('사용자 통계 DB 동기화 완료');
+      } catch (error) {
+        console.error('사용자 통계 DB 동기화 에러:', error);
+      }
+    };
+
+    // debounce를 위해 약간의 딜레이 추가
+    const timeoutId = setTimeout(syncUserStatsToDB, 2000);
+    return () => clearTimeout(timeoutId);
+  }, [points, totalEarnedPoints, totalPlasticSaved, consecutiveDays, currentUser]);
 
   // Deep link 처리 (모바일 앱에서 OAuth callback 처리)
   useEffect(() => {
@@ -565,10 +596,6 @@ const EcostepAppContent = () => {
   useEffect(() => {
     localStorage.setItem('challengeHistory', JSON.stringify(challengeHistory));
   }, [challengeHistory]);
-
-  useEffect(() => {
-    localStorage.setItem('claimedTanks', JSON.stringify(claimedTanks));
-  }, [claimedTanks]);
 
   // customChallenges 저장
   useEffect(() => {
@@ -849,7 +876,6 @@ const EcostepAppContent = () => {
               decorationsData={decorationsData}
               isRandomDecorations={isRandomDecorations}
               setIsRandomDecorations={setIsRandomDecorations}
-              claimedTanks={claimedTanks}
             />
           ) : (
             <>
@@ -876,7 +902,7 @@ const EcostepAppContent = () => {
                 showToast={showToast}
                 isActive={activeTab === 'home'}
               />}
-              {activeTab === 'challenge' && <ChallengePage 
+              {activeTab === 'challenge' && <ChallengePage
                 isDarkMode={isDarkMode}
                 activeSubTab={activeSubTab}
                 setActiveSubTab={setActiveSubTab}
@@ -906,6 +932,7 @@ const EcostepAppContent = () => {
                 testDate={testDate}
                 setTestDate={setTestDate}
                 setNotificationsList={setNotificationsList}
+                currentUser={currentUser}
               />}
               {activeTab === 'reward' && <RewardsPage
                 isDarkMode={isDarkMode}
@@ -913,8 +940,6 @@ const EcostepAppContent = () => {
                 setPurchasedFish={setPurchasedFish}
                 userRanking={userRanking}
                 setUserRanking={setUserRanking}
-                claimedTanks={claimedTanks}
-                setClaimedTanks={setClaimedTanks}
                 purchasedDecorations={purchasedDecorations}
                 setPurchasedDecorations={setPurchasedDecorations}
                 points={points}

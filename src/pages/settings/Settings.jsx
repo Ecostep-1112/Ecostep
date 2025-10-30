@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { ChevronRight, Sun, Moon, Check } from 'lucide-react';
 import { BronzeIcon, SilverIcon, GoldIcon, PlatinumIcon } from '../../components/RankIcons';
 import FishIcons from '../../components/FishIcons';
 import DecorationIcons from '../../components/DecorationIcons';
 import { getFishId, getDecorationId } from '../../utils/itemMapping';
 import { useData } from '../../services/DataContext';
+import { supabase } from '../../lib/supabase';
+import { getUserPurchasedItems } from '../../lib/database';
 import BasicTank from '../../components/tanks/BasicTank';
 import SilverTank from '../../components/tanks/SilverTank';
 import GoldTank from '../../components/tanks/GoldTank';
@@ -448,11 +450,30 @@ export const AquariumSettings = ({
   purchasedDecorations,
   decorationsData,
   isRandomDecorations,
-  setIsRandomDecorations,
-  claimedTanks
+  setIsRandomDecorations
 }) => {
   // DataContext에서 fishData 가져오기
   const { fishData } = useData();
+
+  // 어항 수령 상태 (user_item에서 관리)
+  const [purchasedBackgrounds, setPurchasedBackgrounds] = useState([]);
+
+  // DB에서 어항 로드
+  useEffect(() => {
+    const loadBackgrounds = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          const { data } = await getUserPurchasedItems(user.id);
+          const backgrounds = data?.filter(item => item.startsWith('background_')) || [];
+          setPurchasedBackgrounds(backgrounds);
+        }
+      } catch (error) {
+        console.error('어항 로드 에러:', error);
+      }
+    };
+    loadBackgrounds();
+  }, []);
   const bgColor = isDarkMode ? 'bg-gray-900' : 'bg-white';
   const textColor = isDarkMode ? 'text-white' : 'text-gray-900';
   const borderColor = isDarkMode ? 'border-gray-700' : 'border-gray-200';
@@ -478,7 +499,9 @@ export const AquariumSettings = ({
           <h3 className={`text-[16px] font-medium mb-3 ${textColor}`}>어항 선택</h3>
           <div className="flex gap-3 mb-6">
             {['basic', 'silver', 'gold', 'platinum'].map((type) => {
-              const isUnlocked = type === 'basic' || claimedTanks.includes(type);
+              // 어항 타입을 background_XX로 매핑
+              const tankMap = { basic: 'background_01', silver: 'background_02', gold: 'background_03', platinum: 'background_04' };
+              const isUnlocked = type === 'basic' || purchasedBackgrounds.includes(tankMap[type]);
               const isSelected = currentTank === type;
               
               return (

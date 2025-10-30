@@ -95,10 +95,10 @@ function Login({ onLogin }) {
     console.log(`${provider} 로그인 시도`);
     setIsLoading(true);
     setError(null);
-    
+
     try {
       let result;
-      
+
       switch(provider) {
         case 'Google':
           console.log('구글 로그인 함수 호출');
@@ -118,13 +118,13 @@ function Login({ onLogin }) {
         default:
           throw new Error('지원하지 않는 로그인 방식입니다.');
       }
-      
+
       console.log('로그인 결과:', result);
-      
+
       if (result.error) {
         throw result.error;
       }
-      
+
       // 로그인 성공 시 처리는 리다이렉트 후 App.jsx에서 처리됨
       console.log('로그인 성공, 리다이렉트 대기중...');
     } catch (err) {
@@ -138,7 +138,7 @@ function Login({ onLogin }) {
   return (
     <div className="w-full min-h-screen bg-gradient-to-br from-cyan-400 via-blue-500 to-blue-600 overflow-hidden flex flex-col items-center px-6 py-8 relative">
             {/* 별 애니메이션 */}
-            <style jsx>{`
+            <style>{`
               @keyframes twinkle {
                 0%, 100% {
                   opacity: 0;

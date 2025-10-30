@@ -109,7 +109,9 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
   const [locationPermissionDenied, setLocationPermissionDenied] = useState(true); // 기본값: 위치 꺼짐
 
   const categories = ['랜덤', '재활용 팁', '생활 습관', '에너지 절약', '제로웨이스트'];
-  const placeCategories = ['전체', '리필샵', '친환경 매장', '재활용/업사이클', '무포장 가게', '비건/친환경 카페'];
+
+  // DB에서 로드한 places의 tag 값들로 동적 카테고리 생성
+  const placeCategories = ['전체', ...Array.from(new Set(zeroWastePlaces.map(place => place.category).filter(Boolean)))];
 
   // Supabase에서 장소 데이터 불러오기
   const loadPlaces = async () => {
@@ -128,18 +130,14 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
         address: '', // places 테이블에 address가 없으므로 빈 문자열
         lat: place.latitude,
         lng: place.longitude,
-        category: place.tag || '전체'
+        category: place.category || '전체'
       }));
 
       setZeroWastePlaces(formattedPlaces);
     } catch (error) {
       console.error('장소 데이터 로드 실패:', error);
-      // 에러 발생 시 기본 데이터 사용
-      setZeroWastePlaces([
-        { name: '알맹상점 서울역점', description: '리필 전문 매장', address: '서울시 용산구 한강대로 405', lat: 37.5547, lng: 126.9707, category: '리필샵' },
-        { name: '더피커 성수', description: '친환경 편집숍', address: '서울시 성동구 왕십리로 115', lat: 37.5447, lng: 127.0557, category: '친환경 매장' },
-        { name: '송파 나눔장터', description: '재활용품 거래소', address: '서울시 송파구 올림픽로 240', lat: 37.5145, lng: 127.1065, category: '재활용/업사이클' },
-      ]);
+      // 에러 발생 시 빈 배열로 설정
+      setZeroWastePlaces([]);
     } finally {
       setIsLoadingPlaces(false);
     }

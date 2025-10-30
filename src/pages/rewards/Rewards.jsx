@@ -17,8 +17,6 @@ const Rewards = ({
   setPurchasedFish,
   userRanking = 'gold',
   setUserRanking,
-  claimedTanks = [],
-  setClaimedTanks = () => {},
   purchasedDecorations = ['해초', '산호'],
   setPurchasedDecorations,
   points,
@@ -34,6 +32,26 @@ const Rewards = ({
 }) => {
   // 전역 데이터 컨텍스트에서 데이터 가져오기
   const { fishData, decorationsData } = useData();
+
+  // 어항 수령 상태 (user_item에서 관리)
+  const [purchasedBackgrounds, setPurchasedBackgrounds] = useState([]);
+
+  // DB에서 어항 로드
+  useEffect(() => {
+    const loadBackgrounds = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          const { data } = await getUserPurchasedItems(user.id);
+          const backgrounds = data?.filter(item => item.item_id?.startsWith('background_')).map(item => item.item_id) || [];
+          setPurchasedBackgrounds(backgrounds);
+        }
+      } catch (error) {
+        console.error('어항 로드 에러:', error);
+      }
+    };
+    loadBackgrounds();
+  }, []);
 
   const bgColor = isDarkMode ? 'bg-gray-900' : 'bg-white';
   const textColor = isDarkMode ? 'text-white' : 'text-gray-900';
@@ -264,18 +282,39 @@ const Rewards = ({
           <div className="grid grid-cols-3 gap-1.5">
             {/* 실버 어항 */}
             <button
-              onClick={() => {
+              onClick={async () => {
                 const canClaim = userRanking === 'silver' || userRanking === 'gold' || userRanking === 'platinum';
+                const alreadyClaimed = purchasedBackgrounds.includes('background_02');
+
                 if (!canClaim) {
                   showToast('실버 랭크에서 잠금 해제', 'error');
-                } else if (!claimedTanks.includes('silver')) {
-                  setClaimedTanks([...claimedTanks, 'silver']);
-                  setCurrentTank('silver');
-                  showToast('실버 어항 수령 완료', 'success');
+                } else if (!alreadyClaimed) {
+                  try {
+                    const { data: { user } } = await supabase.auth.getUser();
+                    if (!user) {
+                      showToast('로그인이 필요합니다', 'error');
+                      return;
+                    }
+                    const result = await purchaseItem(user.id, 'background_02');
+                    if (result.error) {
+                      showToast('수령 실패', 'error');
+                    } else if (result.alreadyPurchased) {
+                      // 이미 구매한 경우 - 상태 업데이트만
+                      setPurchasedBackgrounds([...purchasedBackgrounds, 'background_02']);
+                      showToast('이미 수령한 어항입니다', 'info');
+                    } else {
+                      setPurchasedBackgrounds([...purchasedBackgrounds, 'background_02']);
+                      setCurrentTank('silver');
+                      showToast('실버 어항 수령 완료', 'success');
+                    }
+                  } catch (error) {
+                    console.error('어항 수령 에러:', error);
+                    showToast('수령 실패', 'error');
+                  }
                 }
               }}
-              disabled={claimedTanks.includes('silver')}
-              className={`${claimedTanks.includes('silver') ? 'bg-green-50 border-green-300' : (userRanking === 'silver' || userRanking === 'gold' || userRanking === 'platinum') ? `${cardBg} hover:bg-cyan-50` : 'bg-gray-100 cursor-not-allowed'} border ${claimedTanks.includes('silver') ? 'border-green-300' : borderColor} rounded-lg relative flex flex-col items-center justify-between h-[125px] p-2 transition-colors overflow-hidden`}
+              disabled={purchasedBackgrounds.includes('background_02')}
+              className={`${purchasedBackgrounds.includes('background_02') ? 'bg-green-50 border-green-300' : (userRanking === 'silver' || userRanking === 'gold' || userRanking === 'platinum') ? `${cardBg} hover:bg-cyan-50` : 'bg-gray-100 cursor-not-allowed'} border ${purchasedBackgrounds.includes('background_02') ? 'border-green-300' : borderColor} rounded-lg relative flex flex-col items-center justify-between h-[125px] p-2 transition-colors overflow-hidden`}
             >
               {/* 블러 효과를 받을 컨테이너 */}
               <div className={`w-full h-full flex flex-col items-center justify-between ${(userRanking !== 'silver' && userRanking !== 'gold' && userRanking !== 'platinum') ? 'filter blur-[1px]' : ''}`}>
@@ -284,16 +323,16 @@ const Rewards = ({
                 </div>
                 
                 <div className="flex-1 flex flex-col items-center justify-center w-full px-1">
-                  <p className={`text-[15px] leading-tight ${claimedTanks.includes('silver') ? 'text-green-700' : (userRanking === 'silver' || userRanking === 'gold' || userRanking === 'platinum') ? (isDarkMode ? 'text-gray-300' : 'text-gray-700') : 'text-gray-500'} text-center font-medium`}>
+                  <p className={`text-[15px] leading-tight ${purchasedBackgrounds.includes('background_02') ? 'text-green-700' : (userRanking === 'silver' || userRanking === 'gold' || userRanking === 'platinum') ? (isDarkMode ? 'text-gray-300' : 'text-gray-700') : 'text-gray-500'} text-center font-medium`}>
                     실버 어항
                   </p>
                   <p className={`text-[13px] ${isDarkMode ? 'text-gray-500' : 'text-gray-400'} mt-0.5 text-center leading-tight`}>
                     실버 랭킹 보상
                   </p>
                 </div>
-                
+
                 <div className="h-[20px] flex items-center justify-center w-full">
-                  {claimedTanks.includes('silver') ? (
+                  {purchasedBackgrounds.includes('background_02') ? (
                     <p className="text-[17px] text-green-500 font-medium text-center">수령 완료</p>
                   ) : (userRanking === 'silver' || userRanking === 'gold' || userRanking === 'platinum') ? (
                     <p className="text-[17px] font-medium text-center bg-gradient-to-r from-cyan-500 via-blue-500 to-blue-600 bg-clip-text text-transparent">수령 가능</p>
@@ -316,18 +355,39 @@ const Rewards = ({
             
             {/* 골드 어항 */}
             <button
-              onClick={() => {
+              onClick={async () => {
                 const canClaim = userRanking === 'gold' || userRanking === 'platinum';
+                const alreadyClaimed = purchasedBackgrounds.includes('background_03');
+
                 if (!canClaim) {
                   showToast('골드 랭크에서 잠금 해제', 'error');
-                } else if (!claimedTanks.includes('gold')) {
-                  setClaimedTanks([...claimedTanks, 'gold']);
-                  setCurrentTank('gold');
-                  showToast('골드 어항 수령 완료', 'success');
+                } else if (!alreadyClaimed) {
+                  try {
+                    const { data: { user } } = await supabase.auth.getUser();
+                    if (!user) {
+                      showToast('로그인이 필요합니다', 'error');
+                      return;
+                    }
+                    const result = await purchaseItem(user.id, 'background_03');
+                    if (result.error) {
+                      showToast('수령 실패', 'error');
+                    } else if (result.alreadyPurchased) {
+                      // 이미 구매한 경우 - 상태 업데이트만
+                      setPurchasedBackgrounds([...purchasedBackgrounds, 'background_03']);
+                      showToast('이미 수령한 어항입니다', 'info');
+                    } else {
+                      setPurchasedBackgrounds([...purchasedBackgrounds, 'background_03']);
+                      setCurrentTank('gold');
+                      showToast('골드 어항 수령 완료', 'success');
+                    }
+                  } catch (error) {
+                    console.error('어항 수령 에러:', error);
+                    showToast('수령 실패', 'error');
+                  }
                 }
               }}
-              disabled={claimedTanks.includes('gold')}
-              className={`${claimedTanks.includes('gold') ? 'bg-green-50 border-green-300' : (userRanking === 'gold' || userRanking === 'platinum') ? `${cardBg} hover:bg-cyan-50` : 'bg-gray-100 cursor-not-allowed'} border ${claimedTanks.includes('gold') ? 'border-green-300' : borderColor} rounded-lg relative flex flex-col items-center justify-between h-[125px] p-2 transition-colors overflow-hidden`}
+              disabled={purchasedBackgrounds.includes('background_03')}
+              className={`${purchasedBackgrounds.includes('background_03') ? 'bg-green-50 border-green-300' : (userRanking === 'gold' || userRanking === 'platinum') ? `${cardBg} hover:bg-cyan-50` : 'bg-gray-100 cursor-not-allowed'} border ${purchasedBackgrounds.includes('background_03') ? 'border-green-300' : borderColor} rounded-lg relative flex flex-col items-center justify-between h-[125px] p-2 transition-colors overflow-hidden`}
             >
               {/* 블러 효과를 받을 컨테이너 */}
               <div className={`w-full h-full flex flex-col items-center justify-between ${(userRanking !== 'gold' && userRanking !== 'platinum') ? 'filter blur-[1px]' : ''}`}>
@@ -336,16 +396,16 @@ const Rewards = ({
                 </div>
                 
                 <div className="flex-1 flex flex-col items-center justify-center w-full px-1">
-                  <p className={`text-[15px] leading-tight ${claimedTanks.includes('gold') ? 'text-green-700' : (userRanking === 'gold' || userRanking === 'platinum') ? (isDarkMode ? 'text-gray-300' : 'text-gray-700') : 'text-gray-500'} text-center font-medium`}>
+                  <p className={`text-[15px] leading-tight ${purchasedBackgrounds.includes('background_03') ? 'text-green-700' : (userRanking === 'gold' || userRanking === 'platinum') ? (isDarkMode ? 'text-gray-300' : 'text-gray-700') : 'text-gray-500'} text-center font-medium`}>
                     골드 어항
                   </p>
                   <p className={`text-[13px] ${isDarkMode ? 'text-gray-500' : 'text-gray-400'} mt-0.5 text-center leading-tight`}>
                     골드 랭킹 보상
                   </p>
                 </div>
-                
+
                 <div className="h-[20px] flex items-center justify-center w-full">
-                  {claimedTanks.includes('gold') ? (
+                  {purchasedBackgrounds.includes('background_03') ? (
                     <p className="text-[17px] text-green-500 font-medium text-center">수령 완료</p>
                   ) : (userRanking === 'gold' || userRanking === 'platinum') ? (
                     <p className="text-[17px] font-medium text-center bg-gradient-to-r from-cyan-500 via-blue-500 to-blue-600 bg-clip-text text-transparent">수령 가능</p>
@@ -368,18 +428,39 @@ const Rewards = ({
             
             {/* 플래티넘 어항 */}
             <button
-              onClick={() => {
+              onClick={async () => {
                 const canClaim = userRanking === 'platinum';
+                const alreadyClaimed = purchasedBackgrounds.includes('background_04');
+
                 if (!canClaim) {
                   showToast('플래티넘 랭크에서 잠금 해제', 'error');
-                } else if (!claimedTanks.includes('platinum')) {
-                  setClaimedTanks([...claimedTanks, 'platinum']);
-                  setCurrentTank('platinum');
-                  showToast('플래티넘 어항 수령 완료', 'success');
+                } else if (!alreadyClaimed) {
+                  try {
+                    const { data: { user } } = await supabase.auth.getUser();
+                    if (!user) {
+                      showToast('로그인이 필요합니다', 'error');
+                      return;
+                    }
+                    const result = await purchaseItem(user.id, 'background_04');
+                    if (result.error) {
+                      showToast('수령 실패', 'error');
+                    } else if (result.alreadyPurchased) {
+                      // 이미 구매한 경우 - 상태 업데이트만
+                      setPurchasedBackgrounds([...purchasedBackgrounds, 'background_04']);
+                      showToast('이미 수령한 어항입니다', 'info');
+                    } else {
+                      setPurchasedBackgrounds([...purchasedBackgrounds, 'background_04']);
+                      setCurrentTank('platinum');
+                      showToast('플래티넘 어항 수령 완료', 'success');
+                    }
+                  } catch (error) {
+                    console.error('어항 수령 에러:', error);
+                    showToast('수령 실패', 'error');
+                  }
                 }
               }}
-              disabled={claimedTanks.includes('platinum')}
-              className={`${claimedTanks.includes('platinum') ? 'bg-green-50 border-green-300' : userRanking === 'platinum' ? `${cardBg} hover:bg-cyan-50` : 'bg-gray-100 cursor-not-allowed'} border ${claimedTanks.includes('platinum') ? 'border-green-300' : borderColor} rounded-lg relative flex flex-col items-center justify-between h-[125px] p-2 transition-colors overflow-hidden`}
+              disabled={purchasedBackgrounds.includes('background_04')}
+              className={`${purchasedBackgrounds.includes('background_04') ? 'bg-green-50 border-green-300' : userRanking === 'platinum' ? `${cardBg} hover:bg-cyan-50` : 'bg-gray-100 cursor-not-allowed'} border ${purchasedBackgrounds.includes('background_04') ? 'border-green-300' : borderColor} rounded-lg relative flex flex-col items-center justify-between h-[125px] p-2 transition-colors overflow-hidden`}
             >
               {/* 블러 효과를 받을 컨테이너 */}
               <div className={`w-full h-full flex flex-col items-center justify-between ${userRanking !== 'platinum' ? 'filter blur-[1px]' : ''}`}>
@@ -388,16 +469,16 @@ const Rewards = ({
                 </div>
                 
                 <div className="flex-1 flex flex-col items-center justify-center w-full px-1">
-                  <p className={`text-[15px] leading-tight ${claimedTanks.includes('platinum') ? 'text-green-700' : userRanking === 'platinum' ? (isDarkMode ? 'text-gray-300' : 'text-gray-700') : 'text-gray-500'} text-center font-medium`}>
+                  <p className={`text-[15px] leading-tight ${purchasedBackgrounds.includes('background_04') ? 'text-green-700' : userRanking === 'platinum' ? (isDarkMode ? 'text-gray-300' : 'text-gray-700') : 'text-gray-500'} text-center font-medium`}>
                     플래티넘 어항
                   </p>
                   <p className={`text-[13px] ${isDarkMode ? 'text-gray-500' : 'text-gray-400'} mt-0.5 text-center leading-tight`}>
                     플래티넘 랭킹 보상
                   </p>
                 </div>
-                
+
                 <div className="h-[20px] flex items-center justify-center w-full">
-                  {claimedTanks.includes('platinum') ? (
+                  {purchasedBackgrounds.includes('background_04') ? (
                     <p className="text-[17px] text-green-500 font-medium text-center">수령 완료</p>
                   ) : userRanking === 'platinum' ? (
                     <p className="text-[17px] font-medium text-center bg-gradient-to-r from-cyan-500 via-blue-500 to-blue-600 bg-clip-text text-transparent">수령 가능</p>
@@ -732,13 +813,12 @@ const Rewards = ({
               // 구매 이력만 초기화 (포인트는 유지)
               setPurchasedFish([]);
               setPurchasedDecorations([]);
-              setClaimedTanks([]); // 랭킹 보상 초기화
-              
+              setPurchasedBackgrounds([]); // 어항 보상 초기화
+
               // localStorage에서 구매내역만 초기화
               localStorage.setItem('purchasedFish', JSON.stringify([]));
               localStorage.setItem('purchasedDecorations', JSON.stringify([]));
-              localStorage.setItem('claimedTanks', JSON.stringify([])); // 랭킹 보상 초기화
-              
+
               showToast('구매내역 초기화 완료', 'success');
             }}
             className={`w-full py-3 px-4 rounded-xl ${

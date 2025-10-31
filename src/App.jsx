@@ -44,6 +44,7 @@ const EcostepAppContent = () => {
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const [currentUser, setCurrentUser] = useState(null);
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
+  const [platform, setPlatform] = useState('web');
   const [activeTab, setActiveTab] = useState('home');
   const [activeSubTab, setActiveSubTab] = useState('habit');
   const [challengeDay, setChallengeDay] = useState(4);
@@ -475,11 +476,12 @@ const EcostepAppContent = () => {
     }
   }, []);
 
-  // 키보드 이벤트 리스너 (하단 네비게이션 자동 숨김)
+  // 플랫폼 감지 및 키보드 이벤트 리스너 (하단 네비게이션 자동 숨김)
   useEffect(() => {
-    const platform = Capacitor.getPlatform();
+    const detectedPlatform = Capacitor.getPlatform();
+    setPlatform(detectedPlatform);
 
-    if (platform === 'android' || platform === 'ios') {
+    if (detectedPlatform === 'android' || detectedPlatform === 'ios') {
       // 키보드가 올라올 때
       const showListener = Keyboard.addListener('keyboardWillShow', () => {
         setIsKeyboardVisible(true);
@@ -981,7 +983,12 @@ const EcostepAppContent = () => {
               borderTop: isDarkMode ? '1px solid rgba(107, 114, 128, 0.3)' : '1px solid rgba(209, 213, 219, 0.8)',
               boxShadow: '0 -4px 30px rgba(0, 0, 0, 0.05)'
             }}>
-              <div className="flex justify-around pt-2 pb-6">
+              <div
+                className="flex justify-around pt-2"
+                style={{
+                  paddingBottom: platform === 'ios' ? '24px' : platform === 'android' ? 'max(24px, env(safe-area-inset-bottom))' : '24px'
+                }}
+              >
                 {[
                   { id: 'home', icon: Home, label: '홈' },
                   { id: 'challenge', icon: Target, label: '챌린지' },

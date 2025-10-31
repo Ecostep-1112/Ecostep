@@ -2,6 +2,18 @@
 @tailwind components;
 @tailwind utilities;
 
+/* 모바일 줌/확대 방지 */
+* {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  touch-action: manipulation;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
 /* 슬라이드 업 애니메이션 */
 @keyframes slideUp {
   from {

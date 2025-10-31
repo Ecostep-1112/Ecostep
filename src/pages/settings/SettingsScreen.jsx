@@ -155,7 +155,7 @@ const SettingsScreen = ({
       </div>
 
       {/* 로그아웃 버튼 - 하단 고정 (내비게이션 바 위) */}
-      <div className="fixed bottom-20 left-0 right-0 z-50 p-4">
+      <div className="fixed bottom-16 left-0 right-0 z-50 p-4">
         <button
           onClick={onLogout}
           className={`w-full py-2.5 text-sm font-medium text-red-500 rounded-lg border border-red-200 ${isDarkMode ? 'bg-gray-800' : 'bg-white'} hover:bg-red-50 transition-colors`}

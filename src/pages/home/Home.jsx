@@ -107,6 +107,7 @@ const Home = ({
   // 장식품 위치 초기화 (저장된 설정 또는 랜덤 배치)
   useEffect(() => {
     // 저장된 설정 불러오기
+    const savedPositions = JSON.parse(localStorage.getItem('decorationPositions') || '{}');
     const savedConfigs = JSON.parse(localStorage.getItem('savedDecorationConfigs') || '{}');
     const savedSettings = JSON.parse(localStorage.getItem('decorationSettings') || '{}');
 
@@ -156,11 +157,25 @@ const Home = ({
     const existingPositions = [];
 
     displayDecorations.forEach((decoName, index) => {
-      // 위치 설정: savedConfigs에서 가져오거나 랜덤 생성
-      if (savedConfigs[decoName]) {
+      // 위치 설정 우선순위:
+      // 1. decorationPositions state (현재 조정된 값)
+      // 2. savedPositions localStorage (드래그로 이동한 자동 저장 값)
+      // 3. savedConfigs (명시적으로 저장 버튼 누른 값)
+      // 4. 랜덤 생성
+      if (decorationPositions[decoName]) {
+        // 이미 state에 있으면 그대로 유지
+        newPositions[decoName] = decorationPositions[decoName];
+        existingPositions.push(decorationPositions[decoName]);
+      } else if (savedPositions[decoName]) {
+        // localStorage의 decorationPositions에 있으면 사용 (드래그로 이동한 위치)
+        newPositions[decoName] = savedPositions[decoName];
+        existingPositions.push(savedPositions[decoName]);
+      } else if (savedConfigs[decoName]) {
+        // savedConfigs에 있으면 사용 (저장 버튼으로 명시적으로 저장한 위치)
         newPositions[decoName] = savedConfigs[decoName].position;
         existingPositions.push(savedConfigs[decoName].position);
       } else {
+        // 없으면 랜덤 생성
         const randomPosition = generateRandomPosition(existingPositions, index);
         newPositions[decoName] = randomPosition;
         existingPositions.push(randomPosition);

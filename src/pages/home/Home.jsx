@@ -117,8 +117,8 @@ const Home = ({
       const maxAttempts = 50;
 
       do {
-        // 랜덤 위치 생성 (어항 내부에서)
-        const left = 2 + Math.random() * 96; // 2% ~ 98%
+        // 랜덤 위치 생성 (어항 내부에서, 장식품 크기를 고려한 여유 공간)
+        const left = 5 + Math.random() * 80; // 5% ~ 85% (장식품이 경계를 넘지 않도록)
         const bottom = 10 + Math.random() * 10; // 10% ~ 20% (수질바 위)
         position = { bottom: `${bottom}%`, left: `${left}%` };
 
@@ -135,11 +135,13 @@ const Home = ({
         if (!overlapping) break;
         attempts++;
 
-        // 시도 횟수 초과 시 단순 배치
+        // 시도 횟수 초과 시 단순 배치 (어항 경계 내로 제한)
         if (attempts >= maxAttempts) {
+          // index에 따라 위치를 계산하되, 최대 85%를 넘지 않도록 함
+          const calculatedLeft = 10 + (index * 12); // 12% 간격으로 배치
           position = {
-            bottom: '10%',
-            left: `${20 + (index * 15)}%` // 최소 간격으로 배치
+            bottom: '12%',
+            left: `${Math.min(calculatedLeft, 85)}%` // 85%를 넘지 않도록 제한
           };
           break;
         }
@@ -380,9 +382,9 @@ const Home = ({
     const x = ((clientX - rect.left) / rect.width) * 100;
     const y = ((rect.bottom - clientY) / rect.height) * 100;
 
-    // 경계 체크 (어항 영역 내에서만 이동 가능)
+    // 경계 체크 (어항 영역 내에서만 이동 가능, 장식품이 경계를 넘지 않도록 여유 공간 확보)
     return {
-      x: Math.max(2, Math.min(98, x)),
+      x: Math.max(5, Math.min(95, x)),  // 좌우 여유 공간 확보
       y: Math.max(10, Math.min(85, y))  // 하단 10%부터 이동 가능
     };
   };
@@ -575,7 +577,7 @@ const Home = ({
       <div className="min-h-full">
         {/* 어항 섹션 - 정사각형, 파란 박스가 직접 어항 역할 */}
         <div
-          className={`relative ${
+          className={`relative overflow-hidden ${
             currentTank === 'basic' ? 'bg-gradient-to-br from-cyan-400 via-blue-500 to-blue-600' :
             currentTank === 'silver' ? 'bg-gradient-to-br from-slate-300 via-cyan-400 to-teal-500' :
             currentTank === 'gold' ? 'bg-gradient-to-br from-amber-300 via-yellow-400 to-orange-400' :

@@ -620,12 +620,28 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
         <div className={`mx-3 mt-4 ${cardBg} border ${borderColor} rounded-xl p-3`}>
           <h3 className={`${textColor} text-sm font-medium mb-2`}>도움말</h3>
           <div className="space-y-2">
-            <button className={`w-full flex items-center justify-between p-2.5 ${inputBg} rounded-lg`}>
-              <div className="flex items-center">
+            <button
+              onClick={() => {}}
+              className={`w-full flex items-center justify-between p-2.5 ${inputBg} rounded-lg relative overflow-hidden cursor-not-allowed opacity-60`}
+              disabled={true}
+            >
+              {/* 블러 효과 오버레이 - 약하게 조정 */}
+              <div className="absolute inset-0 backdrop-blur-[2px] bg-black/5 z-10" />
+
+              {/* Coming Soon 메시지 */}
+              <div className="absolute inset-0 flex items-center justify-center z-20">
+                <span className={`text-xs font-medium ${
+                  isDarkMode ? 'text-gray-400' : 'text-gray-600'
+                }`}>
+                  Coming Soon
+                </span>
+              </div>
+
+              <div className="flex items-center relative z-0">
                 <Book className={`w-4 h-4 mr-2 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
                 <span className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>앱 사용 방법</span>
               </div>
-              <ChevronRight className={`w-4 h-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
+              <ChevronRight className={`w-4 h-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} relative z-0`} />
             </button>
             <button
               onClick={onShowChatBot}

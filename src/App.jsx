@@ -782,7 +782,7 @@ const EcostepAppContent = () => {
         {/* 화면 영역 */}
         <div className="w-full h-full flex flex-col overflow-hidden">
           {/* 상태바 */}
-          <div className={`fixed top-0 left-0 right-0 z-50 ${isDarkMode ? 'bg-gray-900' : 'bg-white'} px-3 pt-[72px] pb-3 flex justify-between items-center`}>
+          <div className={`fixed top-0 left-0 right-0 z-50 ${isDarkMode ? 'bg-gray-900' : 'bg-white'} px-3 pt-[70px] pb-3 flex justify-between items-center`}>
             <h1 className={`${isDarkMode ? 'text-white' : 'text-gray-800'} font-medium`} style={{ fontSize: '15.5px' }}>
               {activeTab === 'home' && '홈'}
               {activeTab === 'challenge' && '챌린지'}

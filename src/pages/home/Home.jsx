@@ -108,6 +108,7 @@ const Home = ({
   useEffect(() => {
     // 저장된 설정 불러오기
     const savedConfigs = JSON.parse(localStorage.getItem('savedDecorationConfigs') || '{}');
+    const savedSettings = JSON.parse(localStorage.getItem('decorationSettings') || '{}');
 
     // 랜덤 위치 생성 함수 (겹치지 않게)
     const generateRandomPosition = (existingPositions, index) => {
@@ -153,23 +154,50 @@ const Home = ({
     const existingPositions = [];
 
     displayDecorations.forEach((decoName, index) => {
+      // 위치 설정: savedConfigs에서 가져오거나 랜덤 생성
       if (savedConfigs[decoName]) {
-        // 저장된 설정이 있으면 사용
         newPositions[decoName] = savedConfigs[decoName].position;
-        newSettings[decoName] = savedConfigs[decoName].settings;
         existingPositions.push(savedConfigs[decoName].position);
       } else {
-        // 저장된 설정이 없으면 랜덤 배치
         const randomPosition = generateRandomPosition(existingPositions, index);
         newPositions[decoName] = randomPosition;
-        newSettings[decoName] = { size: 100, rotation: 0 };
         existingPositions.push(randomPosition);
+      }
+
+      // 설정(사이즈, 회전) 우선순위:
+      // 1. decorationSettings state (현재 조정된 값)
+      // 2. savedConfigs (명시적으로 저장된 값)
+      // 3. savedSettings localStorage (자동 저장된 값)
+      // 4. 기본값
+      if (decorationSettings[decoName]) {
+        // 이미 state에 있으면 그대로 유지
+        newSettings[decoName] = decorationSettings[decoName];
+      } else if (savedConfigs[decoName]?.settings) {
+        // savedConfigs에 있으면 사용
+        newSettings[decoName] = savedConfigs[decoName].settings;
+      } else if (savedSettings[decoName]) {
+        // localStorage의 decorationSettings에 있으면 사용
+        newSettings[decoName] = savedSettings[decoName];
+      } else {
+        // 없으면 기본값
+        newSettings[decoName] = { size: 100, rotation: 0 };
       }
     });
 
     // 상태 업데이트
     setDecorationPositions(newPositions);
-    setDecorationSettings(prev => ({ ...prev, ...newSettings }));
+    setDecorationSettings(prev => {
+      const merged = { ...prev };
+      // newSettings의 값 중 prev에 없거나 displayDecorations에 있는 것만 업데이트
+      Object.keys(newSettings).forEach(key => {
+        if (!prev[key] || displayDecorations.includes(key)) {
+          // prev에 값이 없거나, 현재 표시 중인 장식품이면 newSettings 값 사용
+          // 단, prev에 이미 값이 있으면 그것을 우선 유지
+          merged[key] = prev[key] || newSettings[key];
+        }
+      });
+      return merged;
+    });
   }, [displayDecorations]);
   
   // 물고기 위치 초기화 및 애니메이션

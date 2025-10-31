@@ -125,11 +125,9 @@ const ChatBot = ({ isDarkMode, onBack }) => {
     }
   };
 
+  // 엔터 키는 줄바꿈으로만 동작 (메시지 전송은 버튼만 사용)
   const handleKeyPress = (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleSendMessage();
-    }
+    // 엔터 키 동작을 줄바꿈으로 허용 (기본 동작 유지)
   };
 
   const handleReset = () => {

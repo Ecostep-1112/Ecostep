@@ -543,7 +543,7 @@ const Home = ({
 
 
   return (
-    <div className={`flex-1 overflow-y-auto custom-scrollbar scrollbar-hide-idle pb-20 ${bgColor}`}>
+    <div className={`flex-1 ${isDragging ? 'overflow-hidden' : 'overflow-y-auto'} custom-scrollbar scrollbar-hide-idle pb-20 ${bgColor}`}>
       <div className="min-h-full">
         {/* 어항 섹션 - 정사각형, 파란 박스가 직접 어항 역할 */}
         <div

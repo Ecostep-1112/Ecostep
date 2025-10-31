@@ -903,15 +903,17 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
         />
       )}
       
-      {/* 계정 탈퇴 버튼 */}
-      <div className="fixed bottom-0 left-0 right-0 z-50 p-4">
-        <button
-          onClick={() => setShowDeleteConfirm(true)}
-          className={`w-full py-2.5 text-sm font-medium text-red-500 rounded-lg border border-red-200 ${isDarkMode ? 'bg-gray-800' : 'bg-white'} hover:bg-red-50 transition-colors`}
-        >
-          계정 탈퇴
-        </button>
-      </div>
+      {/* 계정 탈퇴 버튼 - 프로필 메인 화면에서만 표시 */}
+      {!editingField && (
+        <div className="fixed bottom-0 left-0 right-0 z-50 p-4">
+          <button
+            onClick={() => setShowDeleteConfirm(true)}
+            className={`w-full py-2.5 text-sm font-medium text-red-500 rounded-lg border border-red-200 ${isDarkMode ? 'bg-gray-800' : 'bg-white'} hover:bg-red-50 transition-colors`}
+          >
+            계정 탈퇴
+          </button>
+        </div>
+      )}
       
       {/* 탈퇴 확인 다이얼로그 */}
       {showDeleteConfirm && (

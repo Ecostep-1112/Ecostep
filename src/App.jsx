@@ -27,6 +27,7 @@ import {
 import { DataProvider, useData } from './services/DataContext';
 import { App as CapacitorApp } from '@capacitor/app';
 import { Capacitor } from '@capacitor/core';
+import { Keyboard } from '@capacitor/keyboard';
 
 const EcostepAppContent = () => {
   // 전역 데이터 컨텍스트 사용
@@ -42,6 +43,7 @@ const EcostepAppContent = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const [currentUser, setCurrentUser] = useState(null);
+  const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
   const [activeTab, setActiveTab] = useState('home');
   const [activeSubTab, setActiveSubTab] = useState('habit');
   const [challengeDay, setChallengeDay] = useState(4);
@@ -469,6 +471,28 @@ const EcostepAppContent = () => {
 
       return () => {
         listener.remove();
+      };
+    }
+  }, []);
+
+  // 키보드 이벤트 리스너 (하단 네비게이션 자동 숨김)
+  useEffect(() => {
+    const platform = Capacitor.getPlatform();
+
+    if (platform === 'android' || platform === 'ios') {
+      // 키보드가 올라올 때
+      const showListener = Keyboard.addListener('keyboardWillShow', () => {
+        setIsKeyboardVisible(true);
+      });
+
+      // 키보드가 내려갈 때
+      const hideListener = Keyboard.addListener('keyboardWillHide', () => {
+        setIsKeyboardVisible(false);
+      });
+
+      return () => {
+        showListener.remove();
+        hideListener.remove();
       };
     }
   }, []);
@@ -949,7 +973,7 @@ const EcostepAppContent = () => {
           </div>
 
           {/* 하단 네비게이션 - 글래스모피즘 효과 */}
-          {!showNotifications && !showSettings && !showProfile && !showAquariumSettings && !showThemeSettings && !showRankThemeSettings && !showLanguageSettings && !showNotificationSettings && !showLocationSettings && !showFriendsList && !showGlobalList && (
+          {!showNotifications && !showSettings && !showProfile && !showAquariumSettings && !showThemeSettings && !showRankThemeSettings && !showLanguageSettings && !showNotificationSettings && !showLocationSettings && !showFriendsList && !showGlobalList && !isKeyboardVisible && (
             <div className="fixed bottom-0 left-0 right-0 z-50" style={{
               backgroundColor: isDarkMode ? 'rgba(55, 65, 81, 0.3)' : 'rgba(255, 255, 255, 0.3)',
               backdropFilter: isDarkMode ? 'blur(20px) saturate(1.5)' : 'blur(20px) saturate(2.5)',

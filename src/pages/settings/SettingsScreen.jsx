@@ -73,7 +73,7 @@ const SettingsScreen = ({
           </button>
 
           {/* 설정 섹션 - 하나의 박스로 통합 */}
-          <div className={`${cardBg} border ${borderColor} rounded-xl overflow-hidden`}>
+          <div className={`w-full ${cardBg} border ${borderColor} rounded-xl overflow-hidden`}>
             <button 
               onClick={() => setShowLanguageSettings(true)}
               className={`w-full p-3 flex justify-between items-center`}
@@ -87,9 +87,9 @@ const SettingsScreen = ({
               </div>
             </button>
             
-            <div className={`border-t ${borderColor} mx-4`}></div>
-            
-            <button 
+            <div className={`border-t ${borderColor} mx-3`}></div>
+
+            <button
               onClick={() => setShowNotificationSettings(true)}
               className={`w-full p-3 flex justify-between items-center`}
             >
@@ -101,10 +101,10 @@ const SettingsScreen = ({
                 <ChevronRight className={`w-4 h-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-400'}`} />
               </div>
             </button>
-            
-            <div className={`border-t ${borderColor} mx-4`}></div>
-            
-            <button 
+
+            <div className={`border-t ${borderColor} mx-3`}></div>
+
+            <button
               onClick={() => setShowLocationSettings(true)}
               className={`w-full p-3 flex justify-between items-center`}
             >
@@ -116,10 +116,10 @@ const SettingsScreen = ({
                 <ChevronRight className={`w-4 h-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-400'}`} />
               </div>
             </button>
-            
-            <div className={`border-t ${borderColor} mx-4`}></div>
-            
-            <button 
+
+            <div className={`border-t ${borderColor} mx-3`}></div>
+
+            <button
               onClick={() => setShowThemeSettings(true)}
               className={`w-full p-3 flex justify-between items-center`}
             >
@@ -131,8 +131,8 @@ const SettingsScreen = ({
                 <ChevronRight className={`w-4 h-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-400'}`} />
               </div>
             </button>
-            
-            <div className={`border-t ${borderColor} mx-4`}></div>
+
+            <div className={`border-t ${borderColor} mx-3`}></div>
             
             <button 
               onClick={() => setShowRankThemeSettings(true)}

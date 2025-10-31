@@ -26,7 +26,7 @@ CREATE TABLE public.places (
   latitude double precision NOT NULL,
   longitude double precision NOT NULL,
   name text NOT NULL,
-  tag text,
+  category text,
   description text,
   CONSTRAINT places_pkey PRIMARY KEY (latitude, longitude)
 );
@@ -50,7 +50,7 @@ CREATE TABLE public.user_friend (
 CREATE TABLE public.user_info (
   user_id text NOT NULL,
   name text NOT NULL,
-  user_password text,
+  user_f_id text,
   phone_num text,
   email text NOT NULL UNIQUE,
   created_at date DEFAULT CURRENT_DATE,
@@ -59,6 +59,8 @@ CREATE TABLE public.user_info (
   rank character varying DEFAULT 'bronze'::character varying CHECK (rank::text = ANY (ARRAY['bronze'::character varying, 'silver'::character varying, 'gold'::character varying, 'platinum'::character varying]::text[])),
   amount integer DEFAULT 0,
   birthdate date,
+  profile_image_url text,
+  consecutive_days integer,
   CONSTRAINT user_info_pkey PRIMARY KEY (user_id)
 );
 CREATE TABLE public.user_item (

@@ -132,9 +132,29 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
             <button
               onClick={async () => {
                 try {
-                  const inviteCode = 'ECO' + Math.random().toString(36).substr(2, 6).toUpperCase();
-                  const inviteLink = `https://ecostep.app/invite?code=${inviteCode}`;
-                  const shareText = '🌱 EcoStep - Small Steps, Big Change. Why Not?\n\n함께 환경을 지켜요!';
+                  // localStorage에서 user_f_id 가져오기
+                  const savedProfileData = localStorage.getItem('profileData');
+                  let userFId = '';
+
+                  if (savedProfileData) {
+                    try {
+                      const parsed = JSON.parse(savedProfileData);
+                      userFId = parsed.userFId || '';
+                    } catch (e) {
+                      console.error('프로필 데이터 파싱 오류:', e);
+                    }
+                  }
+
+                  // user_f_id가 없으면 경고
+                  if (!userFId) {
+                    if (showToast) {
+                      showToast('먼저 설정에서 아이디를 설정해주세요', 'warning');
+                    }
+                    return;
+                  }
+
+                  const inviteLink = `https://ecostep.app/invite?code=${userFId}`;
+                  const shareText = '🌱 EcoStep - Small Steps, Big Change. Why Not?';
 
                   // Capacitor 모바일 앱 환경인지 확인
                   const isNative = Capacitor.isNativePlatform();
@@ -229,9 +249,28 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
             </button>
             <button
               onClick={() => {
-                // Generate unique invite code
-                const inviteCode = 'ECO' + Math.random().toString(36).substr(2, 6).toUpperCase();
-                const inviteLink = `https://ecostep.app/invite?code=${inviteCode}`;
+                // localStorage에서 user_f_id 가져오기
+                const savedProfileData = localStorage.getItem('profileData');
+                let userFId = '';
+
+                if (savedProfileData) {
+                  try {
+                    const parsed = JSON.parse(savedProfileData);
+                    userFId = parsed.userFId || '';
+                  } catch (e) {
+                    console.error('프로필 데이터 파싱 오류:', e);
+                  }
+                }
+
+                // user_f_id가 없으면 경고
+                if (!userFId) {
+                  if (showToast) {
+                    showToast('먼저 설정에서 아이디를 설정해주세요', 'warning');
+                  }
+                  return;
+                }
+
+                const inviteLink = `https://ecostep.app/invite?code=${userFId}`;
 
                 // Copy to clipboard
                 navigator.clipboard.writeText(inviteLink).then(() => {
@@ -272,20 +311,20 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
               onClick={() => setShowSearchPage(true)}
               className={`flex-1 relative overflow-hidden py-2 rounded-xl text-[16px] font-medium flex items-center justify-center transition-all transform hover:scale-[1.02]`}
               style={{
-                background: isDarkMode 
+                background: isDarkMode
                   ? 'rgba(255,255,255,0.07)'
                   : 'rgba(255,255,255,0.7)',
                 backdropFilter: 'blur(40px) saturate(150%)',
                 WebkitBackdropFilter: 'blur(40px) saturate(150%)',
                 border: `1px solid ${isDarkMode ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.2)'}`,
-                boxShadow: isDarkMode 
+                boxShadow: isDarkMode
                   ? '0 20px 40px -12px rgba(0,0,0,0.5)'
                   : '0 8px 24px -4px rgba(0,0,0,0.15)',
                 color: isDarkMode ? 'rgba(255,255,255,0.95)' : 'rgba(0,0,0,0.8)'
               }}
             >
               <UserSearch className="w-4 h-4 mr-1.5" />
-              아이디
+              검색
             </button>
           </div>
         </div>

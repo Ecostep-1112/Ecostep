@@ -30,15 +30,15 @@ const generateRandomUserId = () => {
   return `${randomWord}${randomNumber}`;
 };
 
-// 아이디 중복 확인 함수
-const checkUserIdAvailability = async (userId) => {
+// 아이디 중복 확인 함수 (user_f_id 기준)
+const checkUserFIdAvailability = async (userFId) => {
   try {
-    console.log('중복 확인할 아이디:', userId);
+    console.log('중복 확인할 아이디:', userFId);
     const { data, error } = await supabase
       .from('user_info')
-      .select('user_id')
-      .eq('user_id', userId)
-      .maybeSingle(); // single() 대신 maybeSingle() 사용
+      .select('user_f_id')
+      .eq('user_f_id', userFId)
+      .maybeSingle();
 
     if (error) {
       console.error('중복 확인 쿼리 에러:', error);
@@ -56,25 +56,25 @@ const checkUserIdAvailability = async (userId) => {
   }
 };
 
-// 유니크한 아이디 생성 함수
-const generateUniqueUserId = async () => {
-  let userId;
+// 유니크한 user_f_id 생성 함수
+const generateUniqueUserFId = async () => {
+  let userFId;
   let isAvailable = false;
   let attempts = 0;
   const maxAttempts = 10;
-  
+
   while (!isAvailable && attempts < maxAttempts) {
-    userId = generateRandomUserId();
-    isAvailable = await checkUserIdAvailability(userId);
+    userFId = generateRandomUserId(); // 환경 관련 단어 + 랜덤 4자리 숫자
+    isAvailable = await checkUserFIdAvailability(userFId);
     attempts++;
   }
-  
+
   if (!isAvailable) {
     // 10번 시도 후에도 실패하면 타임스탬프 추가
-    userId = `${userId}_${Date.now().toString().slice(-4)}`;
+    userFId = `${userFId}_${Date.now().toString().slice(-4)}`;
   }
-  
-  return userId;
+
+  return userFId;
 };
 
 // 사용자 프로필 생성 또는 업데이트
@@ -92,6 +92,27 @@ export const createOrUpdateUserProfile = async (user) => {
     console.log('기존 프로필:', existingProfile);
 
     if (existingProfile) {
+      // 기존 프로필이 있지만 user_f_id가 없는 경우 자동 생성
+      if (!existingProfile.user_f_id) {
+        console.log('user_f_id 없음, 자동 생성 시작');
+        const newUserFId = await generateUniqueUserFId();
+
+        const { data: updatedProfile, error: updateError } = await supabase
+          .from('user_info')
+          .update({ user_f_id: newUserFId })
+          .eq('user_id', user.id)
+          .select()
+          .single();
+
+        if (updateError) {
+          console.error('user_f_id 업데이트 실패:', updateError);
+          return { profile: existingProfile, error: null };
+        }
+
+        console.log('user_f_id 자동 생성 완료:', newUserFId);
+        return { profile: updatedProfile, error: null };
+      }
+
       // 이미 프로필이 있으면 반환
       console.log('기존 프로필 있음:', existingProfile.user_id);
       return { profile: existingProfile, error: null };
@@ -109,6 +130,24 @@ export const createOrUpdateUserProfile = async (user) => {
       .maybeSingle();
 
     if (retryProfile) {
+      // 새로 생성된 프로필에 user_f_id가 없으면 추가
+      if (!retryProfile.user_f_id) {
+        console.log('새 프로필에 user_f_id 추가');
+        const newUserFId = await generateUniqueUserFId();
+
+        const { data: updatedProfile, error: updateError } = await supabase
+          .from('user_info')
+          .update({ user_f_id: newUserFId })
+          .eq('user_id', user.id)
+          .select()
+          .single();
+
+        if (!updateError && updatedProfile) {
+          console.log('user_f_id 자동 생성 완료:', newUserFId);
+          return { profile: updatedProfile, error: null };
+        }
+      }
+
       return { profile: retryProfile, error: null };
     }
 
@@ -223,17 +262,17 @@ export const onAuthStateChange = (callback) => {
   return supabase.auth.onAuthStateChange(callback);
 };
 
-// 사용자 아이디(닉네임) 업데이트 함수
-export const updateUserId = async (newUserId) => {
+// user_f_id 업데이트 함수
+export const updateUserFId = async (newUserFId) => {
   try {
-    console.log('아이디 업데이트 시작:', newUserId);
+    console.log('user_f_id 업데이트 시작:', newUserFId);
 
     // 입력값 검증
-    if (!newUserId || newUserId.trim() === '') {
+    if (!newUserFId || newUserFId.trim() === '') {
       return { success: false, error: '아이디를 입력해주세요.' };
     }
 
-    const trimmedUserId = newUserId.trim();
+    const trimmedUserFId = newUserFId.trim();
 
     // 현재 로그인한 사용자 가져오기
     const { data: { user }, error: authError } = await supabase.auth.getUser();
@@ -241,24 +280,46 @@ export const updateUserId = async (newUserId) => {
       return { success: false, error: '로그인이 필요합니다.' };
     }
 
-    // profileData에서 현재 프로필 정보 가져오기
-    const profileData = JSON.parse(localStorage.getItem('profileData') || '{}');
+    // 중복 확인
+    const isAvailable = await checkUserFIdAvailability(trimmedUserFId);
+    if (!isAvailable) {
+      return { success: false, error: '이미 사용 중인 아이디입니다.' };
+    }
 
-    // localStorage 업데이트
-    profileData.userId = trimmedUserId;
-    localStorage.setItem('profileData', JSON.stringify(profileData));
+    // DB에 저장
+    const { data, error: updateError } = await supabase
+      .from('user_info')
+      .update({ user_f_id: trimmedUserFId })
+      .eq('user_id', user.id)
+      .select()
+      .single();
 
-    console.log('localStorage 저장 성공:', {
-      userId: trimmedUserId
-    });
+    if (updateError) {
+      console.error('user_f_id DB 업데이트 실패:', updateError);
+      return { success: false, error: 'user_f_id 업데이트에 실패했습니다.' };
+    }
 
-    // 참고: DB 스키마에 nickname 필드가 없어서 localStorage에만 저장됩니다.
-    // 중복 체크는 클라이언트 측에서만 수행됩니다.
+    console.log('user_f_id 저장 성공:', data);
 
-    return { success: true, data: { user_id: trimmedUserId }, error: null };
+    return { success: true, data: { user_f_id: trimmedUserFId }, error: null };
   } catch (error) {
-    console.error('아이디 업데이트 에러:', error);
-    return { success: false, error: error.message || '아이디 업데이트에 실패했습니다.' };
+    console.error('user_f_id 업데이트 에러:', error);
+    return { success: false, error: error.message || 'user_f_id 업데이트에 실패했습니다.' };
+  }
+};
+
+// user_f_id 중복 확인 API (export 추가)
+export const checkUserFIdDuplicate = async (userFId) => {
+  try {
+    if (!userFId || userFId.trim() === '') {
+      return { isAvailable: false, error: '아이디를 입력해주세요.' };
+    }
+
+    const isAvailable = await checkUserFIdAvailability(userFId.trim());
+    return { isAvailable, error: null };
+  } catch (error) {
+    console.error('user_f_id 중복 확인 에러:', error);
+    return { isAvailable: false, error: error.message || '중복 확인에 실패했습니다.' };
   }
 };
 
@@ -337,5 +398,120 @@ export const getUserProfile = async () => {
   } catch (error) {
     console.error('프로필 가져오기 에러:', error);
     return { profile: null, error };
+  }
+};
+
+// 초대 코드 처리 함수
+export const processInviteCode = async (inviteCode) => {
+  try {
+    console.log('초대 코드 처리 시작:', inviteCode);
+
+    // 현재 로그인한 사용자 가져오기
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user) {
+      return { success: false, error: '로그인이 필요합니다.' };
+    }
+
+    // 본인의 초대 코드인지 확인
+    const { data: myProfile } = await supabase
+      .from('user_info')
+      .select('user_f_id')
+      .eq('user_id', user.id)
+      .single();
+
+    if (myProfile?.user_f_id === inviteCode) {
+      return { success: false, error: '본인의 초대 코드는 사용할 수 없습니다.' };
+    }
+
+    // 초대자 찾기 (user_f_id로)
+    const { data: inviter, error: inviterError } = await supabase
+      .from('user_info')
+      .select('user_id, user_f_id, point_current, points_total')
+      .eq('user_f_id', inviteCode)
+      .maybeSingle();
+
+    if (inviterError || !inviter) {
+      console.error('초대자를 찾을 수 없습니다:', inviterError);
+      return { success: false, error: '유효하지 않은 초대 코드입니다.' };
+    }
+
+    console.log('초대자 찾음:', inviter.user_f_id);
+
+    // 이미 친구인지 확인
+    const { data: existingFriend } = await supabase
+      .from('user_friend')
+      .select('*')
+      .eq('user_id', user.id)
+      .eq('friend_id', inviter.user_id)
+      .eq('status', 'accepted')
+      .maybeSingle();
+
+    if (existingFriend) {
+      return { success: false, error: '이미 친구입니다.' };
+    }
+
+    // 1. 초대자에게 500 포인트 지급
+    const { error: inviterUpdateError } = await supabase
+      .from('user_info')
+      .update({
+        point_current: (inviter.point_current || 0) + 500,
+        points_total: (inviter.points_total || 0) + 500
+      })
+      .eq('user_id', inviter.user_id);
+
+    if (inviterUpdateError) {
+      console.error('초대자 포인트 지급 실패:', inviterUpdateError);
+      return { success: false, error: '초대 보상 지급에 실패했습니다.' };
+    }
+
+    // 2. 초대받은 사람에게 500 포인트 지급
+    const { data: currentUserProfile } = await supabase
+      .from('user_info')
+      .select('point_current, points_total')
+      .eq('user_id', user.id)
+      .single();
+
+    const { error: inviteeUpdateError } = await supabase
+      .from('user_info')
+      .update({
+        point_current: (currentUserProfile?.point_current || 0) + 500,
+        points_total: (currentUserProfile?.points_total || 0) + 500
+      })
+      .eq('user_id', user.id);
+
+    if (inviteeUpdateError) {
+      console.error('초대받은 사람 포인트 지급 실패:', inviteeUpdateError);
+      return { success: false, error: '초대 보상 지급에 실패했습니다.' };
+    }
+
+    // 3. 자동 친구 추가 (양방향)
+    const { error: friendError1 } = await supabase
+      .from('user_friend')
+      .insert({
+        user_id: user.id,
+        friend_id: inviter.user_id,
+        status: 'accepted',
+        accepted_at: new Date().toISOString().split('T')[0]
+      });
+
+    const { error: friendError2 } = await supabase
+      .from('user_friend')
+      .insert({
+        user_id: inviter.user_id,
+        friend_id: user.id,
+        status: 'accepted',
+        accepted_at: new Date().toISOString().split('T')[0]
+      });
+
+    if (friendError1 || friendError2) {
+      console.error('친구 추가 실패:', friendError1 || friendError2);
+      // 포인트는 이미 지급되었으므로 에러는 무시하고 성공 처리
+    }
+
+    console.log('초대 코드 처리 완료');
+    return { success: true, inviterName: inviter.user_f_id, error: null };
+  } catch (error) {
+    console.error('초대 코드 처리 에러:', error);
+    return { success: false, error: error.message || '초대 코드 처리에 실패했습니다.' };
   }
 };

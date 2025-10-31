@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { ChevronRight, ChevronLeft, X, Camera, Plus, AlertTriangle } from 'lucide-react';
-import { updateUserId, deleteAccount } from '../../lib/auth';
+import { ChevronRight, ChevronLeft, X, Camera, Plus, AlertTriangle, Check } from 'lucide-react';
+import { updateUserFId, checkUserFIdDuplicate, deleteAccount } from '../../lib/auth';
 import { supabase } from '../../lib/supabase';
 import { saveUserStats } from '../../lib/database';
 import Toast from '../../components/Toast';
@@ -389,15 +389,69 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
       };
     }, [saveTimer]);
 
-    // 아이디 저장 핸들러
-    const handleUserIdSave = async () => {
+    // user_f_id 중복 확인 상태
+    const [isChecking, setIsChecking] = useState(false);
+    const [isChecked, setIsChecked] = useState(false);
+    const [isAvailable, setIsAvailable] = useState(false);
+
+    // user_f_id 중복 확인 핸들러
+    const handleCheckDuplicate = async () => {
+      const trimmedValue = inputValue.trim();
+
+      if (!trimmedValue) {
+        if (showToast) {
+          showToast('아이디를 입력해주세요.', 'error');
+        }
+        return;
+      }
+
+      if (trimmedValue.length < 1 || trimmedValue.length > 15) {
+        if (showToast) {
+          showToast('아이디는 1~15자여야 합니다.', 'error');
+        }
+        return;
+      }
+
+      setIsChecking(true);
+
+      try {
+        const { isAvailable: available, error: checkError } = await checkUserFIdDuplicate(trimmedValue);
+
+        if (checkError) {
+          throw new Error(checkError);
+        }
+
+        setIsAvailable(available);
+        setIsChecked(true);
+
+        if (available) {
+          if (showToast) {
+            showToast('사용 가능한 아이디입니다.', 'success');
+          }
+        } else {
+          if (showToast) {
+            showToast('이미 사용 중인 아이디입니다.', 'error');
+          }
+        }
+      } catch (err) {
+        console.error('중복 확인 오류:', err);
+        if (showToast) {
+          showToast('중복 확인에 실패했습니다.', 'error');
+        }
+      } finally {
+        setIsChecking(false);
+      }
+    };
+
+    // user_f_id 저장 핸들러
+    const handleUserFIdSave = async () => {
       // 이미 처리 중이면 무시
       if (isLoading) {
         console.log('이미 저장 처리 중');
         return;
       }
 
-      console.log('=== 아이디 저장 시작 ===');
+      console.log('=== user_f_id 저장 시작 ===');
       console.log('입력값:', inputValue);
 
       const trimmedValue = inputValue.trim();
@@ -430,14 +484,30 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
         return;
       }
 
+      // 중복 확인 여부 체크
+      if (!isChecked) {
+        if (showToast) {
+          showToast('중복 확인을 먼저 해주세요.', 'warning');
+        }
+        return;
+      }
+
+      // 중복 확인 후 사용 불가능한 경우
+      if (!isAvailable) {
+        if (showToast) {
+          showToast('사용 불가능한 아이디입니다.', 'error');
+        }
+        return;
+      }
+
       console.log('유효성 검사 통과, 저장 시도');
       setIsLoading(true);
       setError('');
 
       try {
-        // 아이디 업데이트
-        console.log('아이디 업데이트 시작');
-        const { success, error: updateError, data } = await updateUserId(trimmedValue);
+        // user_f_id 업데이트
+        console.log('user_f_id 업데이트 시작');
+        const { success, error: updateError, data } = await updateUserFId(trimmedValue);
         console.log('업데이트 결과:', { success, error: updateError });
 
         if (success) {
@@ -445,15 +515,6 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
 
           // 상태 업데이트
           onSave(trimmedValue);
-
-          // localStorage 업데이트
-          const savedData = localStorage.getItem('profileData');
-          if (savedData) {
-            const parsed = JSON.parse(savedData);
-            parsed.userId = trimmedValue;
-            localStorage.setItem('profileData', JSON.stringify(parsed));
-            console.log('localStorage 업데이트 완료');
-          }
 
           // 토스트 메시지 표시
           if (showToast) {
@@ -466,7 +527,7 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
             onClose();
           }, 300);
         } else {
-          console.error('아이디 업데이트 실패:', updateError);
+          console.error('user_f_id 업데이트 실패:', updateError);
           setIsLoading(false);
           setError('invalid');
 
@@ -481,7 +542,7 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
           }
         }
       } catch (err) {
-        console.error('아이디 저장 중 오류:', err);
+        console.error('user_f_id 저장 중 오류:', err);
         setIsLoading(false);
         setError('invalid');
         if (showToast) {
@@ -500,60 +561,89 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
         </div>
         
         <div className="p-4 max-w-md mx-auto">
-          <input
-            type={field === 'email' ? 'email' : 'text'}
-            value={inputValue}
-            onChange={(e) => {
-              const value = e.target.value;
+          <div className="flex gap-2">
+            <input
+              type={field === 'email' ? 'email' : 'text'}
+              value={inputValue}
+              onChange={(e) => {
+                const value = e.target.value;
 
-              // 아이디 필드
-              if (field === 'userId') {
-                // 영문, 숫자, 언더스코어만 허용
-                const filtered = value.replace(/[^a-zA-Z0-9_]/g, '');
-                const finalValue = filtered.slice(0, 15);
-                setInputValue(finalValue);
-                setError('');
-
-                // 기존 타이머 취소
-                if (saveTimer) {
-                  clearTimeout(saveTimer);
-                }
-                return;
-              }
-              
-              // 이름 필드 - 10자 제한
-              if (field === 'name') {
-                if (value.length <= 10) {
-                  setInputValue(value);
+                // 아이디 필드
+                if (field === 'userId') {
+                  // 영문, 숫자, 언더스코어만 허용
+                  const filtered = value.replace(/[^a-zA-Z0-9_]/g, '');
+                  const finalValue = filtered.slice(0, 15);
+                  setInputValue(finalValue);
                   setError('');
+
+                  // 입력값이 변경되면 중복 확인 상태 리셋
+                  setIsChecked(false);
+                  setIsAvailable(false);
+
+                  // 기존 타이머 취소
+                  if (saveTimer) {
+                    clearTimeout(saveTimer);
+                  }
+                  return;
                 }
-                return;
-              }
-              
-              // 기타 필드
-              setInputValue(value);
-              setError('');
-            }}
-            placeholder={getPlaceholder(field)}
-            className={`w-full px-4 py-2.5 text-[15px] ${textColor} bg-transparent rounded-lg border ${error ? 'border-red-500' : borderColor} focus:outline-none ${error ? 'focus:border-red-500' : 'focus:border-gray-400'}`}
-            autoFocus
-            disabled={isLoading}
-            maxLength={field === 'name' ? 10 : field === 'userId' ? 15 : undefined}
-          />
-          
+
+                // 이름 필드 - 10자 제한
+                if (field === 'name') {
+                  if (value.length <= 10) {
+                    setInputValue(value);
+                    setError('');
+                  }
+                  return;
+                }
+
+                // 기타 필드
+                setInputValue(value);
+                setError('');
+              }}
+              placeholder={getPlaceholder(field)}
+              className={`flex-1 px-4 py-2.5 text-[15px] ${textColor} bg-transparent rounded-lg border ${error ? 'border-red-500' : borderColor} focus:outline-none ${error ? 'focus:border-red-500' : 'focus:border-gray-400'}`}
+              autoFocus
+              disabled={isLoading}
+              maxLength={field === 'name' ? 10 : field === 'userId' ? 15 : undefined}
+            />
+
+            {/* userId 필드일 때만 중복 확인 버튼 표시 */}
+            {field === 'userId' && (
+              <button
+                onClick={handleCheckDuplicate}
+                disabled={isChecking || !inputValue.trim()}
+                className={`px-4 py-2.5 text-[15px] rounded-lg font-medium transition-opacity flex items-center justify-center ${
+                  isChecked && isAvailable
+                    ? 'bg-green-500 text-white'
+                    : 'bg-gradient-to-r from-cyan-500 via-blue-500 to-blue-600 text-white'
+                } ${
+                  isChecking || !inputValue.trim() ? 'opacity-50 cursor-not-allowed' : 'hover:opacity-90'
+                }`}
+              >
+                {isChecking ? (
+                  '확인 중...'
+                ) : isChecked && isAvailable ? (
+                  <Check className="w-4 h-4" />
+                ) : (
+                  '중복 확인'
+                )}
+              </button>
+            )}
+          </div>
+
           {field === 'userId' && (
             <p className={`text-[13px] ${secondaryText} mt-2 text-center`}>
               영문, 숫자, 언더스코어만 사용 가능 (1~15자)
             </p>
           )}
-          
+
           <button
             onClick={async () => {
               // 버튼 중복 클릭 방지
               if (isLoading) return;
 
               if (field === 'userId') {
-                await handleUserIdSave();
+                await handleUserFIdSave();
               } else if (field === 'email') {
                 if (!validateEmail(inputValue)) {
                   setError('invalid');
@@ -645,7 +735,7 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
             <span className={`${textColor} text-[15px]`}>아이디</span>
             <div className="flex items-center">
               <span className={`${secondaryText} text-[15px] mr-2`}>
-                {profileData.userId || '없음'}
+                {profileData.userFId || '없음'}
               </span>
               <ChevronRight className={`w-4 h-4 ${secondaryText}`} />
             </div>
@@ -746,10 +836,10 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
         <EditFieldScreen
           field="userId"
           label="아이디"
-          value={profileData.userId}
+          value={profileData.userFId}
           onSave={(value) => {
             setProfileData(prev => {
-              const newData = {...prev, userId: value};
+              const newData = {...prev, userFId: value};
               localStorage.setItem('profileData', JSON.stringify(newData));
               return newData;
             });

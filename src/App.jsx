@@ -13,7 +13,7 @@ import NotificationsScreen from './pages/settings/NotificationsScreen';
 import { ThemeSettings, RankThemeSettings, LanguageSettings, NotificationSettings, LocationSettings, AquariumSettings } from './pages/settings/Settings';
 import Toast from './components/Toast';
 import Login from './pages/auth/Login';
-import { onAuthStateChange, getCurrentUser, signOut, createOrUpdateUserProfile } from './lib/auth';
+import { onAuthStateChange, getCurrentUser, signOut, createOrUpdateUserProfile, processInviteCode } from './lib/auth';
 import { getUserInfo, saveUserInfo, getUserItems, saveUserStats, getUserPurchasedItems, purchaseItem } from './lib/database';
 import { supabase } from './lib/supabase';
 import {
@@ -101,7 +101,7 @@ const EcostepAppContent = () => {
     }
     return {
       name: '',
-      userId: '',
+      userFId: '',
       birthDate: '',
       phone: '',
       email: '',
@@ -134,7 +134,7 @@ const EcostepAppContent = () => {
           name: data.name || prev.name,
           email: data.email || prev.email,
           phone: data.phone_num || prev.phone || '',
-          userId: data.user_id || prev.userId,
+          userFId: data.user_f_id || prev.userFId || '',
           profileImage: data.profile_image_url || prev.profileImage || ''
         }));
 
@@ -404,12 +404,62 @@ const EcostepAppContent = () => {
     };
   }, []);
 
-  // 로그인 없이 둘러보기 시 Store 데이터 로드
+  // URL에서 초대 코드 확인 및 저장
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const inviteCode = params.get('code');
+
+    if (inviteCode) {
+      console.log('초대 코드 감지:', inviteCode);
+      localStorage.setItem('pendingInviteCode', inviteCode);
+      // URL에서 파라미터 제거
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  }, []);
+
+  // 로그인 후 초대 코드 처리
+  useEffect(() => {
+    const handleInviteCode = async () => {
+      if (!isLoggedIn || !currentUser || isCheckingAuth) return;
+
+      const pendingInviteCode = localStorage.getItem('pendingInviteCode');
+      if (!pendingInviteCode) return;
+
+      console.log('초대 코드 처리 중:', pendingInviteCode);
+
+      // 초대 코드 처리
+      const { success, inviterName, error } = await processInviteCode(pendingInviteCode);
+
+      if (success) {
+        showToastMessage(`${inviterName}님의 초대로 500 포인트를 받았습니다!`, 'success');
+        // 초대 코드 삭제 (한 번만 사용)
+        localStorage.removeItem('pendingInviteCode');
+
+        // 포인트 업데이트 (리프레시)
+        if (currentUser?.id) {
+          await loadUserDataFromSupabase(currentUser.id);
+        }
+      } else if (error) {
+        console.error('초대 코드 처리 실패:', error);
+        // 이미 친구거나 유효하지 않은 코드는 조용히 무시
+        localStorage.removeItem('pendingInviteCode');
+      }
+    };
+
+    handleInviteCode();
+  }, [isLoggedIn, currentUser, isCheckingAuth]);
+
+  // 로그인 없이 둘러보기 시 Store 데이터 로드 및 기본 물고기 추가
   useEffect(() => {
     if (isLoggedIn && !currentUser && !isCheckingAuth) {
       // 로그인 없이 둘러보기 (currentUser가 null)
       console.log('로그인 없이 둘러보기 - Store 데이터 로드');
-      preloadAllData(null);
+      preloadAllData(null).then(() => {
+        // 데이터 로딩 후 기본 물고기 추가 (로그인 없이 둘러보기용)
+        console.log('로그인 없이 둘러보기 - 기본 물고기 추가');
+        setPurchasedFish(['금붕어', '구피']);
+        setPurchasedDecorations(['해초']);
+      });
     }
   }, [isLoggedIn, currentUser, isCheckingAuth]);
 
@@ -469,6 +519,36 @@ const EcostepAppContent = () => {
                 console.error('세션 설정 에러:', error);
               } else {
                 console.log('세션 설정 성공:', sessionData);
+
+                // 세션 설정 성공 후 사용자 상태 업데이트
+                if (sessionData?.user) {
+                  setCurrentUser(sessionData.user);
+                  setIsLoggedIn(true);
+                  setIsCheckingAuth(false);
+
+                  // 프로필 생성 또는 업데이트
+                  const { profile } = await createOrUpdateUserProfile(sessionData.user);
+                  console.log('Deep link - 프로필 생성 결과:', profile);
+
+                  // Supabase에서 유저 데이터 불러오기
+                  if (profile?.user_id) {
+                    await loadUserDataFromSupabase(profile.user_id);
+                    // 전역 데이터 프리로딩
+                    preloadAllData(profile.user_id);
+
+                    // 신규 사용자에게 기본 어항 추가
+                    try {
+                      const { data: purchasedItems } = await getUserPurchasedItems(sessionData.user.id);
+                      const hasBackground = purchasedItems?.some(item => item.item_id?.startsWith('background_'));
+                      if (!hasBackground) {
+                        console.log('신규 사용자: 기본 어항 추가');
+                        await purchaseItem(sessionData.user.id, 'background_01');
+                      }
+                    } catch (error) {
+                      console.error('기본 어항 추가 에러:', error);
+                    }
+                  }
+                }
               }
             }
           }
@@ -755,6 +835,15 @@ const EcostepAppContent = () => {
   // 로그인 화면 표시
   if (!isLoggedIn) {
     return <Login onLogin={() => setIsLoggedIn(true)} />;
+  }
+
+  // 데이터 로딩 중 (로그인 후)
+  if (isDataLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gray-100">
+        <div className="text-gray-600">데이터 로딩 중...</div>
+      </div>
+    );
   }
 
   return (

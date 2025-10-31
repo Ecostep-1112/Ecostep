@@ -1,6 +1,6 @@
 {
   "appId": "com.ecostep.app",
-  "appName": "Ecostep",
+  "appName": "EcoStep",
   "webDir": "dist",
   "ios": {
     "contentInset": "always"

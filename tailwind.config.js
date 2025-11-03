@@ -5,7 +5,16 @@ export default {
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        sans: [
+          '-apple-system',        // iOS/macOS: San Francisco
+          'BlinkMacSystemFont',   // macOS fallback
+          'Roboto',               // Android 및 기타 플랫폼
+          'sans-serif',           // 최종 fallback
+        ],
+      },
+    },
   },
   plugins: [],
 }

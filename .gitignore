@@ -45,3 +45,10 @@ AuthKey_*.p8
 
 # Images
 *.png
+
+# Backup files
+*.backup
+*.backup*
+*.bak
+*.old
+*~

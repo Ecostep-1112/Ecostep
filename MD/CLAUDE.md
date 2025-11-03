@@ -114,8 +114,14 @@ npx cap init
 ## Git Workflow
 After making changes:
 1. `git add .` - Stage changes
-2. `git commit -m "Description of changes"` - Commit
+2. `git commit -m "Description of changes"` - Commit (간결하고 명확한 한글 커밋 메시지 작성)
 3. `git push` - Push to GitHub
+
+### Commit Message Guidelines
+- **언어**: 한글로 작성
+- **형식**: `type: 간단한 설명` (예: `feat: 새로운 기능 추가`, `fix: 버그 수정`, `style: 스타일 변경`)
+- **금지사항**: 커밋 메시지에 "🤖 Generated with Claude Code" 또는 "Co-Authored-By: Claude" 등의 자동 생성 메시지를 추가하지 않음
+- **승인 필요**: Push하기 전에 반드시 사용자의 승인을 받아야 함
 
 ## Database Integration
 - Supabase client is configured at `src/lib/supabase.js`
@@ -180,4 +186,7 @@ When building with Capacitor for iOS/Android:
 3. 다른 얘기 없으면, 계속해서 이전 작업을 이어서 수정하는 겁니다.
 4. 요청한 사항 이외에 것을 과하게 수정하지 말아주세요. 즉, 실수로 다른 부분의 코드를 건드리지 않도록 해주세요.
 5. 항상 맞춤법과 띄어쓰기를 검토해서 반영해주세요.
-6. 항상 수정을 완료 했으면 변경 내용을 간략히 정리해서 보여주세요. 
+6. 항상 수정을 완료 했으면 변경 내용을 간략히 정리해서 보여주세요.
+7. 제 허락 없이, push하지 마세요.
+8. **커밋 메시지**: "🤖 Generated with Claude Code" 또는 "Co-Authored-By: Claude" 같은 자동 생성 메시지를 절대 추가하지 마세요. 간결한 한글 커밋 메시지만 작성해주세요.
+9. **이모지 사용 금지**: 응답, 코드 설명, 커밋 메시지 등 모든 커뮤니케이션에서 이모지/아이콘을 사용하지 마세요. 100% 필수적인 경우(코드에 이미 이모지가 포함되어 있거나 사용자가 명시적으로 요청한 경우)에만 예외적으로 사용하세요. 

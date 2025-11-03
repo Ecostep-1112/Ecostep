@@ -595,7 +595,7 @@ const Challenge = ({
       const updatedWeek = {
         ...currentWeekData,
         challenge: finalChallenge,
-        days: currentWeekData.days.map((day, idx) =>
+        days: (currentWeekData.days || [null, null, null, null, null, null, null]).map((day, idx) =>
           idx === currentDayIndex ? true : day
         )
       };
@@ -2085,6 +2085,9 @@ const Challenge = ({
                       setPlasticRecords(updatedRecords);
                       localStorage.setItem('plasticRecords', JSON.stringify(updatedRecords));
 
+                      // 총 플라스틱 절약량 업데이트
+                      setTotalPlasticSaved(prev => prev + totalWeight);
+
                       // Supabase에 플라스틱 기록 저장
                       try {
                         // Supabase Auth 사용자 ID 가져오기 (UUID)
@@ -2096,12 +2099,15 @@ const Challenge = ({
                         }
 
                         if (user) {
+                          // recordItem이 DB에 있는지 확인 (id가 문자열이고 item_ 로 시작하는지)
+                          const isDbItem = recordItem.id && typeof recordItem.id === 'string' && recordItem.id.startsWith('item_');
+
                           const { error } = await supabase
                             .from('zero_chal_data')
                             .insert({
                               record_id: crypto.randomUUID(),
                               user_id: user.id, // Supabase Auth UUID 사용
-                              item_id: recordItem.id || null,
+                              item_id: isDbItem ? recordItem.id : null, // DB 아이템만 item_id 저장, 커스텀 아이템은 null
                               item_num: 1,
                               tracked_date: new Date(testDate || new Date()).toISOString().split('T')[0],
                               quantity: plasticQuantity,
@@ -2112,7 +2118,7 @@ const Challenge = ({
                             console.error('플라스틱 기록 저장 에러:', error);
                             throw error;
                           }
-                          console.log('플라스틱 기록 저장 성공');
+                          console.log('플라스틱 기록 저장 성공:', isDbItem ? 'DB 아이템' : '커스텀 아이템');
                         } else {
                           console.warn('로그인된 사용자가 없습니다.');
                         }

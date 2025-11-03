@@ -29,7 +29,7 @@ app.use(cors({
 app.use(express.json());
 
 // Claude API configuration
-const CLAUDE_API_KEY = process.env.VITE_CLAUDE_API_KEY;
+const CLAUDE_API_KEY = process.env.CLAUDE_API_KEY;
 
 // Initialize Anthropic client
 const anthropic = new Anthropic({
@@ -105,7 +105,7 @@ app.post('/api/chatbot', async (req, res) => {
     }
 
     // Check if API key exists and is valid
-    if (!CLAUDE_API_KEY || CLAUDE_API_KEY === 'your_claude_api_key_here' || !CLAUDE_API_KEY.startsWith('sk-ant-')) {
+    if (!CLAUDE_API_KEY || !CLAUDE_API_KEY.startsWith('sk-ant-')) {
       console.log('Using mock response - API key not properly configured');
       // Return a helpful mock response
       const mockResponses = [
@@ -174,7 +174,7 @@ app.post('/api/environmental-tip', async (req, res) => {
     const { category } = req.body;
 
     // Check if API key exists
-    if (!CLAUDE_API_KEY || CLAUDE_API_KEY === 'your-api-key-here' || !CLAUDE_API_KEY.startsWith('sk-ant-')) {
+    if (!CLAUDE_API_KEY || !CLAUDE_API_KEY.startsWith('sk-ant-')) {
       console.log('Using mock data - Claude API key not configured');
       return res.json(generateMockTip());
     }
@@ -268,7 +268,7 @@ app.post('/api/validate-plastic-challenge', async (req, res) => {
     }
 
     // Check if API key exists
-    if (!CLAUDE_API_KEY || CLAUDE_API_KEY === 'your-api-key-here' || !CLAUDE_API_KEY.startsWith('sk-ant-')) {
+    if (!CLAUDE_API_KEY || !CLAUDE_API_KEY.startsWith('sk-ant-')) {
       console.log('Using fallback validation - Claude API key not configured');
       // Fallback validation logic
       const plasticKeywords = ['플라스틱', '비닐', '일회용', '컵', '빨대', '봉지', '포장'];
@@ -347,7 +347,7 @@ app.post('/api/classify-plastic-item', async (req, res) => {
     }
 
     // Check if API key exists
-    if (!CLAUDE_API_KEY || CLAUDE_API_KEY === 'your-api-key-here' || !CLAUDE_API_KEY.startsWith('sk-ant-')) {
+    if (!CLAUDE_API_KEY || !CLAUDE_API_KEY.startsWith('sk-ant-')) {
       console.log('Using fallback classification - Claude API key not configured');
 
       // Simple keyword-based fallback classification
@@ -448,7 +448,7 @@ app.post('/api/validate-plastic-item', async (req, res) => {
     }
 
     // Check if API key exists
-    if (!CLAUDE_API_KEY || CLAUDE_API_KEY === 'your-api-key-here' || !CLAUDE_API_KEY.startsWith('sk-ant-')) {
+    if (!CLAUDE_API_KEY || !CLAUDE_API_KEY.startsWith('sk-ant-')) {
       console.log('Using fallback estimation - Claude API key not configured');
       // Fallback estimation logic
       const defaultWeights = {

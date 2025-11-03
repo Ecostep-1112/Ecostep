@@ -36,7 +36,8 @@ const EcostepAppContent = () => {
     purchasedFish,
     setPurchasedFish,
     purchasedDecorations,
-    setPurchasedDecorations
+    setPurchasedDecorations,
+    decorationsData
   } = useData();
 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -147,37 +148,7 @@ const EcostepAppContent = () => {
     }
   };
 
-  // Supabase에 유저 데이터 저장
-  const saveUserDataToSupabase = async () => {
-    try {
-      // Supabase Auth UUID 가져오기
-      const { data: { user }, error: authError } = await supabase.auth.getUser();
-
-      if (authError || !user) {
-        console.log('로그인된 사용자가 없습니다.');
-        return;
-      }
-
-      const userInfo = {
-        name: profileData.name,
-        email: profileData.email,
-        phone_num: profileData.phone,
-        point_current: points,
-        points_total: totalEarnedPoints,
-        rank: userRanking,
-        amount: plasticGoal || 0
-      };
-
-      const { data, error } = await saveUserInfo(user.id, userInfo); // Auth UUID 사용
-      if (error) {
-        console.error('유저 정보 저장 에러:', error);
-      } else {
-        console.log('Supabase에 유저 정보 저장 완료:', data);
-      }
-    } catch (error) {
-      console.error('유저 데이터 저장 에러:', error);
-    }
-  };
+  // Supabase 동기화는 Line 466의 통합 useEffect에서 처리
 
   // localStorage에도 저장하는 래퍼 함수
   const setProfileData = useCallback((newData) => {
@@ -310,29 +281,7 @@ const EcostepAppContent = () => {
     setPoints(prev => Math.max(0, prev - amount));
   };
 
-  // master의 decorationsData
-  const decorationsData = {
-    bronze: [
-      { name: '해초', description: '자연스러운 수초', price: 100 },
-      { name: '용암석', description: '신비로운 화산석', price: 150 },
-      { name: '작은 동굴', description: '아늑한 은신처', price: 200 }
-    ],
-    silver: [
-      { name: '산호', description: '화려한 바다 정원', price: 250 },
-      { name: '드리프트 우드', description: '오래된 바다 목재', price: 300 },
-      { name: '조개 껍질', description: '바다의 보석함', price: 350 }
-    ],
-    gold: [
-      { name: '그리스 신전', description: '고대 문명의 흔적', price: 400 },
-      { name: '보물 상자', description: '해적의 황금 보물', price: 450 },
-      { name: '해적선', description: '전설의 침몰선', price: 500 }
-    ],
-    platinum: [
-      { name: '크리스탈 동굴', description: '신비한 크리스탈', price: 600 },
-      { name: 'LED 해파리', description: '빛나는 수중 요정', price: 700 },
-      { name: '아틀란티스 유적', description: '잃어버린 문명', price: 800 }
-    ]
-  };
+  // decorationsData는 DataContext에서 가져옴 (DB 기반)
 
   // localStorage에서 상태 불러오기
   // 인증 상태 확인
@@ -624,44 +573,31 @@ const EcostepAppContent = () => {
     localStorage.setItem('waterQuality', waterQuality.toString());
   }, [waterQuality]);
 
-  // 포인트 변경시 localStorage + Supabase에 저장
+  // 포인트 변경시 localStorage에 저장 (Supabase는 Line 466의 통합 동기화에서 처리)
   useEffect(() => {
     localStorage.setItem('userPoints', points.toString());
-    // Supabase에 저장 (디바운스 적용)
-    const timeoutId = setTimeout(() => {
-      saveUserDataToSupabase();
-    }, 1000); // 1초 디바운스
-    return () => clearTimeout(timeoutId);
   }, [points]);
 
-  // 누적 포인트 변경시 localStorage + Supabase에 저장 및 랭크 업데이트
+  // 누적 포인트 변경시 localStorage에 저장 및 랭크 업데이트 (Supabase는 Line 466의 통합 동기화에서 처리)
   useEffect(() => {
     localStorage.setItem('totalEarnedPoints', totalEarnedPoints.toString());
     const newRank = calculateRankFromPoints(totalEarnedPoints);
     if (newRank !== userRanking) {
       setUserRanking(newRank);
     }
-    // Supabase에 저장 (디바운스 적용)
-    const timeoutId = setTimeout(() => {
-      saveUserDataToSupabase();
-    }, 1000); // 1초 디바운스
-    return () => clearTimeout(timeoutId);
   }, [totalEarnedPoints]);
 
-  // plasticGoal 변경 시 Supabase에 저장
+  // plasticGoal localStorage 저장 (목표치는 localStorage에만 저장)
   useEffect(() => {
     if (plasticGoal !== null) {
-      const timeoutId = setTimeout(() => {
-        saveUserDataToSupabase();
-      }, 1000); // 1초 디바운스
-      return () => clearTimeout(timeoutId);
+      localStorage.setItem('plasticGoal', plasticGoal.toString());
     }
   }, [plasticGoal]);
 
-  // 프로필 데이터 변경 감지 (디버깅용)
+  // totalPlasticSaved localStorage 저장
   useEffect(() => {
-    console.log('profileData 업데이트됨:', profileData);
-  }, [profileData]);
+    localStorage.setItem('totalPlasticSaved', totalPlasticSaved.toString());
+  }, [totalPlasticSaved]);
 
   useEffect(() => {
     if (lastChallengeDate) {

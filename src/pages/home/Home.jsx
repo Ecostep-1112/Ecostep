@@ -606,7 +606,7 @@ const Home = ({
             
           {/* 물고기 표시 (애니메이션) */}
           <div className="absolute inset-0 pointer-events-none z-[4] overflow-hidden">
-            {displayFish.length > 0 && fishPositions.map((fish, i) => {
+            {fishPositions.length > 0 && fishPositions.map((fish, i) => {
               const fishId = getFishId(fish.name);
               const FishIcon = FishIcons[fishId];
               const isMoving = fish.speed > 0;

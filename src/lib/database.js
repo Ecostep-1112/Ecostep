@@ -69,12 +69,11 @@ export const saveUserStats = async (userId, stats) => {
       updateData.phone_num = stats.phone_num;
     }
 
+    // upsert 대신 update 사용 (레코드는 로그인 시 자동 생성됨)
     const { data, error } = await supabase
       .from('user_info')
-      .upsert(updateData, {
-        onConflict: 'user_id', // PRIMARY KEY 명시
-        ignoreDuplicates: false // upsert로 업데이트
-      })
+      .update(updateData)
+      .eq('user_id', userId)
       .select()
       .single();
 
@@ -102,44 +101,6 @@ export const getUserStats = async (userId) => {
     return { data: null, error };
   }
 };
-
-// 챌린지 기록 저장 (주석: challenge_history 테이블이 스키마에 없음 - daily_chal_data 사용)
-// export const saveChallengeHistory = async (userId, challenge) => {
-//   try {
-//     const { data, error } = await supabase
-//       .from('challenge_history')
-//       .insert({
-//         user_id: userId,
-//         ...challenge,
-//         created_at: new Date().toISOString()
-//       })
-//       .select()
-//       .single();
-//
-//     if (error) throw error;
-//     return { data, error: null };
-//   } catch (error) {
-//     console.error('챌린지 기록 저장 에러:', error);
-//     return { data: null, error };
-//   }
-// };
-
-// 챌린지 기록 가져오기 (주석: challenge_history 테이블이 스키마에 없음 - daily_chal_data 사용)
-// export const getChallengeHistory = async (userId) => {
-//   try {
-//     const { data, error } = await supabase
-//       .from('challenge_history')
-//       .select('*')
-//       .eq('user_id', userId)
-//       .order('created_at', { ascending: false });
-
-//     if (error) throw error;
-//     return { data, error: null };
-//   } catch (error) {
-//     console.error('챌린지 기록 가져오기 에러:', error);
-//     return { data: null, error };
-//   }
-// };
 
 // ======================== 데일리 챌린지 관련 함수 ========================
 

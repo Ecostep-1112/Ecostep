@@ -2,6 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
+/* 글자 크기 고정 - 시스템 설정 영향 방지 */
+html {
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+  -moz-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
 /* 모바일 줌/확대 방지 */
 * {
   touch-action: manipulation;

@@ -4,7 +4,6 @@ import FishIcons from '../../components/FishIcons';
 import DecorationIcons from '../../components/DecorationIcons';
 import WaterSurface from '../../components/WaterSurface';
 import BubbleSystem from '../../components/BubbleSystem';
-import { getFishId, getDecorationId } from '../../utils/itemMapping';
 
 // 장식품 최소 간격 상수
 const DECORATION_MIN_SPACING = 12; // 장식품 간 최소 간격 (%)
@@ -652,8 +651,7 @@ const Home = ({
           {/* 물고기 표시 (애니메이션) */}
           <div className="absolute inset-0 pointer-events-none z-[4] overflow-hidden">
             {displayFish.length > 0 && fishPositions.map((fish, i) => {
-              const fishId = getFishId(fish.name);
-              const FishIcon = FishIcons[fishId];
+              const FishIcon = FishIcons[fish.name];
               const isMoving = fish.speed > 0;
               // 물고기가 어항 경계를 벗어나지 않도록 추가 제한
               const clampedX = Math.max(4, Math.min(96, fish.x));

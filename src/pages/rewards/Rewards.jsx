@@ -7,8 +7,9 @@ import SilverTank from '../../components/tanks/SilverTank';
 import GoldTank from '../../components/tanks/GoldTank';
 import PlatinumTank from '../../components/tanks/PlatinumTank';
 import { BronzeIcon, SilverIcon, GoldIcon, PlatinumIcon } from '../../components/RankIcons';
-import { getStoreFish, getStoreDecorations, getUserPurchasedItems, purchaseItem } from '../../lib/database';
+import { purchaseItem } from '../../lib/database';
 import { supabase } from '../../lib/supabase';
+import { useData } from '../../services/DataContext';
 
 const Rewards = ({
   isDarkMode,
@@ -37,109 +38,26 @@ const Rewards = ({
   const cardBg = isDarkMode ? 'bg-gray-800' : 'bg-white';
   const inputBg = isDarkMode ? 'bg-gray-700' : 'bg-gray-50';
 
-  // Supabase에서 상점 아이템 불러오기
-  const [fishData, setFishData] = useState({
-    bronze: [],
-    silver: [],
-    gold: [],
-    platinum: []
-  });
+  // DataContext에서 상점 데이터 가져오기
+  const { fishData, decorationsData, refreshStoreData, purchasedFish: contextPurchasedFish, purchasedDecorations: contextPurchasedDecorations } = useData();
 
-  const [decorationsData, setDecorationsData] = useState({
-    bronze: [],
-    silver: [],
-    gold: [],
-    platinum: []
-  });
-
-  // 상점 데이터 로드
+  // 상점 데이터와 구매 목록 동기화
   useEffect(() => {
-    const loadStoreData = async () => {
-      try {
-        // 물고기 데이터 로드
-        const { data: fishList, error: fishError } = await getStoreFish();
-        if (!fishError && fishList) {
-          console.log('물고기 데이터:', fishList); // 디버깅용
-          console.log('물고기 item_id 목록:', fishList.map(f => f.item_id));
-          const fishByRank = {
-            bronze: [],
-            silver: [],
-            gold: [],
-            platinum: []
-          };
-          fishList.forEach(fish => {
-            const rankKey = fish.rank.toLowerCase(); // 대문자를 소문자로 변환
-            if (fishByRank[rankKey]) {
-              fishByRank[rankKey].push({
-                id: fish.item_id, // database ID
-                name: fish.item_name, // 아이콘 매칭용 이름
-                description: fish.item_name,
-                price: fish.price
-              });
-            }
-          });
-          setFishData(fishByRank);
-        }
-
-        // 장식품 데이터 로드
-        const { data: decoList, error: decoError } = await getStoreDecorations();
-        if (!decoError && decoList) {
-          console.log('장식품 데이터:', decoList); // 디버깅용
-          console.log('장식품 item_id 목록:', decoList.map(d => d.item_id));
-          const decoByRank = {
-            bronze: [],
-            silver: [],
-            gold: [],
-            platinum: []
-          };
-          decoList.forEach(deco => {
-            const rankKey = deco.rank.toLowerCase(); // 대문자를 소문자로 변환
-            if (decoByRank[rankKey]) {
-              decoByRank[rankKey].push({
-                id: deco.item_id, // database ID
-                name: deco.item_name, // 아이콘 매칭용 이름
-                description: deco.item_name,
-                price: deco.price
-              });
-            }
-          });
-          setDecorationsData(decoByRank);
-        }
-
-        // 사용자 구매 목록 로드
-        const { data: { user } } = await supabase.auth.getUser();
-        if (user) {
-          const { data: purchasedItems, error: purchaseError } = await getUserPurchasedItems(user.id);
-
-          if (!purchaseError && purchasedItems) {
-            const fishNames = [];
-            const decoNames = [];
-
-            purchasedItems.forEach(item => {
-              const itemId = item.item_id;
-
-              // item_id로 물고기인지 장식품인지 구분하고 item_name 찾기
-              const foundFish = fishList?.find(fish => fish.item_id === itemId);
-              const foundDeco = decoList?.find(deco => deco.item_id === itemId);
-
-              if (foundFish) {
-                fishNames.push(foundFish.item_name); // item_name으로 저장
-              } else if (foundDeco) {
-                decoNames.push(foundDeco.item_name); // item_name으로 저장
-              }
-            });
-
-            setPurchasedFish(fishNames);
-            setPurchasedDecorations(decoNames);
-          }
-        }
-      } catch (error) {
-        console.error('상점 데이터 로드 에러:', error);
+    const loadData = async () => {
+      // fishData가 비어있으면 상점 데이터 로드 (구매 목록은 App.jsx의 preloadAllData에서 로드됨)
+      if (Object.values(fishData).every(arr => arr.length === 0)) {
+        await refreshStoreData();
       }
     };
-
-    loadStoreData();
+    loadData();
   }, []);
+
+  // DataContext의 구매 목록과 props의 구매 목록 동기화 체크
+  useEffect(() => {
+    if (contextPurchasedFish.length > 0 && purchasedFish.length === 0) {
+      console.log('구매 목록 동기화 필요:', contextPurchasedFish);
+    }
+  }, [contextPurchasedFish, purchasedFish]);
 
   // 랭크별 색상 정의 - 조건부 렌더링을 위한 함수
   const getRankGradient = (rank) => {

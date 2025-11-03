@@ -3,7 +3,6 @@ import { ChevronRight, Sun, Moon, Check } from 'lucide-react';
 import { BronzeIcon, SilverIcon, GoldIcon, PlatinumIcon } from '../../components/RankIcons';
 import FishIcons from '../../components/FishIcons';
 import DecorationIcons from '../../components/DecorationIcons';
-import { getFishId, getDecorationId } from '../../utils/itemMapping';
 import { useData } from '../../services/DataContext';
 import BasicTank from '../../components/tanks/BasicTank';
 import SilverTank from '../../components/tanks/SilverTank';
@@ -608,8 +607,7 @@ export const AquariumSettings = ({
                             {/* 물고기 아이콘 */}
                             <div className="flex items-center justify-center mb-1">
                               {(() => {
-                                const fishId = getFishId(fish.name);
-                                const FishIcon = FishIcons[fishId];
+                                const FishIcon = FishIcons[fish.name];
                                 return FishIcon ? <FishIcon size={32} /> : null;
                               })()}
                             </div>

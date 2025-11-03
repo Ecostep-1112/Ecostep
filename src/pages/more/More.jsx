@@ -12,59 +12,7 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
       window.Kakao.init(import.meta.env.VITE_KAKAO_API_KEY);
     }
   }, []);
-  
-  // 테마 색상 가져오기
-  const getThemeColor = () => {
-    if (rankTheme === 'basic') {
-      return isDarkMode ? 'bg-gray-200' : 'bg-gray-700';
-    }
-    if (rankTheme === 'bronze') return 'bg-cyan-500';
-    if (rankTheme === 'silver') return 'bg-teal-500';
-    if (rankTheme === 'gold') return 'bg-yellow-400';
-    if (rankTheme === 'platinum') return 'bg-purple-400';
-    return isDarkMode ? 'bg-gray-700' : 'bg-gray-900';
-  };
-  
-  const getThemeHoverColor = () => {
-    if (rankTheme === 'basic') {
-      return isDarkMode ? 'hover:bg-gray-300' : 'hover:bg-gray-600';
-    }
-    if (rankTheme === 'bronze') return 'hover:bg-cyan-600';
-    if (rankTheme === 'silver') return 'hover:bg-teal-600';
-    if (rankTheme === 'gold') return 'hover:bg-yellow-500';
-    if (rankTheme === 'platinum') return 'hover:bg-purple-500';
-    return isDarkMode ? 'hover:bg-gray-600' : 'hover:bg-gray-800';
-  };
-  
-  const getButtonTextColor = () => {
-    if (rankTheme === 'basic') {
-      return isDarkMode ? 'text-black' : 'text-white';
-    }
-    if (rankTheme === 'gold') return 'text-gray-800';
-    return 'text-white';
-  };
-  
-  const getOutlineColor = () => {
-    if (rankTheme === 'basic') {
-      return isDarkMode ? 'border-gray-400' : 'border-gray-700';
-    }
-    if (rankTheme === 'bronze') return 'border-cyan-500';
-    if (rankTheme === 'silver') return 'border-teal-500';
-    if (rankTheme === 'gold') return 'border-yellow-400';
-    if (rankTheme === 'platinum') return 'border-purple-400';
-    return isDarkMode ? 'border-gray-400' : 'border-gray-700';
-  };
-  
-  const getOutlineTextColor = () => {
-    if (rankTheme === 'basic') {
-      return isDarkMode ? 'text-gray-400' : 'text-gray-700';
-    }
-    if (rankTheme === 'bronze') return 'text-cyan-500';
-    if (rankTheme === 'silver') return 'text-teal-500';
-    if (rankTheme === 'gold') return 'text-yellow-500';
-    if (rankTheme === 'platinum') return 'text-purple-400';
-    return isDarkMode ? 'text-gray-400' : 'text-gray-700';
-  };
+
   const [isLoadingTip, setIsLoadingTip] = useState(false);
   const [environmentalTip, setEnvironmentalTip] = useState(null);
   const [errorMessage, setErrorMessage] = useState('');

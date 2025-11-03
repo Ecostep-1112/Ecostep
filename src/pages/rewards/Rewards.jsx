@@ -67,11 +67,11 @@ const Rewards = ({
       case 'silver':
         return 'bg-gradient-to-br from-cyan-400 to-teal-500';
       case 'gold':
-        return 'bg-gradient-to-br from-yellow-300 to-orange-400';
+        return 'bg-gradient-to-br from-yellow-200 to-yellow-400';
       case 'platinum':
         return 'bg-gradient-to-br from-purple-400 to-indigo-500';
       default:
-        return 'bg-gradient-to-br from-yellow-300 to-orange-400';
+        return 'bg-gradient-to-br from-yellow-200 to-yellow-400';
     }
   };
 
@@ -83,7 +83,7 @@ const Rewards = ({
       case 'silver':
         return 'bg-gradient-to-r from-cyan-400 to-teal-500';
       case 'gold':
-        return 'bg-gradient-to-r from-yellow-300 to-orange-400';
+        return 'bg-gradient-to-r from-yellow-200 to-yellow-400';
       case 'platinum':
         return 'bg-gradient-to-r from-purple-400 to-indigo-500';
       default:
@@ -108,7 +108,7 @@ const Rewards = ({
   const rankColors = {
     bronze: '#3b82f6',
     silver: '#06b6d4',
-    gold: '#facc15',
+    gold: '#fcd34d',
     platinum: '#ec4899'
   };
 
@@ -250,7 +250,7 @@ const Rewards = ({
                 <GoldIcon size={28} />
               </div>
               {userRanking === 'gold' || userRanking === 'platinum' ? (
-                <span className="font-medium bg-gradient-to-r from-yellow-400 via-amber-500 to-orange-500 bg-clip-text text-transparent">
+                <span className="font-medium bg-gradient-to-r from-yellow-300 via-yellow-400 to-amber-400 bg-clip-text text-transparent">
                   골드
                 </span>
               ) : (

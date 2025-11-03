@@ -16,9 +16,9 @@ const GoldTank = ({ className = "", isPreview = false }) => {
         {/* 그라디언트 정의 */}
         <defs>
           <linearGradient id="goldWaterGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#fcd34d" />
-            <stop offset="50%" stopColor="#facc15" />
-            <stop offset="100%" stopColor="#fb923c" />
+            <stop offset="0%" stopColor="#fde68a" />
+            <stop offset="50%" stopColor="#fcd34d" />
+            <stop offset="100%" stopColor="#fbbf24" />
           </linearGradient>
         </defs>
         

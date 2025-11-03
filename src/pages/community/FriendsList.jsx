@@ -154,7 +154,7 @@ const FriendsList = ({ isDarkMode, onBack, isGlobalRanking = false, totalPlastic
           <div className={`${cardBg} border ${borderColor} rounded-xl p-4`}>
             {filteredFriends.map((friend, index) => {
               // 1등: 플래티넘, 2등: 골드, 3등: 실버
-              const rankColor = friend.rank === 1 ? '#c084fc' : friend.rank === 2 ? '#facc15' : friend.rank === 3 ? '#14b8a6' : '';
+              const rankColor = friend.rank === 1 ? '#c084fc' : friend.rank === 2 ? '#fcd34d' : friend.rank === 3 ? '#14b8a6' : '';
               const isMe = friend.id === currentUserId;
               
               return (

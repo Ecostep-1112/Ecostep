@@ -474,7 +474,7 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
             {globalRankingDataRaw.slice(0, 3).map((user, index) => {
               // 1등: 플래티넘, 2등: 골드, 3등: 실버
               const actualRank = index + 1; // 실제 순위
-              const rankColor = actualRank === 1 ? '#ec4899' : actualRank === 2 ? '#facc15' : '#06b6d4';
+              const rankColor = actualRank === 1 ? '#ec4899' : actualRank === 2 ? '#fcd34d' : '#06b6d4';
               const isMe = user.name === '나';
               
               return (

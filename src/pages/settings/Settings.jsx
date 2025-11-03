@@ -19,7 +19,7 @@ export const RankThemeSettings = ({ isDarkMode, userRanking, setUserRanking, set
     { id: 'basic', name: '기본', subName: '(다크/화이트)', icon: null, color: isDarkMode ? '#e5e7eb' : '#374151', level: 0 },
     { id: 'bronze', name: '브론즈', subName: '(청록)', icon: BronzeIcon, color: '#06b6d4', level: 1 },
     { id: 'silver', name: '실버', subName: '(민트)', icon: SilverIcon, color: '#14b8a6', level: 2 },
-    { id: 'gold', name: '골드', subName: '(황금)', icon: GoldIcon, color: '#facc15', level: 3 },
+    { id: 'gold', name: '골드', subName: '(황금)', icon: GoldIcon, color: '#fcd34d', level: 3 },
     { id: 'platinum', name: '플래티넘', subName: '(보라)', icon: PlatinumIcon, color: '#c084fc', level: 4 }
   ];
   
@@ -128,9 +128,9 @@ export const RankThemeSettings = ({ isDarkMode, userRanking, setUserRanking, set
                             </>
                           ) : rank.id === 'gold' ? (
                             <>
-                              <stop offset="0%" stopColor="#facc15" />
-                              <stop offset="50%" stopColor="#f59e0b" />
-                              <stop offset="100%" stopColor="#d97706" />
+                              <stop offset="0%" stopColor="#fde68a" />
+                              <stop offset="50%" stopColor="#fcd34d" />
+                              <stop offset="100%" stopColor="#fbbf24" />
                             </>
                           ) : (
                             <>

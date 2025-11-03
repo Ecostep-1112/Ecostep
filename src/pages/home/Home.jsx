@@ -594,7 +594,7 @@ const Home = ({
           className={`relative overflow-hidden ${
             currentTank === 'basic' ? 'bg-gradient-to-br from-cyan-400 via-blue-500 to-blue-600' :
             currentTank === 'silver' ? 'bg-gradient-to-br from-slate-300 via-cyan-400 to-teal-500' :
-            currentTank === 'gold' ? 'bg-gradient-to-br from-amber-300 via-yellow-400 to-orange-400' :
+            currentTank === 'gold' ? 'bg-gradient-to-br from-yellow-200 via-yellow-300 to-yellow-400' :
             'bg-gradient-to-br from-purple-400 via-pink-400 to-indigo-500'
           } ${isDragging ? 'cursor-move' : ''}`}
           style={{ aspectRatio: '1/1' }}

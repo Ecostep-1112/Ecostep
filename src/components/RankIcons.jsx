@@ -185,9 +185,9 @@ export const GoldIcon = ({ size = 24, className = "" }) => (
   >
     <defs>
       <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stopColor="#fcd34d" />
-        <stop offset="50%" stopColor="#facc15" />
-        <stop offset="100%" stopColor="#fb923c" />
+        <stop offset="0%" stopColor="#fde68a" />
+        <stop offset="50%" stopColor="#fcd34d" />
+        <stop offset="100%" stopColor="#fbbf24" />
       </linearGradient>
       <filter id="goldShadow">
         <feDropShadow dx="2" dy="2" stdDeviation="2" floodOpacity="0.3"/>

@@ -628,7 +628,7 @@ const Challenge = ({
     }
     if (userRanking === 'bronze') return '#06b6d4';
     if (userRanking === 'silver') return '#14b8a6';
-    if (userRanking === 'gold') return '#facc15';
+    if (userRanking === 'gold') return '#fcd34d';
     if (userRanking === 'platinum') return '#c084fc';
     return '#06b6d4'; // default
   };
@@ -646,7 +646,7 @@ const Challenge = ({
       return 'linear-gradient(135deg, #14b8a6 0%, #10b981 50%, #059669 100%)';
     }
     if (userRanking === 'gold') {
-      return 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 50%, #f97316 100%)';
+      return 'linear-gradient(135deg, #fde68a 0%, #fcd34d 50%, #fbbf24 100%)';
     }
     if (userRanking === 'platinum') {
       return 'linear-gradient(135deg, #e879f9 0%, #d946ef 50%, #c026d3 100%)';
@@ -686,8 +686,8 @@ const Challenge = ({
         };
       case 'gold':
         return {
-          gradient: 'linear-gradient(135deg, #fcd34d, #facc15)',
-          color: '#facc15'
+          gradient: 'linear-gradient(135deg, #fde68a, #fcd34d)',
+          color: '#fcd34d'
         };
       case 'platinum':
         return {
@@ -2061,7 +2061,7 @@ const Challenge = ({
                       return userRanking === 'basic' ? (isDarkMode ? 'linear-gradient(to right, rgba(255,255,255,0.75), rgba(255,255,255,0.75))' : 'linear-gradient(to right, rgba(31,41,55,0.75), rgba(31,41,55,0.75))') :
                              userRanking === 'bronze' ? 'linear-gradient(to right, rgba(6,182,212,0.75), rgba(59,130,246,0.75))' :
                              userRanking === 'silver' ? 'linear-gradient(to right, rgba(203,213,225,0.75), rgba(20,184,166,0.75))' :
-                             userRanking === 'gold' ? 'linear-gradient(to right, rgba(252,211,77,0.75), rgba(250,204,21,0.75))' :
+                             userRanking === 'gold' ? 'linear-gradient(to right, rgba(253,230,138,0.75), rgba(252,211,77,0.75))' :
                              userRanking === 'platinum' ? 'linear-gradient(to right, rgba(192,132,252,0.75), rgba(236,72,153,0.75))' :
                              'linear-gradient(to right, rgba(6,182,212,0.75), rgba(59,130,246,0.75))';
                     } else if (index === 2) {
@@ -2069,7 +2069,7 @@ const Challenge = ({
                       return userRanking === 'basic' ? (isDarkMode ? 'linear-gradient(to right, rgba(255,255,255,0.5), rgba(255,255,255,0.5))' : 'linear-gradient(to right, rgba(31,41,55,0.5), rgba(31,41,55,0.5))') :
                              userRanking === 'bronze' ? 'linear-gradient(to right, rgba(6,182,212,0.5), rgba(59,130,246,0.5))' :
                              userRanking === 'silver' ? 'linear-gradient(to right, rgba(203,213,225,0.5), rgba(20,184,166,0.5))' :
-                             userRanking === 'gold' ? 'linear-gradient(to right, rgba(252,211,77,0.5), rgba(250,204,21,0.5))' :
+                             userRanking === 'gold' ? 'linear-gradient(to right, rgba(253,230,138,0.5), rgba(252,211,77,0.5))' :
                              userRanking === 'platinum' ? 'linear-gradient(to right, rgba(192,132,252,0.5), rgba(236,72,153,0.5))' :
                              'linear-gradient(to right, rgba(6,182,212,0.5), rgba(59,130,246,0.5))';
                     } else if (index === 3) {
@@ -2077,7 +2077,7 @@ const Challenge = ({
                       return userRanking === 'basic' ? (isDarkMode ? 'linear-gradient(to right, rgba(255,255,255,0.25), rgba(255,255,255,0.25))' : 'linear-gradient(to right, rgba(31,41,55,0.25), rgba(31,41,55,0.25))') :
                              userRanking === 'bronze' ? 'linear-gradient(to right, rgba(6,182,212,0.25), rgba(59,130,246,0.25))' :
                              userRanking === 'silver' ? 'linear-gradient(to right, rgba(203,213,225,0.25), rgba(20,184,166,0.25))' :
-                             userRanking === 'gold' ? 'linear-gradient(to right, rgba(252,211,77,0.25), rgba(250,204,21,0.25))' :
+                             userRanking === 'gold' ? 'linear-gradient(to right, rgba(253,230,138,0.25), rgba(252,211,77,0.25))' :
                              userRanking === 'platinum' ? 'linear-gradient(to right, rgba(192,132,252,0.25), rgba(236,72,153,0.25))' :
                              'linear-gradient(to right, rgba(6,182,212,0.25), rgba(59,130,246,0.25))';
                     } else {
@@ -2173,7 +2173,7 @@ const Challenge = ({
                     } else if (userRanking === 'silver') {
                       return `linear-gradient(to top, rgba(203, 213, 225, ${opacity}), rgba(20, 184, 166, ${opacity}))`;
                     } else if (userRanking === 'gold') {
-                      return `linear-gradient(to top, rgba(252, 211, 77, ${opacity}), rgba(250, 204, 21, ${opacity}))`;
+                      return `linear-gradient(to top, rgba(253, 230, 138, ${opacity}), rgba(252, 211, 77, ${opacity}))`;
                     } else if (userRanking === 'platinum') {
                       return `linear-gradient(to top, rgba(192, 132, 252, ${opacity}), rgba(236, 72, 153, ${opacity}))`;
                     }

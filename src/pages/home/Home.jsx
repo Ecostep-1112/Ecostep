@@ -329,10 +329,18 @@ const Home = ({
 
     setFishPositions(initialPositions);
 
-    // 물고기 애니메이션
-    let interval;
-    if (isActive) {
-      interval = setInterval(() => {
+    // 물고기 애니메이션 (requestAnimationFrame 사용)
+    let animationFrameId;
+    let lastUpdateTime = Date.now();
+
+    const animate = () => {
+      const currentTime = Date.now();
+      const deltaTime = currentTime - lastUpdateTime;
+
+      // 약 30fps (33ms)마다 업데이트
+      if (deltaTime >= 33) {
+        lastUpdateTime = currentTime;
+
         setFishPositions(prevPositions => {
           return prevPositions.map(fish => {
             if (fish.name === '코리도라스' || fish.name === '체리바브' || fish.name === '네온테트라' || fish.name === '아피스토그라마' || fish.name === '람시클리드' || fish.name === '구피' || fish.name === '엔젤피쉬' || fish.name === '킬리피쉬' || fish.name === '베타' || fish.name === '디스커스' || fish.name === '만다린피쉬' || fish.name === '아로와나') {
@@ -358,11 +366,19 @@ const Home = ({
             return fish;
           });
         });
-      }, 50);  // 50ms마다 업데이트
+      }
+
+      if (isActive) {
+        animationFrameId = requestAnimationFrame(animate);
+      }
+    };
+
+    if (isActive) {
+      animationFrameId = requestAnimationFrame(animate);
     }
 
     return () => {
-      if (interval) clearInterval(interval);
+      if (animationFrameId) cancelAnimationFrame(animationFrameId);
     };
   }, [displayFish, isActive]);
 
@@ -701,11 +717,12 @@ const Home = ({
               return FishIcon ? (
                 <div
                   key={i}
-                  className="absolute transition-all duration-50 ease-linear"
+                  className="absolute"
                   style={{
                     left: `${clampedX}%`,
                     top: `${clampedY}%`,
-                    transform: `translateX(-50%) translateY(-50%) scaleX(${-fish.direction})`,
+                    transform: `translate3d(-50%, -50%, 0) scaleX(${-fish.direction})`,
+                    willChange: 'transform',
                   }}
                 >
                   <FishIcon size={35} isMoving={isMoving} />

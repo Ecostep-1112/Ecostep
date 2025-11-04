@@ -68,18 +68,8 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
   const [isLoadingTip, setIsLoadingTip] = useState(false);
   const [environmentalTip, setEnvironmentalTip] = useState(null);
   const [errorMessage, setErrorMessage] = useState('');
-  const [hasCheckedTip, setHasCheckedTip] = useState(() => {
-    // 오늘 이미 확인했는지 체크
-    const lastChecked = localStorage.getItem('lastTipCheckedDate');
-    if (lastChecked) {
-      const lastDate = new Date(lastChecked);
-      const today = new Date();
-      return lastDate.toDateString() === today.toDateString();
-    }
-    return false;
-  });
-  // 카테고리 초기화 함수
-  const initializeCategory = () => {
+  // 날짜 체크 및 카테고리 업데이트 유틸 함수 (중복 제거)
+  const checkAndUpdateDailyData = () => {
     const today = new Date().toDateString();
     const lastUpdate = localStorage.getItem('lastCategoryUpdateDate');
 
@@ -91,9 +81,25 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
         localStorage.removeItem('nextDayCategory');
       }
       localStorage.setItem('lastCategoryUpdateDate', today);
+      return true; // 날짜가 변경됨
     }
+    return false; // 날짜가 같음
+  };
 
-    // 현재 카테고리 반환
+  const [hasCheckedTip, setHasCheckedTip] = useState(() => {
+    // 오늘 이미 확인했는지 체크
+    const lastChecked = localStorage.getItem('lastTipCheckedDate');
+    if (lastChecked) {
+      const lastDate = new Date(lastChecked);
+      const today = new Date();
+      return lastDate.toDateString() === today.toDateString();
+    }
+    return false;
+  });
+
+  // 카테고리 초기화 함수
+  const initializeCategory = () => {
+    checkAndUpdateDailyData();
     return localStorage.getItem('tipCategory') || '랜덤';
   };
 
@@ -101,30 +107,32 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
   const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
   const [categoryIndices, setCategoryIndices] = useState({});
   const [userLocation, setUserLocation] = useState(null);
-  const [selectedPlaceCategory, setSelectedPlaceCategory] = useState('전체');
+  const [selectedPlaceCategory, setSelectedPlaceCategory] = useState('제로웨이스트샵');
   const [showPlaceCategoryDropdown, setShowPlaceCategoryDropdown] = useState(false);
   const [zeroWastePlaces, setZeroWastePlaces] = useState([]);
   const [isLoadingPlaces, setIsLoadingPlaces] = useState(false);
   const [locationPermissionDenied, setLocationPermissionDenied] = useState(true); // 기본값: 위치 꺼짐
+  const [placesCache, setPlacesCache] = useState({}); // 카테고리별 장소 캐시
+  const [placeError, setPlaceError] = useState(null); // 장소 로드 에러 상태
 
   const categories = ['랜덤', '재활용 팁', '생활 습관', '에너지 절약', '제로웨이스트'];
 
-  // 제로웨이스트 맵 카테고리 정의
-  const placeCategories = ['전체', '제로웨이스트샵', '리필스테이션', '친환경매장', '재활용센터'];
+  // 제로웨이스트 맵 카테고리 정의 (전체 제거)
+  const placeCategories = ['제로웨이스트샵', '리필스테이션', '친환경매장', '재활용센터'];
 
-  // 카테고리별 검색어 매핑
+  // 카테고리별 검색어 매핑 (전체 제거)
   const categorySearchQueries = {
-    '전체': ['제로웨이스트', '리필스테이션', '친환경매장', '재활용센터'],
     '제로웨이스트샵': ['제로웨이스트샵', '제로웨이스트'],
     '리필스테이션': ['리필스테이션', '리필샵'],
     '친환경매장': ['친환경매장', '친환경제품'],
     '재활용센터': ['재활용센터', '재활용']
   };
 
-  // 네이버 지도 API에서 장소 데이터 불러오기
+  // 네이버 지도 API에서 장소 데이터 불러오기 (캐싱 포함)
   const loadPlaces = async () => {
     try {
       setIsLoadingPlaces(true);
+      setPlaceError(null);
 
       // 위치 권한이 없으면 검색하지 않음
       if (!userLocation) {
@@ -133,8 +141,26 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
         return;
       }
 
+      // 캐시 키 생성 (카테고리 + 위치)
+      const cacheKey = `${selectedPlaceCategory}-${userLocation.lat.toFixed(3)}-${userLocation.lng.toFixed(3)}`;
+
+      // 캐시에 데이터가 있으면 사용 (10분간 유효)
+      const cached = placesCache[cacheKey];
+      if (cached && Date.now() - cached.timestamp < 10 * 60 * 1000) {
+        setZeroWastePlaces(cached.places);
+        setIsLoadingPlaces(false);
+        return;
+      }
+
       // 선택된 카테고리에 해당하는 검색어 가져오기
-      const searchQueries = categorySearchQueries[selectedPlaceCategory] || categorySearchQueries['전체'];
+      const searchQueries = categorySearchQueries[selectedPlaceCategory];
+
+      if (!searchQueries) {
+        console.error('유효하지 않은 카테고리:', selectedPlaceCategory);
+        setPlaceError('유효하지 않은 카테고리입니다.');
+        setIsLoadingPlaces(false);
+        return;
+      }
 
       // 모든 검색어로 장소 검색
       const searchPromises = searchQueries.map(query => searchPlaces(query, 20));
@@ -154,16 +180,30 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
         return true;
       }).map(place => ({
         ...place,
-        category: selectedPlaceCategory === '전체' ? place.category : selectedPlaceCategory
+        category: selectedPlaceCategory
       }));
 
       // 사용자 위치 기준 3km 반경 내 장소만 필터링 및 정렬
       const filteredPlaces = filterAndSortPlaces(uniquePlaces, userLocation, 3);
 
       setZeroWastePlaces(filteredPlaces);
+
+      // 캐시에 저장
+      setPlacesCache(prev => ({
+        ...prev,
+        [cacheKey]: {
+          places: filteredPlaces,
+          timestamp: Date.now()
+        }
+      }));
     } catch (error) {
       console.error('장소 데이터 로드 실패:', error);
       setZeroWastePlaces([]);
+      setPlaceError('장소를 불러오는데 실패했습니다. 잠시 후 다시 시도해주세요.');
+
+      if (showToast) {
+        showToast('장소 검색에 실패했습니다', 'error');
+      }
     } finally {
       setIsLoadingPlaces(false);
     }
@@ -335,11 +375,10 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
     });
   };
   
-  // 매일 자정에 리셋되도록 체크 (날짜 변경 시 팁도 리로드)
+  // 매일 자정에 리셋되도록 체크 (날짜 변경 시 팁도 리로드) - 중복 로직 통합
   useEffect(() => {
     const checkReset = () => {
       const lastChecked = localStorage.getItem('lastTipCheckedDate');
-      const lastUpdate = localStorage.getItem('lastCategoryUpdateDate');
       const today = new Date().toDateString();
 
       // 포인트 리셋 체크
@@ -350,18 +389,10 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
         }
       }
 
-      // 날짜 변경 체크 및 팁 리로드
-      if (lastUpdate !== today) {
+      // 날짜 변경 체크 및 팁 리로드 (통합된 함수 사용)
+      const dateChanged = checkAndUpdateDailyData();
+      if (dateChanged) {
         console.log('날짜가 변경되었습니다. 팁을 리로드합니다.');
-        // 카테고리 업데이트
-        const nextCat = localStorage.getItem('nextDayCategory');
-        if (nextCat) {
-          localStorage.setItem('tipCategory', nextCat);
-          localStorage.removeItem('nextDayCategory');
-        }
-        localStorage.setItem('lastCategoryUpdateDate', today);
-
-        // 팁 리로드
         loadInitialTip();
       }
     };
@@ -373,6 +404,34 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
   }, []);
 
   // zeroWastePlaces는 네이버 Local Search API에서 실시간으로 불러옵니다
+
+  // 장소 카드 컴포넌트 (중복 제거)
+  const PlaceCard = ({ place, isDarkMode }) => (
+    <div className={`border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-100'} pb-3 min-h-[60px]`}>
+      <div className="flex justify-between">
+        <div className="flex-1 pr-3">
+          <p className={`text-[16px] ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} mb-1`}>{place.name}</p>
+          <span className={`text-[14px] ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>{place.description}</span>
+        </div>
+        <div className="relative min-w-[60px] min-h-[20px]">
+          <button
+            onClick={() => openInNaverMap(place)}
+            className="absolute top-[1px] right-0 mb-1 text-[16px] font-medium bg-gradient-to-r from-cyan-500 via-blue-500 to-blue-600 bg-clip-text text-transparent"
+          >
+            이동
+          </button>
+          {place.distance !== null && (
+            <span className={`absolute bottom-1 right-0 text-[14px] font-medium ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+              {place.distance < 1 ?
+                `${Math.round(place.distance * 1000)}m` :
+                `${place.distance.toFixed(1)}km`
+              }
+            </span>
+          )}
+        </div>
+      </div>
+    </div>
+  );
 
   const openInNaverMap = (place) => {
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
@@ -595,67 +654,39 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
               <div className="flex justify-center items-center py-8">
                 <div className="text-gray-500">장소를 불러오는 중...</div>
               </div>
+            ) : placeError ? (
+              <div className="flex flex-col items-center justify-center py-8">
+                <p className={`${isDarkMode ? 'text-red-400' : 'text-red-600'} text-[15px] text-center mb-2`}>
+                  {placeError}
+                </p>
+                <button
+                  onClick={loadPlaces}
+                  className={`px-3 py-1.5 rounded-lg text-[14px] font-medium ${
+                    isDarkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-200 text-gray-700'
+                  } hover:opacity-80`}
+                >
+                  다시 시도
+                </button>
+              </div>
             ) : zeroWastePlaces.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-8">
                 <p className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} text-[15px] text-center`}>
                   3km 반경 내에 장소가 없습니다
                 </p>
               </div>
-            ) : zeroWastePlaces.slice(0, 4).map((place, index) => (
-              <div key={index} className={`border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-100'} pb-3 min-h-[60px]`}>
-                <div className="flex justify-between">
-                  <div className="flex-1 pr-3">
-                    <p className={`text-[16px] ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} mb-1`}>{place.name}</p>
-                    <span className={`text-[14px] ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>{place.description}</span>
-                  </div>
-                  <div className="relative min-w-[60px] min-h-[20px]">
-                    <button
-                      onClick={() => openInNaverMap(place)}
-                      className="absolute top-[1px] right-0 mb-1 text-[16px] font-medium bg-gradient-to-r from-cyan-500 via-blue-500 to-blue-600 bg-clip-text text-transparent"
-                    >
-                      이동
-                    </button>
-                    {place.distance !== null && (
-                      <span className={`absolute bottom-1 right-0 text-[14px] font-medium ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                        {place.distance < 1 ? 
-                          `${Math.round(place.distance * 1000)}m` : 
-                          `${place.distance.toFixed(1)}km`
-                        }
-                      </span>
-                    )}
-                  </div>
-                </div>
-              </div>
-            ))}
-            {!locationPermissionDenied && !isLoadingPlaces && zeroWastePlaces.length > 4 && (
-              <div className="pt-2">
-                {zeroWastePlaces.slice(4).map((place, index) => (
-                  <div key={index + 4} className={`border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-100'} pb-3 mb-2 min-h-[60px]`}>
-                    <div className="flex justify-between">
-                      <div className="flex-1 pr-3">
-                        <p className={`text-[16px] ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} mb-1`}>{place.name}</p>
-                        <span className={`text-[14px] ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>{place.description}</span>
-                      </div>
-                      <div className="relative min-w-[60px] min-h-[20px]">
-                        <button
-                          onClick={() => openInNaverMap(place)}
-                          className="absolute top-0 right-0 mb-1 text-[16px] font-medium bg-gradient-to-r from-cyan-500 via-blue-500 to-blue-600 bg-clip-text text-transparent"
-                        >
-                          이동
-                        </button>
-                        {place.distance !== null && (
-                          <span className={`absolute bottom-1 right-0 text-[14px] font-medium ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                            {place.distance < 1 ? 
-                              `${Math.round(place.distance * 1000)}m` : 
-                              `${place.distance.toFixed(1)}km`
-                            }
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  </div>
+            ) : (
+              <>
+                {zeroWastePlaces.slice(0, 4).map((place, index) => (
+                  <PlaceCard key={index} place={place} isDarkMode={isDarkMode} />
                 ))}
-              </div>
+                {zeroWastePlaces.length > 4 && (
+                  <div className="pt-2">
+                    {zeroWastePlaces.slice(4).map((place, index) => (
+                      <PlaceCard key={index + 4} place={place} isDarkMode={isDarkMode} />
+                    ))}
+                  </div>
+                )}
+              </>
             )}
           </div>
         </div>

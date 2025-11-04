@@ -708,6 +708,18 @@ export const AquariumSettings = ({
         </div>
       </div>
       
+      {/* 장식품 안내 메시지 - 구매한 장식품이 있을 때만 표시 */}
+      {availableDecorations.length > 0 && (
+        <div className="absolute bottom-[72px] left-0 right-0 px-6 pb-2">
+          <p
+            className={`${isDarkMode ? 'text-gray-400' : 'text-gray-500'} text-center italic leading-relaxed`}
+            style={{ fontSize: 'clamp(7px, 2vw, 9px)' }}
+          >
+            어항 내에서 장식품을 두 번 터치하여 수정 모드로 진입 후 드래그하여 위치를 변경할 수 있습니다
+          </p>
+        </div>
+      )}
+
       {/* 하단 고정 적용하기 버튼 */}
       <div className={`absolute bottom-0 left-0 right-0 ${bgColor} border-t ${borderColor} p-4`}>
         <button 

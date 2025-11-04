@@ -8,6 +8,13 @@ import BubbleSystem from '../../components/BubbleSystem';
 // 장식품 최소 간격 상수
 const DECORATION_MIN_SPACING = 12; // 장식품 간 최소 간격 (%)
 
+// 움직이는 물고기 목록 (성능 최적화)
+const MOVING_FISH = new Set([
+  '코리도라스', '체리바브', '네온테트라', '아피스토그라마',
+  '람시클리드', '구피', '엔젤피쉬', '킬리피쉬',
+  '베타', '디스커스', '만다린피쉬', '아로와나'
+]);
+
 const Home = ({
   isDarkMode,
   setShowAquariumSettings,
@@ -343,7 +350,8 @@ const Home = ({
 
         setFishPositions(prevPositions => {
           return prevPositions.map(fish => {
-            if (fish.name === '코리도라스' || fish.name === '체리바브' || fish.name === '네온테트라' || fish.name === '아피스토그라마' || fish.name === '람시클리드' || fish.name === '구피' || fish.name === '엔젤피쉬' || fish.name === '킬리피쉬' || fish.name === '베타' || fish.name === '디스커스' || fish.name === '만다린피쉬' || fish.name === '아로와나') {
+            // Set을 사용한 O(1) 조회로 성능 최적화
+            if (MOVING_FISH.has(fish.name)) {
               let newX = fish.x + (fish.speed * fish.direction);
               let newDirection = fish.direction;
 

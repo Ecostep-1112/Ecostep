@@ -207,7 +207,7 @@ const ChatBot = ({ isDarkMode, onBack }) => {
       </div>
 
       {/* Input Area - Fixed at Bottom */}
-      <div className={`sticky bottom-0 z-10 flex-shrink-0 ${bgColor} py-2.5 px-4 border-t ${borderColor}`}>
+      <div className={`sticky bottom-0 z-10 flex-shrink-0 ${bgColor} pt-2.5 pb-0.5 px-4 border-t ${borderColor}`}>
         <div className="flex items-center space-x-2">
           <textarea
             ref={inputRef}

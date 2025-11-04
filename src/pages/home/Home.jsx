@@ -423,35 +423,77 @@ const Home = ({
 
   // 터치 더블탭 핸들러 (모바일 지원)
   const [lastTouchTime, setLastTouchTime] = useState(0);
+  const [touchStartPos, setTouchStartPos] = useState(null);
+
   const handleTouchStart = (e, decoName) => {
-    e.preventDefault();
     const currentTime = new Date().getTime();
     const tapLength = currentTime - lastTouchTime;
 
-    if (tapLength < 500 && tapLength > 0) {
-      // 더블탭 감지
-      handleDoubleClick(e, decoName);
-      // 더블탭 후 계속 누르고 있는지 확인
+    // 터치 시작 위치 기록 (드래그 감지용)
+    if (e.touches && e.touches.length > 0) {
+      setTouchStartPos({ x: e.touches[0].clientX, y: e.touches[0].clientY });
+    }
+
+    if (tapLength < 400 && tapLength > 0) {
+      // 더블탭 감지 (400ms 이내)
+      e.preventDefault(); // 줌 방지
+
+      // 더블탭 시점에 터치가 계속되는지 체크
       setIsHolding(true);
-      setDoubleClickTimer(setTimeout(() => {
-        if (isHolding) {
-          // 더블탭 + 홀드 = 드래그 모드
-          setIsDragging(decoName);
-          setSelectedDecoration(decoName);
-          setShowSettingsPanel(false); // 드래그 시에는 패널 숨김
-        }
-      }, 200)); // 200ms 후 홀드 체크
+
+      // 즉시 설정 패널 표시
+      setSelectedDecoration(decoName);
+      setShowSettingsPanel(true);
+      setIsDragging(null);
+
+      // 햅틱 피드백 (모바일에서만 작동)
+      if (navigator.vibrate) {
+        navigator.vibrate(100);
+      }
+
+      // 기본 설정이 없으면 초기화
+      if (!decorationSettings[decoName]) {
+        setDecorationSettings(prev => ({
+          ...prev,
+          [decoName]: {
+            size: 100,
+            rotation: 0
+          }
+        }));
+      }
+
+      // 타이머 초기화
+      setLastTouchTime(0);
     } else if (showSettingsPanel && selectedDecoration === decoName) {
       // 설정 패널이 열려있고 같은 장식품을 클릭하면 드래그 시작
       setIsDragging(decoName);
       setIsHolding(true);
+    } else {
+      // 첫 번째 탭
+      setLastTouchTime(currentTime);
     }
-    setLastTouchTime(currentTime);
   };
 
   const handleTouchEnd = (e, decoName) => {
+    // 터치 종료 위치 확인 (드래그 감지)
+    if (e.changedTouches && e.changedTouches.length > 0 && touchStartPos) {
+      const touchEndPos = { x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY };
+      const distance = Math.sqrt(
+        Math.pow(touchEndPos.x - touchStartPos.x, 2) +
+        Math.pow(touchEndPos.y - touchStartPos.y, 2)
+      );
+
+      // 이동 거리가 10px 이상이면 드래그로 간주
+      if (distance > 10) {
+        // 드래그였으므로 더블탭 타이머 리셋
+        setLastTouchTime(0);
+      }
+    }
+
     // 터치 종료 시 드래그 중지
     setIsHolding(false);
+    setTouchStartPos(null);
+
     if (doubleClickTimer) {
       clearTimeout(doubleClickTimer);
       setDoubleClickTimer(null);
@@ -694,6 +736,8 @@ const Home = ({
                   transform: `translateX(-50%)`,
                   userSelect: 'none',
                   WebkitUserSelect: 'none',
+                  WebkitTouchCallout: 'none',
+                  touchAction: 'none',
                   pointerEvents: isDragging && isDragging !== decoName ? 'none' : 'auto'
                 }}
                 onTouchStart={(e) => handleTouchStart(e, decoName)}

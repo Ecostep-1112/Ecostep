@@ -274,7 +274,7 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
     
     if (field === 'birthDate') {
       return (
-        <div className={`fixed inset-0 z-50 ${bgColor}`}>
+        <div className={`absolute inset-0 z-50 ${bgColor}`}>
           <div className={`${bgColor} p-4 flex items-center border-b ${borderColor}`}>
             <button onClick={onClose} className="mr-3">
               <ChevronLeft className={`w-4 h-4 ${textColor}`} />
@@ -345,7 +345,7 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
     
     if (field === 'phone') {
       return (
-        <div className={`fixed inset-0 z-50 ${bgColor}`}>
+        <div className={`absolute inset-0 z-50 ${bgColor}`}>
           <div className={`${bgColor} p-4 flex items-center border-b ${borderColor}`}>
             <button onClick={onClose} className="mr-3">
               <ChevronLeft className={`w-4 h-4 ${textColor}`} />
@@ -504,9 +504,9 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
         }
       }
     };
-    
+
     return (
-      <div className={`fixed inset-0 z-50 ${bgColor}`}>
+      <div className={`absolute inset-0 z-50 ${bgColor}`}>
         <div className={`${bgColor} p-4 flex items-center border-b ${borderColor}`}>
           <button onClick={onClose} className="mr-3">
             <ChevronLeft className={`w-4 h-4 ${textColor}`} />

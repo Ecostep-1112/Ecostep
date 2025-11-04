@@ -842,7 +842,7 @@ const Challenge = ({
   ];
 
   return (
-    <div className={`fixed inset-0 overflow-y-auto custom-scrollbar scrollbar-hide-idle pb-20 ${bgColor}`}>
+    <div className={`flex-1 overflow-y-auto custom-scrollbar scrollbar-hide-idle pb-20 ${bgColor}`}>
       <div className="min-h-full">
         {/* 서브탭 */}
         <div className="flex mx-3 mt-4 relative">

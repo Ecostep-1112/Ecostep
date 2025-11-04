@@ -259,7 +259,7 @@ const EcostepAppContent = () => {
   const [showFriendsList, setShowFriendsList] = useState(false);
   const [rankingInitialTab, setRankingInitialTab] = useState('friends');
   const [showGlobalList, setShowGlobalList] = useState(false);
-  const [waterQuality, setWaterQuality] = useState(85);
+  const [waterQuality, setWaterQuality] = useState(100);
   const [lastChallengeDate, setLastChallengeDate] = useState(null);
   const [daysWithoutChallenge, setDaysWithoutChallenge] = useState(0);
   const [consecutiveDays, setConsecutiveDays] = useState(() => {

@@ -82,3 +82,34 @@ Backend API (Claude API 프록시)
 ### "OAuth 로그인 후 응답 없음"
 → Supabase redirect URL 설정 확인
 → `com.ecostep.app://callback` 추가되었는지 확인
+
+## Supabase OAuth 설정 확인
+
+모바일 앱에서 OAuth 로그인이 정상 작동하려면 다음을 확인하세요:
+
+### 1. Redirect URL 설정
+Supabase Dashboard → Authentication → URL Configuration:
+```
+com.ecostep.app://callback
+```
+
+### 2. OAuth 제공자 설정
+Supabase Dashboard → Authentication → Providers에서:
+- Google: Client ID/Secret 입력
+- Kakao: Client ID/Secret 입력
+- Apple: Services ID, Team ID, Key ID, Private Key 입력
+
+### 3. Deep Link 설정
+`capacitor.config.ts` 파일 확인:
+```typescript
+{
+  appId: 'com.ecostep.app',
+  // ...
+}
+```
+
+### 4. 로그인 테스트
+1. 앱 빌드 및 설치
+2. 각 OAuth 제공자로 로그인 시도
+3. 브라우저에서 로그인 후 앱으로 자동 리다이렉트 확인
+4. 프로필 자동 생성 확인

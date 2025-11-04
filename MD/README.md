@@ -76,9 +76,9 @@ Supabase SQL Editor에서 실행:
 ```
 
 **왜 initData.sql이 필요한가?**
-- 현재 앱은 `localStorage` 기반 userId를 사용 (Supabase Auth 미사용)
-- RLS (Row Level Security)가 활성화되면 `auth.uid()`가 없어서 데이터 접근 불가
-- `initData.sql`은 개발 단계에서 공개 접근을 허용하는 RLS 정책을 설정합니다
+- 현재 앱은 Supabase OAuth 로그인을 사용합니다 (Google, Kakao, Apple)
+- RLS (Row Level Security) 정책은 프로덕션에 맞게 설정되어 있습니다
+- `initData.sql`은 초기 스토어 데이터와 장소 데이터를 삽입합니다
 
 ---
 
@@ -184,9 +184,12 @@ Supabase SQL Editor에서 실행:
 
 ### ❌ User info가 저장되지 않음
 
-**원인**: RLS 정책이 활성화되어 있고, localStorage 기반 userId는 `auth.uid()`와 매칭되지 않습니다.
+**원인**: Supabase OAuth 로그인 후 프로필이 생성되지 않았거나 RLS 정책 문제입니다.
 
-**해결**: `initData.sql` 실행하여 개발용 공개 접근 정책 적용
+**해결**:
+1. Supabase Dashboard에서 user_info 테이블의 RLS 정책 확인
+2. 로그인 후 프로필 자동 생성 트리거 확인
+3. 브라우저 콘솔에서 에러 로그 확인
 
 **확인 방법**:
 ```sql
@@ -194,7 +197,7 @@ Supabase SQL Editor에서 실행:
 SELECT tablename, policyname FROM pg_policies
 WHERE schemaname = 'public' AND tablename = 'user_info';
 
--- "Public access for development" 정책이 있어야 함
+-- Auth 기반 정책이 있어야 함
 ```
 
 ### ❌ "new row violates row-level security policy" 오류
@@ -260,36 +263,42 @@ ORDER BY count DESC;
 
 ## 📝 마이그레이션 이력
 
-- **2025-01-11**: 초기 데이터 스크립트 작성
+- **2025-10-24**: 초기 데이터 스크립트 작성
   - store 테이블 통합 (store_fish, store_decoration, store_background → store)
   - item_id를 한글 → 영문 식별자로 변경
   - item_name 컬럼 추가 (한글 표시명)
   - enum 타입 적용 (category, rank)
-  - 개발용 RLS 정책 추가 (localStorage 기반 userId 지원)
+
+- **2025-10**: Supabase OAuth 로그인 구현
+  - Google, Kakao, Apple 소셜 로그인 추가
+  - Auth 기반 RLS 정책 적용
+  - Deep link 처리 (모바일 앱)
+  - 로그인 페이지 및 인증 관리 구현
 
 ---
 
 ## 🔐 보안 및 인증
 
-### 현재 상태 (개발 단계)
-- ✅ localStorage 기반 userId 사용
-- ✅ RLS 활성화 + 공개 접근 정책 (개발용)
-- ⏳ Supabase Auth 미적용
+### 현재 상태
+- ✅ Supabase OAuth 로그인 구현 완료 (Google, Kakao, Apple)
+- ✅ RLS 활성화 + Auth 기반 정책 적용
+- ✅ 로그인 페이지 구현 (src/pages/auth/Login.jsx)
+- ✅ 인증 상태 관리 (App.jsx)
 
-### 프로덕션 배포 전 필수 작업
+### 구현된 기능
 
-1. **Supabase Auth 통합**
-   ```sql
-   -- Supabase SQL Editor에서 실행
-   -- database/setup_supabase_auth.sql 전체 실행
-   ```
+1. **OAuth 로그인**
+   - Google, Kakao, Apple 소셜 로그인
+   - 로그인 후 자동 프로필 생성
+   - Deep link 처리 (모바일 앱)
 
-2. **프론트엔드 수정**
-   - `src/contexts/AuthContext.jsx` 사용
-   - localStorage userId → `auth.uid()` 전환
-   - 로그인/회원가입 페이지 구현
+2. **인증 관리**
+   - `src/lib/auth.js`: OAuth 로그인 함수
+   - `App.jsx`: 인증 상태 리스너
+   - Supabase Session 관리
 
-3. **상세 가이드**
-   - `docs/SUPABASE_AUTH_MIGRATION.md` 참조
-
-**⚠️ 경고**: 개발용 공개 접근 정책은 프로덕션에서 절대 사용하지 마세요!
+3. **프로덕션 배포 체크리스트**
+   - Supabase Auth redirect URL 설정 확인
+   - RLS 정책 검토
+   - 민감한 정보 보호 (환경변수 확인)
+   - OAuth 제공자 설정 (Google, Kakao, Apple) 확인

@@ -135,37 +135,43 @@ After making changes:
 4. Test with users via web browser
 5. Once design is finalized (~80%), build with Capacitor for iOS/Android deployment
 
-## Local Storage Strategy
+## Authentication & Data Storage
 
-### Current Implementation (Web Prototype)
-- **localStorage**: Used for web browser prototype phase
-- **Purpose**: Quick development and testing of core features
-- **Scope**: App settings, aquarium configuration, challenge preferences
+### Current Implementation
+- **Supabase OAuth**: Google, Kakao, Apple 소셜 로그인 구현 완료
+- **인증 관리**: App.jsx에서 직접 관리 (AuthContext 미사용)
+- **자동 프로필 생성**: 로그인 시 user_info 테이블에 자동 생성
+- **Deep Link**: 모바일 앱에서 OAuth callback 처리
 
-### Production App Migration Plan
-When building with Capacitor for iOS/Android:
+### Authentication Files
+- `src/lib/auth.js`: OAuth 로그인 함수
+- `src/pages/auth/Login.jsx`: 로그인 페이지
+- `src/App.jsx`: 인증 상태 리스너 및 관리
 
-1. **Local Storage (Device)**
-   - **Capacitor Preferences**: For app settings and user preferences
-   - **Capacitor Storage**: Key-value storage API (replaces localStorage)
-   - **Capacitor SecureStorage**: For sensitive data (tokens, credentials)
-   - **Native**: UserDefaults (iOS) / SharedPreferences (Android) via Capacitor plugins
+### Data Storage Strategy
 
-2. **Cloud Storage (Database)**
-   - User profiles and authentication
+1. **Cloud Storage (Supabase)**
+   - User authentication (OAuth)
+   - User profiles (user_info 테이블)
    - Challenge completion records
    - Points and rankings
    - Friend relationships
    - Plastic usage history
 
+2. **Local Storage (localStorage)**
+   - App settings (theme, language, notifications)
+   - Aquarium configuration (fish, decorations)
+   - Challenge preferences
+   - Temporary cache
+
 3. **Hybrid Strategy**
-   - Local: User preferences, offline functionality (Capacitor Storage)
-   - Cloud: Critical user data, cross-device sync (Supabase)
+   - Local: User preferences, offline functionality
+   - Cloud: Critical user data, cross-device sync
    - Sync: Online/offline data synchronization
 
 ### Data Classification
-- **Local Only**: Theme, language, notifications, aquarium layout
-- **Cloud Only**: User account, social features, leaderboards
+- **Cloud (Supabase)**: User account, social features, leaderboards, challenge records
+- **Local (localStorage)**: Theme, language, notifications, aquarium layout
 - **Hybrid**: Challenge progress (local cache + cloud backup)
 
 ## Claude API Integration
@@ -179,6 +185,46 @@ When building with Capacitor for iOS/Android:
 - Claude API key stored in `.env.local` as `VITE_CLAUDE_API_KEY`
 - Service layer at `src/services/claudeService.js`
 - Backend proxy server for API calls (`server.js`)
+
+## UI/UX Guidelines
+
+### Keyboard Input Handling
+모바일 환경에서 키보드 입력이 필요한 페이지는 특별한 처리가 필요합니다.
+
+- **가이드 문서**: `MD/KEYBOARD_INPUT_GUIDE.md` 참조
+- **핵심 규칙**: `fixed inset-0` 사용하여 키보드 올라올 때 배경 고정
+- **적용 파일**:
+  - `src/pages/more/ChatBot.jsx`: 고객센터 챗봇
+  - `src/pages/settings/ProfileScreen.jsx`: 프로필 편집
+  - `src/pages/community/SearchFriends.jsx`: 친구 검색
+  - `src/pages/community/FriendsList.jsx`: 친구 목록 검색
+  - `src/pages/challenge/Challenge.jsx`: 커스텀 챌린지/플라스틱 입력
+
+### Mobile Considerations
+- 플랫폼 감지: `Capacitor.getPlatform()` 사용
+- 키보드 이벤트: `Keyboard.addListener()` 사용
+- Safe Area 처리: iOS notch 및 Android navigation bar 고려
+- 하단 네비게이션: 키보드 올라올 때 자동 숨김
+
+## Recent Updates
+
+### 2025-10
+1. **OAuth 로그인 구현**
+   - Google, Kakao, Apple 소셜 로그인 추가
+   - 자동 프로필 생성 및 Deep link 처리
+   - 로그인 페이지 및 인증 관리 구현
+
+### 2025-11
+1. **키보드 입력 UI 개선**
+   - 모바일 키보드 올라올 때 배경 축소 문제 해결
+   - 키보드 입력 가이드라인 문서 작성
+   - 모든 입력 페이지에 일관된 패턴 적용
+
+2. **문서화**
+   - `MD/KEYBOARD_INPUT_GUIDE.md`: 키보드 입력 UI 가이드
+   - `MD/AUTHENTICATION.md`: 인증 시스템 구현 문서
+   - `MD/BUILD_MOBILE.md`: 모바일 빌드 가이드
+   - `MD/README.md`: 데이터베이스 초기 데이터 가이드
 
 ## 작업
 1. 작업을 진행하기 전에, 항상 한 번 더 생각해보고, 단계별로 차근차근 순차적으로 진행해주세요.

@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { memo } from 'react';
 
-const WaterSurface = () => {
+const WaterSurface = memo(() => {
   return (
     <>
       {/* 물 표면 경계선 - 자연스러운 물결 효과 */}
@@ -172,6 +172,8 @@ const WaterSurface = () => {
       />
     </>
   );
-};
+});
+
+WaterSurface.displayName = 'WaterSurface';
 
 export default WaterSurface;

@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Settings } from 'lucide-react';
-import FishIcons from '../../components/FishIcons';
-import DecorationIcons from '../../components/DecorationIcons';
+import FishRenderer from '../../components/FishRenderer';
+import DecorationItem from '../../components/DecorationItem';
 import WaterSurface from '../../components/WaterSurface';
 import BubbleSystem from '../../components/BubbleSystem';
 
@@ -405,17 +405,17 @@ const Home = ({
   }, [decorationPositions, decorationSettings]);
 
   // 어항 클릭 시 드래그 모드 해제
-  const handleAquariumClick = (e) => {
+  const handleAquariumClick = useCallback((e) => {
     // 장식품이 아닌 빈 공간을 클릭했을 때 드래그 모드 및 설정 패널 해제
     if (e.target === e.currentTarget && (isDragging || showSettingsPanel)) {
       setIsDragging(null);
       setSelectedDecoration(null);
       setShowSettingsPanel(false);
     }
-  };
+  }, [isDragging, showSettingsPanel]);
 
   // 드래그 위치 계산 함수 (재사용성 향상)
-  const calculateDragPosition = (clientX, clientY, container) => {
+  const calculateDragPosition = useCallback((clientX, clientY, container) => {
     const rect = container.getBoundingClientRect();
     const x = ((clientX - rect.left) / rect.width) * 100;
     const y = ((rect.bottom - clientY) / rect.height) * 100;
@@ -425,9 +425,9 @@ const Home = ({
       x: Math.max(5, Math.min(95, x)),  // 좌우 여유 공간 확보
       y: Math.max(10, Math.min(85, y))  // 하단 10%부터 이동 가능
     };
-  };
+  }, []);
 
-  const handleMouseMove = (e) => {
+  const handleMouseMove = useCallback((e) => {
     if (!isDragging) return;
 
     const container = document.querySelector('[style*="aspectRatio"]') || e.currentTarget;
@@ -443,13 +443,13 @@ const Home = ({
         }
       }));
     });
-  };
+  }, [isDragging, calculateDragPosition]);
 
   // 터치 더블탭 핸들러 (모바일 지원)
   const [lastTouchTime, setLastTouchTime] = useState(0);
   const [touchStartPos, setTouchStartPos] = useState(null);
 
-  const handleTouchStart = (e, decoName) => {
+  const handleTouchStart = useCallback((e, decoName) => {
     const currentTime = new Date().getTime();
     const tapLength = currentTime - lastTouchTime;
 
@@ -496,9 +496,9 @@ const Home = ({
       // 첫 번째 탭
       setLastTouchTime(currentTime);
     }
-  };
+  }, [lastTouchTime, showSettingsPanel, selectedDecoration, decorationSettings]);
 
-  const handleTouchEnd = (e, decoName) => {
+  const handleTouchEnd = useCallback((e, decoName) => {
     // 터치 종료 위치 확인 (드래그 감지)
     if (e.changedTouches && e.changedTouches.length > 0 && touchStartPos) {
       const touchEndPos = { x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY };
@@ -525,9 +525,9 @@ const Home = ({
     if (isDragging === decoName) {
       setIsDragging(null);
     }
-  };
+  }, [touchStartPos, doubleClickTimer, isDragging]);
 
-  const handleTouchMove = (e) => {
+  const handleTouchMove = useCallback((e) => {
     if (!isDragging) return;
     e.preventDefault();
 
@@ -545,20 +545,20 @@ const Home = ({
         }
       }));
     });
-  };
+  }, [isDragging, calculateDragPosition]);
 
   // 마우스 다운 핸들러
-  const handleMouseDown = (e, decoName) => {
+  const handleMouseDown = useCallback((e, decoName) => {
     // 설정 패널이 열려있고 같은 장식품을 클릭하면 드래그 시작
     if (showSettingsPanel && selectedDecoration === decoName) {
       e.preventDefault();
       setIsDragging(decoName);
       setIsHolding(true);
     }
-  };
+  }, [showSettingsPanel, selectedDecoration]);
 
   // 마우스 업 핸들러
-  const handleMouseUp = (e, decoName) => {
+  const handleMouseUp = useCallback((e, decoName) => {
     // 마우스를 떼면 드래그 중지
     setIsHolding(false);
     if (doubleClickTimer) {
@@ -568,10 +568,10 @@ const Home = ({
     if (isDragging === decoName) {
       setIsDragging(null);
     }
-  };
+  }, [doubleClickTimer, isDragging]);
 
   // 더블클릭 핸들러 - 설정 패널 표시
-  const handleDoubleClick = (e, decoName) => {
+  const handleDoubleClick = useCallback((e, decoName) => {
     e.preventDefault();
     e.stopPropagation();
 
@@ -601,7 +601,6 @@ const Home = ({
         navigator.vibrate(100);
       }
 
-
       // 기본 설정이 없으면 초기화
       if (!decorationSettings[decoName]) {
         setDecorationSettings(prev => ({
@@ -618,10 +617,10 @@ const Home = ({
         setDoubleClickTimer(null);
       }, 200));
     }
-  };
+  }, [selectedDecoration, showSettingsPanel, decorationSettings]);
 
   // 크기 변경 핸들러
-  const handleSizeChange = (newSize) => {
+  const handleSizeChange = useCallback((newSize) => {
     if (selectedDecoration) {
       setDecorationSettings(prev => ({
         ...prev,
@@ -631,25 +630,20 @@ const Home = ({
         }
       }));
     }
-  };
+  }, [selectedDecoration]);
 
   // 회전 변경 핸들러
-  const handleRotationChange = (newRotation) => {
+  const handleRotationChange = useCallback((newRotation) => {
     if (selectedDecoration) {
-      console.log('Rotation changing to:', newRotation, 'for', selectedDecoration);
-      setDecorationSettings(prev => {
-        const newSettings = {
-          ...prev,
-          [selectedDecoration]: {
-            ...(prev[selectedDecoration] || { size: 100, rotation: 0 }),
-            rotation: newRotation
-          }
-        };
-        console.log('New decoration settings:', newSettings);
-        return newSettings;
-      });
+      setDecorationSettings(prev => ({
+        ...prev,
+        [selectedDecoration]: {
+          ...(prev[selectedDecoration] || { size: 100, rotation: 0 }),
+          rotation: newRotation
+        }
+      }));
     }
-  };
+  }, [selectedDecoration]);
 
 
   return (
@@ -715,79 +709,25 @@ const Home = ({
           <BubbleSystem fishPositions={fishPositions} />
             
           {/* 물고기 표시 (애니메이션) */}
-          <div className="absolute inset-0 pointer-events-none z-[4] overflow-hidden">
-            {displayFish.length > 0 && fishPositions.map((fish, i) => {
-              const FishIcon = FishIcons[fish.name];
-              const isMoving = fish.speed > 0;
-              // 물고기가 어항 경계를 벗어나지 않도록 추가 제한
-              const clampedX = Math.max(4, Math.min(96, fish.x));
-              const clampedY = Math.max(5, Math.min(95, fish.y));
-              return FishIcon ? (
-                <div
-                  key={i}
-                  className="absolute"
-                  style={{
-                    left: `${clampedX}%`,
-                    top: `${clampedY}%`,
-                    transform: `translate3d(-50%, -50%, 0) scaleX(${-fish.direction})`,
-                    willChange: 'transform',
-                  }}
-                >
-                  <FishIcon size={35} isMoving={isMoving} />
-                </div>
-              ) : null;
-            })}
-          </div>
+          <FishRenderer fishPositions={fishPositions} />
           
           {/* 사용자가 선택한 장식품 표시 - 어항 안쪽 */}
-          {displayDecorations.length > 0 && displayDecorations.map((decoName, i) => {
-            const position = decorationPositions[decoName] || { bottom: '18%', left: '20%' };
-            const settings = decorationSettings[decoName] || { size: 100, rotation: 0 };
-            const DecoIcon = DecorationIcons[decoName];
-            const isCurrentlyDragging = isDragging === decoName;
-            const isSelected = selectedDecoration === decoName;
-
-            // 크기 계산 (50% ~ 150%)
-            const scaledSize = Math.round(25 * (settings.size / 100));
-            // 회전 값 확인 (디버깅용)
-            const rotationValue = settings.rotation || 0;
-
-            return DecoIcon ? (
-              <div
-                key={i}
-                className={`absolute z-[2] ${isCurrentlyDragging ? 'cursor-move' : 'cursor-pointer'}`}
-                style={{
-                  ...position,
-                  transform: `translateX(-50%)`,
-                  userSelect: 'none',
-                  WebkitUserSelect: 'none',
-                  WebkitTouchCallout: 'none',
-                  touchAction: 'none',
-                  pointerEvents: isDragging && isDragging !== decoName ? 'none' : 'auto'
-                }}
-                onTouchStart={(e) => handleTouchStart(e, decoName)}
-                onTouchEnd={(e) => handleTouchEnd(e, decoName)}
-                onMouseDown={(e) => handleMouseDown(e, decoName)}
-                onMouseUp={(e) => handleMouseUp(e, decoName)}
-                onDoubleClick={(e) => handleDoubleClick(e, decoName)}
-              >
-                <div
-                  className={`transition-all duration-200 relative`}
-                  style={{
-                    transform: `rotate(${rotationValue}deg) ${isCurrentlyDragging ? 'scale(1.1)' : 'scale(1)'}`,
-                    opacity: isCurrentlyDragging ? 0.8 : 1,
-                    transformOrigin: 'center bottom'
-                  }}
-                >
-                  {React.createElement(DecoIcon, { size: scaledSize })}
-                  {/* 드래그 모드일 때 시각적 피드백 */}
-                  {isCurrentlyDragging && (
-                    <div className="absolute -inset-2 border-2 border-white/50 border-dashed rounded-full animate-pulse"></div>
-                  )}
-                </div>
-              </div>
-            ) : null;
-          })}
+          {displayDecorations.length > 0 && displayDecorations.map((decoName, i) => (
+            <DecorationItem
+              key={i}
+              decoName={decoName}
+              index={i}
+              position={decorationPositions[decoName] || { bottom: '18%', left: '20%' }}
+              settings={decorationSettings[decoName] || { size: 100, rotation: 0 }}
+              isDragging={isDragging}
+              isSelected={selectedDecoration === decoName}
+              onTouchStart={handleTouchStart}
+              onTouchEnd={handleTouchEnd}
+              onMouseDown={handleMouseDown}
+              onMouseUp={handleMouseUp}
+              onDoubleClick={handleDoubleClick}
+            />
+          ))}
           {/* 수질바 - 하단에 위치, 개선된 디자인 */}
           <div className="absolute bottom-0 left-0 right-0 z-[20]">
             {/* 구분선 */}

@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Share2, ChevronDown, ChevronUp, Book, Phone, ChevronRight, ArrowRight, Check } from 'lucide-react';
-import { generateEnvironmentalTip } from '../../services/claudeService';
-import { supabase } from '../../lib/supabase';
+import { getTodayTip, generateDailyTip } from '../../services/claudeService';
+import { searchPlaces, filterAndSortPlaces } from '../../services/naverMapService';
 
 const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, showToast, onShowChatBot, locationSharing }) => {
   const [expandedTip, setExpandedTip] = useState(null);
   
   // 카카오톡 API 초기화
   useEffect(() => {
-    if (!window.Kakao.isInitialized() && import.meta.env.VITE_KAKAO_API_KEY) {
+    if (window.Kakao && !window.Kakao.isInitialized() && import.meta.env.VITE_KAKAO_API_KEY) {
       window.Kakao.init(import.meta.env.VITE_KAKAO_API_KEY);
     }
   }, []);
@@ -101,52 +101,77 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
   const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
   const [categoryIndices, setCategoryIndices] = useState({});
   const [userLocation, setUserLocation] = useState(null);
-  const [sortedPlaces, setSortedPlaces] = useState([]);
   const [selectedPlaceCategory, setSelectedPlaceCategory] = useState('전체');
   const [showPlaceCategoryDropdown, setShowPlaceCategoryDropdown] = useState(false);
   const [zeroWastePlaces, setZeroWastePlaces] = useState([]);
-  const [isLoadingPlaces, setIsLoadingPlaces] = useState(true);
+  const [isLoadingPlaces, setIsLoadingPlaces] = useState(false);
   const [locationPermissionDenied, setLocationPermissionDenied] = useState(true); // 기본값: 위치 꺼짐
 
   const categories = ['랜덤', '재활용 팁', '생활 습관', '에너지 절약', '제로웨이스트'];
 
-  // DB에서 로드한 places의 tag 값들로 동적 카테고리 생성
-  const placeCategories = ['전체', ...Array.from(new Set(zeroWastePlaces.map(place => place.category).filter(Boolean)))];
+  // 제로웨이스트 맵 카테고리 정의
+  const placeCategories = ['전체', '제로웨이스트샵', '리필스테이션', '친환경매장', '재활용센터'];
 
-  // Supabase에서 장소 데이터 불러오기
+  // 카테고리별 검색어 매핑
+  const categorySearchQueries = {
+    '전체': ['제로웨이스트', '리필스테이션', '친환경매장', '재활용센터'],
+    '제로웨이스트샵': ['제로웨이스트샵', '제로웨이스트'],
+    '리필스테이션': ['리필스테이션', '리필샵'],
+    '친환경매장': ['친환경매장', '친환경제품'],
+    '재활용센터': ['재활용센터', '재활용']
+  };
+
+  // 네이버 지도 API에서 장소 데이터 불러오기
   const loadPlaces = async () => {
     try {
       setIsLoadingPlaces(true);
-      const { data, error } = await supabase
-        .from('places')
-        .select('*');
 
-      if (error) throw error;
+      // 위치 권한이 없으면 검색하지 않음
+      if (!userLocation) {
+        setZeroWastePlaces([]);
+        setIsLoadingPlaces(false);
+        return;
+      }
 
-      // places 테이블의 데이터를 기존 형식에 맞게 변환
-      const formattedPlaces = data.map(place => ({
-        name: place.name,
-        description: place.description || '',
-        address: '', // places 테이블에 address가 없으므로 빈 문자열
-        lat: place.latitude,
-        lng: place.longitude,
-        category: place.category || '전체'
+      // 선택된 카테고리에 해당하는 검색어 가져오기
+      const searchQueries = categorySearchQueries[selectedPlaceCategory] || categorySearchQueries['전체'];
+
+      // 모든 검색어로 장소 검색
+      const searchPromises = searchQueries.map(query => searchPlaces(query, 20));
+      const searchResults = await Promise.all(searchPromises);
+
+      // 모든 결과 합치기
+      const allPlaces = searchResults.flat();
+
+      // 중복 제거 (같은 이름과 주소를 가진 장소) - O(n) 성능 개선
+      const seenKeys = new Set();
+      const uniquePlaces = allPlaces.filter(place => {
+        const key = `${place.name}-${place.address}`;
+        if (seenKeys.has(key)) {
+          return false;
+        }
+        seenKeys.add(key);
+        return true;
+      }).map(place => ({
+        ...place,
+        category: selectedPlaceCategory === '전체' ? place.category : selectedPlaceCategory
       }));
 
-      setZeroWastePlaces(formattedPlaces);
+      // 사용자 위치 기준 3km 반경 내 장소만 필터링 및 정렬
+      const filteredPlaces = filterAndSortPlaces(uniquePlaces, userLocation, 3);
+
+      setZeroWastePlaces(filteredPlaces);
     } catch (error) {
       console.error('장소 데이터 로드 실패:', error);
-      // 에러 발생 시 빈 배열로 설정
       setZeroWastePlaces([]);
     } finally {
       setIsLoadingPlaces(false);
     }
   };
 
-  // 컴포넌트 마운트 시 초기 팁 로드 및 장소 데이터 로드
+  // 컴포넌트 마운트 시 초기 팁 로드
   useEffect(() => {
     loadInitialTip();
-    loadPlaces();
   }, []);
 
   // locationSharing 설정에 따라 위치 정보 가져오기
@@ -158,28 +183,14 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
       // 위치 설정이 꺼져있으면 위치 거부 상태로 설정
       setLocationPermissionDenied(true);
       setUserLocation(null);
+      setZeroWastePlaces([]);
     }
   }, [locationSharing]);
 
-  // 사용자 위치 및 카테고리 기반으로 장소 정렬 및 필터링
+  // 사용자 위치를 가져온 후 또는 카테고리 변경 시 장소 로드
   useEffect(() => {
-    let filteredPlaces = zeroWastePlaces;
-    
-    // 카테고리 필터링
-    if (selectedPlaceCategory !== '전체') {
-      filteredPlaces = zeroWastePlaces.filter(place => place.category === selectedPlaceCategory);
-    }
-    
     if (userLocation) {
-      const placesWithDistance = filteredPlaces.map(place => ({
-        ...place,
-        distance: calculateDistance(userLocation.lat, userLocation.lng, place.lat, place.lng)
-      }));
-      const sorted = placesWithDistance.sort((a, b) => a.distance - b.distance);
-      setSortedPlaces(sorted);
-    } else {
-      // 위치 정보가 없으면 원래 순서대로
-      setSortedPlaces(filteredPlaces.map(place => ({ ...place, distance: null })));
+      loadPlaces();
     }
   }, [userLocation, selectedPlaceCategory]);
 
@@ -208,12 +219,14 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
   const loadInitialTip = async () => {
     setIsLoadingTip(true);
     try {
+      // localStorage에서 저장된 오늘의 팁 가져오기
+      const tip = getTodayTip();
+      setEnvironmentalTip(tip);
+
       // 현재 카테고리 가져오기
       const currentCategory = localStorage.getItem('tipCategory') || '랜덤';
       setSelectedCategory(currentCategory);
 
-      const tip = await generateEnvironmentalTip(currentCategory === '랜덤' ? null : currentCategory);
-      setEnvironmentalTip(tip);
       setErrorMessage('');
     } catch (error) {
       console.error('팁 로드 실패:', error);
@@ -226,25 +239,14 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
   const handleCategoryClick = (category) => {
     setShowCategoryDropdown(false);
 
-    // 다음 날부터 적용될 카테고리 저장
-    localStorage.setItem('nextDayCategory', category);
+    // 카테고리 저장 (다음 팁 생성 시 적용)
+    localStorage.setItem('tipCategory', category);
+    setSelectedCategory(category);
 
     // 토스트 메시지 표시
     if (showToast) {
       showToast(`내일부터 "${category}" 팁이 표시됩니다`, 'success');
     }
-  };
-
-  // Haversine formula to calculate distance between two coordinates
-  const calculateDistance = (lat1, lng1, lat2, lng2) => {
-    const R = 6371; // Earth's radius in km
-    const dLat = (lat2 - lat1) * Math.PI / 180;
-    const dLng = (lng2 - lng1) * Math.PI / 180;
-    const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-              Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-              Math.sin(dLng/2) * Math.sin(dLng/2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-    return R * c; // Distance in km
   };
 
   const handleCheckTip = () => {
@@ -370,7 +372,7 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
     return () => clearInterval(interval);
   }, []);
 
-  // zeroWastePlaces는 이제 state로 관리되며 Supabase에서 불러옵니다
+  // zeroWastePlaces는 네이버 Local Search API에서 실시간으로 불러옵니다
 
   const openInNaverMap = (place) => {
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
@@ -380,10 +382,23 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
 
     if (isMobile) {
       const appUrl = `nmap://place?lat=${place.lat}&lng=${place.lng}&name=${encodeURIComponent(place.name)}&appname=com.ecostep`;
+
+      // 앱이 설치되어 있는지 확인
+      let appOpened = false;
       window.location.href = appUrl;
-      setTimeout(() => {
-        window.open(`https://map.naver.com/v5/search/${encodedQuery}`, '_blank');
-      }, 1000);
+
+      // 앱이 열리지 않았을 때만 웹 페이지 열기
+      const timer = setTimeout(() => {
+        if (!appOpened) {
+          window.open(`https://map.naver.com/v5/search/${encodedQuery}`, '_blank');
+        }
+      }, 1500);
+
+      // 앱이 열렸으면 타이머 취소
+      window.addEventListener('blur', () => {
+        appOpened = true;
+        clearTimeout(timer);
+      }, { once: true });
     } else {
       window.open(`https://map.naver.com/v5/search/${encodedQuery}`, '_blank');
     }
@@ -576,7 +591,17 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
                   설정에서 위치 권한을 허락해 주세요
                 </p>
               </div>
-            ) : sortedPlaces.slice(0, 4).map((place, index) => (
+            ) : isLoadingPlaces ? (
+              <div className="flex justify-center items-center py-8">
+                <div className="text-gray-500">장소를 불러오는 중...</div>
+              </div>
+            ) : zeroWastePlaces.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-8">
+                <p className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} text-[15px] text-center`}>
+                  3km 반경 내에 장소가 없습니다
+                </p>
+              </div>
+            ) : zeroWastePlaces.slice(0, 4).map((place, index) => (
               <div key={index} className={`border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-100'} pb-3 min-h-[60px]`}>
                 <div className="flex justify-between">
                   <div className="flex-1 pr-3">
@@ -602,9 +627,9 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
                 </div>
               </div>
             ))}
-            {!locationPermissionDenied && sortedPlaces.length > 4 && (
+            {!locationPermissionDenied && !isLoadingPlaces && zeroWastePlaces.length > 4 && (
               <div className="pt-2">
-                {sortedPlaces.slice(4).map((place, index) => (
+                {zeroWastePlaces.slice(4).map((place, index) => (
                   <div key={index + 4} className={`border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-100'} pb-3 mb-2 min-h-[60px]`}>
                     <div className="flex justify-between">
                       <div className="flex-1 pr-3">

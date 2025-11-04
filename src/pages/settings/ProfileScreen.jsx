@@ -484,29 +484,32 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
         return;
       }
 
-      // 중복 확인 여부 체크
-      if (!isChecked) {
-        if (showToast) {
-          showToast('중복 확인을 먼저 해주세요.', 'warning');
-        }
-        return;
-      }
-
-      // 중복 확인 후 사용 불가능한 경우
-      if (!isAvailable) {
-        if (showToast) {
-          showToast('사용 불가능한 아이디입니다.', 'error');
-        }
-        return;
-      }
-
-      console.log('유효성 검사 통과, 저장 시도');
+      console.log('유효성 검사 통과, 중복 확인 및 저장 시도');
       setIsLoading(true);
       setError('');
 
       try {
+        // 중복 확인
+        console.log('중복 확인 시작');
+        const { isAvailable: available, error: checkError } = await checkUserFIdDuplicate(trimmedValue);
+
+        if (checkError) {
+          throw new Error(checkError);
+        }
+
+        if (!available) {
+          console.log('중복된 아이디');
+          setIsLoading(false);
+          setError('invalid');
+          if (showToast) {
+            showToast('이미 사용 중인 아이디입니다.', 'error');
+          }
+          return;
+        }
+
+        console.log('중복 확인 통과, 업데이트 시작');
+
         // user_f_id 업데이트
-        console.log('user_f_id 업데이트 시작');
         const { success, error: updateError, data } = await updateUserFId(trimmedValue);
         console.log('업데이트 결과:', { success, error: updateError });
 
@@ -606,29 +609,6 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
               disabled={isLoading}
               maxLength={field === 'name' ? 10 : field === 'userId' ? 15 : undefined}
             />
-
-            {/* userId 필드일 때만 중복 확인 버튼 표시 */}
-            {field === 'userId' && (
-              <button
-                onClick={handleCheckDuplicate}
-                disabled={isChecking || !inputValue.trim()}
-                className={`px-4 py-2.5 text-[15px] rounded-lg font-medium transition-opacity flex items-center justify-center ${
-                  isChecked && isAvailable
-                    ? 'bg-green-500 text-white'
-                    : 'bg-gradient-to-r from-cyan-500 via-blue-500 to-blue-600 text-white'
-                } ${
-                  isChecking || !inputValue.trim() ? 'opacity-50 cursor-not-allowed' : 'hover:opacity-90'
-                }`}
-              >
-                {isChecking ? (
-                  '확인 중...'
-                ) : isChecked && isAvailable ? (
-                  <Check className="w-4 h-4" />
-                ) : (
-                  '중복 확인'
-                )}
-              </button>
-            )}
           </div>
 
           {field === 'userId' && (

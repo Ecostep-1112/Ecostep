@@ -552,7 +552,7 @@ const DecorationIcons = {
     </svg>
   ),
 
-  '작은 동굴': ({ size = 35 }) => (
+  decoration_03: ({ size = 35 }) => (
     <svg width={size} height={size} viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <filter id="cave-shadow" x="-50%" y="-50%" width="200%" height="200%">
@@ -1193,7 +1193,7 @@ const DecorationIcons = {
     </svg>
   ),
 
-  '드리프트 우드': ({ size = 35 }) => (
+  decoration_05: ({ size = 35 }) => (
     <svg width={size} height={size} viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <filter id="driftwood-shadow" x="-50%" y="-50%" width="200%" height="200%">
@@ -1406,7 +1406,7 @@ const DecorationIcons = {
     </svg>
   ),
 
-  '조개 껍질': ({ size = 35 }) => (
+  decoration_06: ({ size = 35 }) => (
     <svg width={size} height={size} viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <filter id="shell-shadow" x="-50%" y="-50%" width="200%" height="200%">
@@ -1640,7 +1640,7 @@ const DecorationIcons = {
   ),
 
   // 골드 랭크 장식품
-  '그리스 신전': ({ size = 35 }) => (
+  decoration_07: ({ size = 35 }) => (
     <svg width={size} height={size} viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <filter id="temple-shadow" x="-50%" y="-50%" width="200%" height="200%">
@@ -1845,7 +1845,7 @@ const DecorationIcons = {
     </svg>
   ),
 
-  '보물 상자': ({ size = 35 }) => (
+  decoration_08: ({ size = 35 }) => (
     <svg width={size} height={size} viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <filter id="chest-shadow" x="-50%" y="-50%" width="200%" height="200%">
@@ -2255,7 +2255,7 @@ const DecorationIcons = {
   ),
 
   // 플래티넘 랭크 장식품 (블러 완전 제거, 100% 선명)
-  '크리스탈 동굴': ({ size = 35 }) => (
+  decoration_10: ({ size = 35 }) => (
     <svg width={size} height={size} viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
         {/* Enhanced shadow filter */}
@@ -2508,7 +2508,7 @@ const DecorationIcons = {
     </svg>
   ),
 
-  'LED 해파리': ({ size = 35 }) => (
+  decoration_11: ({ size = 35 }) => (
     <svg width={size} height={size} viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
         {/* Enhanced shadow filter */}
@@ -2871,7 +2871,7 @@ const DecorationIcons = {
     </svg>
   ),
 
-  '아틀란티스 유적': ({ size = 35 }) => (
+  decoration_12: ({ size = 35 }) => (
     <svg width={size} height={size} viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
         {/* Enhanced shadow filter */}

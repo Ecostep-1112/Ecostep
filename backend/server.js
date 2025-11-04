@@ -31,6 +31,10 @@ app.use(express.json());
 // Claude API configuration
 const CLAUDE_API_KEY = process.env.CLAUDE_API_KEY;
 
+// Naver API configuration
+const NAVER_CLIENT_ID = process.env.NAVER_CLIENT_ID;
+const NAVER_CLIENT_SECRET = process.env.NAVER_CLIENT_SECRET;
+
 // Initialize Anthropic client
 const anthropic = new Anthropic({
   apiKey: CLAUDE_API_KEY || 'dummy-key-for-mock',
@@ -171,7 +175,7 @@ app.post('/api/chatbot', async (req, res) => {
 // Environmental tip endpoint
 app.post('/api/environmental-tip', async (req, res) => {
   try {
-    const { category } = req.body;
+    const { category, language } = req.body;
 
     // Check if API key exists
     if (!CLAUDE_API_KEY || !CLAUDE_API_KEY.startsWith('sk-ant-')) {
@@ -179,54 +183,44 @@ app.post('/api/environmental-tip', async (req, res) => {
       return res.json(generateMockTip());
     }
 
-    // 카테고리별 프롬프트 생성
-    let categoryPrompt = '';
-    let categoryName = category || '랜덤';
+    // 카테고리 한글 -> 영어 매핑
+    const categoryMap = {
+      '재활용 팁': 'Recycling Tips',
+      '생활 습관': 'Daily Habits',
+      '에너지 절약': 'Energy Saving',
+      '제로웨이스트': 'Zero Waste',
+      '랜덤': 'Random'
+    };
 
-    switch(categoryName) {
-      case '재활용 팁':
-        categoryPrompt = `재활용 팁 카테고리에서 실용적인 팁을 하나 생성해주세요.
-        주제: 플라스틱, 종이, 유리, 금속 등의 올바른 분리배출 방법, 재활용품 활용법, 업사이클링 아이디어 등
-        예시: 페트병 분리배출 방법, 우유팩 재활용, 커피 찌꺼기 활용법 등`;
-        break;
-      case '생활 습관':
-        categoryPrompt = `생활 습관 카테고리에서 실용적인 팁을 하나 생성해주세요.
-        주제: 일상생활에서 쉽게 실천할 수 있는 친환경 습관, 일회용품 줄이기, 친환경 소비 등
-        예시: 텀블러 사용하기, 장바구니 휴대하기, 손수건 사용하기, 메쉬백으로 장보기 등`;
-        break;
-      case '에너지 절약':
-        categoryPrompt = `에너지 절약 카테고리에서 실용적인 팁을 하나 생성해주세요.
-        주제: 전기, 가스, 물 등의 에너지 절약 방법, 효율적인 에너지 사용법 등
-        예시: 대기전력 차단하기, LED 전구 사용, 에어컨 적정 온도 유지, 찬물 세탁 등`;
-        break;
-      case '제로웨이스트':
-        categoryPrompt = `제로웨이스트 카테고리에서 실용적인 팁을 하나 생성해주세요.
-        주제: 쓰레기 제로를 목표로 하는 실천법, 친환경 대체품 사용, 무포장 제품 구매 등
-        예시: 밀랍 랩 사용하기, 천연 수세미 사용, 고체 샴푸바, 스테인리스 빨대 등`;
-        break;
-      default:
-        categoryPrompt = `환경 보호와 제로웨이스트에 관한 실용적인 팁을 하나 생성해주세요.
-        카테고리는 재활용 팁, 생활 습관, 에너지 절약, 제로웨이스트 중 하나를 선택해주세요.`;
-    }
+    // 언어 한글 -> 영어 매핑
+    const languageMap = {
+      '한국어': 'Korean',
+      '영어': 'English',
+      '일본어': 'Japanese',
+      '중국어': 'Chinese'
+    };
 
-    // Call Claude API
+    const categoryName = category || '랜덤';
+    const categoryEng = categoryMap[categoryName] || categoryName;
+    const languageEng = languageMap[language] || language || 'Korean';
+
+    // Call Claude API with new prompt format
     const response = await anthropic.messages.create({
       model: 'claude-3-haiku-20240307',
       max_tokens: 500,
       messages: [{
         role: 'user',
-        content: `${categoryPrompt}
+        content: `Based on the facts, make simple eco-friendly tip in the category of ${categoryEng}. Must have a title to summarize it and it should be length of 200~300 characters in ${languageEng}. Try to be little specific then vague.
 
-        다음 형식으로 JSON 응답을 보내주세요:
-        {
-          "title": "간단한 제목 (20자 이내)",
-          "preview": "짧은 미리보기 텍스트 (40자 이내)",
-          "content": "자세한 설명 (200자 이내, 실천 방법 포함)",
-          "category": "${categoryName === '랜덤' ? '카테고리 (재활용 팁, 생활 습관, 에너지 절약, 제로웨이스트 중 하나)' : categoryName}"
-        }
+Return the response in JSON format:
+{
+  "title": "Brief title summarizing the tip",
+  "preview": "Short preview text (30-50 characters)",
+  "content": "Detailed explanation (200-300 characters with practical steps)",
+  "category": "${categoryName}"
+}
 
-        실용적이고 한국에서 실천 가능한 내용으로 작성해주세요.
-        매번 다른 팁을 생성해주세요.`
+Make sure the content is practical and actionable. Generate a unique tip each time.`
       }]
     });
 
@@ -518,6 +512,62 @@ app.post('/api/validate-plastic-item', async (req, res) => {
   } catch (error) {
     console.error('Plastic item validation error:', error);
     res.status(500).json({ error: 'Failed to validate plastic item' });
+  }
+});
+
+// Naver Local Search API proxy
+app.post('/api/naver-local-search', async (req, res) => {
+  try {
+    const { query, display = 20 } = req.body;
+
+    if (!query) {
+      return res.status(400).json({ error: 'Query is required' });
+    }
+
+    // Check if Naver API keys exist
+    if (!NAVER_CLIENT_ID || !NAVER_CLIENT_SECRET) {
+      console.log('Naver API keys not configured - returning empty results');
+      return res.json({ places: [] });
+    }
+
+    // Call Naver Local Search API
+    const searchUrl = `https://openapi.naver.com/v1/search/local.json?query=${encodeURIComponent(query)}&display=${display}`;
+
+    const response = await fetch(searchUrl, {
+      headers: {
+        'X-Naver-Client-Id': NAVER_CLIENT_ID,
+        'X-Naver-Client-Secret': NAVER_CLIENT_SECRET
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error(`Naver API returned status ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    // Transform Naver API response to our format
+    const places = data.items.map(item => {
+      // Convert Naver coordinate format to standard WGS84
+      // Naver Local API returns coordinates multiplied by 10^7
+      const lng = parseFloat(item.mapx) / 10000000;
+      const lat = parseFloat(item.mapy) / 10000000;
+
+      return {
+        name: item.title.replace(/<\/?b>/g, ''), // Remove HTML tags
+        description: item.category || '',
+        address: item.roadAddress || item.address || '',
+        lat: lat,
+        lng: lng,
+        category: item.category || '전체',
+        telephone: item.telephone || ''
+      };
+    });
+
+    res.json({ places });
+  } catch (error) {
+    console.error('Naver Local Search error:', error);
+    res.status(500).json({ error: 'Failed to search places', places: [] });
   }
 });
 

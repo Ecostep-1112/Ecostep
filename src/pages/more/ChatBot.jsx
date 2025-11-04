@@ -150,7 +150,7 @@ const ChatBot = ({ isDarkMode, onBack }) => {
   const messageTextBot = isDarkMode ? 'text-gray-100' : 'text-gray-800';
 
   return (
-    <div className={`flex-1 ${bgColor} flex flex-col h-full overflow-hidden`}>
+    <div className={`fixed inset-0 ${bgColor} flex flex-col overflow-hidden`}>
       {/* Header - Fixed Position */}
       <div className={`sticky top-0 z-10 flex-shrink-0 ${bgColor} border-b ${borderColor} py-3 px-4 flex items-center justify-between`}>
         <div className="flex items-center">
@@ -180,7 +180,7 @@ const ChatBot = ({ isDarkMode, onBack }) => {
       </div>
 
       {/* Messages Container - No Scrollbar */}
-      <div className="flex-1 min-h-0 overflow-y-auto p-4 space-y-4 scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+      <div className="flex-1 min-h-0 overflow-y-auto px-4 pt-4 pb-2 space-y-4 scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
         {messages.map(message => (
           <div
             key={message.id}
@@ -207,7 +207,7 @@ const ChatBot = ({ isDarkMode, onBack }) => {
       </div>
 
       {/* Input Area - Fixed at Bottom */}
-      <div className={`sticky bottom-0 z-10 flex-shrink-0 ${bgColor} py-2.5 px-4 border-t ${borderColor}`}>
+      <div className={`sticky bottom-0 z-10 flex-shrink-0 ${bgColor} py-1.5 px-4 border-t ${borderColor}`}>
         <div className="flex items-center space-x-2">
           <textarea
             ref={inputRef}

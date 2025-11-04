@@ -233,7 +233,7 @@ const SearchFriends = ({ isDarkMode, onBack, userRanking = 'bronze', showToast, 
   };
 
   return (
-    <div className={`w-full h-full ${bgColor} overflow-y-auto`}>
+    <div className={`fixed inset-0 ${bgColor} overflow-y-auto`}>
       {/* 헤더 */}
       <div className={`flex items-center p-4 border-b ${borderColor}`}>
         <button onClick={onBack} className="mr-3">

@@ -113,7 +113,7 @@ const FriendsList = ({ isDarkMode, onBack, isGlobalRanking = false, totalPlastic
   
   
   return (
-    <div className={`h-full flex flex-col ${bgColor}`}>
+    <div className={`fixed inset-0 flex flex-col ${bgColor}`}>
       {/* Header */}
       <div className={`flex items-center p-4 border-b ${borderColor}`}>
         <button onClick={onBack} className="mr-3">

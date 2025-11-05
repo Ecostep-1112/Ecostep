@@ -32,8 +32,6 @@ const DecorationItem = memo(({
         transform: `translateX(-50%)`,
         userSelect: 'none',
         WebkitUserSelect: 'none',
-        WebkitTouchCallout: 'none',
-        touchAction: 'none',
         pointerEvents: isDragging && isDragging !== decoName ? 'none' : 'auto'
       }}
       onTouchStart={(e) => onTouchStart(e, decoName)}

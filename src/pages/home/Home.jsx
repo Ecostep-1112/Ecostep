@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Settings } from 'lucide-react';
 import FishRenderer from '../../components/FishRenderer';
 import DecorationItem from '../../components/DecorationItem';
@@ -446,21 +446,21 @@ const Home = ({
   }, [isDragging, calculateDragPosition]);
 
   // 터치 더블탭 핸들러 (모바일 지원)
-  const [lastTouchTime, setLastTouchTime] = useState(0);
+  const lastTouchTimeRef = useRef(0);
   const [touchStartPos, setTouchStartPos] = useState(null);
 
   const handleTouchStart = useCallback((e, decoName) => {
+    e.preventDefault(); // iOS 줌/스크롤 차단 (항상 실행)
     const currentTime = new Date().getTime();
-    const tapLength = currentTime - lastTouchTime;
+    const tapLength = currentTime - lastTouchTimeRef.current;
 
     // 터치 시작 위치 기록 (드래그 감지용)
     if (e.touches && e.touches.length > 0) {
       setTouchStartPos({ x: e.touches[0].clientX, y: e.touches[0].clientY });
     }
 
-    if (tapLength < 400 && tapLength > 0) {
-      // 더블탭 감지 (400ms 이내)
-      e.preventDefault(); // 줌 방지
+    if (tapLength < 500 && tapLength > 0) {
+      // 더블탭 감지 (500ms 이내)
 
       // 더블탭 시점에 터치가 계속되는지 체크
       setIsHolding(true);
@@ -485,18 +485,14 @@ const Home = ({
           }
         }));
       }
-
-      // 타이머 초기화
-      setLastTouchTime(0);
     } else if (showSettingsPanel && selectedDecoration === decoName) {
       // 설정 패널이 열려있고 같은 장식품을 클릭하면 드래그 시작
       setIsDragging(decoName);
       setIsHolding(true);
-    } else {
-      // 첫 번째 탭
-      setLastTouchTime(currentTime);
     }
-  }, [lastTouchTime, showSettingsPanel, selectedDecoration, decorationSettings]);
+    // 항상 현재 시간으로 업데이트
+    lastTouchTimeRef.current = currentTime;
+  }, [showSettingsPanel, selectedDecoration, decorationSettings]);
 
   const handleTouchEnd = useCallback((e, decoName) => {
     // 터치 종료 위치 확인 (드래그 감지)
@@ -510,7 +506,7 @@ const Home = ({
       // 이동 거리가 10px 이상이면 드래그로 간주
       if (distance > 10) {
         // 드래그였으므로 더블탭 타이머 리셋
-        setLastTouchTime(0);
+        lastTouchTimeRef.current = 0;
       }
     }
 
@@ -681,7 +677,7 @@ const Home = ({
               setIsDragging(null);
               setIsHolding(false);
             }
-            setLastTouchTime(0); // 터치 타이머 리셋
+            lastTouchTimeRef.current = 0; // 터치 타이머 리셋
           }}
         >
           {/* 상단 그라데이션 구분선 */}

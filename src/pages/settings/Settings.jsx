@@ -3,7 +3,6 @@ import { ChevronRight, Sun, Moon, Check } from 'lucide-react';
 import { BronzeIcon, SilverIcon, GoldIcon, PlatinumIcon } from '../../components/RankIcons';
 import FishIcons from '../../components/FishIcons';
 import DecorationIcons from '../../components/DecorationIcons';
-import { getFishId, getDecorationId } from '../../utils/itemMapping';
 import { useData } from '../../services/DataContext';
 import { supabase } from '../../lib/supabase';
 import { getUserPurchasedItems } from '../../lib/database';
@@ -584,7 +583,7 @@ export const AquariumSettings = ({
 
                   // 랜덤 선택 해제 시 코리도라스만 선택
                   if (!newIsRandomFish) {
-                    const coridorasIndex = purchasedFish.indexOf('코리도라스');
+                    const coridorasIndex = purchasedFish.indexOf('fish_01'); // 코리도라스 ID
                     if (coridorasIndex !== -1) {
                       setSelectedFish([coridorasIndex]);
                       setFishCount(1);
@@ -613,7 +612,7 @@ export const AquariumSettings = ({
             <div className="mb-6">
               <h4 className={`text-[14px] ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} mb-2`}>물고기 선택 ({selectedFish.length}/{purchasedFish.length})</h4>
               {Object.entries(fishData).map(([rank, fishes]) => {
-                const purchasedInRank = fishes.filter(fish => purchasedFish.includes(fish.name));
+                const purchasedInRank = fishes.filter(fish => purchasedFish.includes(fish.id));
                 if (purchasedInRank.length === 0) return null;
                 
                 return (
@@ -623,12 +622,12 @@ export const AquariumSettings = ({
                     </h5>
                     <div className="grid grid-cols-3 gap-2">
                       {purchasedInRank.map((fish) => {
-                        const isSelected = selectedFish.includes(purchasedFish.indexOf(fish.name));
+                        const isSelected = selectedFish.includes(purchasedFish.indexOf(fish.id));
                         return (
                           <button
                             key={fish.name}
                             onClick={() => {
-                              const fishIndex = purchasedFish.indexOf(fish.name);
+                              const fishIndex = purchasedFish.indexOf(fish.id);
                               if (isSelected) {
                                 setSelectedFish(selectedFish.filter(f => f !== fishIndex));
                                 setFishCount(Math.max(1, selectedFish.length - 1));
@@ -646,8 +645,7 @@ export const AquariumSettings = ({
                             {/* 물고기 아이콘 */}
                             <div className="w-full flex items-center justify-center mb-1" style={{ height: 'clamp(45px, 2.8125rem, 49px)' }}>
                               {(() => {
-                                const fishId = getFishId(fish.name);
-                                const FishIcon = FishIcons[fishId];
+                                const FishIcon = FishIcons[fish.id];
                                 return FishIcon ? <FishIcon size={32} /> : null;
                               })()}
                             </div>
@@ -706,17 +704,17 @@ export const AquariumSettings = ({
                       </h5>
                       <div className="grid grid-cols-3 gap-2">
                         {purchasedInRank.map((deco) => {
-                          const isSelected = selectedDecorations.includes(deco.name);
-                          const DecoIcon = DecorationIcons[deco.name];
-                          
+                          const isSelected = selectedDecorations.includes(deco.id);
+                          const DecoIcon = DecorationIcons[deco.id];
+
                           return (
                             <button
                               key={deco.name}
                               onClick={() => {
                                 if (isSelected) {
-                                  setSelectedDecorations(selectedDecorations.filter(d => d !== deco.name));
+                                  setSelectedDecorations(selectedDecorations.filter(d => d !== deco.id));
                                 } else if (selectedDecorations.length < availableDecorations.length) {
-                                  setSelectedDecorations([...selectedDecorations, deco.name]);
+                                  setSelectedDecorations([...selectedDecorations, deco.id]);
                                 }
                               }}
                               className={`rounded-lg border ${

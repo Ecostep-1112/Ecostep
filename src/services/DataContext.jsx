@@ -203,13 +203,11 @@ export const DataProvider = ({ children }) => {
           const itemId = item.item_id;
           const isFish = fishList?.some(fish => fish.item_id === itemId);
 
-          // item_id로 구매한 아이템을 찾아 item_name으로 변환
+          // item_id를 그대로 저장 (일관성을 위해)
           if (isFish) {
-            const fish = fishList.find(f => f.item_id === itemId);
-            fishNames.push(fish?.item_name || itemId);
+            fishNames.push(itemId);
           } else {
-            const deco = decoList?.find(d => d.item_id === itemId);
-            decoNames.push(deco?.item_name || itemId);
+            decoNames.push(itemId);
           }
         });
 

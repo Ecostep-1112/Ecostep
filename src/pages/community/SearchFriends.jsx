@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Search, ChevronRight, X } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
+import { useData } from '../../services/DataContext';
 
 const SearchFriends = ({ isDarkMode, onBack, userRanking = 'bronze', showToast, currentUserId = '', currentUserName = '' }) => {
+  const { refreshFriends } = useData();
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [hasSearched, setHasSearched] = useState(false);
@@ -181,6 +183,11 @@ const SearchFriends = ({ isDarkMode, onBack, userRanking = 'bronze', showToast, 
       // 상태 업데이트
       const newAddedFriends = [...addedFriends, friendId];
       setAddedFriends(newAddedFriends);
+
+      // 친구 목록 새로고침
+      if (refreshFriends && user.id) {
+        await refreshFriends(user.id);
+      }
 
       if (showToast) {
         showToast('친구가 추가되었습니다!', 'success');

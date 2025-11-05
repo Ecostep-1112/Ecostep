@@ -4,7 +4,6 @@ import FishIcons from '../../components/FishIcons';
 import DecorationIcons from '../../components/DecorationIcons';
 import WaterSurface from '../../components/WaterSurface';
 import BubbleSystem from '../../components/BubbleSystem';
-import { getFishId, getDecorationId } from '../../utils/itemMapping';
 
 // 장식품 최소 간격 상수
 const DECORATION_MIN_SPACING = 12; // 장식품 간 최소 간격 (%)
@@ -90,8 +89,8 @@ const Home = ({
   // 랜덤 장식품 선택 로직
   useEffect(() => {
     const availableDecorations = Object.values(decorationsData).flat()
-      .filter(deco => purchasedDecorations.includes(deco.name))
-      .map(deco => deco.name);
+      .filter(deco => purchasedDecorations.includes(deco.id))
+      .map(deco => deco.id);
 
     if (isRandomDecorations && availableDecorations.length > 0) {
       // 랜덤으로 장식품 선택
@@ -188,20 +187,20 @@ const Home = ({
     ];
 
     // 물고기별 Y축 선호도 정의
-    const getPreferredYZone = (fishName) => {
+    const getPreferredYZone = (fishId) => {
       const rand = Math.random();
 
-      if (fishName === '코리도라스') {
+      if (fishId === 'fish_01') { // 코리도라스
         // 코리도라스: 하층 선호 (60% 하층, 35% 중층, 5% 상층)
         if (rand < 0.6) return 2;  // 하층
         else if (rand < 0.95) return 1;  // 중층
         else return 0;  // 상층
-      } else if (fishName === '네온테트라' || fishName === '구피') {
+      } else if (fishId === 'fish_03' || fishId === 'fish_06') { // 네온테트라, 구피
         // 중층 선호로 변경 (15% 상층, 70% 중층, 15% 하층)
         if (rand < 0.15) return 0;  // 상층
         else if (rand < 0.85) return 1;  // 중층
         else return 2;  // 하층
-      } else if (fishName === '베타' || fishName === '디스커스' || fishName === '만다린피쉬') {
+      } else if (fishId === 'fish_09' || fishId === 'fish_10' || fishId === 'fish_11') { // 베타, 디스커스, 만다린피쉬
         // 중층 선호 강화 (10% 상층, 80% 중층, 10% 하층)
         if (rand < 0.1) return 0;  // 상층
         else if (rand < 0.9) return 1;  // 중층
@@ -235,9 +234,9 @@ const Home = ({
     const usedZones = new Set();
     const finalPositions = [];
 
-    const initialPositions = displayFish.map((fishName, i) => {
+    const initialPositions = displayFish.map((fishId, i) => {
       // Y축 구역 선택
-      const yZoneIndex = getPreferredYZone(fishName);
+      const yZoneIndex = getPreferredYZone(fishId);
       const yZone = yZones[yZoneIndex];
 
       // X축 구역을 랜덤하게 선택하되, 같은 구역에 3마리 이상 배치 방지
@@ -272,11 +271,11 @@ const Home = ({
       usedZones.add(zoneKey);
 
       const position = {
-        name: fishName,
+        name: fishId,
         x: x,
         y: y,
         direction: Math.random() > 0.5 ? 1 : -1,  // 랜덤 방향
-        speed: fishName === '아피스토그라마' ? 0.5 : (fishName === '네온테트라' || fishName === '킬리피쉬') ? 0.4 : (fishName === '체리바브' || fishName === '람시클리드' || fishName === '만다린피쉬') ? 0.35 : fishName === '디스커스' ? 0.2 : (fishName === '코리도라스' || fishName === '구피' || fishName === '엔젤피쉬' || fishName === '베타' || fishName === '아로와나') ? 0.3 : 0  // 물고기 움직임 속도
+        speed: fishId === 'fish_04' ? 0.5 : (fishId === 'fish_03' || fishId === 'fish_08') ? 0.4 : (fishId === 'fish_02' || fishId === 'fish_05' || fishId === 'fish_11') ? 0.35 : fishId === 'fish_10' ? 0.2 : (fishId === 'fish_01' || fishId === 'fish_06' || fishId === 'fish_07' || fishId === 'fish_09' || fishId === 'fish_12') ? 0.3 : 0  // 물고기 움직임 속도
       };
 
       finalPositions.push(position);
@@ -291,13 +290,13 @@ const Home = ({
       interval = setInterval(() => {
         setFishPositions(prevPositions => {
           return prevPositions.map(fish => {
-            if (fish.name === '코리도라스' || fish.name === '체리바브' || fish.name === '네온테트라' || fish.name === '아피스토그라마' || fish.name === '람시클리드' || fish.name === '구피' || fish.name === '엔젤피쉬' || fish.name === '킬리피쉬' || fish.name === '베타' || fish.name === '디스커스' || fish.name === '만다린피쉬' || fish.name === '아로와나') {
+            if (fish.name === 'fish_01' || fish.name === 'fish_02' || fish.name === 'fish_03' || fish.name === 'fish_04' || fish.name === 'fish_05' || fish.name === 'fish_06' || fish.name === 'fish_07' || fish.name === 'fish_08' || fish.name === 'fish_09' || fish.name === 'fish_10' || fish.name === 'fish_11' || fish.name === 'fish_12') {
               let newX = fish.x + (fish.speed * fish.direction);
               let newDirection = fish.direction;
 
               // 아로와나는 더 큰 여유 공간 필요 (width가 size * 1.8이므로 더 넓음)
-              const marginLeft = fish.name === '아로와나' ? 8 : 4;
-              const marginRight = fish.name === '아로와나' ? 92 : 96;
+              const marginLeft = fish.name === 'fish_12' ? 8 : 4; // fish_12 = 아로와나
+              const marginRight = fish.name === 'fish_12' ? 92 : 96;
 
               // 벽에 닿으면 방향 전환 (물고기 크기를 고려한 여유 공간)
               if (newX <= marginLeft || newX >= marginRight) {
@@ -607,8 +606,7 @@ const Home = ({
           {/* 물고기 표시 (애니메이션) */}
           <div className="absolute inset-0 pointer-events-none z-[4] overflow-hidden">
             {fishPositions.length > 0 && fishPositions.map((fish, i) => {
-              const fishId = getFishId(fish.name);
-              const FishIcon = FishIcons[fishId];
+              const FishIcon = FishIcons[fish.name];
               const isMoving = fish.speed > 0;
               // 물고기가 어항 경계를 벗어나지 않도록 추가 제한
               const clampedX = Math.max(4, Math.min(96, fish.x));

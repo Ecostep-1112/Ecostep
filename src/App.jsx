@@ -829,7 +829,7 @@ const EcostepAppContent = () => {
           </div>
 
           {/* 메인 콘텐츠 */}
-          <div className={`flex-1 overflow-y-auto pt-[104px] pb-24 ${bgColor} scrollbar-hide`}>
+          <div className={`flex-1 overflow-y-auto pt-[104px] ${isKeyboardVisible ? 'pb-0' : 'pb-24'} ${bgColor} scrollbar-hide`}>
           {showNotifications ? (
             <NotificationsScreen 
               isDarkMode={isDarkMode} 

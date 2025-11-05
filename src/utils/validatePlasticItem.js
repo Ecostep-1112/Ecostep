@@ -1,25 +1,22 @@
 // Claude API를 사용한 플라스틱 아이템 무게 추천
 // 주의: 실제 API 키는 환경 변수로 관리해야 합니다.
+import { CapacitorHttp } from '@capacitor/core';
 
 export async function validatePlasticItem(itemName) {
   try {
     // 1단계: 플라스틱 분류 확인
     const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5176';
-    const classificationResponse = await fetch(`${API_URL}/api/classify-plastic-item`, {
-      method: 'POST',
+    const classificationResponse = await CapacitorHttp.post({
+      url: `${API_URL}/api/classify-plastic-item`,
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({
+      data: {
         itemName: itemName
-      })
+      }
     });
 
-    if (!classificationResponse.ok) {
-      throw new Error('분류 API 호출 실패');
-    }
-
-    const classificationData = await classificationResponse.json();
+    const classificationData = classificationResponse.data;
 
     // 플라스틱이 아닌 경우 0g 반환
     if (!classificationData.isPlastic) {

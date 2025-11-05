@@ -1,5 +1,6 @@
 // Claude API 서비스
 // 백엔드 서버를 통해 API를 호출합니다 (보안)
+import { CapacitorHttp } from '@capacitor/core';
 
 // 오늘 날짜를 YYYY-MM-DD 형식으로 반환
 const getTodayDateString = () => {
@@ -36,22 +37,18 @@ export const generateDailyTip = async () => {
 
     // 백엔드 서버를 통해 Claude API 호출
     const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5176';
-    const response = await fetch(`${API_URL}/api/environmental-tip`, {
-      method: 'POST',
+    const response = await CapacitorHttp.post({
+      url: `${API_URL}/api/environmental-tip`,
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
+      data: {
         category: category === '랜덤' ? null : category,
         language: language
-      })
+      }
     });
 
-    if (!response.ok) {
-      throw new Error('API 요청 실패');
-    }
-
-    const tipData = await response.json();
+    const tipData = response.data;
 
     // localStorage에 저장
     localStorage.setItem('currentDailyTip', JSON.stringify(tipData));

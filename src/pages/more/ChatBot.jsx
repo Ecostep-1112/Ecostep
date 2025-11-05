@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { ChevronRight, RotateCcw, ArrowUp } from 'lucide-react';
+import { CapacitorHttp } from '@capacitor/core';
 
 const ChatBot = ({ isDarkMode, onBack }) => {
   // CSS 스타일을 컴포넌트 내부에 추가
@@ -86,15 +87,19 @@ const ChatBot = ({ isDarkMode, onBack }) => {
 
     try {
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5176';
-      const response = await fetch(`${API_URL}/api/chatbot`, {
-        method: 'POST',
+      console.log('API_URL:', API_URL); // 디버깅용
+      console.log('Sending message:', inputMessage); // 디버깅용
+
+      // Use Capacitor HTTP for better mobile compatibility
+      const response = await CapacitorHttp.post({
+        url: `${API_URL}/api/chatbot`,
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ message: inputMessage })
+        data: { message: inputMessage }
       });
 
-      const data = await response.json();
+      const data = response.data;
       
       // Remove waiting message and add actual response
       setMessages(prev => {
@@ -109,12 +114,16 @@ const ChatBot = ({ isDarkMode, onBack }) => {
       });
     } catch (error) {
       console.error('Chatbot error:', error);
+      console.error('Error details:', {
+        message: error.message,
+        stack: error.stack
+      });
       // Remove waiting message and add error message
       setMessages(prev => {
         const filtered = prev.filter(msg => msg.id !== waitingMessage.id);
         const errorMessage = {
           id: Date.now() + 1,
-          text: '죄송합니다. 일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요.',
+          text: `오류가 발생했습니다.\n\n에러: ${error.message}\n\nAPI URL: ${import.meta.env.VITE_API_URL || 'http://localhost:5176'}\n\n잠시 후 다시 시도해주세요.`,
           sender: 'bot',
           timestamp: new Date()
         };

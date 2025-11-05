@@ -136,7 +136,7 @@ const EcostepAppContent = () => {
           name: data.name || prev.name,
           email: data.email || prev.email,
           phone: data.phone_num || prev.phone || '',
-          userFId: data.user_f_id || prev.userFId || '',
+          userId: data.user_f_id || prev.userId || '',
           profileImage: data.profile_image_url || prev.profileImage || ''
         }));
 

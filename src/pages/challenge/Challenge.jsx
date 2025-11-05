@@ -2059,7 +2059,13 @@ const Challenge = ({
                   </div>
                 </div>
                 <button
+                  disabled={!selectedPlasticItem || selectedPlasticItem === ''}
                   onClick={async () => {
+                    // 아이템이 선택되지 않았으면 기록하지 않음
+                    if (!selectedPlasticItem || selectedPlasticItem === '') {
+                      return;
+                    }
+
                     let recordItem = null;
                     let totalWeight = 0;
 
@@ -2132,7 +2138,9 @@ const Challenge = ({
                     }
                   }}
                   className={`w-full py-2 rounded-lg text-[16px] font-medium transition-colors ${
-                    isDarkMode ? 'bg-white text-gray-900 hover:bg-gray-100' : 'bg-gray-900 text-white hover:bg-gray-800'
+                    !selectedPlasticItem || selectedPlasticItem === ''
+                      ? (isDarkMode ? 'bg-gray-700 text-gray-500 cursor-not-allowed' : 'bg-gray-300 text-gray-500 cursor-not-allowed')
+                      : (isDarkMode ? 'bg-white text-gray-900 hover:bg-gray-100' : 'bg-gray-900 text-white hover:bg-gray-800')
                   }`}
                 >
                   기록하기
@@ -2151,12 +2159,16 @@ const Challenge = ({
                   
                   plasticRecords.forEach(record => {
                     const itemName = record.item;
+                    // undefined나 빈 문자열인 경우 무시
+                    if (!itemName || itemName === '' || itemName === 'undefined') {
+                      return;
+                    }
                     if (!analysis[itemName]) {
                       analysis[itemName] = { weight: 0, count: 0 };
                     }
-                    analysis[itemName].weight += record.totalWeight;
-                    analysis[itemName].count += record.quantity;
-                    totalWeight += record.totalWeight;
+                    analysis[itemName].weight += record.totalWeight || 0;
+                    analysis[itemName].count += record.quantity || 0;
+                    totalWeight += record.totalWeight || 0;
                   });
                   
                   // 무게 기준으로 정렬

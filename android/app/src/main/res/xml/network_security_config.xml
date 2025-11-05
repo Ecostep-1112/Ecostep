@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <!-- Allow all HTTPS connections -->
+    <base-config cleartextTrafficPermitted="false">
+        <trust-anchors>
+            <!-- Trust preinstalled CAs -->
+            <certificates src="system" />
+            <!-- Additionally trust user added CAs -->
+            <certificates src="user" />
+        </trust-anchors>
+    </base-config>
+
+    <!-- Allow Railway domain -->
+    <domain-config cleartextTrafficPermitted="false">
+        <domain includeSubdomains="true">ecostep-production.up.railway.app</domain>
+        <domain includeSubdomains="true">railway.app</domain>
+    </domain-config>
+
+    <!-- Allow localhost for development -->
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">localhost</domain>
+        <domain includeSubdomains="true">127.0.0.1</domain>
+        <domain includeSubdomains="true">10.0.2.2</domain>
+    </domain-config>
+</network-security-config>

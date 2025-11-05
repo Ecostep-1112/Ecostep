@@ -1,5 +1,6 @@
 // 네이버 지도 API 서비스
 // 백엔드 서버를 통해 네이버 Local Search API를 호출합니다 (보안)
+import { CapacitorHttp } from '@capacitor/core';
 
 /**
  * 네이버 Local Search API를 통해 장소 검색
@@ -10,22 +11,18 @@
 export const searchPlaces = async (query, display = 20) => {
   try {
     const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5176';
-    const response = await fetch(`${API_URL}/api/naver-local-search`, {
-      method: 'POST',
+    const response = await CapacitorHttp.post({
+      url: `${API_URL}/api/naver-local-search`,
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
+      data: {
         query: query,
         display: display
-      })
+      }
     });
 
-    if (!response.ok) {
-      throw new Error('네이버 검색 실패');
-    }
-
-    const data = await response.json();
+    const data = response.data;
     return data.places || [];
   } catch (error) {
     console.error('장소 검색 실패:', error);

@@ -1,25 +1,22 @@
 // Claude API를 사용한 플라스틱 절약량 검증
 // 주의: 실제 API 키는 환경 변수로 관리해야 합니다.
+import { CapacitorHttp } from '@capacitor/core';
 
 export async function validatePlasticChallenge(description) {
   try {
     // 백엔드 서버를 통해 Claude API 호출
     const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5176';
-    const response = await fetch(`${API_URL}/api/validate-plastic-challenge`, {
-      method: 'POST',
+    const response = await CapacitorHttp.post({
+      url: `${API_URL}/api/validate-plastic-challenge`,
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({
+      data: {
         challenge: description
-      })
+      }
     });
 
-    if (!response.ok) {
-      throw new Error('API 호출 실패');
-    }
-
-    const data = await response.json();
+    const data = response.data;
     const content = data.content[0].text;
     
     try {

@@ -150,9 +150,9 @@ const ChatBot = ({ isDarkMode, onBack, platform, isKeyboardVisible }) => {
   const messageTextBot = isDarkMode ? 'text-gray-100' : 'text-gray-800';
 
   return (
-    <div className={`flex-1 ${bgColor} flex flex-col h-full overflow-hidden`}>
+    <div className={`fixed top-[104px] bottom-0 left-0 right-0 z-40 ${bgColor} flex flex-col overflow-hidden`}>
       {/* Header - Fixed Position */}
-      <div className={`sticky top-0 z-10 flex-shrink-0 ${bgColor} border-b ${borderColor} py-3 px-4 flex items-center justify-between`}>
+      <div className={`flex-shrink-0 ${bgColor} border-b ${borderColor} py-3 px-4 flex items-center justify-between`}>
         <div className="flex items-center">
           <button
             onClick={onBack}

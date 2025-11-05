@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { ChevronRight, RotateCcw, ArrowUp } from 'lucide-react';
 
-const ChatBot = ({ isDarkMode, onBack }) => {
+const ChatBot = ({ isDarkMode, onBack, platform, isKeyboardVisible }) => {
   // CSS 스타일을 컴포넌트 내부에 추가
   useEffect(() => {
     const style = document.createElement('style');
@@ -207,7 +207,12 @@ const ChatBot = ({ isDarkMode, onBack }) => {
       </div>
 
       {/* Input Area - Fixed at Bottom */}
-      <div className={`sticky bottom-0 z-10 flex-shrink-0 ${bgColor} pt-2.5 pb-0.5 px-4 border-t ${borderColor}`}>
+      <div
+        className={`sticky bottom-0 z-10 flex-shrink-0 ${bgColor} pt-2.5 px-4 border-t ${borderColor}`}
+        style={{
+          paddingBottom: isKeyboardVisible ? '10px' : 'max(24px, env(safe-area-inset-bottom))'
+        }}
+      >
         <div className="flex items-center space-x-2">
           <textarea
             ref={inputRef}

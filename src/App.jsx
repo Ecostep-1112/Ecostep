@@ -829,7 +829,7 @@ const EcostepAppContent = () => {
           </div>
 
           {/* 메인 콘텐츠 */}
-          <div className={`flex-1 overflow-y-auto pt-[104px] ${isKeyboardVisible ? 'pb-0' : 'pb-24'} ${bgColor} scrollbar-hide`}>
+          <div className={`flex-1 overflow-y-auto pt-[104px] ${isKeyboardVisible || showChatBot ? 'pb-0' : 'pb-24'} ${bgColor} scrollbar-hide`}>
           {showNotifications ? (
             <NotificationsScreen 
               isDarkMode={isDarkMode} 
@@ -969,13 +969,13 @@ const EcostepAppContent = () => {
               {activeTab === 'community' && showFriendsList && <FriendsList isDarkMode={isDarkMode} onBack={() => setShowFriendsList(false)} isGlobalRanking={false} totalPlasticSaved={testPlasticSaved > 0 ? testPlasticSaved : totalPlasticSaved} currentUserId={profileData.userId} currentUserName={profileData.name} />}
               {activeTab === 'community' && showGlobalList && <FriendsList isDarkMode={isDarkMode} onBack={() => setShowGlobalList(false)} isGlobalRanking={true} totalPlasticSaved={testPlasticSaved > 0 ? testPlasticSaved : totalPlasticSaved} currentUserId={profileData.userId} currentUserName={profileData.name} />}
               {activeTab === 'more' && !showChatBot && <MorePage isDarkMode={isDarkMode} userPoints={points} setUserPoints={setPoints} onShowChatBot={() => setShowChatBot(true)} earnPoints={earnPoints} rankTheme={rankTheme} showToast={showToast} />}
-              {activeTab === 'more' && showChatBot && <ChatBot isDarkMode={isDarkMode} onBack={() => setShowChatBot(false)} />}
+              {activeTab === 'more' && showChatBot && <ChatBot isDarkMode={isDarkMode} onBack={() => setShowChatBot(false)} platform={platform} isKeyboardVisible={isKeyboardVisible} />}
             </>
           )}
           </div>
 
           {/* 하단 네비게이션 - 글래스모피즘 효과 */}
-          {!showNotifications && !showSettings && !showProfile && !showAquariumSettings && !showThemeSettings && !showRankThemeSettings && !showLanguageSettings && !showNotificationSettings && !showLocationSettings && !showFriendsList && !showGlobalList && !isKeyboardVisible && (
+          {!showNotifications && !showSettings && !showProfile && !showAquariumSettings && !showThemeSettings && !showRankThemeSettings && !showLanguageSettings && !showNotificationSettings && !showLocationSettings && !showFriendsList && !showGlobalList && !showChatBot && !isKeyboardVisible && (
             <div className="fixed bottom-0 left-0 right-0 z-50" style={{
               backgroundColor: isDarkMode ? 'rgba(55, 65, 81, 0.3)' : 'rgba(255, 255, 255, 0.3)',
               backdropFilter: isDarkMode ? 'blur(20px) saturate(1.5)' : 'blur(20px) saturate(2.5)',

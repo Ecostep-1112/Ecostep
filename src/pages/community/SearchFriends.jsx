@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Search, ChevronRight, X } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
+import { useData } from '../../services/DataContext';
 
 const SearchFriends = ({ isDarkMode, onBack, userRanking = 'bronze', showToast, currentUserId = '', currentUserName = '' }) => {
+  const { refreshFriends } = useData();
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [hasSearched, setHasSearched] = useState(false);
@@ -21,13 +23,14 @@ const SearchFriends = ({ isDarkMode, onBack, userRanking = 'bronze', showToast, 
     try {
       const { data, error } = await supabase
         .from('user_info')
-        .select('user_id, name, point_current, points_total');
+        .select('user_id, user_f_id, name, point_current, points_total');
 
       if (error) throw error;
 
       // 기본 프로필 이미지 설정
       const formattedUsers = data.map(user => ({
-        id: user.user_id,
+        id: user.user_id, // 내부 식별용 (DB의 실제 user_id)
+        fId: user.user_f_id, // 공개 아이디
         name: user.name,
         profileImage: null,
         plasticSaved: user.points_total || 0
@@ -36,41 +39,13 @@ const SearchFriends = ({ isDarkMode, onBack, userRanking = 'bronze', showToast, 
       setAllUsers(formattedUsers);
     } catch (error) {
       console.error('사용자 목록 로드 실패:', error);
-      // 에러 발생 시 기본 데이터 사용
-      setAllUsers([
-        { id: 'songil_eco', name: '송일', profileImage: null, plasticSaved: 15500 },
-        { id: 'wonhee_nature', name: '원희', profileImage: null, plasticSaved: 27000 },
-      ]);
+      setAllUsers([]);
     }
   };
 
   // Supabase에서 친구 목록 불러오기
   const loadFriends = async () => {
-    if (!currentUserId) {
-      // localStorage에서 프로필 데이터 확인
-      const savedProfileData = localStorage.getItem('profileData');
-      if (savedProfileData) {
-        try {
-          const parsed = JSON.parse(savedProfileData);
-          const userId = parsed.userId;
-          if (!userId) return;
-
-          const { data, error } = await supabase
-            .from('user_friend')
-            .select('friend_id')
-            .eq('user_id', userId)
-            .eq('status', 'accepted');
-
-          if (error) throw error;
-
-          const friendIds = data.map(f => f.friend_id);
-          setAddedFriends(friendIds);
-        } catch (e) {
-          console.error('친구 목록 로드 실패:', e);
-        }
-      }
-      return;
-    }
+    if (!currentUserId) return;
 
     try {
       const { data, error } = await supabase
@@ -97,71 +72,71 @@ const SearchFriends = ({ isDarkMode, onBack, userRanking = 'bronze', showToast, 
   // 검색 함수
   const handleSearch = () => {
     setHasSearched(true);
-    
+
     // localStorage에서 프로필 데이터 확인
     const savedProfileData = localStorage.getItem('profileData');
     let savedUserId = '';
     let savedUserName = '';
-    
+
     if (savedProfileData) {
       try {
         const parsed = JSON.parse(savedProfileData);
-        savedUserId = parsed.userId || '';
+        savedUserId = parsed.userFId || ''; // userFId로 변경
         savedUserName = parsed.name || '';
       } catch (e) {
         console.error('프로필 데이터 파싱 오류:', e);
       }
     }
-    
-    const userId = currentUserId || savedUserId;
+
+    const userFId = currentUserId || savedUserId;
     const userName = currentUserName || savedUserName;
-    
+
     // 디버깅용 로그
-    console.log('User ID:', userId);
+    console.log('User F_ID:', userFId);
     console.log('User Name:', userName);
     console.log('Search Term:', searchTerm);
     console.log('All Users:', allUsers);
-    
+
     // 프로필 아이디나 이름이 설정되지 않은 경우
-    if (!userId && !userName) {
+    if (!userFId && !userName) {
       if (showToast) {
         showToast('먼저 설정에서 프로필을 등록해주세요', 'warning');
       }
       setSearchResults([]);
       return;
     }
-    
+
     if (searchTerm.trim()) {
       const searchLower = searchTerm.toLowerCase().trim();
       let results = [];
-      
-      // 아이디로 검색하는 경우
-      const idResults = allUsers.filter(user => {
-        // 정확한 아이디 매치
-        return user.id.toLowerCase() === searchLower;
+
+      // user_f_id로 검색하는 경우
+      const fIdResults = allUsers.filter(user => {
+        // 정확한 user_f_id 매치
+        return user.fId && user.fId.toLowerCase() === searchLower;
       });
-      
-      if (idResults.length > 0) {
-        results = idResults;
+
+      if (fIdResults.length > 0) {
+        results = fIdResults;
       }
-      
-      // 이름으로 검색하는 경우 (아이디 검색 결과가 없을 때)
+
+      // 이름으로 검색하는 경우 (user_f_id 검색 결과가 없을 때)
       if (results.length === 0) {
         const nameResults = allUsers.filter(user => {
           // 정확한 이름 매치
           return user.name === searchTerm.trim();
         });
-        
+
         if (nameResults.length > 0) {
           results = nameResults;
         }
       }
-      
-      // 본인은 검색 결과에서 제외
-      if (userId) {
-        results = results.filter(user => user.id !== userId);
+
+      // 본인은 검색 결과에서 제외 (user_f_id 기준)
+      if (userFId) {
+        results = results.filter(user => user.fId !== userFId);
       }
-      
+
       setSearchResults(results);
     } else {
       setSearchResults([]);
@@ -183,34 +158,22 @@ const SearchFriends = ({ isDarkMode, onBack, userRanking = 'bronze', showToast, 
       return;
     }
 
-    // 현재 사용자 ID 가져오기
-    let userId = currentUserId;
-    if (!userId) {
-      const savedProfileData = localStorage.getItem('profileData');
-      if (savedProfileData) {
-        try {
-          const parsed = JSON.parse(savedProfileData);
-          userId = parsed.userId;
-        } catch (e) {
-          console.error('프로필 데이터 파싱 오류:', e);
-        }
-      }
-    }
-
-    if (!userId) {
-      if (showToast) {
-        showToast('먼저 설정에서 프로필을 등록해주세요', 'warning');
-      }
-      return;
-    }
-
+    // 현재 사용자의 실제 user_id 가져오기 (Supabase Auth ID)
     try {
-      // Supabase에 친구 추가
+      const { data: { user }, error: authError } = await supabase.auth.getUser();
+      if (authError || !user) {
+        if (showToast) {
+          showToast('로그인이 필요합니다', 'warning');
+        }
+        return;
+      }
+
+      // Supabase에 친구 추가 (user_id는 내부 식별자로 사용)
       const { error } = await supabase
         .from('user_friend')
         .insert({
-          user_id: userId,
-          friend_id: friendId,
+          user_id: user.id, // 현재 사용자의 실제 user_id (Auth UUID)
+          friend_id: friendId, // 친구의 실제 user_id (Auth UUID)
           status: 'accepted',
           accepted_at: new Date().toISOString().split('T')[0]
         });
@@ -220,6 +183,11 @@ const SearchFriends = ({ isDarkMode, onBack, userRanking = 'bronze', showToast, 
       // 상태 업데이트
       const newAddedFriends = [...addedFriends, friendId];
       setAddedFriends(newAddedFriends);
+
+      // 친구 목록 새로고침
+      if (refreshFriends && user.id) {
+        await refreshFriends(user.id);
+      }
 
       if (showToast) {
         showToast('친구가 추가되었습니다!', 'success');
@@ -239,7 +207,7 @@ const SearchFriends = ({ isDarkMode, onBack, userRanking = 'bronze', showToast, 
         <button onClick={onBack} className="mr-3">
           <ChevronRight className={`w-5 h-5 rotate-180 ${textColor}`} />
         </button>
-        <h2 className={`text-base font-medium ${textColor}`}>아이디</h2>
+        <h2 className={`text-base font-medium ${textColor}`}>검색</h2>
       </div>
 
       <div className="p-4 pb-20">
@@ -293,7 +261,7 @@ const SearchFriends = ({ isDarkMode, onBack, userRanking = 'bronze', showToast, 
                   </div>
                   <div className="flex-1 text-left">
                     <p className={`text-sm font-medium ${textColor}`}>{user.name}</p>
-                    <p className={`text-[11px] ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>@{user.id}</p>
+                    <p className={`text-[11px] ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>@{user.fId || '아이디 없음'}</p>
                   </div>
                   <div className="flex items-center">
                     {addedFriends.includes(user.id) ? (

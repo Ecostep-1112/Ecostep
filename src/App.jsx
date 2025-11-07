@@ -105,6 +105,7 @@ const EcostepAppContent = () => {
     return {
       name: '',
       userId: '',
+      userFId: '',
       birthDate: '',
       phone: '',
       email: ''

@@ -3,11 +3,15 @@ import { MessageCircle, Link, UserSearch, ChevronDown } from 'lucide-react';
 import SearchFriends from './SearchFriends';
 import { BronzeIcon, SilverIcon, GoldIcon, PlatinumIcon } from '../../components/RankIcons';
 import { supabase } from '../../lib/supabase';
+import { useData } from '../../services/DataContext';
+import { Capacitor } from '@capacitor/core';
+import { Share } from '@capacitor/share';
 
 const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast, userRanking, totalPlasticSaved = 0, currentUserId = '', currentUserName = '', currentUserNickname = '' }) => {
+  // 전역 데이터 컨텍스트에서 데이터 가져오기
+  const { allUsers, friendsList: friendsData } = useData();
+
   const [showSearchPage, setShowSearchPage] = useState(false);
-  const [addedFriends, setAddedFriends] = useState([]);
-  const [allUsers, setAllUsers] = useState([]);
 
   const bgColor = isDarkMode ? 'bg-gray-900' : 'bg-white';
   const textColor = isDarkMode ? 'text-white' : 'text-gray-900';
@@ -26,169 +30,52 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
 
   const myScore = getDisplayScore(totalPlasticSaved);
 
-  // 전체 랭킹 데이터 생성 - 실제 DB 데이터 사용
-  let globalRankingDataRaw = [];
-  let currentUserFound = false;
+  // 전체 랭킹 데이터 - 데이터베이스에서 가져온 상위 50명 사용
+  let globalRankingDataRaw = allUsers.map(user => ({
+    name: user.name,
+    id: user.id,
+    score: getDisplayScore(user.plasticSaved),
+    grams: user.plasticSaved
+  }));
 
-  // 실제 DB에서 가져온 사용자들 추가
-  allUsers.forEach(user => {
-    if (user.id === currentUserId) {
-      // 현재 사용자는 props의 totalPlasticSaved 사용
-      globalRankingDataRaw.push({
-        name: '나',
-        id: currentUserId,
-        score: myScore,
-        grams: totalPlasticSaved
-      });
-      currentUserFound = true;
-    } else {
-      // 다른 사용자는 DB 데이터 사용
-      globalRankingDataRaw.push({
-        name: user.name,
-        id: user.id,
-        score: getDisplayScore(user.plasticSaved),
-        grams: user.plasticSaved
-      });
-    }
-  });
-
-  // DB에 현재 사용자가 없으면 추가
-  if (!currentUserFound) {
+  // 현재 사용자가 상위 50명에 없다면 추가
+  const currentUserInList = globalRankingDataRaw.find(u => u.id === currentUserId);
+  if (!currentUserInList && currentUserId) {
     globalRankingDataRaw.push({
       name: '나',
       id: currentUserId,
       score: myScore,
       grams: totalPlasticSaved
     });
+    // 다시 정렬
+    globalRankingDataRaw.sort((a, b) => b.grams - a.grams);
   }
 
-  // 플라스틱 절약량으로 정렬
-  globalRankingDataRaw.sort((a, b) => b.grams - a.grams);
-
   // 나의 전체 순위 찾기
-  const myGlobalRank = globalRankingDataRaw.findIndex(u => u.name === '나') + 1;
+  const myGlobalRank = globalRankingDataRaw.findIndex(u => u.id === currentUserId) + 1;
   const totalUsers = globalRankingDataRaw.length;
-  const topPercentage = Math.round((myGlobalRank / totalUsers) * 100);
+  const topPercentage = myGlobalRank > 0 ? Math.round((myGlobalRank / totalUsers) * 100) : 0;
 
-  // kg로 변환하는 함수 (정렬을 위해 숫자로 반환)
-  const parseScoreToGrams = (score) => {
-    if (typeof score === 'string') {
-      if (score.includes('kg')) {
-        return parseFloat(score) * 1000;
-      } else if (score.includes('g')) {
-        return parseFloat(score);
-      }
-    }
-    return 0;
-  };
+  // 친구 목록 데이터 - 데이터베이스에서 가져온 친구들 사용
+  let friendsListRaw = friendsData.map(friend => ({
+    name: friend.name,
+    id: friend.id,
+    score: getDisplayScore(friend.plasticSaved),
+    grams: friend.plasticSaved
+  }));
 
-  // Supabase에서 사용자 목록 불러오기
-  const loadUsers = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('user_info')
-        .select('user_id, name, points_total');
-
-      if (error) throw error;
-
-      const formattedUsers = data.map(user => ({
-        id: user.user_id,
-        name: user.name,
-        profileImage: null,
-        plasticSaved: user.points_total || 0
-      }));
-
-      setAllUsers(formattedUsers);
-    } catch (error) {
-      console.error('사용자 목록 로드 실패:', error);
-      setAllUsers([]);
-    }
-  };
-
-  // Supabase에서 친구 목록 불러오기
-  const loadFriends = async () => {
-    let userId = currentUserId;
-    if (!userId) {
-      const savedProfileData = localStorage.getItem('profileData');
-      if (savedProfileData) {
-        try {
-          const parsed = JSON.parse(savedProfileData);
-          userId = parsed.userId;
-        } catch (e) {
-          console.error('프로필 데이터 파싱 오류:', e);
-        }
-      }
-    }
-
-    if (!userId) return;
-
-    try {
-      const { data, error } = await supabase
-        .from('user_friend')
-        .select('friend_id')
-        .eq('user_id', userId)
-        .eq('status', 'accepted');
-
-      if (error) throw error;
-
-      const friendIds = data.map(f => f.friend_id);
-      setAddedFriends(friendIds);
-    } catch (error) {
-      console.error('친구 목록 로드 실패:', error);
-    }
-  };
-
-  // 컴포넌트 마운트 시 데이터 로드
-  useEffect(() => {
-    if (!showSearchPage) {
-      loadUsers();
-      loadFriends();
-    }
-  }, [currentUserId, showSearchPage]);
-
-  // 친구 목록 데이터 생성 - 실제 추가된 친구들 사용
-  let friendsListRaw = [];
-  let currentUserInFriends = false;
-
-  // 추가된 친구들의 데이터 가져오기
-  addedFriends.forEach(friendId => {
-    const friend = allUsers.find(u => u.id === friendId);
-    if (friend) {
-      if (friend.id === currentUserId) {
-        // 현재 사용자는 props의 totalPlasticSaved 사용
-        friendsListRaw.push({
-          name: '나',
-          id: currentUserId,
-          score: myScore,
-          grams: totalPlasticSaved
-        });
-        currentUserInFriends = true;
-      } else {
-        friendsListRaw.push({
-          name: friend.name,
-          id: friend.id,
-          score: getDisplayScore(friend.plasticSaved),
-          grams: friend.plasticSaved
-        });
-      }
-    }
-  });
-
-  // 친구 목록에 나 자신이 없으면 추가
-  if (!currentUserInFriends) {
+  // 나 자신 추가 (친구 목록에 없는 경우)
+  const meInFriends = friendsListRaw.find(f => f.id === currentUserId);
+  if (!meInFriends && currentUserId) {
     friendsListRaw.push({
       name: '나',
       id: currentUserId,
       score: myScore,
       grams: totalPlasticSaved
     });
+    // 다시 정렬
+    friendsListRaw.sort((a, b) => b.grams - a.grams);
   }
-
-  // 점수로 정렬 (내림차순) - 플라스틱 절약량이 많을수록 상위
-  friendsListRaw.sort((a, b) => {
-    // grams 값으로 비교 (큰 값이 먼저 오도록)
-    return b.grams - a.grams;
-  });
 
   // 랭킹 부여
   const friendsList = friendsListRaw.map((friend, index) => ({
@@ -197,8 +84,8 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
   }));
 
   // 나의 친구 중 랭킹 찾기
-  const myRank = friendsList.findIndex(f => f.name === '나') + 1;
-  const isInTop3 = myRank <= 3;
+  const myRank = friendsList.findIndex(f => f.id === currentUserId) + 1;
+  const isInTop3 = myRank <= 3 && myRank > 0;
 
   // Initialize Kakao SDK when component mounts
   useEffect(() => {
@@ -243,52 +130,103 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
           <h3 className={`${textColor} text-sm font-medium mb-3 text-center`}>초대</h3>
           <div className="flex gap-2">
             <button
-              onClick={() => {
+              onClick={async () => {
                 try {
-                  // KakaoTalk share with SDK if initialized
-                  const inviteCode = 'ECO' + Math.random().toString(36).substr(2, 6).toUpperCase();
-                  const inviteLink = `https://ecostep.app/invite?code=${inviteCode}`;
+                  // localStorage에서 user_f_id 가져오기
+                  const savedProfileData = localStorage.getItem('profileData');
+                  let userFId = '';
 
-                  if (window.Kakao && window.Kakao.isInitialized()) {
-                    window.Kakao.Share.sendDefault({
-                      objectType: 'feed',
-                      content: {
+                  if (savedProfileData) {
+                    try {
+                      const parsed = JSON.parse(savedProfileData);
+                      userFId = parsed.userFId || '';
+                    } catch (e) {
+                      console.error('프로필 데이터 파싱 오류:', e);
+                    }
+                  }
+
+                  // user_f_id가 없으면 경고
+                  if (!userFId) {
+                    if (showToast) {
+                      showToast('먼저 설정에서 아이디를 설정해주세요', 'warning');
+                    }
+                    return;
+                  }
+
+                  const inviteLink = `https://ecostep.app/invite?code=${userFId}`;
+                  const shareText = '🌱 EcoStep - Small Steps, Big Change. Why Not?';
+
+                  // Capacitor 모바일 앱 환경인지 확인
+                  const isNative = Capacitor.isNativePlatform();
+
+                  if (isNative) {
+                    // 모바일 앱: Capacitor Share API 사용 (네이티브 공유 기능)
+                    try {
+                      await Share.share({
                         title: 'EcoStep',
-                        description: 'Small Steps, Big Change. Why Not?',
-                        imageUrl: 'https://via.placeholder.com/300x200?text=EcoStep',
-                        link: {
-                          mobileWebUrl: inviteLink,
-                          webUrl: inviteLink,
-                        },
-                      },
-                      buttons: [
-                        {
-                          title: '앱 시작하기',
+                        text: shareText,
+                        url: inviteLink,
+                        dialogTitle: '친구 초대하기',
+                      });
+                      console.log('Native share successful');
+                    } catch (error) {
+                      console.error('Native share error:', error);
+                      if (showToast) {
+                        showToast('공유 기능을 사용할 수 없습니다.', 'error');
+                      }
+                    }
+                  } else {
+                    // 웹 환경: Kakao SDK 사용
+                    if (window.Kakao && window.Kakao.isInitialized()) {
+                      window.Kakao.Share.sendDefault({
+                        objectType: 'feed',
+                        content: {
+                          title: 'EcoStep',
+                          description: 'Small Steps, Big Change. Why Not?',
+                          imageUrl: 'https://via.placeholder.com/300x200?text=EcoStep',
                           link: {
                             mobileWebUrl: inviteLink,
                             webUrl: inviteLink,
                           },
                         },
-                      ],
-                    });
-                    console.log('Kakao share sent successfully');
-                  } else {
-                    console.warn('Kakao SDK not initialized, using fallback');
-                    // Fallback: Copy link and show toast
-                    navigator.clipboard.writeText(inviteLink).then(() => {
-                      if (showToast) {
-                        showToast('카카오톡 SDK를 불러올 수 없어 링크가 복사되었습니다. 카카오톡에서 직접 공유해주세요.', 'info');
+                        buttons: [
+                          {
+                            title: '앱 시작하기',
+                            link: {
+                              mobileWebUrl: inviteLink,
+                              webUrl: inviteLink,
+                            },
+                          },
+                        ],
+                      });
+                      console.log('Kakao share sent successfully');
+                    } else {
+                      console.warn('Kakao SDK not initialized, using Web Share API');
+                      // Web Share API 사용
+                      if (navigator.share) {
+                        await navigator.share({
+                          title: 'EcoStep',
+                          text: shareText,
+                          url: inviteLink,
+                        });
+                      } else {
+                        // 최종 대안: 링크 복사
+                        navigator.clipboard.writeText(inviteLink).then(() => {
+                          if (showToast) {
+                            showToast('링크가 복사되었습니다. 카카오톡에서 직접 공유해주세요.', 'info');
+                          }
+                        }).catch(() => {
+                          if (showToast) {
+                            showToast('공유 기능을 사용할 수 없습니다.', 'error');
+                          }
+                        });
                       }
-                    }).catch(() => {
-                      if (showToast) {
-                        showToast('카카오톡 공유 기능을 사용할 수 없습니다.', 'error');
-                      }
-                    });
+                    }
                   }
                 } catch (error) {
-                  console.error('Kakao share error:', error);
+                  console.error('Share error:', error);
                   if (showToast) {
-                    showToast('카카오톡 공유 중 오류가 발생했습니다.', 'error');
+                    showToast('공유 중 오류가 발생했습니다.', 'error');
                   }
                 }
               }}
@@ -309,12 +247,31 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
               <MessageCircle className="w-4 h-4 mr-1.5" />
               카톡
             </button>
-            <button 
+            <button
               onClick={() => {
-                // Generate unique invite code
-                const inviteCode = 'ECO' + Math.random().toString(36).substr(2, 6).toUpperCase();
-                const inviteLink = `https://ecostep.app/invite?code=${inviteCode}`;
-                
+                // localStorage에서 user_f_id 가져오기
+                const savedProfileData = localStorage.getItem('profileData');
+                let userFId = '';
+
+                if (savedProfileData) {
+                  try {
+                    const parsed = JSON.parse(savedProfileData);
+                    userFId = parsed.userFId || '';
+                  } catch (e) {
+                    console.error('프로필 데이터 파싱 오류:', e);
+                  }
+                }
+
+                // user_f_id가 없으면 경고
+                if (!userFId) {
+                  if (showToast) {
+                    showToast('먼저 설정에서 아이디를 설정해주세요', 'warning');
+                  }
+                  return;
+                }
+
+                const inviteLink = `https://ecostep.app/invite?code=${userFId}`;
+
                 // Copy to clipboard
                 navigator.clipboard.writeText(inviteLink).then(() => {
                   if (showToast) {
@@ -367,7 +324,7 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
               }}
             >
               <UserSearch className="w-4 h-4 mr-1.5" />
-              아이디
+              검색
             </button>
           </div>
         </div>

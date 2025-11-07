@@ -105,11 +105,11 @@ const EcostepAppContent = () => {
     }
     return {
       name: '',
-      userId: '',
       userFId: '',
       birthDate: '',
       phone: '',
-      email: ''
+      email: '',
+      profileImage: ''
     };
   });
 
@@ -130,6 +130,18 @@ const EcostepAppContent = () => {
         setTotalEarnedPoints(data.points_total || 0);
         setUserRanking(data.rank || 'bronze');
         setPlasticGoal(data.amount || null);
+        setConsecutiveDays(data.consecutive_days || 0);
+
+        // 프로필 데이터도 Supabase 데이터로 업데이트
+        setProfileData(prev => ({
+          ...prev,
+          name: data.name || prev.name,
+          email: data.email || prev.email,
+          phone: data.phone_num || prev.phone || '',
+          userFId: data.user_f_id || prev.userFId || '',
+          profileImage: data.profile_image_url || prev.profileImage || ''
+        }));
+
         console.log('Supabase에서 유저 정보 로드:', data);
         return data;
       }
@@ -972,9 +984,9 @@ const EcostepAppContent = () => {
                 spendPoints={spendPoints}
                 isActive={activeTab === 'reward'}
               />}
-              {activeTab === 'community' && !showFriendsList && !showGlobalList && <CommunityPage isDarkMode={isDarkMode} onShowFriendsList={() => setShowFriendsList(true)} onShowGlobalList={() => setShowGlobalList(true)} showToast={showToast} userRanking={rankTheme} totalPlasticSaved={testPlasticSaved > 0 ? testPlasticSaved : totalPlasticSaved} currentUserId={profileData.userId} currentUserName={profileData.name} />}
-              {activeTab === 'community' && showFriendsList && <FriendsList isDarkMode={isDarkMode} onBack={() => setShowFriendsList(false)} isGlobalRanking={false} totalPlasticSaved={testPlasticSaved > 0 ? testPlasticSaved : totalPlasticSaved} currentUserId={profileData.userId} currentUserName={profileData.name} />}
-              {activeTab === 'community' && showGlobalList && <FriendsList isDarkMode={isDarkMode} onBack={() => setShowGlobalList(false)} isGlobalRanking={true} totalPlasticSaved={testPlasticSaved > 0 ? testPlasticSaved : totalPlasticSaved} currentUserId={profileData.userId} currentUserName={profileData.name} />}
+              {activeTab === 'community' && !showFriendsList && !showGlobalList && <CommunityPage isDarkMode={isDarkMode} onShowFriendsList={() => setShowFriendsList(true)} onShowGlobalList={() => setShowGlobalList(true)} showToast={showToast} userRanking={rankTheme} totalPlasticSaved={testPlasticSaved > 0 ? testPlasticSaved : totalPlasticSaved} currentUserId={profileData.userFId} currentUserName={profileData.name} />}
+              {activeTab === 'community' && showFriendsList && <FriendsList isDarkMode={isDarkMode} onBack={() => setShowFriendsList(false)} isGlobalRanking={false} totalPlasticSaved={testPlasticSaved > 0 ? testPlasticSaved : totalPlasticSaved} currentUserId={profileData.userFId} currentUserName={profileData.name} />}
+              {activeTab === 'community' && showGlobalList && <FriendsList isDarkMode={isDarkMode} onBack={() => setShowGlobalList(false)} isGlobalRanking={true} totalPlasticSaved={testPlasticSaved > 0 ? testPlasticSaved : totalPlasticSaved} currentUserId={profileData.userFId} currentUserName={profileData.name} />}
               {activeTab === 'more' && !showChatBot && <MorePage isDarkMode={isDarkMode} userPoints={points} setUserPoints={setPoints} onShowChatBot={() => setShowChatBot(true)} earnPoints={earnPoints} rankTheme={rankTheme} showToast={showToast} />}
               {activeTab === 'more' && showChatBot && <ChatBot isDarkMode={isDarkMode} onBack={() => setShowChatBot(false)} platform={platform} isKeyboardVisible={isKeyboardVisible} />}
             </>

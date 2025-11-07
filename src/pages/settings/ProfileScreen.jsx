@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { ChevronRight, ChevronLeft, X, Camera, Plus, AlertTriangle } from 'lucide-react';
-import { getUserProfile, updateUserId, deleteAccount } from '../../lib/auth';
+import { ChevronRight, ChevronLeft, X, Camera, Plus, AlertTriangle, Check } from 'lucide-react';
+import { updateUserFId, checkUserFIdDuplicate, deleteAccount } from '../../lib/auth';
 import { supabase } from '../../lib/supabase';
+import { saveUserStats } from '../../lib/database';
 import Toast from '../../components/Toast';
 
 const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData }) => {
@@ -20,54 +21,38 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
   const [editingField, setEditingField] = useState(null);
   const [isUpdating, setIsUpdating] = useState(false);
 
-  // 컴포넌트 마운트 시 프로필 데이터 로드
-  useEffect(() => {
-    loadUserProfile();
-  }, []);
-  
-  const loadUserProfile = async () => {
-    try {
-      const { profile, error } = await getUserProfile();
-      if (profile && !error) {
-        // localStorage에서 현재 값 확인
-        const savedData = localStorage.getItem('profileData');
-        const parsedData = savedData ? JSON.parse(savedData) : {};
+  // 프로필 데이터는 부모 컴포넌트(App.jsx)에서 이미 Supabase로부터 로드되어 전달됨
+  // 여기서 다시 로드하면 덮어쓰기 문제가 발생하므로 제거
 
-        // 데이터베이스에서 가져온 user_id를 userId로 설정
-        setProfileData(prev => {
-          const newData = {
-            ...prev,
-            userId: parsedData.userId || prev.userId || profile.user_id || '',
-            name: parsedData.name || prev.name || '',
-            email: profile.email || prev.email || '',
-            birthDate: parsedData.birthDate || prev.birthDate || '',
-            phone: parsedData.phone || prev.phone || ''
-          };
-          // localStorage에 저장
-          localStorage.setItem('profileData', JSON.stringify(newData));
-          return newData;
-        });
-      }
-    } catch (err) {
-      console.error('프로필 로드 에러:', err);
-    }
-  };
-  
-  // 프로필 사진 상태 관리 - localStorage에서 초기값 로드
-  const [profileImage, setProfileImage] = useState(() => {
-    return localStorage.getItem('profileImage') || null;
-  });
+  // 프로필 사진은 profileData에서 가져옴 (DB에서 로드됨)
+  const profileImage = profileData?.profileImage || null;
 
   // 이미지 업로드 핸들러
-  const handleImageUpload = (e) => {
+  const handleImageUpload = async (e) => {
     const file = e.target.files[0];
     if (file) {
       const reader = new FileReader();
-      reader.onloadend = () => {
+      reader.onloadend = async () => {
         const imageDataUrl = reader.result;
-        setProfileImage(imageDataUrl);
-        // localStorage에 저장
-        localStorage.setItem('profileImage', imageDataUrl);
+
+        // profileData 업데이트
+        setProfileData(prev => ({
+          ...prev,
+          profileImage: imageDataUrl
+        }));
+
+        // DB에 저장
+        try {
+          const { data: { user } } = await supabase.auth.getUser();
+          if (user) {
+            await saveUserStats(user.id, {
+              profile_image_url: imageDataUrl
+            });
+            console.log('프로필 이미지 DB 저장 완료');
+          }
+        } catch (error) {
+          console.error('프로필 이미지 DB 저장 에러:', error);
+        }
       };
       reader.readAsDataURL(file);
     }
@@ -452,7 +437,7 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
       try {
         // 아이디 업데이트
         console.log('아이디 업데이트 시작');
-        const { success, error: updateError, data } = await updateUserId(trimmedValue);
+        const { success, error: updateError, data } = await updateUserFId(trimmedValue);
         console.log('업데이트 결과:', { success, error: updateError });
 
         if (success) {
@@ -460,15 +445,6 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
 
           // 상태 업데이트
           onSave(trimmedValue);
-
-          // localStorage 업데이트
-          const savedData = localStorage.getItem('profileData');
-          if (savedData) {
-            const parsed = JSON.parse(savedData);
-            parsed.userId = trimmedValue;
-            localStorage.setItem('profileData', JSON.stringify(parsed));
-            console.log('localStorage 업데이트 완료');
-          }
 
           // 토스트 메시지 표시
           if (showToast) {
@@ -660,7 +636,7 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
             <span className={`${textColor} text-sm`}>아이디</span>
             <div className="flex items-center">
               <span className={`${secondaryText} text-sm mr-2`}>
-                {profileData.userId || '없음'}
+                {profileData.userFId || '없음'}
               </span>
               <ChevronRight className={`w-4 h-4 ${secondaryText}`} />
             </div>
@@ -761,13 +737,10 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
         <EditFieldScreen
           field="userId"
           label="아이디"
-          value={profileData.userId}
+          value={profileData.userFId}
           onSave={(value) => {
-            setProfileData(prev => {
-              const newData = {...prev, userId: value};
-              localStorage.setItem('profileData', JSON.stringify(newData));
-              return newData;
-            });
+            const newData = {...profileData, userFId: value};
+            setProfileData(newData);
           }}
           onClose={() => setEditingField(null)}
           showToast={(message, type) => {

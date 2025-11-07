@@ -30,15 +30,15 @@ const generateRandomUserId = () => {
   return `${randomWord}${randomNumber}`;
 };
 
-// 아이디 중복 확인 함수
-const checkUserIdAvailability = async (userId) => {
+// 아이디 중복 확인 함수 (user_f_id 기준)
+const checkUserFIdAvailability = async (userFId) => {
   try {
-    console.log('중복 확인할 아이디:', userId);
+    console.log('중복 확인할 아이디:', userFId);
     const { data, error } = await supabase
       .from('user_info')
-      .select('user_id')
-      .eq('user_id', userId)
-      .maybeSingle(); // single() 대신 maybeSingle() 사용
+      .select('user_f_id')
+      .eq('user_f_id', userFId)
+      .maybeSingle();
 
     if (error) {
       console.error('중복 확인 쿼리 에러:', error);
@@ -56,25 +56,25 @@ const checkUserIdAvailability = async (userId) => {
   }
 };
 
-// 유니크한 아이디 생성 함수
-const generateUniqueUserId = async () => {
-  let userId;
+// 유니크한 user_f_id 생성 함수
+const generateUniqueUserFId = async () => {
+  let userFId;
   let isAvailable = false;
   let attempts = 0;
   const maxAttempts = 10;
-  
+
   while (!isAvailable && attempts < maxAttempts) {
-    userId = generateRandomUserId();
-    isAvailable = await checkUserIdAvailability(userId);
+    userFId = generateRandomUserId(); // 환경 관련 단어 + 랜덤 4자리 숫자
+    isAvailable = await checkUserFIdAvailability(userFId);
     attempts++;
   }
-  
+
   if (!isAvailable) {
     // 10번 시도 후에도 실패하면 타임스탬프 추가
-    userId = `${userId}_${Date.now().toString().slice(-4)}`;
+    userFId = `${userFId}_${Date.now().toString().slice(-4)}`;
   }
-  
-  return userId;
+
+  return userFId;
 };
 
 // 사용자 프로필 생성 또는 업데이트
@@ -92,6 +92,27 @@ export const createOrUpdateUserProfile = async (user) => {
     console.log('기존 프로필:', existingProfile);
 
     if (existingProfile) {
+      // 기존 프로필이 있지만 user_f_id가 없는 경우 자동 생성
+      if (!existingProfile.user_f_id) {
+        console.log('user_f_id 없음, 자동 생성 시작');
+        const newUserFId = await generateUniqueUserFId();
+
+        const { data: updatedProfile, error: updateError } = await supabase
+          .from('user_info')
+          .update({ user_f_id: newUserFId })
+          .eq('user_id', user.id)
+          .select()
+          .single();
+
+        if (updateError) {
+          console.error('user_f_id 업데이트 실패:', updateError);
+          return { profile: existingProfile, error: null };
+        }
+
+        console.log('user_f_id 자동 생성 완료:', newUserFId);
+        return { profile: updatedProfile, error: null };
+      }
+
       // 이미 프로필이 있으면 반환
       console.log('기존 프로필 있음:', existingProfile.user_id);
       return { profile: existingProfile, error: null };
@@ -109,6 +130,27 @@ export const createOrUpdateUserProfile = async (user) => {
       .maybeSingle();
 
     if (retryProfile) {
+      // 새로 생성된 프로필에 user_f_id가 없으면 추가
+      if (!retryProfile.user_f_id) {
+        console.log('새 프로필에 user_f_id 추가');
+        const newUserFId = await generateUniqueUserFId();
+
+        const { data: updatedProfile, error: updateError } = await supabase
+          .from('user_info')
+          .update({ user_f_id: newUserFId })
+          .eq('user_id', user.id)
+          .select()
+          .single();
+
+        if (updateError) {
+          console.error('user_f_id 업데이트 실패:', updateError);
+          return { profile: retryProfile, error: null };
+        }
+
+        console.log('user_f_id 자동 생성 완료:', newUserFId);
+        return { profile: updatedProfile, error: null };
+      }
+
       return { profile: retryProfile, error: null };
     }
 
@@ -230,54 +272,62 @@ export const onAuthStateChange = (callback) => {
 };
 
 // 사용자 아이디 업데이트 함수
-export const updateUserId = async (newUserId) => {
+export const updateUserFId = async (newUserFId) => {
   try {
-    console.log('아이디 업데이트 시작:', newUserId);
+    console.log('user_f_id 업데이트 시작:', newUserFId);
 
     // 입력값 검증
-    if (!newUserId || newUserId.trim() === '') {
+    if (!newUserFId || newUserFId.trim() === '') {
       return { success: false, error: '아이디를 입력해주세요.' };
     }
 
-    const trimmedUserId = newUserId.trim();
+    const trimmedUserFId = newUserFId.trim();
 
-    // profileData에서 현재 프로필 정보 가져오기
-    const profileData = JSON.parse(localStorage.getItem('profileData') || '{}');
-    const userProfile = JSON.parse(localStorage.getItem('userProfile') || '{}');
+    // 현재 로그인한 사용자 가져오기
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user) {
+      return { success: false, error: '로그인이 필요합니다.' };
+    }
 
-    // 아이디 중복 체크 (로컬에서만)
-    const existingIds = JSON.parse(localStorage.getItem('allUserIds') || '[]');
-
-    // 현재 사용자의 이전 아이디는 목록에서 제거
-    const filteredIds = existingIds.filter(id => id !== profileData.userId && id !== userProfile.userId);
-
-    // 새 아이디가 이미 사용 중인지 확인
-    if (filteredIds.includes(trimmedUserId)) {
-      console.log('중복된 아이디:', trimmedUserId);
+    // 중복 확인
+    const isAvailable = await checkUserFIdAvailability(trimmedUserFId);
+    if (!isAvailable) {
       return { success: false, error: '이미 사용 중인 아이디입니다.' };
     }
 
-    // userProfile 업데이트
-    userProfile.userId = trimmedUserId;
-    localStorage.setItem('userProfile', JSON.stringify(userProfile));
+    // DB에 저장
+    const { data, error: updateError } = await supabase
+      .from('user_info')
+      .update({ user_f_id: trimmedUserFId })
+      .eq('user_id', user.id)
+      .select()
+      .single();
 
-    // profileData 업데이트
-    profileData.userId = trimmedUserId;
-    localStorage.setItem('profileData', JSON.stringify(profileData));
+    if (updateError) {
+      console.error('user_f_id 업데이트 DB 에러:', updateError);
+      return { success: false, error: 'DB 업데이트에 실패했습니다.' };
+    }
 
-    // 전체 아이디 목록 업데이트
-    filteredIds.push(trimmedUserId);
-    localStorage.setItem('allUserIds', JSON.stringify(filteredIds));
-
-    console.log('로컬 저장 성공:', {
-      userId: trimmedUserId,
-      allUserIds: filteredIds
-    });
-
-    return { success: true, data: { user_id: trimmedUserId }, error: null };
+    console.log('user_f_id 업데이트 성공:', data);
+    return { success: true, data, error: null };
   } catch (error) {
-    console.error('아이디 업데이트 에러:', error);
+    console.error('user_f_id 업데이트 에러:', error);
     return { success: false, error: error.message || '아이디 업데이트에 실패했습니다.' };
+  }
+};
+
+// user_f_id 중복 확인 (export용)
+export const checkUserFIdDuplicate = async (userFId) => {
+  try {
+    if (!userFId || userFId.trim() === '') {
+      return { isAvailable: false, error: '아이디를 입력해주세요.' };
+    }
+
+    const isAvailable = await checkUserFIdAvailability(userFId.trim());
+    return { isAvailable, error: null };
+  } catch (error) {
+    console.error('user_f_id 중복 확인 에러:', error);
+    return { isAvailable: false, error: error.message || '중복 확인에 실패했습니다.' };
   }
 };
 

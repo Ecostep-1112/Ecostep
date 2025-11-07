@@ -13,8 +13,8 @@ import NotificationsScreen from './pages/settings/NotificationsScreen';
 import { ThemeSettings, RankThemeSettings, LanguageSettings, NotificationSettings, LocationSettings, AquariumSettings } from './pages/settings/Settings';
 import Toast from './components/Toast';
 import Login from './pages/auth/Login';
-import { onAuthStateChange, getCurrentUser, signOut, createOrUpdateUserProfile } from './lib/auth';
-import { getUserInfo, saveUserInfo, getUserItems } from './lib/database';
+import { onAuthStateChange, getCurrentUser, signOut, createOrUpdateUserProfile, processInviteCode } from './lib/auth';
+import { getUserInfo, saveUserInfo, getUserItems, saveUserStats, getUserPurchasedItems, purchaseItem } from './lib/database';
 import { supabase } from './lib/supabase';
 import {
   appSettingsStorage,
@@ -276,10 +276,7 @@ const EcostepAppContent = () => {
   const [waterQuality, setWaterQuality] = useState(100);
   const [lastChallengeDate, setLastChallengeDate] = useState(null);
   const [daysWithoutChallenge, setDaysWithoutChallenge] = useState(0);
-  const [consecutiveDays, setConsecutiveDays] = useState(() => {
-    const saved = localStorage.getItem('consecutiveDays');
-    return saved ? parseInt(saved) : 0;
-  });
+  const [consecutiveDays, setConsecutiveDays] = useState(0);
   const [challengeHistory, setChallengeHistory] = useState(() => {
     const saved = localStorage.getItem('challengeHistory');
     return saved ? JSON.parse(saved) : [];
@@ -385,6 +382,18 @@ const EcostepAppContent = () => {
             loadUserDataFromSupabase(profile.user_id);
             // 전역 데이터 프리로딩
             preloadAllData(profile.user_id);
+
+            // 신규 사용자에게 기본 어항 추가
+            try {
+              const { data: purchasedItems } = await getUserPurchasedItems(user.id);
+              const hasBackground = purchasedItems?.some(item => item.item_id?.startsWith('background_'));
+              if (!hasBackground) {
+                console.log('신규 사용자: 기본 어항 추가');
+                await purchaseItem(user.id, 'background_01');
+              }
+            } catch (error) {
+              console.error('기본 어항 추가 에러:', error);
+            }
           }
         }
       } catch (error) {

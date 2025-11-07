@@ -28,6 +28,7 @@ import { DataProvider, useData } from './services/DataContext';
 import { App as CapacitorApp } from '@capacitor/app';
 import { Capacitor } from '@capacitor/core';
 import { Keyboard } from '@capacitor/keyboard';
+import { generateDailyTip } from './services/claudeService';
 
 const EcostepAppContent = () => {
   // 전역 데이터 컨텍스트 사용
@@ -380,9 +381,14 @@ const EcostepAppContent = () => {
         setIsCheckingAuth(false);
       }
     };
-    
+
     checkUser();
-    
+
+    // 오늘의 환경 팁 생성 (자정 기준으로 하루에 한 번만 생성)
+    generateDailyTip().catch(error => {
+      console.error('일일 팁 생성 실패:', error);
+    });
+
     // 인증 상태 변경 리스너 설정
     const { data: { subscription } } = onAuthStateChange((event, session) => {
       if (event === 'SIGNED_IN' && session?.user) {

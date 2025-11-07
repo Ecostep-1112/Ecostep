@@ -1,4 +1,5 @@
 {
+  "includeCoAuthoredBy": false,
   "permissions": {
     "allow": [
       "Bash(npm install:*)",
@@ -50,7 +51,15 @@
       "Bash(gh api:*)",
       "Bash(cat:*)",
       "Read(//c/**)",
-      "Bash(start http://localhost:5175/)"
+      "Bash(start http://localhost:5175/)",
+      "Bash(git ls-tree:*)",
+      "Bash(/tmp/search_friends_2509f67.jsx)",
+      "Bash(git log:*)",
+      "Bash(/tmp/chatbot_2509f67.jsx)",
+      "Bash(/tmp/community_2509f67.jsx)",
+      "Bash(/tmp/claudeService_2509f67.js)",
+      "Bash(/tmp/naverMapService_2509f67.js)",
+      "Bash(C:/Users/user/Desktop/temp_more_2509f67.jsx)"
     ],
     "deny": [],
     "ask": [],

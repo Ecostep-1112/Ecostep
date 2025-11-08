@@ -104,8 +104,9 @@ const EcostepAppContent = () => {
       }
     }
     return {
+      userId: '', // Auth UUID for DB operations
+      userFId: '', // Friendly ID for display/community
       name: '',
-      userFId: '',
       birthDate: '',
       phone: '',
       email: '',
@@ -363,15 +364,18 @@ const EcostepAppContent = () => {
           const currentData = savedData ? JSON.parse(savedData) : {};
 
           setProfileData(prev => {
-            // localStorage의 userId를 우선적으로 사용
-            const finalUserId = currentData.userId || prev.userId || profile?.user_id || '';
-            console.log('App.jsx - finalUserId:', finalUserId, 'currentData.userId:', currentData.userId, 'prev.userId:', prev.userId, 'profile?.user_id:', profile?.user_id);
+            // Auth UUID (always from authenticated user)
+            const authUserId = user.id;
+            // localStorage의 userFId를 우선적으로 사용
+            const finalUserFId = currentData.userFId || prev.userFId || profile?.user_f_id || '';
+            console.log('App.jsx - userId:', authUserId, 'finalUserFId:', finalUserFId);
 
             return {
               ...prev,
+              userId: authUserId, // Auth UUID for DB operations
+              userFId: finalUserFId, // Friendly ID for display/community
               email: user.email || prev.email,
               name: user.user_metadata?.full_name || user.user_metadata?.name || currentData.name || prev.name,
-              userId: finalUserId,
               birthDate: currentData.birthDate || prev.birthDate || '',
               phone: currentData.phone || prev.phone || ''
             };
@@ -379,7 +383,7 @@ const EcostepAppContent = () => {
 
           // Supabase에서 유저 데이터 불러오기
           if (profile?.user_id) {
-            loadUserDataFromSupabase(profile.user_id);
+            await loadUserDataFromSupabase(profile.user_id);
             // 전역 데이터 프리로딩
             preloadAllData(profile.user_id);
 
@@ -424,18 +428,21 @@ const EcostepAppContent = () => {
           const currentData = savedData ? JSON.parse(savedData) : {};
 
           setProfileData(prev => {
-            // localStorage의 userId를 우선적으로 사용
-            const finalUserId = currentData.userId || prev.userId || profile?.user_id || '';
+            // Auth UUID (always from authenticated user)
+            const authUserId = session.user.id;
+            // localStorage의 userFId를 우선적으로 사용
+            const finalUserFId = currentData.userFId || prev.userFId || profile?.user_f_id || '';
 
             return {
               ...prev,
+              userId: authUserId, // Auth UUID for DB operations
+              userFId: finalUserFId, // Friendly ID for display/community
               email: session.user.email || prev.email || '',
               name: currentData.name || session.user.user_metadata?.full_name ||
                      session.user.user_metadata?.name ||
                      session.user.user_metadata?.nickname ||
                      session.user.user_metadata?.kakao_account?.profile?.nickname ||
                      prev.name || '사용자',
-              userId: finalUserId,
               birthDate: currentData.birthDate || prev.birthDate || '',
               phone: currentData.phone || prev.phone || ''
             };
@@ -492,6 +499,36 @@ const EcostepAppContent = () => {
                 console.error('세션 설정 에러:', error);
               } else {
                 console.log('세션 설정 성공:', sessionData);
+
+                // 세션 설정 성공 후 사용자 상태 업데이트
+                if (sessionData?.user) {
+                  setCurrentUser(sessionData.user);
+                  setIsLoggedIn(true);
+                  setIsCheckingAuth(false);
+
+                  // 프로필 생성 또는 업데이트
+                  const { profile } = await createOrUpdateUserProfile(sessionData.user);
+                  console.log('Deep link - 프로필 생성 결과:', profile);
+
+                  // Supabase에서 유저 데이터 불러오기
+                  if (profile?.user_id) {
+                    await loadUserDataFromSupabase(profile.user_id);
+                    // 전역 데이터 프리로딩
+                    preloadAllData(profile.user_id);
+
+                    // 신규 사용자에게 기본 어항 추가
+                    try {
+                      const { data: purchasedItems } = await getUserPurchasedItems(sessionData.user.id);
+                      const hasBackground = purchasedItems?.some(item => item.item_id?.startsWith('background_'));
+                      if (!hasBackground) {
+                        console.log('신규 사용자: 기본 어항 추가');
+                        await purchaseItem(sessionData.user.id, 'background_01');
+                      }
+                    } catch (error) {
+                      console.error('기본 어항 추가 에러:', error);
+                    }
+                  }
+                }
               }
             }
           }
@@ -782,11 +819,13 @@ const EcostepAppContent = () => {
       setCurrentUser(null);
       // 프로필 데이터 초기화
       setProfileData({
-        name: '',
         userId: '',
+        userFId: '',
+        name: '',
         birthDate: '',
         phone: '',
-        email: ''
+        email: '',
+        profileImage: ''
       });
     } catch (error) {
       console.error('로그아웃 에러:', error);
@@ -993,9 +1032,9 @@ const EcostepAppContent = () => {
                 spendPoints={spendPoints}
                 isActive={activeTab === 'reward'}
               />}
-              {activeTab === 'community' && !showFriendsList && !showGlobalList && <CommunityPage isDarkMode={isDarkMode} onShowFriendsList={() => setShowFriendsList(true)} onShowGlobalList={() => setShowGlobalList(true)} showToast={showToast} userRanking={rankTheme} totalPlasticSaved={testPlasticSaved > 0 ? testPlasticSaved : totalPlasticSaved} currentUserId={profileData.userFId} currentUserName={profileData.name} />}
-              {activeTab === 'community' && showFriendsList && <FriendsList isDarkMode={isDarkMode} onBack={() => setShowFriendsList(false)} isGlobalRanking={false} totalPlasticSaved={testPlasticSaved > 0 ? testPlasticSaved : totalPlasticSaved} currentUserId={profileData.userFId} currentUserName={profileData.name} />}
-              {activeTab === 'community' && showGlobalList && <FriendsList isDarkMode={isDarkMode} onBack={() => setShowGlobalList(false)} isGlobalRanking={true} totalPlasticSaved={testPlasticSaved > 0 ? testPlasticSaved : totalPlasticSaved} currentUserId={profileData.userFId} currentUserName={profileData.name} />}
+              {activeTab === 'community' && !showFriendsList && !showGlobalList && <CommunityPage isDarkMode={isDarkMode} onShowFriendsList={() => setShowFriendsList(true)} onShowGlobalList={() => setShowGlobalList(true)} showToast={showToast} userRanking={rankTheme} totalPlasticSaved={testPlasticSaved > 0 ? testPlasticSaved : totalPlasticSaved} currentUserId={profileData.userId} currentUserFId={profileData.userFId} currentUserName={profileData.name} />}
+              {activeTab === 'community' && showFriendsList && <FriendsList isDarkMode={isDarkMode} onBack={() => setShowFriendsList(false)} isGlobalRanking={false} totalPlasticSaved={testPlasticSaved > 0 ? testPlasticSaved : totalPlasticSaved} currentUserId={profileData.userId} currentUserFId={profileData.userFId} currentUserName={profileData.name} />}
+              {activeTab === 'community' && showGlobalList && <FriendsList isDarkMode={isDarkMode} onBack={() => setShowGlobalList(false)} isGlobalRanking={true} totalPlasticSaved={testPlasticSaved > 0 ? testPlasticSaved : totalPlasticSaved} currentUserId={profileData.userId} currentUserFId={profileData.userFId} currentUserName={profileData.name} />}
               {activeTab === 'more' && !showChatBot && <MorePage isDarkMode={isDarkMode} userPoints={points} setUserPoints={setPoints} onShowChatBot={() => setShowChatBot(true)} earnPoints={earnPoints} rankTheme={rankTheme} showToast={showToast} />}
               {activeTab === 'more' && showChatBot && <ChatBot isDarkMode={isDarkMode} onBack={() => setShowChatBot(false)} platform={platform} isKeyboardVisible={isKeyboardVisible} />}
             </>

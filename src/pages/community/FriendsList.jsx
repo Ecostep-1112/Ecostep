@@ -3,7 +3,7 @@ import { ChevronRight, Search } from 'lucide-react';
 import { BronzeIcon, SilverIcon, GoldIcon, PlatinumIcon } from '../../components/RankIcons';
 import { useData } from '../../services/DataContext';
 
-const FriendsList = ({ isDarkMode, onBack, isGlobalRanking = false, totalPlasticSaved = 0, currentUserId = '', currentUserName = '' }) => {
+const FriendsList = ({ isDarkMode, onBack, isGlobalRanking = false, totalPlasticSaved = 0, currentUserId = '', currentUserFId = '', currentUserName = '' }) => {
   const [searchQuery, setSearchQuery] = useState('');
 
   // 전역 데이터 컨텍스트에서 데이터 가져오기
@@ -29,11 +29,11 @@ const FriendsList = ({ isDarkMode, onBack, isGlobalRanking = false, totalPlastic
   }));
 
   // 현재 사용자가 상위 50명에 없다면 추가
-  const currentUserInList = globalRankingDataRaw.find(u => u.id === currentUserId);
-  if (!currentUserInList && currentUserId) {
+  const currentUserInList = globalRankingDataRaw.find(u => u.id === currentUserFId);
+  if (!currentUserInList && currentUserFId) {
     globalRankingDataRaw.push({
       name: currentUserName || '나',
-      id: currentUserId,
+      id: currentUserFId,
       score: myScore,
       grams: totalPlasticSaved
     });
@@ -56,11 +56,11 @@ const FriendsList = ({ isDarkMode, onBack, isGlobalRanking = false, totalPlastic
   }));
 
   // 나 자신 추가 (친구 목록에 없는 경우)
-  const meInFriends = friendsRankingDataRaw.find(f => f.id === currentUserId);
-  if (!meInFriends && currentUserId) {
+  const meInFriends = friendsRankingDataRaw.find(f => f.id === currentUserFId);
+  if (!meInFriends && currentUserFId) {
     friendsRankingDataRaw.push({
       name: currentUserName || '나',
-      id: currentUserId,
+      id: currentUserFId,
       score: myScore,
       grams: totalPlasticSaved
     });
@@ -77,7 +77,7 @@ const FriendsList = ({ isDarkMode, onBack, isGlobalRanking = false, totalPlastic
   // 친구 목록에서는 최대 99명 + 나의 순위만 표시
   let displayFriends;
   if (!isGlobalRanking) {
-    const myRankInFriends = friendsRankingData.findIndex(f => f.id === currentUserId) + 1;
+    const myRankInFriends = friendsRankingData.findIndex(f => f.id === currentUserFId) + 1;
 
     if (myRankInFriends <= 99) {
       // 내가 99등 이내면 상위 99명만 표시
@@ -85,18 +85,18 @@ const FriendsList = ({ isDarkMode, onBack, isGlobalRanking = false, totalPlastic
     } else {
       // 내가 100등 이상이면 상위 99명 + 나 표시
       const top99 = friendsRankingData.slice(0, 99);
-      const myData = friendsRankingData.find(f => f.id === currentUserId);
+      const myData = friendsRankingData.find(f => f.id === currentUserFId);
       displayFriends = [...top99, myData].filter(Boolean);
     }
   } else {
     // 전체 랭킹도 동일하게 처리
-    const myRankInGlobal = globalRankingData.findIndex(f => f.id === currentUserId) + 1;
+    const myRankInGlobal = globalRankingData.findIndex(f => f.id === currentUserFId) + 1;
 
     if (myRankInGlobal <= 99) {
       displayFriends = globalRankingData.slice(0, 99);
     } else {
       const top99 = globalRankingData.slice(0, 99);
-      const myData = globalRankingData.find(f => f.id === currentUserId);
+      const myData = globalRankingData.find(f => f.id === currentUserFId);
       displayFriends = [...top99, myData].filter(Boolean);
     }
   }
@@ -155,7 +155,7 @@ const FriendsList = ({ isDarkMode, onBack, isGlobalRanking = false, totalPlastic
             {filteredFriends.map((friend, index) => {
               // 1등: 플래티넘, 2등: 골드, 3등: 실버
               const rankColor = friend.rank === 1 ? '#c084fc' : friend.rank === 2 ? '#fcd34d' : friend.rank === 3 ? '#14b8a6' : '';
-              const isMe = friend.id === currentUserId;
+              const isMe = friend.id === currentUserFId;
               
               return (
                 <div key={friend.rank}>

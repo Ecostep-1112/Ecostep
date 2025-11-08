@@ -29,7 +29,7 @@ app.use(cors({
 app.use(express.json());
 
 // Claude API configuration
-const CLAUDE_API_KEY = process.env.VITE_CLAUDE_API_KEY;
+const CLAUDE_API_KEY = process.env.CLAUDE_API_KEY;
 
 // Initialize Anthropic client
 const anthropic = new Anthropic({

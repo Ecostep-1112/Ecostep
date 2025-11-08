@@ -2,9 +2,6 @@
 // 백엔드 서버를 통해 API를 호출합니다 (보안)
 import { CapacitorHttp } from '@capacitor/core';
 
-const CLAUDE_API_KEY = import.meta.env.VITE_CLAUDE_API_KEY || 'your-api-key-here';
-const CLAUDE_API_URL = 'https://api.anthropic.com/v1/messages';
-
 // 오늘 날짜를 YYYY-MM-DD 형식으로 반환
 const getTodayDateString = () => {
   const today = new Date();

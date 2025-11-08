@@ -7,7 +7,7 @@ import { useData } from '../../services/DataContext';
 import { Capacitor } from '@capacitor/core';
 import { Share } from '@capacitor/share';
 
-const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast, userRanking, totalPlasticSaved = 0, currentUserId = '', currentUserName = '', currentUserNickname = '' }) => {
+const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast, userRanking, totalPlasticSaved = 0, currentUserId = '', currentUserFId = '', currentUserName = '' }) => {
   // 전역 데이터 컨텍스트에서 데이터 가져오기
   const { allUsers, friendsList: friendsData } = useData();
 
@@ -39,11 +39,11 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
   }));
 
   // 현재 사용자가 상위 50명에 없다면 추가
-  const currentUserInList = globalRankingDataRaw.find(u => u.id === currentUserId);
-  if (!currentUserInList && currentUserId) {
+  const currentUserInList = globalRankingDataRaw.find(u => u.id === currentUserFId);
+  if (!currentUserInList && currentUserFId) {
     globalRankingDataRaw.push({
       name: '나',
-      id: currentUserId,
+      id: currentUserFId,
       score: myScore,
       grams: totalPlasticSaved
     });
@@ -52,7 +52,7 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
   }
 
   // 나의 전체 순위 찾기
-  const myGlobalRank = globalRankingDataRaw.findIndex(u => u.id === currentUserId) + 1;
+  const myGlobalRank = globalRankingDataRaw.findIndex(u => u.id === currentUserFId) + 1;
   const totalUsers = globalRankingDataRaw.length;
   const topPercentage = myGlobalRank > 0 ? Math.round((myGlobalRank / totalUsers) * 100) : 0;
 
@@ -65,11 +65,11 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
   }));
 
   // 나 자신 추가 (친구 목록에 없는 경우)
-  const meInFriends = friendsListRaw.find(f => f.id === currentUserId);
-  if (!meInFriends && currentUserId) {
+  const meInFriends = friendsListRaw.find(f => f.id === currentUserFId);
+  if (!meInFriends && currentUserFId) {
     friendsListRaw.push({
       name: '나',
-      id: currentUserId,
+      id: currentUserFId,
       score: myScore,
       grams: totalPlasticSaved
     });
@@ -84,7 +84,7 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
   }));
 
   // 나의 친구 중 랭킹 찾기
-  const myRank = friendsList.findIndex(f => f.id === currentUserId) + 1;
+  const myRank = friendsList.findIndex(f => f.id === currentUserFId) + 1;
   const isInTop3 = myRank <= 3 && myRank > 0;
 
   // Initialize Kakao SDK when component mounts
@@ -119,7 +119,7 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
   }, []);
 
   if (showSearchPage) {
-    return <SearchFriends isDarkMode={isDarkMode} onBack={() => setShowSearchPage(false)} userRanking={userRanking} showToast={showToast} currentUserId={currentUserId} currentUserName={currentUserName} />;
+    return <SearchFriends isDarkMode={isDarkMode} onBack={() => setShowSearchPage(false)} userRanking={userRanking} showToast={showToast} currentUserId={currentUserId} currentUserFId={currentUserFId} currentUserName={currentUserName} />;
   }
 
   return (
@@ -405,7 +405,7 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
                     </div>
                     <div className="flex-1 flex flex-col items-start">
                       <span className={`text-xs font-medium ${textColor}`}>나</span>
-                      {currentUserId && <span className={`text-[8px] ${isDarkMode ? 'text-gray-500' : 'text-gray-400'} -mt-[1px]`}>@{currentUserId}</span>}
+                      {currentUserFId && <span className={`text-[8px] ${isDarkMode ? 'text-gray-500' : 'text-gray-400'} -mt-[1px]`}>@{currentUserFId}</span>}
                     </div>
                   </div>
                   <span className={`text-[10px] font-medium ${textColor}`}>{myScore}</span>
@@ -491,7 +491,7 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
                     </div>
                     <div className="flex-1 flex flex-col items-start">
                       <span className={`text-xs font-medium ${textColor}`}>나</span>
-                      {currentUserId && <span className={`text-[8px] ${isDarkMode ? 'text-gray-500' : 'text-gray-400'} -mt-[1px]`}>@{currentUserId}</span>}
+                      {currentUserFId && <span className={`text-[8px] ${isDarkMode ? 'text-gray-500' : 'text-gray-400'} -mt-[1px]`}>@{currentUserFId}</span>}
                     </div>
                   </div>
                   <span className={`text-[10px] font-medium ${textColor}`}>

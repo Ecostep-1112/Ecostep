@@ -3,7 +3,7 @@ import { Search, ChevronRight, X } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useData } from '../../services/DataContext';
 
-const SearchFriends = ({ isDarkMode, onBack, userRanking = 'bronze', showToast, currentUserId = '', currentUserName = '' }) => {
+const SearchFriends = ({ isDarkMode, onBack, userRanking = 'bronze', showToast, currentUserId = '', currentUserFId = '', currentUserName = '' }) => {
   const { refreshFriends } = useData();
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState([]);
@@ -75,20 +75,20 @@ const SearchFriends = ({ isDarkMode, onBack, userRanking = 'bronze', showToast, 
 
     // localStorage에서 프로필 데이터 확인
     const savedProfileData = localStorage.getItem('profileData');
-    let savedUserId = '';
+    let savedUserFId = '';
     let savedUserName = '';
 
     if (savedProfileData) {
       try {
         const parsed = JSON.parse(savedProfileData);
-        savedUserId = parsed.userFId || ''; // userFId로 변경
+        savedUserFId = parsed.userFId || '';
         savedUserName = parsed.name || '';
       } catch (e) {
         console.error('프로필 데이터 파싱 오류:', e);
       }
     }
 
-    const userFId = currentUserId || savedUserId;
+    const userFId = currentUserFId || savedUserFId;
     const userName = currentUserName || savedUserName;
 
     // 디버깅용 로그

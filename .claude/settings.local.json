@@ -61,7 +61,8 @@
       "Bash(/tmp/naverMapService_2509f67.js)",
       "Bash(C:/Users/user/Desktop/temp_more_2509f67.jsx)",
       "Bash(/tmp/app_2509f67.jsx)",
-      "Bash(/tmp/challenge_2509f67.jsx)"
+      "Bash(/tmp/challenge_2509f67.jsx)",
+      "Bash(npm run build:*)"
     ],
     "deny": [],
     "ask": [],

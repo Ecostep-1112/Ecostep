@@ -46,6 +46,7 @@ const EcostepAppContent = () => {
   const [currentUser, setCurrentUser] = useState(null);
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
   const [platform, setPlatform] = useState('web');
+  const [hasLoadedData, setHasLoadedData] = useState(false); // 데이터 로딩 여부 추적
   const [activeTab, setActiveTab] = useState('home');
   const [activeSubTab, setActiveSubTab] = useState('habit');
   const [challengeDay, setChallengeDay] = useState(4);
@@ -151,6 +152,17 @@ const EcostepAppContent = () => {
       return null;
     }
   };
+
+  // 데이터 로딩 래퍼 - 한 번만 로드하도록 보장
+  const loadDataOnce = useCallback(async (userId) => {
+    if (hasLoadedData) {
+      console.log('데이터 이미 로드됨, 스킵');
+      return;
+    }
+    console.log('데이터 로딩 시작...');
+    await preloadAllData(userId);
+    setHasLoadedData(true);
+  }, [hasLoadedData, preloadAllData]);
 
   // Supabase에 유저 데이터 저장
   const saveUserDataToSupabase = async () => {
@@ -389,8 +401,8 @@ const EcostepAppContent = () => {
           // Supabase에서 유저 데이터 불러오기
           if (profile?.user_id) {
             await loadUserDataFromSupabase(profile.user_id);
-            // 전역 데이터 프리로딩
-            preloadAllData(profile.user_id);
+            // 전역 데이터 프리로딩 (한 번만)
+            await loadDataOnce(profile.user_id);
 
             // 신규 사용자에게 기본 어항 추가
             try {
@@ -406,7 +418,7 @@ const EcostepAppContent = () => {
           } else {
             console.warn('프로필이 없지만 로그인은 성공했습니다. 데이터는 나중에 로드됩니다.');
             // 프로필이 없어도 앱 사용은 가능하도록 설정
-            preloadAllData(null);
+            await loadDataOnce(null);
           }
         }
       } catch (error) {
@@ -457,9 +469,9 @@ const EcostepAppContent = () => {
             };
           });
 
-          // 전역 데이터 프리로딩
+          // 전역 데이터 프리로딩 (한 번만)
           if (profile?.user_id) {
-            preloadAllData(profile.user_id);
+            loadDataOnce(profile.user_id);
           }
         }).catch(error => {
           console.error('프로필 생성 실패:', error);
@@ -467,6 +479,7 @@ const EcostepAppContent = () => {
       } else if (event === 'SIGNED_OUT') {
         setCurrentUser(null);
         setIsLoggedIn(false);
+        setHasLoadedData(false); // 로그아웃 시 데이터 로딩 플래그 리셋
       }
     });
     
@@ -530,8 +543,8 @@ const EcostepAppContent = () => {
                   // Supabase에서 유저 데이터 불러오기
                   if (profile?.user_id) {
                     await loadUserDataFromSupabase(profile.user_id);
-                    // 전역 데이터 프리로딩
-                    preloadAllData(profile.user_id);
+                    // 전역 데이터 프리로딩 (한 번만)
+                    await loadDataOnce(profile.user_id);
 
                     // 신규 사용자에게 기본 어항 추가
                     try {
@@ -547,7 +560,7 @@ const EcostepAppContent = () => {
                   } else {
                     console.warn('프로필이 없지만 로그인은 성공했습니다. 데이터는 나중에 로드됩니다.');
                     // 프로필이 없어도 앱 사용은 가능하도록 설정
-                    preloadAllData(null);
+                    await loadDataOnce(null);
                   }
 
                   setIsCheckingAuth(false);
@@ -843,6 +856,7 @@ const EcostepAppContent = () => {
       await signOut();
       setIsLoggedIn(false);
       setCurrentUser(null);
+      setHasLoadedData(false); // 로그아웃 시 데이터 로딩 플래그 리셋
       // 프로필 데이터 초기화
       setProfileData({
         userId: '',

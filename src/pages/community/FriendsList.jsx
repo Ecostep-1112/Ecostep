@@ -29,6 +29,7 @@ const FriendsList = ({ isDarkMode, onBack, isGlobalRanking = false, totalPlastic
   }));
 
   // 현재 사용자가 상위 50명에 없다면 추가
+  // user_f_id로 체크 (표시용 ID)
   const currentUserInList = globalRankingDataRaw.find(u => u.id === currentUserFId);
   if (!currentUserInList && currentUserFId) {
     globalRankingDataRaw.push({
@@ -37,9 +38,34 @@ const FriendsList = ({ isDarkMode, onBack, isGlobalRanking = false, totalPlastic
       score: myScore,
       grams: totalPlasticSaved
     });
-    // 다시 정렬
-    globalRankingDataRaw.sort((a, b) => b.grams - a.grams);
   }
+
+  // ID 변경으로 인한 중복 제거 - 동일한 이름과 점수를 가진 항목 필터링
+  // (같은 사람이 ID를 바꾼 경우 이전 ID 제거)
+  const seenNames = new Map();
+  globalRankingDataRaw = globalRankingDataRaw.filter(user => {
+    const key = `${user.name}_${user.grams}`;
+    if (seenNames.has(key)) {
+      // 이미 동일한 이름과 점수가 있음
+      // 현재 사용자 ID를 우선 유지
+      if (user.id === currentUserFId) {
+        // 현재 ID를 유지하고 이전 것을 제거
+        const prevIndex = globalRankingDataRaw.findIndex(u =>
+          u.name === user.name && u.grams === user.grams && u.id !== currentUserFId
+        );
+        if (prevIndex !== -1) {
+          seenNames.set(key, user);
+          return true; // 현재 ID 유지
+        }
+      }
+      return false; // 중복 제거
+    }
+    seenNames.set(key, user);
+    return true;
+  });
+
+  // 다시 정렬
+  globalRankingDataRaw.sort((a, b) => b.grams - a.grams);
 
   // 정렬 후 순위 부여
   const globalRankingData = globalRankingDataRaw.map((user, index) => ({

@@ -1,0 +1,31 @@
+<!-- Ecostep App Icon - ES Logo -->
+<!-- 블랙 배경 + 화이트 ES 로고 (Times New Roman 글꼴) -->
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <!-- 블랙 배경 -->
+  <rect width="1024" height="1024" fill="#000000"/>
+
+  <!-- E와 S 겹친 로고 (텍스트) -->
+  <g>
+    <!-- E (정중앙) -->
+    <text
+      x="512"
+      y="890"
+      text-anchor="middle"
+      font-family="'Times New Roman', Times, serif"
+      font-size="1144"
+      font-weight="500"
+      fill="#ffffff"
+      letter-spacing="-0.02em">E</text>
+
+    <!-- S (E 왼쪽에 약간 겹침) -->
+    <text
+      x="501.38"
+      y="890"
+      text-anchor="middle"
+      font-family="'Times New Roman', Times, serif"
+      font-size="1144"
+      font-weight="500"
+      fill="#ffffff"
+      letter-spacing="-0.02em">S</text>
+  </g>
+</svg>

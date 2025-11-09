@@ -355,9 +355,14 @@ const EcostepAppContent = () => {
           setIsLoggedIn(true);
           
           // 프로필 생성 또는 업데이트 (아이디가 없을 때만 새로 생성)
-          const { profile } = await createOrUpdateUserProfile(user);
+          const { profile, error: profileError } = await createOrUpdateUserProfile(user);
           console.log('App.jsx - 프로필 생성 결과:', profile);
-          
+
+          if (profileError) {
+            console.error('App.jsx - 프로필 생성 에러:', profileError);
+            // 에러가 있어도 계속 진행 (프로필은 나중에 생성될 수 있음)
+          }
+
           // 수파베이스 사용자 정보로 프로필 업데이트
           // localStorage에서 최신 데이터 확인
           const savedData = localStorage.getItem('profileData');
@@ -398,6 +403,10 @@ const EcostepAppContent = () => {
             } catch (error) {
               console.error('기본 어항 추가 에러:', error);
             }
+          } else {
+            console.warn('프로필이 없지만 로그인은 성공했습니다. 데이터는 나중에 로드됩니다.');
+            // 프로필이 없어도 앱 사용은 가능하도록 설정
+            preloadAllData(null);
           }
         }
       } catch (error) {
@@ -489,26 +498,34 @@ const EcostepAppContent = () => {
             if (accessToken) {
               console.log('Deep link에서 토큰 발견, 세션 설정 중...');
 
-              // Supabase 세션 설정
-              const { data: sessionData, error } = await supabase.auth.setSession({
-                access_token: accessToken,
-                refresh_token: refreshToken || ''
-              });
+              try {
+                // Supabase 세션 설정
+                const { data: sessionData, error } = await supabase.auth.setSession({
+                  access_token: accessToken,
+                  refresh_token: refreshToken || ''
+                });
 
-              if (error) {
-                console.error('세션 설정 에러:', error);
-              } else {
+                if (error) {
+                  console.error('세션 설정 에러:', error);
+                  setIsCheckingAuth(false);
+                  return;
+                }
+
                 console.log('세션 설정 성공:', sessionData);
 
                 // 세션 설정 성공 후 사용자 상태 업데이트
                 if (sessionData?.user) {
                   setCurrentUser(sessionData.user);
                   setIsLoggedIn(true);
-                  setIsCheckingAuth(false);
 
                   // 프로필 생성 또는 업데이트
-                  const { profile } = await createOrUpdateUserProfile(sessionData.user);
+                  const { profile, error: profileError } = await createOrUpdateUserProfile(sessionData.user);
                   console.log('Deep link - 프로필 생성 결과:', profile);
+
+                  if (profileError) {
+                    console.error('프로필 생성 에러:', profileError);
+                    // 에러가 있어도 계속 진행 (프로필은 나중에 생성될 수 있음)
+                  }
 
                   // Supabase에서 유저 데이터 불러오기
                   if (profile?.user_id) {
@@ -527,8 +544,17 @@ const EcostepAppContent = () => {
                     } catch (error) {
                       console.error('기본 어항 추가 에러:', error);
                     }
+                  } else {
+                    console.warn('프로필이 없지만 로그인은 성공했습니다. 데이터는 나중에 로드됩니다.');
+                    // 프로필이 없어도 앱 사용은 가능하도록 설정
+                    preloadAllData(null);
                   }
+
+                  setIsCheckingAuth(false);
                 }
+              } catch (error) {
+                console.error('Deep link 인증 처리 에러:', error);
+                setIsCheckingAuth(false);
               }
             }
           }
@@ -844,6 +870,15 @@ const EcostepAppContent = () => {
   // 로그인 화면 표시
   if (!isLoggedIn) {
     return <Login onLogin={() => setIsLoggedIn(true)} />;
+  }
+
+  // 데이터 로딩 중 (로그인 후)
+  if (isDataLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gray-100">
+        <div className="text-gray-600">데이터 로딩 중...</div>
+      </div>
+    );
   }
 
   return (

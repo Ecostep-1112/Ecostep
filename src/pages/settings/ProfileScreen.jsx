@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ChevronRight, ChevronLeft, X, Camera, Plus, AlertTriangle, Check } from 'lucide-react';
+import { ChevronRight, ChevronLeft, X, Camera, Plus, AlertTriangle, Check, Trash2 } from 'lucide-react';
 import { updateUserFId, checkUserFIdDuplicate, deleteAccount } from '../../lib/auth';
 import { supabase } from '../../lib/supabase';
 import { saveUserStats } from '../../lib/database';
@@ -27,34 +27,224 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
   // 프로필 사진은 profileData에서 가져옴 (DB에서 로드됨)
   const profileImage = profileData?.profileImage || null;
 
+  // 이미지 삭제 핸들러
+  const handleImageDelete = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        console.error('사용자 인증 정보가 없습니다.');
+        setToastMessage('로그인이 필요합니다.');
+        setToastType('error');
+        setShowToast(true);
+        return;
+      }
+
+      // 현재 이미지 URL에서 파일 경로 추출
+      if (profileImage) {
+        try {
+          // URL 디코딩 및 파싱
+          const imageUrl = profileImage.includes('%2F') ? decodeURIComponent(profileImage) : profileImage;
+          console.log('Original URL:', profileImage);
+          console.log('Decoded URL:', imageUrl);
+
+          // 여러 URL 패턴 시도
+          // 패턴 1: /Profile_pic/user_id/file.jpg
+          // 패턴 2: /public/Profile_pic/user_id/file.jpg
+          // 패턴 3: user_id/file.jpg (이미 경로만 있는 경우)
+          let filePath = null;
+
+          // Profile_pic 이후의 경로 추출
+          const match1 = imageUrl.match(/Profile_pic\/(.+?)(?:\?|$)/);
+          if (match1 && match1[1]) {
+            filePath = match1[1];
+          }
+
+          // 경로를 찾지 못했다면, 전체 URL에서 파일명 패턴 찾기
+          if (!filePath) {
+            const match2 = imageUrl.match(/([a-f0-9-]+\/\d+\.\w+)$/);
+            if (match2 && match2[1]) {
+              filePath = match2[1];
+            }
+          }
+
+          if (filePath) {
+            console.log('Extracted file path:', filePath);
+
+            // Storage에서 삭제
+            const { data: deleteData, error: deleteError } = await supabase.storage
+              .from('Profile_pic')
+              .remove([filePath]);
+
+            if (deleteError) {
+              console.error('Storage 삭제 실패:', deleteError);
+              console.error('Error details:', JSON.stringify(deleteError));
+              // 404 에러는 파일이 이미 없는 것이므로 무시
+              if (deleteError.statusCode !== '404') {
+                console.warn('파일 삭제에 실패했지만 계속 진행합니다.');
+              }
+            } else {
+              console.log('Storage 삭제 성공:', deleteData);
+            }
+          } else {
+            console.warn('파일 경로를 추출할 수 없습니다. DB만 업데이트합니다.');
+            console.warn('URL:', imageUrl);
+          }
+        } catch (urlError) {
+          console.error('URL 파싱 에러:', urlError);
+          console.warn('파일 삭제를 건너뛰고 DB만 업데이트합니다.');
+        }
+      }
+
+      // DB에서 URL 제거
+      const { error: dbError } = await supabase
+        .from('user_info')
+        .update({ profile_image_url: null })
+        .eq('user_id', user.id);
+
+      if (dbError) {
+        console.error('DB 업데이트 실패:', dbError);
+        setToastMessage('삭제 중 오류가 발생했습니다.');
+        setToastType('error');
+        setShowToast(true);
+        return;
+      }
+
+      // 로컬 상태 업데이트
+      setProfileData(prev => {
+        const updated = {
+          ...prev,
+          profileImage: null
+        };
+        // localStorage 즉시 업데이트
+        localStorage.setItem('profileData', JSON.stringify(updated));
+        return updated;
+      });
+
+      console.log('프로필 이미지 삭제 완료');
+      setToastMessage('프로필 이미지가 삭제되었습니다.');
+      setToastType('success');
+      setShowToast(true);
+    } catch (error) {
+      console.error('프로필 이미지 삭제 에러:', error);
+      setToastMessage('삭제 중 오류가 발생했습니다.');
+      setToastType('error');
+      setShowToast(true);
+    }
+  };
+
   // 이미지 업로드 핸들러
   const handleImageUpload = async (e) => {
     const file = e.target.files[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = async () => {
-        const imageDataUrl = reader.result;
-
-        // profileData 업데이트
-        setProfileData(prev => ({
-          ...prev,
-          profileImage: imageDataUrl
-        }));
-
-        // DB에 저장
-        try {
-          const { data: { user } } = await supabase.auth.getUser();
-          if (user) {
-            await saveUserStats(user.id, {
-              profile_image_url: imageDataUrl
-            });
-            console.log('프로필 이미지 DB 저장 완료');
-          }
-        } catch (error) {
-          console.error('프로필 이미지 DB 저장 에러:', error);
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+          console.error('사용자 인증 정보가 없습니다.');
+          setToastMessage('로그인이 필요합니다.');
+          setToastType('error');
+          setShowToast(true);
+          return;
         }
-      };
-      reader.readAsDataURL(file);
+
+        // 파일 크기 체크 (5MB 제한)
+        if (file.size > 5 * 1024 * 1024) {
+          console.error('파일 크기가 너무 큽니다:', file.size);
+          setToastMessage('이미지 크기는 5MB 이하여야 합니다.');
+          setToastType('error');
+          setShowToast(true);
+          return;
+        }
+
+        // 파일 확장자 추출
+        const fileExt = file.name.split('.').pop().toLowerCase();
+        // 이미지 파일 형식 체크
+        const allowedTypes = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+        if (!allowedTypes.includes(fileExt)) {
+          console.error('지원하지 않는 파일 형식:', fileExt);
+          setToastMessage('JPG, PNG, GIF, WEBP 형식만 지원합니다.');
+          setToastType('error');
+          setShowToast(true);
+          return;
+        }
+
+        // 고유한 파일명 생성 (user_id/timestamp)
+        const fileName = `${user.id}/${Date.now()}.${fileExt}`;
+        console.log('이미지 업로드 시작:', fileName, 'Size:', file.size, 'bytes');
+
+        // 먼저 로컬 미리보기 표시 (즉시 피드백)
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setProfileData(prev => ({
+            ...prev,
+            profileImage: reader.result
+          }));
+        };
+        reader.readAsDataURL(file);
+
+        // Supabase Storage에 업로드
+        console.log('Uploading to bucket: Profile_pic');
+        const { data: uploadData, error: uploadError } = await supabase.storage
+          .from('Profile_pic')
+          .upload(fileName, file, {
+            cacheControl: '3600',
+            upsert: true
+          });
+
+        if (uploadError) {
+          console.error('이미지 업로드 실패:', uploadError);
+          console.error('Error details:', JSON.stringify(uploadError));
+          setToastMessage(`업로드 실패: ${uploadError.message}`);
+          setToastType('error');
+          setShowToast(true);
+          return;
+        }
+
+        console.log('이미지 업로드 성공:', uploadData);
+
+        // 업로드된 이미지의 공개 URL 가져오기
+        const { data: urlData } = supabase.storage
+          .from('Profile_pic')
+          .getPublicUrl(fileName);
+
+        const publicUrl = urlData.publicUrl;
+        console.log('공개 URL:', publicUrl);
+
+        // DB에 URL 저장
+        const { error: dbError } = await supabase
+          .from('user_info')
+          .update({ profile_image_url: publicUrl })
+          .eq('user_id', user.id);
+
+        if (dbError) {
+          console.error('DB 저장 실패:', dbError);
+          setToastMessage('DB 저장에 실패했습니다.');
+          setToastType('error');
+          setShowToast(true);
+          return;
+        }
+
+        // profileData 업데이트 (실제 URL로 교체) + localStorage 즉시 업데이트
+        setProfileData(prev => {
+          const updated = {
+            ...prev,
+            profileImage: publicUrl
+          };
+          // localStorage 즉시 업데이트
+          localStorage.setItem('profileData', JSON.stringify(updated));
+          console.log('프로필 이미지 localStorage 업데이트:', updated);
+          return updated;
+        });
+
+        console.log('프로필 이미지 DB 저장 완료');
+        setToastMessage('프로필 이미지가 업데이트되었습니다.');
+        setToastType('success');
+        setShowToast(true);
+      } catch (error) {
+        console.error('프로필 이미지 업로드 에러:', error);
+        setToastMessage('업로드 중 오류가 발생했습니다.');
+        setToastType('error');
+        setShowToast(true);
+      }
     }
   };
 
@@ -587,7 +777,7 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
       
       {/* 프로필 사진 업로드 섹션 */}
       <div className="p-4 pb-24 overflow-y-auto flex-1">
-        <div className="flex justify-center mb-6">
+        <div className="flex flex-col items-center mb-6">
           <label htmlFor="profile-upload" className="cursor-pointer relative">
             <div className={`w-20 h-20 ${cardBg} rounded-full flex items-center justify-center border-2 ${borderColor} overflow-hidden`}>
               {profileImage ? (
@@ -608,6 +798,20 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
               className="hidden"
             />
           </label>
+          {/* 이미지 삭제 버튼 (이미지가 있을 때만 표시) */}
+          {profileImage && (
+            <button
+              onClick={handleImageDelete}
+              className={`mt-3 px-4 py-1.5 text-xs font-medium rounded-lg flex items-center gap-1.5 transition-colors ${
+                isDarkMode
+                  ? 'text-red-400 border border-red-400/30 hover:bg-red-400/10'
+                  : 'text-red-600 border border-red-200 hover:bg-red-50'
+              }`}
+            >
+              <Trash2 className="w-3.5 h-3.5" />
+              프로필 사진 삭제
+            </button>
+          )}
         </div>
         
         {/* 필드 영역 배경 박스 */}

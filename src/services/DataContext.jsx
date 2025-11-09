@@ -50,7 +50,7 @@ export const DataProvider = ({ children }) => {
     try {
       const { data, error } = await supabase
         .from('user_info')
-        .select('user_id, user_f_id, name, amount')
+        .select('user_id, user_f_id, name, amount, profile_image_url')
         .order('amount', { ascending: false })
         .limit(50);
 
@@ -59,7 +59,7 @@ export const DataProvider = ({ children }) => {
       const formattedUsers = data.map(user => ({
         id: user.user_f_id || user.user_id, // user_f_id 우선, 없으면 user_id
         name: user.name,
-        profileImage: null,
+        profileImage: user.profile_image_url || null,
         plasticSaved: user.amount || 0
       }));
 
@@ -104,7 +104,7 @@ export const DataProvider = ({ children }) => {
       // 친구들의 정보를 user_info에서 가져오기 (amount 기준 내림차순)
       const { data: friendsInfo, error: error3 } = await supabase
         .from('user_info')
-        .select('user_id, user_f_id, name, amount')
+        .select('user_id, user_f_id, name, amount, profile_image_url')
         .in('user_id', Array.from(friendIds))
         .order('amount', { ascending: false });
 
@@ -113,7 +113,7 @@ export const DataProvider = ({ children }) => {
       const formattedFriends = (friendsInfo || []).map(friend => ({
         id: friend.user_f_id || friend.user_id, // user_f_id 우선, 없으면 user_id
         name: friend.name,
-        profileImage: null,
+        profileImage: friend.profile_image_url || null,
         plasticSaved: friend.amount || 0
       }));
 

@@ -135,16 +135,22 @@ const EcostepAppContent = () => {
         setConsecutiveDays(data.consecutive_days || 0);
 
         // 프로필 데이터도 Supabase 데이터로 업데이트
-        setProfileData(prev => ({
-          ...prev,
-          name: data.name || prev.name,
-          email: data.email || prev.email,
-          phone: data.phone_num || prev.phone || '',
-          userFId: data.user_f_id || prev.userFId || '',
-          profileImage: data.profile_image_url || prev.profileImage || ''
-        }));
+        console.log('DB에서 로드한 profile_image_url:', data.profile_image_url);
 
-        console.log('Supabase에서 유저 정보 로드:', data);
+        setProfileData(prev => {
+          console.log('기존 캐시된 profileImage:', prev.profileImage);
+          return {
+            ...prev,
+            name: data.name || prev.name,
+            email: data.email || prev.email,
+            phone: data.phone_num || prev.phone || '',
+            userFId: data.user_f_id || prev.userFId || '',
+            // profileImage는 DB 값을 우선 - null이면 빈 문자열 (캐시된 값 사용 안 함)
+            profileImage: data.profile_image_url !== undefined ? (data.profile_image_url || '') : prev.profileImage
+          };
+        });
+
+        console.log('Supabase에서 유저 정보 로드 완료:', data);
         return data;
       }
     } catch (error) {

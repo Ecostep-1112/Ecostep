@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import Anthropic from '@anthropic-ai/sdk';
+import { readFile } from 'fs/promises';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -35,6 +36,46 @@ const CLAUDE_API_KEY = process.env.CLAUDE_API_KEY;
 const anthropic = new Anthropic({
   apiKey: CLAUDE_API_KEY || 'dummy-key-for-mock',
 });
+
+// Load chatbot guidelines and documentation
+let chatbotKnowledgeBase = '';
+
+async function loadChatbotGuidelines() {
+  try {
+    const guidelineFiles = [
+      'chatbot-guidelines.md',  // 가장 중요한 가이드라인
+      'app-overview.md',
+      'home.md',
+      'community.md',
+      'challenge.md',
+      'rewards.md',
+      'more.md',
+      'settings.md'
+    ];
+
+    const guidelines = [];
+
+    for (const filename of guidelineFiles) {
+      const filePath = join(__dirname, '../chatbot_md', filename);
+      try {
+        const content = await readFile(filePath, 'utf-8');
+        guidelines.push(`\n\n=== ${filename} ===\n${content}`);
+      } catch (err) {
+        console.warn(`Warning: Could not load ${filename}:`, err.message);
+      }
+    }
+
+    chatbotKnowledgeBase = guidelines.join('\n');
+    console.log(`✅ Loaded ${guidelineFiles.length} chatbot guideline files`);
+    console.log(`📚 Total knowledge base size: ${Math.round(chatbotKnowledgeBase.length / 1024)}KB`);
+  } catch (error) {
+    console.error('Error loading chatbot guidelines:', error);
+    chatbotKnowledgeBase = ''; // Fallback to empty knowledge base
+  }
+}
+
+// Load guidelines on startup
+loadChatbotGuidelines();
 
 // Helper function to generate mock tips
 const generateMockTip = () => {
@@ -120,26 +161,35 @@ app.post('/api/chatbot', async (req, res) => {
     }
 
     // Call Claude API for chatbot response
+    const systemPrompt = chatbotKnowledgeBase
+      ? `당신은 에코스텝(EcoStep) 앱의 고객센터 챗봇입니다.
+
+아래는 당신이 반드시 따라야 할 가이드라인과 앱 사용 정보입니다.
+답변하기 전에 먼저 chatbot-guidelines.md의 내용을 확인하고, 그에 기반하여 답변하세요.
+
+특히 중요한 규칙:
+1. **절대 사용 금지**: 개인정보, 기술 구현 세부사항(DB, API, 테이블명, 필드명 등) 언급 금지
+2. **이모지 사용 금지**: 모든 답변에서 이모지를 절대 사용하지 마세요
+3. **톤 앤 매너**: 간결하고 명확하게, 정중하고 친절하게, 긍정적으로
+4. **답변 원칙**: 사용자 중심, 간결함, 정중함, 정확성
+
+${chatbotKnowledgeBase}
+
+위 가이드라인과 문서를 기반으로 사용자의 질문에 답변하세요.`
+      : `당신은 에코스텝(EcoStep) 앱의 친절한 고객센터 챗봇입니다.
+      에코스텝은 환경 보호와 물고기 키우기 게임을 결합한 모바일 앱입니다.
+
+      항상 친절하고 도움이 되는 답변을 한국어로 제공하세요.
+      이모지는 사용하지 마세요.`;
+
     const response = await anthropic.messages.create({
       model: 'claude-3-haiku-20240307',
-      max_tokens: 500,
-      system: `당신은 에코스텝(EcoStep) 앱의 친절한 고객센터 챗봇입니다. 
-      에코스텝은 환경 보호와 물고기 키우기 게임을 결합한 모바일 앱입니다.
-      주요 기능:
-      - 플라스틱 사용량 추적 및 감소 목표 설정
-      - 가상 물고기 키우기 (12종류)
-      - 수족관 커스터마이징
-      - 일일/주간 챌린지
-      - 친구 랭킹 시스템
-      - 제로웨이스트 지도
-      - 환경 팁 제공
-      
-      항상 친절하고 도움이 되는 답변을 한국어로 제공하세요.
-      이모지를 적절히 사용하여 친근한 분위기를 만드세요.`,
+      max_tokens: 1000,
+      system: systemPrompt,
       messages: [
         {
           role: 'user',
-          content: `다음 질문에 대한 답변을 간결하게, 정중한 말투로, 필요없는 정보와 이모티콘 없이 답해줘. ${message}`
+          content: message
         }
       ]
     });

@@ -36,7 +36,8 @@ const Home = ({
   testPlasticSaved = 0,
   setTestPlasticSaved,
   showToast,
-  isActive = true
+  isActive = true,
+  navbarHeight = 0
 }) => {
   const bgColor = isDarkMode ? 'bg-gray-900' : 'bg-white';
   const textColor = isDarkMode ? 'text-white' : 'text-gray-900';
@@ -1004,8 +1005,9 @@ const Home = ({
       {/* 장식품 조절 패널 */}
       {showSettingsPanel && selectedDecoration && (
         <div
-          className={`absolute bottom-[76px] left-0 right-0 mx-7 z-[25] ${isDarkMode ? 'bg-gray-800/90 border border-gray-700' : 'bg-gray-50/90 border border-gray-200'} rounded-xl p-2 transform transition-transform duration-300 ease-out backdrop-blur-sm`}
+          className={`absolute left-0 right-0 mx-7 z-[25] ${isDarkMode ? 'bg-gray-800/90 border border-gray-700' : 'bg-gray-50/90 border border-gray-200'} rounded-xl p-2 transform transition-transform duration-300 ease-out backdrop-blur-sm`}
           style={{
+            bottom: `${Math.max(76, navbarHeight + 16)}px`,
             animation: 'slideUp 0.3s ease-out forwards'
           }}
         >

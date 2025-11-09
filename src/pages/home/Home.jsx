@@ -452,6 +452,7 @@ const Home = ({
 
   const handleTouchStart = useCallback((e, decoName) => {
     e.preventDefault(); // iOS 줌/스크롤 차단 (항상 실행)
+    e.stopPropagation(); // 부모로의 이벤트 버블링 차단
     const currentTime = new Date().getTime();
     const tapLength = currentTime - lastTouchTimeRef.current;
 
@@ -496,6 +497,7 @@ const Home = ({
   }, [showSettingsPanel, selectedDecoration, decorationSettings]);
 
   const handleTouchEnd = useCallback((e, decoName) => {
+    e.stopPropagation(); // 부모로의 이벤트 버블링 차단
     // 터치 종료 위치 확인 (드래그 감지)
     if (e.changedTouches && e.changedTouches.length > 0 && touchStartPos) {
       const touchEndPos = { x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY };
@@ -672,13 +674,17 @@ const Home = ({
             }
           }}
           onTouchMove={handleTouchMove}
-          onTouchEnd={() => {
-            // 터치 종료 시 드래그 종료
-            if (isDragging) {
-              setIsDragging(null);
-              setIsHolding(false);
+          onTouchEnd={(e) => {
+            // 장식품이 아닌 어항 영역에서만 터치 리셋
+            // e.target === e.currentTarget: 어항 자체를 터치한 경우만
+            if (e.target === e.currentTarget) {
+              // 터치 종료 시 드래그 종료
+              if (isDragging) {
+                setIsDragging(null);
+                setIsHolding(false);
+              }
+              lastTouchTimeRef.current = 0; // 터치 타이머 리셋
             }
-            lastTouchTimeRef.current = 0; // 터치 타이머 리셋
           }}
         >
           {/* 상단 그라데이션 구분선 */}

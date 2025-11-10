@@ -49,7 +49,10 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
   const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
   const [categoryIndices, setCategoryIndices] = useState({});
   const [userLocation, setUserLocation] = useState(null);
-  const [selectedPlaceCategory, setSelectedPlaceCategory] = useState('제로웨이스트샵');
+  // 제로웨이스트 맵 카테고리 - localStorage에서 불러오거나 기본값 '없음'
+  const [selectedPlaceCategory, setSelectedPlaceCategory] = useState(() => {
+    return localStorage.getItem('zeroWastePlaceCategory') || '없음';
+  });
   const [showPlaceCategoryDropdown, setShowPlaceCategoryDropdown] = useState(false);
   const [zeroWastePlaces, setZeroWastePlaces] = useState([]);
   const [isLoadingPlaces, setIsLoadingPlaces] = useState(false);
@@ -59,8 +62,8 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
 
   const categories = ['랜덤', '재활용 팁', '생활 습관', '에너지 절약', '제로웨이스트'];
 
-  // 제로웨이스트 맵 카테고리 정의 (전체 제거)
-  const placeCategories = ['제로웨이스트샵', '리필스테이션', '친환경매장', '재활용센터'];
+  // 제로웨이스트 맵 카테고리 정의 - "없음"을 첫 번째로 추가
+  const placeCategories = ['없음', '제로웨이스트샵', '리필스테이션', '친환경매장', '재활용센터'];
 
   // 카테고리별 검색어 매핑 (전체 제거)
   const categorySearchQueries = {
@@ -75,6 +78,13 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
     try {
       setIsLoadingPlaces(true);
       setPlaceError(null);
+
+      // "없음" 카테고리가 선택되면 장소를 표시하지 않음
+      if (selectedPlaceCategory === '없음') {
+        setZeroWastePlaces([]);
+        setIsLoadingPlaces(false);
+        return;
+      }
 
       // 위치 권한이 없으면 검색하지 않음
       if (!userLocation) {
@@ -554,6 +564,7 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
                       key={category}
                       onClick={() => {
                         setSelectedPlaceCategory(category);
+                        localStorage.setItem('zeroWastePlaceCategory', category);
                         setShowPlaceCategoryDropdown(false);
                       }}
                       className={`block w-full text-left px-3 py-2 text-xs whitespace-nowrap first:rounded-t-lg last:rounded-b-lg ${
@@ -570,11 +581,23 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
             </div>
           </div>
           
-          {/* 위치 권한 거부 상태 */}
-          {locationPermissionDenied && !locationSharing ? (
+          {/* "없음" 카테고리 선택 시 */}
+          {selectedPlaceCategory === '없음' ? (
+            <div className="flex flex-col items-center justify-center py-8">
+              <p className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} text-sm text-center`}>
+                카테고리를 정해 주위의 장소를 찾아보세요
+              </p>
+            </div>
+          ) : !locationSharing ? (
             <div className="flex flex-col items-center justify-center py-8">
               <p className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} text-sm text-center`}>
                 위치 설정을 켜면 주변 장소를 확인할 수 있습니다
+              </p>
+            </div>
+          ) : locationPermissionDenied && locationSharing ? (
+            <div className="flex flex-col items-center justify-center py-8">
+              <p className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} text-sm text-center`}>
+                위치 권한을 허용해주세요
               </p>
             </div>
           ) : isLoadingPlaces ? (

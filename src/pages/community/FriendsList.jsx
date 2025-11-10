@@ -25,10 +25,12 @@ const FriendsList = ({ isDarkMode, onBack, isGlobalRanking = false, totalPlastic
     name: user.name,
     id: user.id,
     score: getDisplayScore(user.plasticSaved),
-    grams: user.plasticSaved
+    grams: user.plasticSaved,
+    profileImage: user.profileImage
   }));
 
   // 현재 사용자가 상위 50명에 없다면 추가
+  // user_f_id로 체크 (표시용 ID)
   const currentUserInList = globalRankingDataRaw.find(u => u.id === currentUserFId);
   if (!currentUserInList && currentUserFId) {
     globalRankingDataRaw.push({
@@ -37,9 +39,34 @@ const FriendsList = ({ isDarkMode, onBack, isGlobalRanking = false, totalPlastic
       score: myScore,
       grams: totalPlasticSaved
     });
-    // 다시 정렬
-    globalRankingDataRaw.sort((a, b) => b.grams - a.grams);
   }
+
+  // ID 변경으로 인한 중복 제거 - 동일한 이름과 점수를 가진 항목 필터링
+  // (같은 사람이 ID를 바꾼 경우 이전 ID 제거)
+  const seenNames = new Map();
+  globalRankingDataRaw = globalRankingDataRaw.filter(user => {
+    const key = `${user.name}_${user.grams}`;
+    if (seenNames.has(key)) {
+      // 이미 동일한 이름과 점수가 있음
+      // 현재 사용자 ID를 우선 유지
+      if (user.id === currentUserFId) {
+        // 현재 ID를 유지하고 이전 것을 제거
+        const prevIndex = globalRankingDataRaw.findIndex(u =>
+          u.name === user.name && u.grams === user.grams && u.id !== currentUserFId
+        );
+        if (prevIndex !== -1) {
+          seenNames.set(key, user);
+          return true; // 현재 ID 유지
+        }
+      }
+      return false; // 중복 제거
+    }
+    seenNames.set(key, user);
+    return true;
+  });
+
+  // 다시 정렬
+  globalRankingDataRaw.sort((a, b) => b.grams - a.grams);
 
   // 정렬 후 순위 부여
   const globalRankingData = globalRankingDataRaw.map((user, index) => ({
@@ -52,7 +79,8 @@ const FriendsList = ({ isDarkMode, onBack, isGlobalRanking = false, totalPlastic
     name: friend.name,
     id: friend.id,
     score: getDisplayScore(friend.plasticSaved),
-    grams: friend.plasticSaved
+    grams: friend.plasticSaved,
+    profileImage: friend.profileImage
   }));
 
   // 나 자신 추가 (친구 목록에 없는 경우)
@@ -161,30 +189,45 @@ const FriendsList = ({ isDarkMode, onBack, isGlobalRanking = false, totalPlastic
                 <div key={friend.rank}>
                   <div className="flex items-center justify-between" style={{ paddingTop: '0.425rem', paddingBottom: '0.425rem' }}>
                     <div className="flex items-center">
-                      <div className="flex items-center justify-center" style={{ 
-                        width: '28px',
-                        height: friend.rank === 1 ? '28px' : friend.rank === 2 ? '26px' : friend.rank <= 3 ? '24px' : '24px',
-                        marginRight: '8px'
-                      }}>
-                        {friend.rank === 1 ? (
-                          <PlatinumIcon size={28} />
-                        ) : friend.rank === 2 ? (
-                          <GoldIcon size={26} />
-                        ) : friend.rank === 3 ? (
-                          <SilverIcon size={24} />
-                        ) : (
-                          <div 
-                            className={`w-[20px] h-[20px] rounded-full border flex items-center justify-center text-[11px] font-medium ${
-                              isMe ? (isDarkMode ? 'text-white' : 'text-gray-900') : (isDarkMode ? 'text-gray-300' : 'text-gray-700')
-                            }`}
-                            style={{ 
-                              borderColor: isMe ? (isDarkMode ? '#9ca3af' : '#6b7280') : (isDarkMode ? '#4b5563' : '#d1d5db')
-                            }}
-                          >
-                            {friend.rank > 99 ? '···' : friend.rank}
-                          </div>
-                        )}
-                      </div>
+                      {/* Top 3: Show rank icons only */}
+                      {friend.rank <= 3 ? (
+                        <div className="flex items-center justify-center" style={{
+                          width: '28px',
+                          height: friend.rank === 1 ? '28px' : friend.rank === 2 ? '26px' : '24px',
+                          marginRight: '8px'
+                        }}>
+                          {friend.rank === 1 ? (
+                            <PlatinumIcon size={28} />
+                          ) : friend.rank === 2 ? (
+                            <GoldIcon size={26} />
+                          ) : (
+                            <SilverIcon size={24} />
+                          )}
+                        </div>
+                      ) : (
+                        /* Rank 4+: Show profile picture or default avatar */
+                        <div className="flex items-center justify-center" style={{
+                          width: '28px',
+                          height: '28px',
+                          marginRight: '8px'
+                        }}>
+                          {friend.profileImage ? (
+                            <img
+                              src={friend.profileImage}
+                              alt={`${friend.name} profile`}
+                              className="w-7 h-7 rounded-full object-cover border"
+                              style={{ borderColor: isDarkMode ? '#4b5563' : '#d1d5db' }}
+                            />
+                          ) : (
+                            <div
+                              className="w-7 h-7 rounded-full border flex items-center justify-center bg-gray-200"
+                              style={{ borderColor: isDarkMode ? '#4b5563' : '#d1d5db' }}
+                            >
+                              <span className="text-xs text-gray-500">{friend.name.charAt(0)}</span>
+                            </div>
+                          )}
+                        </div>
+                      )}
                       <div className="flex-1 flex flex-col items-start">
                         <span className={`${friend.rank === 1 ? 'text-sm' : friend.rank === 2 ? 'text-[13px]' : 'text-xs'} ${isMe ? `font-medium ${textColor}` : isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>{friend.name}</span>
                         {friend.id && <span className={`${friend.rank === 1 ? 'text-[10px]' : friend.rank === 2 ? 'text-[9px]' : 'text-[8px]'} ${isDarkMode ? 'text-gray-500' : 'text-gray-400'} ${friend.rank === 1 ? '-mt-[1.5px]' : friend.rank === 2 ? '-mt-[3px]' : '-mt-[1px]'}`}>@{friend.id}</span>}

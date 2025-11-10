@@ -108,34 +108,44 @@ const SearchFriends = ({ isDarkMode, onBack, userRanking = 'bronze', showToast, 
 
     if (searchTerm.trim()) {
       const searchLower = searchTerm.toLowerCase().trim();
-      let results = [];
 
-      // user_f_id로 검색하는 경우
-      const fIdResults = allUsers.filter(user => {
-        // 정확한 user_f_id 매치
-        return user.fId && user.fId.toLowerCase() === searchLower;
+      // user_f_id 또는 이름에 검색어가 포함된 모든 사용자 찾기 (부분 일치)
+      let results = allUsers.filter(user => {
+        const fIdMatch = user.fId && user.fId.toLowerCase().includes(searchLower);
+        const nameMatch = user.name && user.name.toLowerCase().includes(searchLower);
+        return fIdMatch || nameMatch;
       });
-
-      if (fIdResults.length > 0) {
-        results = fIdResults;
-      }
-
-      // 이름으로 검색하는 경우 (user_f_id 검색 결과가 없을 때)
-      if (results.length === 0) {
-        const nameResults = allUsers.filter(user => {
-          // 정확한 이름 매치
-          return user.name === searchTerm.trim();
-        });
-
-        if (nameResults.length > 0) {
-          results = nameResults;
-        }
-      }
 
       // 본인은 검색 결과에서 제외 (user_f_id 기준)
       if (userFId) {
         results = results.filter(user => user.fId !== userFId);
       }
+
+      // 검색 결과를 관련성 순으로 정렬 (정확한 일치가 우선)
+      results.sort((a, b) => {
+        const aFIdExact = a.fId && a.fId.toLowerCase() === searchLower;
+        const bFIdExact = b.fId && b.fId.toLowerCase() === searchLower;
+        const aNameExact = a.name && a.name.toLowerCase() === searchLower;
+        const bNameExact = b.name && b.name.toLowerCase() === searchLower;
+
+        // 정확한 일치가 있으면 우선
+        if (aFIdExact || aNameExact) return -1;
+        if (bFIdExact || bNameExact) return 1;
+
+        // 이름이 검색어로 시작하는 경우 우선
+        const aNameStarts = a.name && a.name.toLowerCase().startsWith(searchLower);
+        const bNameStarts = b.name && b.name.toLowerCase().startsWith(searchLower);
+        if (aNameStarts && !bNameStarts) return -1;
+        if (!aNameStarts && bNameStarts) return 1;
+
+        // fId가 검색어로 시작하는 경우 우선
+        const aFIdStarts = a.fId && a.fId.toLowerCase().startsWith(searchLower);
+        const bFIdStarts = b.fId && b.fId.toLowerCase().startsWith(searchLower);
+        if (aFIdStarts && !bFIdStarts) return -1;
+        if (!aFIdStarts && bFIdStarts) return 1;
+
+        return 0;
+      });
 
       setSearchResults(results);
     } else {

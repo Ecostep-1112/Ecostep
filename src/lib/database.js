@@ -619,23 +619,64 @@ export const getUserDailyChallengeRecords = async (userId) => {
 // 제로 챌린지 플라스틱 기록 저장
 export const saveZeroChallengeRecord = async (userId, plasticData) => {
   try {
-    const { data, error } = await supabase
-      .from('zero_chal_data')
-      .insert({
-        record_id: `${userId}_${Date.now()}`,
-        user_id: userId,
-        item_id: plasticData.item_id || null,
-        item_num: plasticData.item_num || 1,
-        tracked_date: plasticData.tracked_date || new Date().toISOString().split('T')[0],
-        quantity: plasticData.quantity || 1,
-        weight: plasticData.weight || 0,
-        created_at: new Date().toISOString().split('T')[0] // DATE 타입으로 변경
-      })
-      .select()
-      .single();
+    const trackedDate = plasticData.tracked_date || new Date().toISOString().split('T')[0];
+    const itemName = plasticData.item_name || 'unknown';
 
-    if (error) throw error;
-    return { data, error: null };
+    // 1. 기존 데이터 확인 (같은 날짜, 같은 아이템)
+    const { data: existing, error: fetchError } = await supabase
+      .from('zero_chal_data')
+      .select('*')
+      .eq('user_id', userId)
+      .eq('tracked_date', trackedDate)
+      .eq('item_name', itemName)
+      .maybeSingle(); // single 대신 maybeSingle 사용 (없으면 null 반환)
+
+    if (fetchError) {
+      console.error('기존 데이터 조회 에러:', fetchError);
+      throw fetchError;
+    }
+
+    let result;
+
+    if (existing) {
+      // 2-A. 기존 데이터가 있으면 수량과 무게 증가
+      const { data, error } = await supabase
+        .from('zero_chal_data')
+        .update({
+          quantity: existing.quantity + (plasticData.quantity || 1),
+          weight: existing.weight + (plasticData.weight || 0)
+        })
+        .eq('record_id', existing.record_id)
+        .select()
+        .single();
+
+      if (error) throw error;
+      result = data;
+      console.log('플라스틱 기록 업데이트:', result);
+    } else {
+      // 2-B. 기존 데이터가 없으면 새로 생성
+      const { data, error } = await supabase
+        .from('zero_chal_data')
+        .insert({
+          record_id: crypto.randomUUID(),
+          user_id: userId,
+          item_id: null, // Foreign key constraint 우회
+          item_name: plasticData.item_name,
+          item_num: plasticData.item_num || 1,
+          tracked_date: trackedDate,
+          quantity: plasticData.quantity || 1,
+          weight: plasticData.weight || 0,
+          created_at: trackedDate
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+      result = data;
+      console.log('플라스틱 기록 생성:', result);
+    }
+
+    return { data: result, error: null };
   } catch (error) {
     console.error('플라스틱 기록 저장 에러:', error);
     return { data: null, error };

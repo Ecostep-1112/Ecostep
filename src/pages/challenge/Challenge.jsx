@@ -11,6 +11,7 @@ import {
   selectedChallengeStorage
 } from '../../utils/localStorage';
 import { supabase } from '../../lib/supabase';
+import { getUserZeroChallengeRecords, saveZeroChallengeRecord } from '../../lib/database';
 
 const Challenge = ({ 
   isDarkMode,
@@ -270,6 +271,63 @@ const Challenge = ({
       return () => document.removeEventListener('click', handleClickOutside);
     }
   }, [showGoalDropdown, showPlasticSelect, showUsagePeriodDropdown]);
+
+  // Supabase에서 플라스틱 기록 로드
+  useEffect(() => {
+    const loadPlasticRecordsFromDB = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+
+        // 최근 3개월 데이터만 로드
+        const threeMonthsAgo = new Date();
+        threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
+        const startDate = threeMonthsAgo.toISOString().split('T')[0];
+
+        const { data, error } = await getUserZeroChallengeRecords(user.id, startDate);
+
+        if (error) {
+          console.error('플라스틱 기록 로드 실패:', error);
+          return;
+        }
+
+        if (data && data.length > 0) {
+          // Supabase 데이터를 plasticRecords 형식으로 변환
+          const formattedRecords = data.map(record => ({
+            date: `${record.tracked_date}T00:00:00.000Z`, // 시간대 문제 방지 - 날짜만 사용
+            item: record.item_name || record.item_id || '알 수 없음',
+            quantity: record.quantity || record.item_num || 1,
+            unitWeight: Math.round(record.weight / (record.quantity || 1)),
+            totalWeight: record.weight,
+            recordId: record.record_id // DB record ID 추가
+          }));
+
+          // 기존 localStorage 데이터 가져오기
+          const existingRecords = JSON.parse(localStorage.getItem('plasticRecords') || '[]');
+
+          // DB에서 가져온 레코드의 record_id 목록
+          const dbRecordIds = new Set(formattedRecords.map(r => r.recordId).filter(Boolean));
+
+          // localStorage에만 있는 데이터 (DB에 저장되지 않은 새 데이터)
+          const localOnlyRecords = existingRecords.filter(record =>
+            !record.recordId || !dbRecordIds.has(record.recordId)
+          );
+
+          // DB 데이터를 우선으로 하고, localStorage 전용 데이터 추가
+          const finalRecords = [...formattedRecords, ...localOnlyRecords];
+
+          setPlasticRecords(finalRecords);
+          localStorage.setItem('plasticRecords', JSON.stringify(finalRecords));
+
+          console.log('플라스틱 기록 로드 완료:', finalRecords.length, '개 (DB:', formattedRecords.length, ', Local:', localOnlyRecords.length, ')');
+        }
+      } catch (error) {
+        console.error('플라스틱 기록 로드 에러:', error);
+      }
+    };
+
+    loadPlasticRecordsFromDB();
+  }, []); // 컴포넌트 마운트 시 한 번만 실행
 
   // 매주 월요일에 포인트 지급 및 리셋
   useEffect(() => {
@@ -705,27 +763,33 @@ const Challenge = ({
   // 사용량 데이터 계산 함수
   const getUsageData = () => {
     if (!usagePeriod) return [];
-    
+
     const today = new Date(testDate || new Date());
-    today.setHours(23, 59, 59, 999);
-    
+    today.setHours(0, 0, 0, 0);
+
+    // 날짜를 YYYY-MM-DD 형식으로 변환하는 헬퍼 함수
+    const getDateString = (date) => {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    };
+
     if (usagePeriod === '일주일') {
       // 최근 7일간 데이터
       const data = [];
       for (let i = 6; i >= 0; i--) {
         const date = new Date(today);
         date.setDate(today.getDate() - i);
-        date.setHours(0, 0, 0, 0);
-        const nextDate = new Date(date);
-        nextDate.setDate(date.getDate() + 1);
-        
+        const dateStr = getDateString(date);
+
         const dayUsage = plasticRecords
           .filter(record => {
-            const recordDate = new Date(record.date);
-            return recordDate >= date && recordDate < nextDate;
+            const recordDateStr = record.date.split('T')[0]; // ISO 문자열에서 날짜 부분만 추출
+            return recordDateStr === dateStr;
           })
           .reduce((sum, record) => sum + record.totalWeight, 0);
-        
+
         data.push({
           label: `${date.getDate()}일`,
           value: dayUsage
@@ -740,18 +804,24 @@ const Challenge = ({
         weekEnd.setDate(today.getDate() - (i * 7));
         const weekStart = new Date(weekEnd);
         weekStart.setDate(weekEnd.getDate() - 6);
-        weekStart.setHours(0, 0, 0, 0);
-        weekEnd.setHours(23, 59, 59, 999);
-        
+
+        const weekStartStr = getDateString(weekStart);
+        const weekEndStr = getDateString(weekEnd);
+
         const weekUsage = plasticRecords
           .filter(record => {
-            const recordDate = new Date(record.date);
-            return recordDate >= weekStart && recordDate <= weekEnd;
+            const recordDateStr = record.date.split('T')[0];
+            return recordDateStr >= weekStartStr && recordDateStr <= weekEndStr;
           })
           .reduce((sum, record) => sum + record.totalWeight, 0);
-        
+
+        // 월이 다르면 월 표시, 같으면 일만 표시
+        const endLabel = weekStart.getMonth() === weekEnd.getMonth()
+          ? `${weekEnd.getDate()}`
+          : `${weekEnd.getMonth()+1}/${weekEnd.getDate()}`;
+
         data.push({
-          label: `${weekStart.getMonth()+1}/${weekStart.getDate()}-${weekEnd.getDate()}`,
+          label: `${weekStart.getMonth()+1}/${weekStart.getDate()}-${endLabel}`,
           value: weekUsage
         });
       }
@@ -764,14 +834,18 @@ const Challenge = ({
         monthEnd.setMonth(today.getMonth() - i);
         const monthStart = new Date(monthEnd.getFullYear(), monthEnd.getMonth(), 1);
         const nextMonth = new Date(monthEnd.getFullYear(), monthEnd.getMonth() + 1, 1);
-        
+        nextMonth.setDate(0); // 해당 월의 마지막 날
+
+        const monthStartStr = getDateString(monthStart);
+        const monthEndStr = getDateString(nextMonth);
+
         const monthUsage = plasticRecords
           .filter(record => {
-            const recordDate = new Date(record.date);
-            return recordDate >= monthStart && recordDate < nextMonth;
+            const recordDateStr = record.date.split('T')[0];
+            return recordDateStr >= monthStartStr && recordDateStr <= monthEndStr;
           })
           .reduce((sum, record) => sum + record.totalWeight, 0);
-        
+
         const monthNames = ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'];
         data.push({
           label: monthNames[monthEnd.getMonth()],
@@ -787,14 +861,18 @@ const Challenge = ({
         monthEnd.setMonth(today.getMonth() - i);
         const monthStart = new Date(monthEnd.getFullYear(), monthEnd.getMonth(), 1);
         const nextMonth = new Date(monthEnd.getFullYear(), monthEnd.getMonth() + 1, 1);
-        
+        nextMonth.setDate(0); // 해당 월의 마지막 날
+
+        const monthStartStr = getDateString(monthStart);
+        const monthEndStr = getDateString(nextMonth);
+
         const monthUsage = plasticRecords
           .filter(record => {
-            const recordDate = new Date(record.date);
-            return recordDate >= monthStart && recordDate < nextMonth;
+            const recordDateStr = record.date.split('T')[0];
+            return recordDateStr >= monthStartStr && recordDateStr <= monthEndStr;
           })
           .reduce((sum, record) => sum + record.totalWeight, 0);
-        
+
         data.push({
           label: `${monthEnd.getMonth() + 1}월`,
           value: monthUsage
@@ -804,27 +882,27 @@ const Challenge = ({
     } else if (usagePeriod === '전체') {
       // 전체 기간 데이터 (연도별로 집계, 최대 6년)
       if (plasticRecords.length === 0) return [];
-      
+
       const yearlyData = {};
       plasticRecords.forEach(record => {
-        const date = new Date(record.date);
-        const year = date.getFullYear();
+        const dateStr = record.date.split('T')[0]; // YYYY-MM-DD
+        const year = dateStr.split('-')[0]; // YYYY
         if (!yearlyData[year]) {
           yearlyData[year] = 0;
         }
         yearlyData[year] += record.totalWeight;
       });
-      
+
       const years = Object.keys(yearlyData).map(Number).sort((a, b) => a - b);
-      
+
       // 최대 6년만 표시
       const displayYears = years.slice(-6);
-      
+
       const data = displayYears.map(year => ({
         label: `${year}년`,
         value: yearlyData[year]
       }));
-      
+
       return data;
     }
     
@@ -1957,21 +2035,29 @@ const Challenge = ({
                     }
 
                     if (recordItem && plasticQuantity > 0) {
+                      // 로컬 날짜를 YYYY-MM-DD 형식으로 변환 (UTC 변환 없이)
+                      const currentDate = testDate || new Date();
+                      let localDateStr;
+
+                      if (typeof currentDate === 'string') {
+                        localDateStr = currentDate.split('T')[0];
+                      } else {
+                        const year = currentDate.getFullYear();
+                        const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+                        const day = String(currentDate.getDate()).padStart(2, '0');
+                        localDateStr = `${year}-${month}-${day}`;
+                      }
+
                       const newRecord = {
-                        date: new Date(testDate || new Date()).toISOString(),
+                        date: `${localDateStr}T00:00:00.000Z`, // 날짜만 사용, 시간은 00:00:00
                         item: recordItem.name,
                         quantity: plasticQuantity,
                         unitWeight: recordItem.weight,
                         totalWeight: totalWeight
                       };
 
-                      const updatedRecords = [...plasticRecords, newRecord];
-                      setPlasticRecords(updatedRecords);
-                      localStorage.setItem('plasticRecords', JSON.stringify(updatedRecords));
-
-                      // Supabase에 플라스틱 기록 저장
+                      // Supabase에 플라스틱 기록 저장 (UPSERT 방식)
                       try {
-                        // Supabase Auth 사용자 ID 가져오기 (UUID)
                         const { data: { user }, error: userError } = await supabase.auth.getUser();
 
                         if (userError) {
@@ -1980,29 +2066,35 @@ const Challenge = ({
                         }
 
                         if (user) {
-                          const { error } = await supabase
-                            .from('zero_chal_data')
-                            .insert({
-                              record_id: crypto.randomUUID(),
-                              user_id: user.id, // Supabase Auth UUID 사용
-                              item_id: recordItem.id || null,
-                              item_num: 1,
-                              tracked_date: new Date(testDate || new Date()).toISOString().split('T')[0],
-                              quantity: plasticQuantity,
-                              weight: totalWeight
-                            });
+                          const { data, error } = await saveZeroChallengeRecord(user.id, {
+                            item_id: recordItem.name || recordItem.id || 'unknown',
+                            item_name: recordItem.name,
+                            item_num: 1,
+                            tracked_date: localDateStr, // 이미 계산된 로컬 날짜 사용
+                            quantity: plasticQuantity,
+                            weight: totalWeight
+                          });
 
                           if (error) {
                             console.error('플라스틱 기록 저장 에러:', error);
-                            throw error;
+                          } else {
+                            console.log('플라스틱 기록 저장 성공:', data);
+                            // DB에서 반환된 record_id를 newRecord에 추가
+                            if (data && data.record_id) {
+                              newRecord.recordId = data.record_id;
+                            }
                           }
-                          console.log('플라스틱 기록 저장 성공');
                         } else {
                           console.warn('로그인된 사용자가 없습니다.');
                         }
                       } catch (error) {
                         console.error('플라스틱 기록 저장 실패:', error);
                       }
+
+                      // DB 저장 후 plasticRecords에 추가 (record_id 포함)
+                      const updatedRecords = [...plasticRecords, newRecord];
+                      setPlasticRecords(updatedRecords);
+                      localStorage.setItem('plasticRecords', JSON.stringify(updatedRecords));
 
                       // 입력 초기화
                       setSelectedPlasticItem(null);
@@ -2023,11 +2115,48 @@ const Challenge = ({
               <h3 className={`${textColor} text-sm font-medium mb-3`}>사용량 분석</h3>
               <div className="space-y-2">
                 {(() => {
+                  // 선택된 기간에 맞는 데이터만 필터링
+                  const today = new Date(testDate || new Date());
+                  today.setHours(0, 0, 0, 0);
+
+                  let filteredRecords = plasticRecords;
+
+                  if (usagePeriod === '일주일') {
+                    const weekAgo = new Date(today);
+                    weekAgo.setDate(today.getDate() - 6);
+                    filteredRecords = plasticRecords.filter(record => {
+                      const recordDate = new Date(record.date);
+                      return recordDate >= weekAgo && recordDate <= today;
+                    });
+                  } else if (usagePeriod === '한 달') {
+                    const monthAgo = new Date(today);
+                    monthAgo.setDate(today.getDate() - 27); // 4주
+                    filteredRecords = plasticRecords.filter(record => {
+                      const recordDate = new Date(record.date);
+                      return recordDate >= monthAgo && recordDate <= today;
+                    });
+                  } else if (usagePeriod === '6개월') {
+                    const sixMonthsAgo = new Date(today);
+                    sixMonthsAgo.setMonth(today.getMonth() - 6);
+                    filteredRecords = plasticRecords.filter(record => {
+                      const recordDate = new Date(record.date);
+                      return recordDate >= sixMonthsAgo && recordDate <= today;
+                    });
+                  } else if (usagePeriod === '1년') {
+                    const yearAgo = new Date(today);
+                    yearAgo.setFullYear(today.getFullYear() - 1);
+                    filteredRecords = plasticRecords.filter(record => {
+                      const recordDate = new Date(record.date);
+                      return recordDate >= yearAgo && recordDate <= today;
+                    });
+                  }
+                  // usagePeriod === '전체'인 경우 filteredRecords는 plasticRecords 그대로
+
                   // 아이템별로 그룹핑 및 정렬
                   const analysis = {};
                   let totalWeight = 0;
-                  
-                  plasticRecords.forEach(record => {
+
+                  filteredRecords.forEach(record => {
                     const itemName = record.item;
                     if (!analysis[itemName]) {
                       analysis[itemName] = { weight: 0, count: 0 };
@@ -2129,22 +2258,25 @@ const Challenge = ({
                     const date = new Date(today);
                     date.setDate(date.getDate() - i);
                     date.setHours(0, 0, 0, 0);
-                    
-                    const nextDate = new Date(date);
-                    nextDate.setDate(nextDate.getDate() + 1);
-                    
+
+                    // 로컬 날짜를 YYYY-MM-DD 형식으로 변환 (UTC 변환 없이)
+                    const year = date.getFullYear();
+                    const month = String(date.getMonth() + 1).padStart(2, '0');
+                    const day = String(date.getDate()).padStart(2, '0');
+                    const dateStr = `${year}-${month}-${day}`;
+
                     const dayRecords = plasticRecords.filter(record => {
-                      const recordDate = new Date(record.date);
-                      return recordDate >= date && recordDate < nextDate;
+                      const recordDateStr = record.date.split('T')[0];
+                      return recordDateStr === dateStr;
                     });
-                    
+
                     const totalWeight = dayRecords.reduce((sum, record) => sum + record.totalWeight, 0);
-                    
+
                     const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
                     weekData.push({
                       day: dayNames[date.getDay()],
                       usage: totalWeight,
-                      date: date.toLocaleDateString('ko-KR', { month: 'numeric', day: 'numeric' })
+                      date: `${date.getMonth() + 1}/${date.getDate()}`
                     });
                   }
                   
@@ -2238,15 +2370,18 @@ const Challenge = ({
                     const date = new Date(monday);
                     date.setDate(monday.getDate() + i);
                     date.setHours(0, 0, 0, 0);
-                    
-                    const nextDate = new Date(date);
-                    nextDate.setDate(date.getDate() + 1);
-                    
+
+                    // 로컬 날짜를 YYYY-MM-DD 형식으로 변환 (UTC 변환 없이)
+                    const year = date.getFullYear();
+                    const month = String(date.getMonth() + 1).padStart(2, '0');
+                    const day = String(date.getDate()).padStart(2, '0');
+                    const dateStr = `${year}-${month}-${day}`;
+
                     const dayRecords = plasticRecords.filter(record => {
-                      const recordDate = new Date(record.date);
-                      return recordDate >= date && recordDate < nextDate;
+                      const recordDateStr = record.date.split('T')[0];
+                      return recordDateStr === dateStr;
                     });
-                    
+
                     weekRecords.push({
                       day: weekDays[i],
                       date: date,

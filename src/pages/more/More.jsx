@@ -49,9 +49,9 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
   const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
   const [categoryIndices, setCategoryIndices] = useState({});
   const [userLocation, setUserLocation] = useState(null);
-  // 제로웨이스트 맵 카테고리 - localStorage에서 불러오거나 기본값 '없음'
+  // 제로웨이스트 맵 카테고리 - localStorage에서 불러오거나 기본값 '선택'
   const [selectedPlaceCategory, setSelectedPlaceCategory] = useState(() => {
-    return localStorage.getItem('zeroWastePlaceCategory') || '없음';
+    return localStorage.getItem('zeroWastePlaceCategory') || '선택';
   });
   const [showPlaceCategoryDropdown, setShowPlaceCategoryDropdown] = useState(false);
   const [zeroWastePlaces, setZeroWastePlaces] = useState([]);
@@ -62,8 +62,8 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
 
   const categories = ['랜덤', '재활용 팁', '생활 습관', '에너지 절약', '제로웨이스트'];
 
-  // 제로웨이스트 맵 카테고리 정의 - "없음"을 첫 번째로 추가
-  const placeCategories = ['없음', '제로웨이스트샵', '리필스테이션', '친환경매장', '재활용센터'];
+  // 제로웨이스트 맵 카테고리 정의 - "선택"을 첫 번째로 추가
+  const placeCategories = ['선택', '제로웨이스트샵', '리필스테이션', '친환경매장', '재활용센터'];
 
   // 카테고리별 검색어 매핑 (전체 제거)
   const categorySearchQueries = {
@@ -79,8 +79,8 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
       setIsLoadingPlaces(true);
       setPlaceError(null);
 
-      // "없음" 카테고리가 선택되면 장소를 표시하지 않음
-      if (selectedPlaceCategory === '없음') {
+      // "선택" 카테고리가 선택되면 장소를 표시하지 않음
+      if (selectedPlaceCategory === '선택') {
         setZeroWastePlaces([]);
         setIsLoadingPlaces(false);
         return;
@@ -185,6 +185,13 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
       loadPlaces();
     }
   }, [userLocation, selectedPlaceCategory]);
+
+  // 컴포넌트 언마운트 시 카테고리를 '선택'으로 리셋
+  useEffect(() => {
+    return () => {
+      localStorage.setItem('zeroWastePlaceCategory', '선택');
+    };
+  }, []);
 
   const getUserLocation = () => {
     if (navigator.geolocation) {
@@ -581,8 +588,8 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
             </div>
           </div>
           
-          {/* "없음" 카테고리 선택 시 */}
-          {selectedPlaceCategory === '없음' ? (
+          {/* "선택" 카테고리 선택 시 */}
+          {selectedPlaceCategory === '선택' ? (
             <div className="flex flex-col items-center justify-center py-8">
               <p className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} text-sm text-center`}>
                 카테고리를 정해 주위의 장소를 찾아보세요

@@ -1,12 +1,7 @@
 // Claude API 서비스
 // 백엔드 서버를 통해 API를 호출합니다 (보안)
 import { CapacitorHttp } from '@capacitor/core';
-
-// 오늘 날짜를 YYYY-MM-DD 형식으로 반환
-const getTodayDateString = () => {
-  const today = new Date();
-  return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
-};
+import { getTodayDateString, createCacheKey, cleanOldCache } from '../utils/dateUtils';
 
 // 오늘의 팁이 이미 생성되었는지 확인
 export const isTipGeneratedToday = () => {
@@ -27,6 +22,10 @@ export const generateDailyTip = async () => {
     }
 
     console.log('오늘의 새로운 팁 생성 중...');
+
+    // 🧹 오래된 팁 캐시 정리 (1일 이상 된 캐시 삭제)
+    cleanOldCache('env-tip', 1);
+    cleanOldCache('currentDailyTip', 1);
 
     // 저장된 카테고리 또는 기본값 사용
     const category = localStorage.getItem('tipCategory') || '랜덤';
@@ -99,9 +98,11 @@ export const getTodayTip = () => {
 
 export const generateEnvironmentalTip = async (category = null) => {
   try {
+    // 🧹 오래된 캐시 먼저 정리
+    cleanOldCache('env-tip', 1);
+
     // 오늘 날짜를 기준으로 캐시 키 생성
-    const today = new Date().toDateString(); // "Mon Jan 20 2025"
-    const cacheKey = `env-tip-${today}-${category || '랜덤'}`;
+    const cacheKey = createCacheKey('env-tip', category || '랜덤');
 
     // 캐시 확인
     const cachedTip = localStorage.getItem(cacheKey);

@@ -25,21 +25,16 @@ const ChatBot = ({ isDarkMode, onBack, platform, isKeyboardVisible }) => {
     };
   }, []);
 
-  // 컴포넌트 언마운트 시 대화 세션 리셋
+  // 컴포넌트 마운트 시 대화 세션 초기화 (새로고침 시 초기화)
   useEffect(() => {
-    return () => {
-      // 컴포넌트가 언마운트될 때 localStorage 초기화
-      const initialMessage = [{ id: 1, text: '안녕하세요. 에코스텝 고객센터입니다. 앱 사용에 대해 무엇이든 물어보세요.', sender: 'bot', timestamp: new Date() }];
-      localStorage.setItem('chatbot_messages', JSON.stringify(initialMessage));
-    };
+    // 🧹 컴포넌트가 마운트될 때 localStorage 초기화 (새로고침 시마다 초기화)
+    const initialMessage = [{ id: 1, text: '안녕하세요. 에코스텝 고객센터입니다. 앱 사용에 대해 무엇이든 물어보세요.', sender: 'bot', timestamp: new Date() }];
+    setMessages(initialMessage);
+    localStorage.setItem('chatbot_messages', JSON.stringify(initialMessage));
   }, []);
-  // Load saved messages from localStorage
+
+  // Load saved messages from localStorage (더 이상 사용 안 함 - 항상 초기 상태로 시작)
   const loadMessages = () => {
-    const saved = localStorage.getItem('chatbot_messages');
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      return parsed.map(msg => ({ ...msg, timestamp: new Date(msg.timestamp) }));
-    }
     return [{ id: 1, text: '안녕하세요. 에코스텝 고객센터입니다. 앱 사용에 대해 무엇이든 물어보세요.', sender: 'bot', timestamp: new Date() }];
   };
 

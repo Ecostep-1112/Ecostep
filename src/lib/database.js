@@ -570,6 +570,26 @@ export const purchaseItem = async (userId, itemId) => {
   }
 };
 
+// 사용자의 총 플라스틱 절약량 계산 (DB에서 직접 계산)
+export const getTotalPlasticSaved = async (userId) => {
+  try {
+    const { data, error } = await supabase
+      .from('zero_chal_data')
+      .select('weight')
+      .eq('user_id', userId);
+
+    if (error) throw error;
+
+    // 모든 weight 합산
+    const total = data.reduce((sum, record) => sum + (record.weight || 0), 0);
+
+    return { data: total, error: null };
+  } catch (error) {
+    console.error('총 플라스틱 절약량 계산 에러:', error);
+    return { data: 0, error };
+  }
+};
+
 // ======================== 데일리 챌린지 기록 관련 함수 ========================
 
 // 데일리 챌린지 기록 저장
@@ -619,8 +639,14 @@ export const getUserDailyChallengeRecords = async (userId) => {
 // 제로 챌린지 플라스틱 기록 저장
 export const saveZeroChallengeRecord = async (userId, plasticData) => {
   try {
+    // ✅ item_name 필수 검증
+    if (!plasticData.item_name || plasticData.item_name.trim() === '') {
+      console.error('❌ item_name이 비어있습니다:', plasticData);
+      throw new Error('플라스틱 아이템 이름이 필요합니다.');
+    }
+
     const trackedDate = plasticData.tracked_date || new Date().toISOString().split('T')[0];
-    const itemName = plasticData.item_name || 'unknown';
+    const itemName = plasticData.item_name;
 
     // 1. 기존 데이터 확인 (같은 날짜, 같은 아이템)
     const { data: existing, error: fetchError } = await supabase

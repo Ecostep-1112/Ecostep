@@ -7,11 +7,11 @@ import { validatePlasticItem, fallbackEstimation } from '../../utils/validatePla
 import { formatWeight } from '../../utils/formatters';
 import {
   customChallengeStorage,
-  customPlasticItemStorage,
-  selectedChallengeStorage
+  customPlasticItemStorage
 } from '../../utils/localStorage';
 import { supabase } from '../../lib/supabase';
 import { getUserZeroChallengeRecords, saveZeroChallengeRecord } from '../../lib/database';
+import { getThisMonday, toDateString } from '../../utils/dateUtils';
 
 const Challenge = ({ 
   isDarkMode,
@@ -52,9 +52,6 @@ const Challenge = ({
   const [showCustomPlastic, setShowCustomPlastic] = useState(false);
   const [previousPlasticItem, setPreviousPlasticItem] = useState(''); // 이전 플라스틱 항목 저장
   const [isLoadingWeight, setIsLoadingWeight] = useState(false);
-  const [customPlasticItems2, setCustomPlasticItems2] = useState(() => {
-    return customPlasticItemStorage.get();
-  });
   const [showAllPastChallenges, setShowAllPastChallenges] = useState(false);
   const [selectedPlasticItem, setSelectedPlasticItem] = useState(null);
   const [showPlasticSelect, setShowPlasticSelect] = useState(false);
@@ -342,32 +339,32 @@ const Challenge = ({
         setNotificationsList: !!setNotificationsList
       });
       
-      // 월요일인 경우
-      if (dayOfWeek === 1) {
-        const lastMonday = localStorage.getItem('lastMondayCheck');
-        const todayString = now.toISOString().split('T')[0];
-        
-        console.log('[제로챌린지] 월요일 감지:', {
-          lastMonday,
-          todayString,
-          이미체크: lastMonday === todayString
-        });
-        
-        // 오늘 체크하지 않았다면
-        if (lastMonday !== todayString) {
-          
+      // 🔄 개선: goalSetDate 기준으로 주간 리셋 (localStorage lastMondayCheck 불필요)
+      if (goalSetDate) {
+        const todayString = toDateString(now);
+        const thisMonday = getThisMonday();
+        const goalSetString = toDateString(goalSetDate);
+
+        // 목표 설정일이 이번 주 월요일보다 이전이면 (= 지난 주에 설정됨)
+        if (goalSetString < thisMonday) {
+          console.log('[제로챌린지] 새로운 주 감지 - 목표 리셋:', {
+            목표설정일: goalSetString,
+            이번주월요일: thisMonday,
+            오늘: todayString
+          });
+
           // 플라스틱 목표가 있었다면 달성률 체크
           if (plasticGoal && plasticGoal > 0) {
             // 지난 주 데이터로 달성률 계산
             const weeklyUsage = getWeeklyPlasticUsage(true); // true = 지난 주 데이터
             const achievementPercent = Math.max(0, 100 - (weeklyUsage / plasticGoal * 100));
-            
+
             console.log('[제로챌린지] 달성률 계산:', {
               목표: plasticGoal,
               지난주_사용량: weeklyUsage,
               달성률: achievementPercent
             });
-            
+
             // 달성률 1% 이상이면 알림
             if (achievementPercent >= 1) {
               if (setNotificationsList) {
@@ -395,7 +392,7 @@ const Challenge = ({
           } else {
             console.log('[제로챌린지] 목표 없음 또는 0');
           }
-          
+
           // 새로운 주 시작 - 목표 리셋
           localStorage.removeItem('goalSetDate');
           setGoalSetDate(null);
@@ -403,10 +400,8 @@ const Challenge = ({
           setTempPlasticGoal(null);
           localStorage.removeItem('plasticGoal');
           setSelectedChallenge(null);
-          
-          // 체크 완료 표시
-          localStorage.setItem('lastMondayCheck', todayString);
-          console.log('[제로챌린지] 월요일 처리 완료');
+
+          console.log('[제로챌린지] 주간 목표 리셋 완료');
         }
       }
     };
@@ -672,8 +667,8 @@ const Challenge = ({
     { id: 'custom_input', name: '기타 (직접 입력)', weight: 0, category: 'custom' }
   ];
 
-  // 기타(추가) 카테고리에 들어갈 아이템 목록
-  const customAddedItems = customPlasticItems2.map(item => ({
+  // 기타(추가) 카테고리에 들어갈 아이템 목록 (customPlasticItems 사용)
+  const customAddedItems = customPlasticItems.map(item => ({
     ...item,
     category: 'custom-added'
   }));
@@ -1749,8 +1744,8 @@ const Challenge = ({
                                   weight: parseInt(customPlasticWeight),
                                   desc: `추천 ${customPlasticWeight}g`
                                 };
-                                const updatedItems = [...customPlasticItems2, newItem];
-                                setCustomPlasticItems2(updatedItems);
+                                const updatedItems = [...customPlasticItems, newItem];
+                                setCustomPlasticItems(updatedItems);
                                 customPlasticItemStorage.set(updatedItems);
 
                                 // Supabase zero_chal_item 테이블에도 추가
@@ -1808,8 +1803,8 @@ const Challenge = ({
                                 weight: parseInt(customPlasticWeight),
                                 desc: `추천 ${customPlasticWeight}g`
                               };
-                              setCustomPlasticItems2([...customPlasticItems2, newItem]);
-                              localStorage.setItem('customPlasticItems2', JSON.stringify([...customPlasticItems2, newItem]));
+                              setCustomPlasticItems([...customPlasticItems, newItem]);
+                              customPlasticItemStorage.set([...customPlasticItems, newItem]);
 
                               // Supabase zero_chal_item 테이블에도 추가
                               try {
@@ -1919,21 +1914,14 @@ const Challenge = ({
                                       </span>
                                     )}
                                   </button>
-                                  {(customPlasticItems.find(custom => custom.name === item.name) || 
-                                    customPlasticItems2.find(custom => custom.name === item.name)) && (
+                                  {customPlasticItems.find(custom => custom.name === item.name) && (
                                     <button
                                       onClick={(e) => {
                                         e.stopPropagation();
-                                        // customPlasticItems2에서 삭제
-                                        if (customPlasticItems2.find(c => c.name === item.name)) {
-                                          const updatedItems2 = customPlasticItems2.filter(c => c.name !== item.name);
-                                          setCustomPlasticItems2(updatedItems2);
-                                          customPlasticItemStorage.set(updatedItems2);
-                                        } else {
-                                          // 기존 customPlasticItems에서 삭제
-                                          const updatedItems = customPlasticItems.filter(c => c.name !== item.name);
-                                          setCustomPlasticItems(updatedItems);
-                                        }
+                                        // customPlasticItems에서 삭제
+                                        const updatedItems = customPlasticItems.filter(c => c.name !== item.name);
+                                        setCustomPlasticItems(updatedItems);
+                                        customPlasticItemStorage.set(updatedItems);
                                         if (selectedPlasticItem === item.name) {
                                           setSelectedPlasticItem(null);
                                         }
@@ -2035,6 +2023,13 @@ const Challenge = ({
                     }
 
                     if (recordItem && plasticQuantity > 0) {
+                      // ✅ recordItem.name 검증 추가
+                      if (!recordItem.name || recordItem.name.trim() === '') {
+                        console.error('❌ 플라스틱 아이템 이름이 없습니다:', recordItem);
+                        alert('플라스틱 아이템을 선택해주세요.');
+                        return;
+                      }
+
                       // 로컬 날짜를 YYYY-MM-DD 형식으로 변환 (UTC 변환 없이)
                       const currentDate = testDate || new Date();
                       let localDateStr;
@@ -2067,8 +2062,7 @@ const Challenge = ({
 
                         if (user) {
                           const { data, error } = await saveZeroChallengeRecord(user.id, {
-                            item_id: recordItem.name || recordItem.id || 'unknown',
-                            item_name: recordItem.name,
+                            item_name: recordItem.name, // ✅ item_name을 먼저 (필수)
                             item_num: 1,
                             tracked_date: localDateStr, // 이미 계산된 로컬 날짜 사용
                             quantity: plasticQuantity,

@@ -758,9 +758,8 @@ const Rewards = ({
               setPurchasedDecorations([]);
               setClaimedTanks([]); // 랭킹 보상 초기화
               
-              // localStorage에서 구매내역만 초기화
-              localStorage.setItem('purchasedFish', JSON.stringify([]));
-              localStorage.setItem('purchasedDecorations', JSON.stringify([]));
+              // 🗑️ 구매내역 초기화 (DB에서 관리하므로 localStorage는 불필요)
+              // DB의 user_item 테이블에서 관리되므로 localStorage는 사용하지 않음
               localStorage.setItem('claimedTanks', JSON.stringify([])); // 랭킹 보상 초기화
               
               showToast('구매내역 초기화 완료', 'success');

@@ -77,47 +77,19 @@ async function loadChatbotGuidelines() {
 // Load guidelines on startup
 loadChatbotGuidelines();
 
-// Helper function to generate mock tips
-const generateMockTip = () => {
-  const tips = [
-    {
-      title: '밀랍 랩 사용하기',
-      preview: '일회용 비닐랩 대신 재사용 가능한 밀랍 랩을 사용해보세요',
-      content: '밀랍 랩은 천연 밀랍과 면 천으로 만든 친환경 식품 포장재입니다. 비닐랩과 달리 1년 이상 재사용이 가능하며, 사용 후에는 100% 생분해됩니다. 야채, 과일, 남은 음식을 싸거나 그릇을 덮을 때 사용하세요. 손의 온기로 살짝 눌러주면 밀착되어 신선도를 유지할 수 있습니다.',
-      category: '제로웨이스트'
-    },
-    {
-      title: '메쉬백으로 장보기',
-      preview: '과일과 채소 구매 시 메쉬백을 활용해 비닐봉지를 줄여보세요',
-      content: '재사용 가능한 메쉬백은 과일과 채소를 담기에 완벽합니다. 통기성이 좋아 신선도 유지에도 도움이 되고, 가벼워서 휴대하기도 편합니다. 마트에서 제공하는 비닐봉지 대신 메쉬백을 사용하면 연간 수백 개의 비닐 사용을 줄일 수 있습니다. 사용 후에는 세탁기에 넣어 간단히 세척할 수 있어요.',
-      category: '생활 습관'
-    },
-    {
-      title: '커피 찌꺼기 활용법',
-      preview: '버려지는 커피 찌꺼기를 천연 탈취제로 재활용해보세요',
-      content: '커피를 내리고 남은 찌꺼기는 훌륭한 천연 탈취제입니다. 잘 말린 후 망사 주머니에 넣어 신발장, 냉장고, 차량에 두면 냄새를 흡수합니다. 또한 하수구에 뿌리면 기름때 제거에 효과적이고, 화분에 뿌리면 천연 비료가 됩니다. 일주일에 한 번씩 교체하면 효과적으로 사용할 수 있습니다.',
-      category: '재활용 팁'
-    },
-    {
-      title: '대기전력 차단하기',
-      preview: '멀티탭 스위치로 대기전력을 차단해 전기를 절약하세요',
-      content: '가전제품의 대기전력은 전체 전력 사용량의 10%를 차지합니다. 스위치가 있는 멀티탭을 사용하면 사용하지 않는 가전제품의 전원을 쉽게 차단할 수 있습니다. TV, 컴퓨터, 충전기 등을 사용하지 않을 때는 멀티탭 스위치를 꺼두세요. 월 전기료를 5-10% 절감할 수 있습니다.',
-      category: '에너지 절약'
-    },
-    {
-      title: '천연 수세미 사용',
-      preview: '플라스틱 수세미 대신 천연 수세미를 사용해보세요',
-      content: '수세미 열매로 만든 천연 수세미는 플라스틱 수세미와 달리 미세플라스틱을 배출하지 않습니다. 설거지할 때 세제 사용량도 줄일 수 있고, 사용 후에는 퇴비로 만들 수 있어 100% 자연 순환됩니다. 3-4개월마다 교체하면 위생적으로 사용할 수 있으며, 삶아서 소독하면 더 오래 사용할 수 있습니다.',
-      category: '제로웨이스트'
-    }
-  ];
-
-  const randomTip = tips[Math.floor(Math.random() * tips.length)];
-  return {
-    id: Date.now(),
-    ...randomTip
-  };
-};
+// ================================
+// 플라스틱 관련 키워드 (중앙 관리)
+// ================================
+const plasticKeywords = [
+  '플라스틱', '비닐', '페트', 'pet', '일회용', '용기', '컵', '빨대',
+  '봉지', '봉투', '포장', '배달', '텀블러', '에코백', '장바구니',
+  '병', '보틀', '랩', '지퍼백', '스티로폼', '테이크아웃', '물티슈',
+  '용품', '그릇', '수저', '포크', '젓가락', '나이프', '숟가락',
+  '접시', '트레이', '캡', '뚜껑', '스트로우', '커피',
+  '음료', '카페', '마트', '쇼핑', '포장지', '비닐랩', '샴푸',
+  '세제', '리필', '패키지', '포장재', '택배', '박스',
+  '버블랩', '에어캡', '완충재', '아이스팩', '보냉', '도시락'
+];
 
 // Root endpoint
 app.get('/', (req, res) => {
@@ -147,17 +119,12 @@ app.post('/api/chatbot', async (req, res) => {
 
     // Check if API key exists and is valid
     if (!CLAUDE_API_KEY || CLAUDE_API_KEY === 'your_claude_api_key_here' || !CLAUDE_API_KEY.startsWith('sk-ant-')) {
-      console.log('Using mock response - API key not properly configured');
-      // Return a helpful mock response
-      const mockResponses = [
-        '네, 도와드릴게요! 에코스텝은 환경 보호와 재미있는 물고기 키우기를 결합한 앱입니다.',
-        '플라스틱 사용을 줄이면 포인트를 받아 새로운 물고기를 구매할 수 있어요!',
-        '매일 챌린지를 완료하면 보상을 받을 수 있습니다. 오늘도 환경 보호에 동참해주세요!',
-        '친구를 초대하면 추가 포인트를 받을 수 있어요. 함께 환경을 지켜요!',
-        '앱 사용 중 문제가 있으시면 구체적으로 알려주세요. 도와드리겠습니다!'
-      ];
-      const randomResponse = mockResponses[Math.floor(Math.random() * mockResponses.length)];
-      return res.json({ response: randomResponse });
+      console.error('Claude API key not properly configured');
+      return res.status(503).json({
+        error: 'API_KEY_NOT_CONFIGURED',
+        message: '챗봇 서비스가 일시적으로 사용 불가능합니다. 잠시 후 다시 시도해주세요.',
+        retryable: true
+      });
     }
 
     // Call Claude API for chatbot response
@@ -203,18 +170,20 @@ ${chatbotKnowledgeBase}
     
     // 크레딧 부족 에러 처리
     if (error.status === 400 && error.message.includes('credit balance')) {
-      console.log('API credit balance is low - using mock response');
-      const mockResponses = [
-        '안녕하세요! 에코스텝은 환경 보호와 재미있는 물고기 키우기를 결합한 앱입니다. 플라스틱 사용을 줄이면서 가상 물고기를 키울 수 있어요! 🐠',
-        '에코스텝은 일상에서 플라스틱 사용을 추적하고 줄이도록 도와드립니다. 목표를 달성하면 포인트를 받아 새로운 물고기와 장식품을 구매할 수 있어요!',
-        '매일 챌린지에 참여하고, 친구들과 랭킹을 경쟁하며 환경 보호에 동참해보세요! 함께 지구를 지켜요! 🌍',
-        '물고기를 키우면서 환경 보호도 실천할 수 있는 에코스텝! 오늘부터 시작해보세요! 💚'
-      ];
-      const randomResponse = mockResponses[Math.floor(Math.random() * mockResponses.length)];
-      return res.json({ response: randomResponse });
+      console.error('API credit balance is low');
+      return res.status(503).json({
+        error: 'API_CREDIT_LOW',
+        message: '챗봇 서비스가 일시적으로 사용 불가능합니다. 잠시 후 다시 시도해주세요.',
+        retryable: true
+      });
     }
-    
-    res.json({ response: '죄송합니다. 일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요.' });
+
+    // 일반 에러 처리
+    res.status(500).json({
+      error: 'CHATBOT_ERROR',
+      message: '챗봇 응답 생성 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.',
+      retryable: true
+    });
   }
 });
 
@@ -225,8 +194,12 @@ app.post('/api/environmental-tip', async (req, res) => {
 
     // Check if API key exists
     if (!CLAUDE_API_KEY || CLAUDE_API_KEY === 'your-api-key-here' || !CLAUDE_API_KEY.startsWith('sk-ant-')) {
-      console.log('Using mock data - Claude API key not configured');
-      return res.json(generateMockTip());
+      console.error('Claude API key not configured');
+      return res.status(503).json({
+        error: 'API_KEY_NOT_CONFIGURED',
+        message: '환경 팁 서비스가 일시적으로 사용 불가능합니다. 잠시 후 다시 시도해주세요.',
+        retryable: true
+      });
     }
 
     // 카테고리별 프롬프트 생성
@@ -294,7 +267,11 @@ app.post('/api/environmental-tip', async (req, res) => {
       }
     } catch (parseError) {
       console.error('Failed to parse Claude response:', parseError);
-      return res.json(generateMockTip());
+      return res.status(500).json({
+        error: 'PARSE_ERROR',
+        message: 'AI 응답 처리 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.',
+        retryable: true
+      });
     }
 
     res.json({
@@ -304,7 +281,11 @@ app.post('/api/environmental-tip', async (req, res) => {
 
   } catch (error) {
     console.error('Error generating environmental tip:', error);
-    res.json(generateMockTip());
+    res.status(500).json({
+      error: 'TIP_GENERATION_ERROR',
+      message: '환경 팁 생성 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.',
+      retryable: true
+    });
   }
 });
 
@@ -321,7 +302,6 @@ app.post('/api/validate-plastic-challenge', async (req, res) => {
     if (!CLAUDE_API_KEY || CLAUDE_API_KEY === 'your-api-key-here' || !CLAUDE_API_KEY.startsWith('sk-ant-')) {
       console.log('Using fallback validation - Claude API key not configured');
       // Fallback validation logic
-      const plasticKeywords = ['플라스틱', '비닐', '일회용', '컵', '빨대', '봉지', '포장'];
       const isRelated = plasticKeywords.some(keyword => challenge.toLowerCase().includes(keyword));
       const estimatedSavings = isRelated ? Math.floor(Math.random() * 20) + 5 : 0;
 
@@ -371,7 +351,6 @@ app.post('/api/validate-plastic-challenge', async (req, res) => {
     } catch (parseError) {
       console.error('Failed to parse Claude response:', parseError);
       // Fallback
-      const plasticKeywords = ['플라스틱', '비닐', '일회용', '컵', '빨대', '봉지', '포장'];
       const isRelated = plasticKeywords.some(keyword => challenge.toLowerCase().includes(keyword));
       validationData = {
         isValid: isRelated,
@@ -404,12 +383,6 @@ app.post('/api/classify-plastic-item', async (req, res) => {
       const lowerName = itemName.toLowerCase();
       let category = null;
       let isPlastic = false;
-
-      const plasticKeywords = [
-        '플라스틱', '비닐', '페트', 'pet', '일회용', '용기', '컵', '빨대',
-        '봉지', '봉투', '포장', '배달', '텀블러', '에코백', '장바구니',
-        '병', '보틀', '랩', '지퍼백', '스티로폼', '테이크아웃', '물티슈'
-      ];
 
       isPlastic = plasticKeywords.some(keyword => lowerName.includes(keyword));
 

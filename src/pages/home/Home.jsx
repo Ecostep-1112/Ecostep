@@ -46,11 +46,27 @@ const Home = ({
   const [displayDecorations, setDisplayDecorations] = useState([]);
   const [decorationPositions, setDecorationPositions] = useState(() => {
     const saved = localStorage.getItem('decorationPositions');
-    return saved ? JSON.parse(saved) : {};
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (error) {
+        console.error('decorationPositions 파싱 에러:', error);
+        return {};
+      }
+    }
+    return {};
   });
   const [decorationSettings, setDecorationSettings] = useState(() => {
     const saved = localStorage.getItem('decorationSettings');
-    return saved ? JSON.parse(saved) : {};
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (error) {
+        console.error('decorationSettings 파싱 에러:', error);
+        return {};
+      }
+    }
+    return {};
   });
   const [isDragging, setIsDragging] = useState(null);
   const [selectedDecoration, setSelectedDecoration] = useState(null);
@@ -114,9 +130,27 @@ const Home = ({
   // 장식품 위치 초기화 (저장된 설정 또는 랜덤 배치)
   useEffect(() => {
     // 저장된 설정 불러오기
-    const savedPositions = JSON.parse(localStorage.getItem('decorationPositions') || '{}');
-    const savedConfigs = JSON.parse(localStorage.getItem('savedDecorationConfigs') || '{}');
-    const savedSettings = JSON.parse(localStorage.getItem('decorationSettings') || '{}');
+    let savedPositions = {};
+    let savedConfigs = {};
+    let savedSettings = {};
+
+    try {
+      savedPositions = JSON.parse(localStorage.getItem('decorationPositions') || '{}');
+    } catch (error) {
+      console.error('decorationPositions 파싱 에러:', error);
+    }
+
+    try {
+      savedConfigs = JSON.parse(localStorage.getItem('savedDecorationConfigs') || '{}');
+    } catch (error) {
+      console.error('savedDecorationConfigs 파싱 에러:', error);
+    }
+
+    try {
+      savedSettings = JSON.parse(localStorage.getItem('decorationSettings') || '{}');
+    } catch (error) {
+      console.error('decorationSettings 파싱 에러:', error);
+    }
 
     // 랜덤 위치 생성 함수 (겹치지 않게)
     const generateRandomPosition = (existingPositions, index) => {
@@ -1119,7 +1153,12 @@ const Home = ({
               <button
                 onClick={() => {
                   // 현재 장식품의 위치와 설정을 localStorage에 저장
-                  const savedDecorations = JSON.parse(localStorage.getItem('savedDecorationConfigs') || '{}');
+                  let savedDecorations = {};
+                  try {
+                    savedDecorations = JSON.parse(localStorage.getItem('savedDecorationConfigs') || '{}');
+                  } catch (error) {
+                    console.error('savedDecorationConfigs 파싱 에러:', error);
+                  }
                   savedDecorations[selectedDecoration] = {
                     position: decorationPositions[selectedDecoration],
                     settings: decorationSettings[selectedDecoration] || { size: 100, rotation: 0 }

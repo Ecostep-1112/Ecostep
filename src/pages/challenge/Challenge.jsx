@@ -66,7 +66,15 @@ const Challenge = ({
   const [customGoalInput, setCustomGoalInput] = useState('');
   const [userCustomGoals, setUserCustomGoals] = useState(() => {
     const saved = localStorage.getItem('userCustomGoals');
-    return saved ? JSON.parse(saved) : [];
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (error) {
+        console.error('userCustomGoals 파싱 에러:', error);
+        return [];
+      }
+    }
+    return [];
   });
   const [goalSetDate, setGoalSetDate] = useState(() => {
     const saved = localStorage.getItem('goalSetDate');
@@ -74,13 +82,29 @@ const Challenge = ({
   });
   const [plasticRecords, setPlasticRecords] = useState(() => {
     const saved = localStorage.getItem('plasticRecords');
-    return saved ? JSON.parse(saved) : [];
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (error) {
+        console.error('plasticRecords 파싱 에러:', error);
+        return [];
+      }
+    }
+    return [];
   });
   
   // 주간 챌린지 관리
   const [weeklyProgress, setWeeklyProgress] = useState(() => {
     const saved = localStorage.getItem('weeklyProgress');
-    return saved ? JSON.parse(saved) : {};
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (error) {
+        console.error('weeklyProgress 파싱 에러:', error);
+        return {};
+      }
+    }
+    return {};
   });
   const [currentWeekStart, setCurrentWeekStart] = useState('');
   const [currentDayIndex, setCurrentDayIndex] = useState(0);
@@ -91,7 +115,15 @@ const Challenge = ({
   const [showUsagePeriodDropdown, setShowUsagePeriodDropdown] = useState(false); // 사용량 기간 드롭다운 표시 여부
   const [customChallengeSavings, setCustomChallengeSavings] = useState(() => {
     const saved = localStorage.getItem('customChallengeSavings');
-    return saved ? JSON.parse(saved) : {};
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (error) {
+        console.error('customChallengeSavings 파싱 에러:', error);
+        return {};
+      }
+    }
+    return {};
   }); // 커스텀 챌린지별 절약량 저장
   
   // 플라스틱 목표 옵션 리스트
@@ -230,17 +262,22 @@ const Challenge = ({
   const [completedChallenges, setCompletedChallenges] = useState(() => {
     const saved = localStorage.getItem('completedChallenges');
     if (saved) {
-      const parsed = JSON.parse(saved);
-      // 1년 이상 된 데이터 필터링
-      const oneYearAgo = new Date();
-      oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
-      const filtered = parsed.filter(challenge => new Date(challenge.endDate) > oneYearAgo);
-      if (filtered.length !== parsed.length) {
-        localStorage.setItem('completedChallenges', JSON.stringify(filtered));
+      try {
+        const parsed = JSON.parse(saved);
+        // 1년 이상 된 데이터 필터링
+        const oneYearAgo = new Date();
+        oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+        const filtered = parsed.filter(challenge => new Date(challenge.endDate) > oneYearAgo);
+        if (filtered.length !== parsed.length) {
+          localStorage.setItem('completedChallenges', JSON.stringify(filtered));
+        }
+        return filtered;
+      } catch (error) {
+        console.error('completedChallenges 파싱 에러:', error);
+        return [];
       }
-      return filtered;
     }
-    
+
     // 실제 완료된 챌린지만 반환 (예시 데이터 제거)
     return [];
   });
@@ -296,7 +333,12 @@ const Challenge = ({
           }));
 
           // 기존 localStorage 데이터 가져오기
-          const existingRecords = JSON.parse(localStorage.getItem('plasticRecords') || '[]');
+          let existingRecords = [];
+          try {
+            existingRecords = JSON.parse(localStorage.getItem('plasticRecords') || '[]');
+          } catch (error) {
+            console.error('plasticRecords 파싱 에러:', error);
+          }
 
           // DB에서 가져온 레코드의 record_id 목록
           const dbRecordIds = new Set(formattedRecords.map(r => r.recordId).filter(Boolean));

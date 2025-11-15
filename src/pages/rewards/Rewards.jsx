@@ -1,12 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, memo } from 'react';
 import { Lock } from 'lucide-react';
 import FishIcons from '../../components/FishIcons';
 import DecorationIcons from '../../components/DecorationIcons';
-import { memo } from 'react';
+import { BronzeIcon, SilverIcon, GoldIcon, PlatinumIcon } from '../../components/RankIcons';
 import SilverTank from '../../components/tanks/SilverTank';
 import GoldTank from '../../components/tanks/GoldTank';
 import PlatinumTank from '../../components/tanks/PlatinumTank';
-import { BronzeIcon, SilverIcon, GoldIcon, PlatinumIcon } from '../../components/RankIcons';
 import { purchaseItem } from '../../lib/database';
 import { supabase } from '../../lib/supabase';
 import { useData } from '../../services/DataContext';

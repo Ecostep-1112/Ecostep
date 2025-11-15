@@ -40,98 +40,46 @@ export const getUserProfile = async (userId) => {
   }
 };
 
-// 사용자 정보 저장 (user_info 테이블 사용)
-export const saveUserStats = async (userId, stats) => {
-  try {
-    const { data, error } = await supabase
-      .from('user_info')
-      .upsert({
-        user_id: userId,
-        point_current: stats.point_current || stats.points || 0,
-        points_total: stats.points_total || stats.totalPoints || 0,
-        rank: stats.rank || 'bronze',
-        amount: stats.amount || stats.plasticGoal || 0,
-        ...stats
-      }, {
-        onConflict: 'user_id' // PRIMARY KEY 명시
-      })
-      .select()
-      .single();
-
-    if (error) throw error;
-    return { data, error: null };
-  } catch (error) {
-    console.error('유저 정보 저장 에러:', error);
-    return { data: null, error };
-  }
-};
-
-// 사용자 정보 가져오기 (user_info 테이블 사용)
-export const getUserStats = async (userId) => {
-  try {
-    const { data, error } = await supabase
-      .from('user_info')
-      .select('*')
-      .eq('user_id', userId)
-      .single();
-
-    if (error) throw error;
-    return { data, error: null };
-  } catch (error) {
-    console.error('유저 정보 가져오기 에러:', error);
-    return { data: null, error };
-  }
-};
-
-// 챌린지 기록 저장 (주석: challenge_history 테이블이 스키마에 없음 - daily_chal_data 사용)
-// export const saveChallengeHistory = async (userId, challenge) => {
-//   try {
-//     const { data, error } = await supabase
-//       .from('challenge_history')
-//       .insert({
-//         user_id: userId,
-//         ...challenge,
-//         created_at: new Date().toISOString()
-//       })
-//       .select()
-//       .single();
-//
-//     if (error) throw error;
-//     return { data, error: null };
-//   } catch (error) {
-//     console.error('챌린지 기록 저장 에러:', error);
-//     return { data: null, error };
-//   }
-// };
-
-// 챌린지 기록 가져오기 (주석: challenge_history 테이블이 스키마에 없음 - daily_chal_data 사용)
-// export const getChallengeHistory = async (userId) => {
-//   try {
-//     const { data, error } = await supabase
-//       .from('challenge_history')
-//       .select('*')
-//       .eq('user_id', userId)
-//       .order('created_at', { ascending: false });
-
-//     if (error) throw error;
-//     return { data, error: null };
-//   } catch (error) {
-//     console.error('챌린지 기록 가져오기 에러:', error);
-//     return { data: null, error };
-//   }
-// };
-
 // ======================== 데일리 챌린지 관련 함수 ========================
 
-// 데일리 챌린지 리스트 가져오기 (localStorage 기반)
-// 기본 제공 챌린지 + 유저 커스텀 챌린지를 함께 반환
-export const getDailyChallengeList = async () => {
+// 데일리 챌린지 리스트 가져오기 (DB + localStorage)
+// 기본 제공 챌린지(DB) + 유저 커스텀 챌린지(localStorage)를 함께 반환
+export const getDailyChallengeList = async (userId = null) => {
   try {
-    const data = dailyChallengeListStorage.getAll();
-    return { data, error: null };
+    // 1. DB에서 기본 챌린지 가져오기
+    const { data: basicChallenges, error: dbError } = await supabase
+      .from('daily_chal_list')
+      .select('*')
+      .eq('is_basic', true)
+      .order('chal_id', { ascending: true });
+
+    if (dbError) {
+      console.error('기본 챌린지 로드 에러:', dbError);
+      throw dbError;
+    }
+
+    // 2. localStorage에서 커스텀 챌린지 가져오기
+    const customChallenges = dailyChallengeListStorage.getCustom();
+
+    // 3. 데이터 포맷 변환 (DB 형식 → 앱 형식)
+    const formattedBasicChallenges = (basicChallenges || []).map(chal => ({
+      id: chal.chal_id,
+      title: chal.chal_name,
+      description: chal.chal_name,
+      category: chal.about_plastic ? '플라스틱 줄이기' : '일반',
+      estimatedSavings: 0, // DB에 없으면 기본값
+      isBasic: true
+    }));
+
+    // 4. 기본 + 커스텀 합치기
+    const allChallenges = [...formattedBasicChallenges, ...customChallenges];
+
+    return { data: allChallenges, error: null };
   } catch (error) {
     console.error('데일리 챌린지 리스트 가져오기 에러:', error);
-    return { data: null, error };
+    // 에러 발생 시 localStorage만 사용
+    const fallbackData = dailyChallengeListStorage.getAll();
+    return { data: fallbackData, error };
   }
 };
 

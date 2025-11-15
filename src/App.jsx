@@ -1,5 +1,6 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { Settings, Home, Target, Gift, Users, MoreHorizontal, Bell } from 'lucide-react';
+import { debounce } from './utils/debounce';
 import HomePage from './pages/home/Home';
 import ChallengePage from './pages/challenge/Challenge';
 import RewardsPage from './pages/rewards/Rewards';
@@ -14,7 +15,7 @@ import { ThemeSettings, RankThemeSettings, LanguageSettings, NotificationSetting
 import Toast from './components/Toast';
 import Login from './pages/auth/Login';
 import { onAuthStateChange, getCurrentUser, signOut, createOrUpdateUserProfile, processInviteCode } from './lib/auth';
-import { getUserInfo, saveUserInfo, getUserItems, saveUserStats, getUserPurchasedItems, purchaseItem } from './lib/database';
+import { getUserInfo, saveUserInfo, getUserItems, getUserPurchasedItems, purchaseItem } from './lib/database';
 import { supabase } from './lib/supabase';
 import {
   appSettingsStorage,
@@ -282,11 +283,27 @@ const EcostepAppContent = () => {
   }, [fishCount, isRandomFish, selectedFish, selectedDecorations]);
   const [customChallenges, setCustomChallenges] = useState(() => {
     const saved = localStorage.getItem('customChallenges');
-    return saved ? JSON.parse(saved) : [];
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (error) {
+        console.error('customChallenges 파싱 에러:', error);
+        return [];
+      }
+    }
+    return [];
   });
   const [customPlasticItems, setCustomPlasticItems] = useState(() => {
     const saved = localStorage.getItem('customPlasticItems');
-    return saved ? JSON.parse(saved) : [];
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (error) {
+        console.error('customPlasticItems 파싱 에러:', error);
+        return [];
+      }
+    }
+    return [];
   });
   const [currentTank, setCurrentTank] = useState('basic');
   const [unlockedTanks, setUnlockedTanks] = useState(['basic', 'silver', 'gold', 'platinum']); // 모든 어항 잠금 해제
@@ -303,7 +320,15 @@ const EcostepAppContent = () => {
   }); // 색상 테마 (색상만 변경)
   const [claimedTanks, setClaimedTanks] = useState(() => {
     const saved = localStorage.getItem('claimedTanks');
-    return saved ? JSON.parse(saved) : [];
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (error) {
+        console.error('claimedTanks 파싱 에러:', error);
+        return [];
+      }
+    }
+    return [];
   }); // 수령 완료한 어항 목록
   const [tankName, setTankName] = useState('수질');
   const [isEditingTankName, setIsEditingTankName] = useState(false);
@@ -316,7 +341,15 @@ const EcostepAppContent = () => {
   const [consecutiveDays, setConsecutiveDays] = useState(0);
   const [challengeHistory, setChallengeHistory] = useState(() => {
     const saved = localStorage.getItem('challengeHistory');
-    return saved ? JSON.parse(saved) : [];
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (error) {
+        console.error('challengeHistory 파싱 에러:', error);
+        return [];
+      }
+    }
+    return [];
   });
   
   // 총 플라스틱 절약량 상태
@@ -402,7 +435,12 @@ const EcostepAppContent = () => {
           // 수파베이스 사용자 정보로 프로필 업데이트
           // localStorage에서 최신 데이터 확인
           const savedData = localStorage.getItem('profileData');
-          const currentData = savedData ? JSON.parse(savedData) : {};
+          let currentData = {};
+          try {
+            currentData = savedData ? JSON.parse(savedData) : {};
+          } catch (error) {
+            console.error('profileData 파싱 에러:', error);
+          }
 
           setProfileData(prev => {
             // Auth UUID (always from authenticated user)
@@ -470,7 +508,14 @@ const EcostepAppContent = () => {
           // 로그인 시 프로필 업데이트
           // localStorage에서 최신 데이터 확인
           const savedData = localStorage.getItem('profileData');
-          const currentData = savedData ? JSON.parse(savedData) : {};
+          let currentData = {};
+          if (savedData) {
+            try {
+              currentData = JSON.parse(savedData);
+            } catch (error) {
+              console.error('profileData 파싱 에러:', error);
+            }
+          }
 
           setProfileData(prev => {
             // Auth UUID (always from authenticated user)
@@ -636,9 +681,16 @@ const EcostepAppContent = () => {
     const savedWaterQuality = localStorage.getItem('waterQuality');
     const savedLastChallengeDate = localStorage.getItem('lastChallengeDate');
     const savedTotalPlasticSaved = localStorage.getItem('totalPlasticSaved');
-    
+
     if (savedTank) setCurrentTank(savedTank);
-    if (savedUnlockedTanks) setUnlockedTanks(JSON.parse(savedUnlockedTanks));
+    if (savedUnlockedTanks) {
+      try {
+        setUnlockedTanks(JSON.parse(savedUnlockedTanks));
+      } catch (error) {
+        console.error('unlockedTanks 파싱 에러:', error);
+        setUnlockedTanks(['basic', 'silver', 'gold', 'platinum']);
+      }
+    }
     if (savedRanking) setUserRanking(savedRanking);
     if (savedRankTheme) setRankTheme(savedRankTheme);
     else if (savedRanking) setRankTheme(savedRanking); // 초기값은 실제 랭킹과 동일
@@ -665,30 +717,38 @@ const EcostepAppContent = () => {
     }
   }, []);
 
-  // 상태 변경시 localStorage에 저장
-  useEffect(() => {
-    localStorage.setItem('currentTank', currentTank);
-  }, [currentTank]);
+  // 상태 변경시 localStorage에 저장 (debounced)
+  // useMemo로 debounced 함수를 메모이제이션하여 불필요한 재생성 방지
+  const debouncedSaveToLocalStorage = useMemo(
+    () => debounce((key, value) => {
+      localStorage.setItem(key, value);
+    }, 500), // 500ms 딜레이
+    []
+  );
 
   useEffect(() => {
-    localStorage.setItem('unlockedTanks', JSON.stringify(unlockedTanks));
-  }, [unlockedTanks]);
+    debouncedSaveToLocalStorage('currentTank', currentTank);
+  }, [currentTank, debouncedSaveToLocalStorage]);
 
   useEffect(() => {
-    localStorage.setItem('userRanking', userRanking);
-  }, [userRanking]);
+    debouncedSaveToLocalStorage('unlockedTanks', JSON.stringify(unlockedTanks));
+  }, [unlockedTanks, debouncedSaveToLocalStorage]);
 
   useEffect(() => {
-    localStorage.setItem('rankTheme', rankTheme);
-  }, [rankTheme]);
+    debouncedSaveToLocalStorage('userRanking', userRanking);
+  }, [userRanking, debouncedSaveToLocalStorage]);
 
   useEffect(() => {
-    localStorage.setItem('tankName', tankName);
-  }, [tankName]);
+    debouncedSaveToLocalStorage('rankTheme', rankTheme);
+  }, [rankTheme, debouncedSaveToLocalStorage]);
 
   useEffect(() => {
-    localStorage.setItem('waterQuality', waterQuality.toString());
-  }, [waterQuality]);
+    debouncedSaveToLocalStorage('tankName', tankName);
+  }, [tankName, debouncedSaveToLocalStorage]);
+
+  useEffect(() => {
+    debouncedSaveToLocalStorage('waterQuality', waterQuality.toString());
+  }, [waterQuality, debouncedSaveToLocalStorage]);
 
   // 포인트 변경시 localStorage + Supabase에 저장
   useEffect(() => {
@@ -731,35 +791,35 @@ const EcostepAppContent = () => {
 
   useEffect(() => {
     if (lastChallengeDate) {
-      localStorage.setItem('lastChallengeDate', lastChallengeDate);
+      debouncedSaveToLocalStorage('lastChallengeDate', lastChallengeDate);
     }
-  }, [lastChallengeDate]);
+  }, [lastChallengeDate, debouncedSaveToLocalStorage]);
 
   useEffect(() => {
-    localStorage.setItem('consecutiveDays', consecutiveDays.toString());
-  }, [consecutiveDays]);
+    debouncedSaveToLocalStorage('consecutiveDays', consecutiveDays.toString());
+  }, [consecutiveDays, debouncedSaveToLocalStorage]);
 
   useEffect(() => {
-    localStorage.setItem('challengeHistory', JSON.stringify(challengeHistory));
-  }, [challengeHistory]);
+    debouncedSaveToLocalStorage('challengeHistory', JSON.stringify(challengeHistory));
+  }, [challengeHistory, debouncedSaveToLocalStorage]);
 
   useEffect(() => {
-    localStorage.setItem('claimedTanks', JSON.stringify(claimedTanks));
-  }, [claimedTanks]);
+    debouncedSaveToLocalStorage('claimedTanks', JSON.stringify(claimedTanks));
+  }, [claimedTanks, debouncedSaveToLocalStorage]);
 
   // customChallenges 저장
   useEffect(() => {
     if (customChallenges.length > 0) {
-      localStorage.setItem('customChallenges', JSON.stringify(customChallenges));
+      debouncedSaveToLocalStorage('customChallenges', JSON.stringify(customChallenges));
     }
-  }, [customChallenges]);
+  }, [customChallenges, debouncedSaveToLocalStorage]);
 
   // customPlasticItems 저장
   useEffect(() => {
     if (customPlasticItems.length > 0) {
-      localStorage.setItem('customPlasticItems', JSON.stringify(customPlasticItems));
+      debouncedSaveToLocalStorage('customPlasticItems', JSON.stringify(customPlasticItems));
     }
-  }, [customPlasticItems]);
+  }, [customPlasticItems, debouncedSaveToLocalStorage]);
 
   // 연속 달성 일수 계산 로직
   useEffect(() => {
@@ -861,14 +921,22 @@ const EcostepAppContent = () => {
     midnight.setHours(24, 0, 0, 0);
     const msUntilMidnight = midnight - now;
 
+    // ✅ Memory Leak 수정: interval ID를 저장하여 cleanup 가능하도록 함
+    let dailyInterval = null;
+
     const midnightTimeout = setTimeout(() => {
       calculateWaterQuality();
       // 매일 자정 체크
-      const dailyInterval = setInterval(calculateWaterQuality, 24 * 60 * 60 * 1000);
-      return () => clearInterval(dailyInterval);
+      dailyInterval = setInterval(calculateWaterQuality, 24 * 60 * 60 * 1000);
     }, msUntilMidnight);
 
-    return () => clearTimeout(midnightTimeout);
+    // Cleanup: timeout과 interval 모두 정리
+    return () => {
+      clearTimeout(midnightTimeout);
+      if (dailyInterval) {
+        clearInterval(dailyInterval);
+      }
+    };
   }, [lastChallengeDate]);
 
   const bgColor = isDarkMode ? 'bg-gray-900' : 'bg-white';

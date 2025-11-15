@@ -1,3 +1,5 @@
+import { plasticKeywords } from '../utils/validatePlastic';
+
 // 챌린지별 일일 플라스틱 절약량 데이터 (단위: g)
 export const challengeSavings = {
   '텀블러 사용하기': 15,
@@ -11,15 +13,8 @@ export const challengeSavings = {
   '기타 (직접 입력)': 0  // API로 계산
 };
 
-// 플라스틱 관련 키워드
-export const plasticKeywords = [
-  '플라스틱', '비닐', '페트', 'PET', '일회용', '용기', '컵', '빨대', '봉지', '봉투',
-  '포장', '포장재', '용품', '그릇', '수저', '포크', '나이프', '젓가락',
-  '병', '보틀', '텀블러', '에코백', '장바구니', '배달', '포장지',
-  '랩', '비닐랩', '지퍼백', '지퍼팩', '팩', '트레이', '스티로폼',
-  '테이크아웃', '배달용기', '음료', '커피', '카페', '마트', '쇼핑',
-  '물티슈', '티슈', '휴지'
-];
+// 플라스틱 관련 키워드를 validatePlastic.js에서 import하여 사용
+export { plasticKeywords };
 
 // 챌린지가 플라스틱 관련인지 검증
 export const isPlasticRelated = (text) => {

@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { ChevronRight, ChevronLeft, X, Camera, Plus, AlertTriangle, Check, Trash2 } from 'lucide-react';
 import { updateUserFId, checkUserFIdDuplicate, deleteAccount } from '../../lib/auth';
 import { supabase } from '../../lib/supabase';
-import { saveUserStats } from '../../lib/database';
 import Toast from '../../components/Toast';
 
 const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData }) => {

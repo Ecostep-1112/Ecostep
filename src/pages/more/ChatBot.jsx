@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { ChevronRight, RotateCcw, ArrowUp } from 'lucide-react';
+import { ChevronRight, RotateCcw, ArrowUp, RefreshCw } from 'lucide-react';
 import { CapacitorHttp } from '@capacitor/core';
 
 const ChatBot = ({ isDarkMode, onBack, platform, isKeyboardVisible }) => {
@@ -82,8 +82,8 @@ const ChatBot = ({ isDarkMode, onBack, platform, isKeyboardVisible }) => {
 
     try {
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5176';
-      console.log('API_URL:', API_URL); // 디버깅용
-      console.log('Sending message:', inputMessage); // 디버깅용
+      console.log('API_URL:', API_URL);
+      console.log('Sending message:', inputMessage);
 
       // Use Capacitor HTTP for better mobile compatibility
       const response = await CapacitorHttp.post({
@@ -95,6 +95,16 @@ const ChatBot = ({ isDarkMode, onBack, platform, isKeyboardVisible }) => {
       });
 
       const data = response.data;
+
+      // API 에러 응답 처리
+      if (data.error) {
+        throw {
+          isApiError: true,
+          errorCode: data.error,
+          message: data.message,
+          retryable: data.retryable
+        };
+      }
 
       // Remove waiting message and add actual response
       setMessages(prev => {
@@ -109,18 +119,28 @@ const ChatBot = ({ isDarkMode, onBack, platform, isKeyboardVisible }) => {
       });
     } catch (error) {
       console.error('Chatbot error:', error);
-      console.error('Error details:', {
-        message: error.message,
-        stack: error.stack
-      });
-      // Remove waiting message and add error message
+
+      // Remove waiting message and add error message with retry option
       setMessages(prev => {
         const filtered = prev.filter(msg => msg.id !== waitingMessage.id);
+
+        let errorText = '죄송합니다. 일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요.';
+        let isRetryable = true;
+
+        // API 에러 응답인 경우
+        if (error.isApiError) {
+          errorText = error.message;
+          isRetryable = error.retryable;
+        }
+
         const errorMessage = {
           id: Date.now() + 1,
-          text: '죄송합니다. 일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요.',
+          text: errorText,
           sender: 'bot',
-          timestamp: new Date()
+          timestamp: new Date(),
+          isError: true,
+          retryable: isRetryable,
+          retryMessage: inputMessage // 재시도할 메시지 저장
         };
         return [...filtered, errorMessage];
       });
@@ -132,6 +152,19 @@ const ChatBot = ({ isDarkMode, onBack, platform, isKeyboardVisible }) => {
   // 엔터 키는 줄바꿈으로만 동작 (메시지 전송은 버튼만 사용)
   const handleKeyPress = (e) => {
     // 엔터 키 동작을 줄바꿈으로 허용 (기본 동작 유지)
+  };
+
+  // 에러 메시지 재시도 핸들러
+  const handleRetry = async (retryMessage) => {
+    if (!retryMessage) return;
+
+    // 이전 입력 메시지로 재시도
+    setInputMessage(retryMessage);
+
+    // 약간의 딜레이 후 전송
+    setTimeout(() => {
+      handleSendMessage();
+    }, 100);
   };
 
   const handleReset = () => {
@@ -195,18 +228,35 @@ const ChatBot = ({ isDarkMode, onBack, platform, isKeyboardVisible }) => {
                 className={`rounded-2xl px-3 py-2 ${
                   message.sender === 'user'
                     ? `${messageBgUser} text-white`
+                    : message.isError
+                    ? `bg-red-50 ${isDarkMode ? 'bg-red-900/20 border-red-800' : 'border-red-200'} border ${messageTextBot}`
                     : `${messageBgBot} ${messageTextBot} border ${borderColor}`
                 }`}
               >
-                <p className={`text-[13px] whitespace-pre-wrap break-words text-left`} style={{
+                <p className={`text-[13px] whitespace-pre-wrap break-words text-left ${message.isError ? 'text-red-600 dark:text-red-400' : ''}`} style={{
                   wordBreak: 'break-word',
                   overflowWrap: 'break-word'
                 }}>{message.text}</p>
+
+                {/* 재시도 버튼 */}
+                {message.isError && message.retryable && (
+                  <button
+                    onClick={() => handleRetry(message.retryMessage)}
+                    className={`mt-2 flex items-center space-x-1 px-3 py-1.5 rounded-lg text-xs ${
+                      isDarkMode
+                        ? 'bg-red-800/30 hover:bg-red-800/50 text-red-300'
+                        : 'bg-red-100 hover:bg-red-200 text-red-700'
+                    } transition-colors`}
+                  >
+                    <RefreshCw className="w-3 h-3" />
+                    <span>다시 시도</span>
+                  </button>
+                )}
               </div>
             </div>
           </div>
         ))}
-        
+
         <div ref={messagesEndRef} />
       </div>
 

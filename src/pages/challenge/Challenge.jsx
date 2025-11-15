@@ -10,7 +10,12 @@ import {
   customPlasticItemStorage
 } from '../../utils/localStorage';
 import { supabase } from '../../lib/supabase';
-import { getUserZeroChallengeRecords, saveZeroChallengeRecord } from '../../lib/database';
+import {
+  getUserZeroChallengeRecords,
+  saveZeroChallengeRecord,
+  getWeeklyChallengeRecord,
+  completeWeeklyChallenge
+} from '../../lib/database';
 import { getThisMonday, toDateString } from '../../utils/dateUtils';
 
 const Challenge = ({ 
@@ -91,15 +96,6 @@ const Challenge = ({
   
   // 플라스틱 목표 옵션 리스트
   const predefinedGoals = [100, 200, 300, 400, 500, 700, 900, 1100, 1300, 1500];
-  
-  // 단위 변환 함수 (1000g 이상은 kg로)
-  const formatWeight = (weight) => {
-    if (weight >= 1000) {
-      const kg = weight / 1000;
-      return kg % 1 === 0 ? `${kg}kg` : `${kg.toFixed(1)}kg`;
-    }
-    return `${weight}g`;
-  };
 
   // 그램 단위로 변환하는 함수
   const parseWeight = (value) => {
@@ -325,6 +321,67 @@ const Challenge = ({
 
     loadPlasticRecordsFromDB();
   }, []); // 컴포넌트 마운트 시 한 번만 실행
+
+  // ✅ DB에서 이번 주 챌린지 데이터 로드
+  // 주의: DB는 total_completed만 저장 (요일별 정보 없음)
+  // localStorage가 primary source이고, DB는 summary/backup
+  useEffect(() => {
+    const loadWeeklyChallengeFromDB = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+
+        // 이번 주 월요일 날짜
+        const thisMonday = getThisMonday();
+
+        // localStorage에 이미 데이터가 있으면 DB 로드 스킵
+        if (weeklyProgress[thisMonday]) {
+          console.log('📦 localStorage에 이번 주 데이터 존재 - DB 로드 스킵');
+          return;
+        }
+
+        // DB에서 이번 주 챌린지 기록 가져오기
+        const { data, error } = await getWeeklyChallengeRecord(user.id, thisMonday);
+
+        if (error) {
+          console.error('주간 챌린지 로드 실패:', error);
+          return;
+        }
+
+        if (data) {
+          console.log('✅ DB에서 주간 챌린지 로드:', data);
+
+          // ⚠️ DB에는 total_completed만 있고 요일별 정보가 없음
+          // 따라서 정확한 복원은 불가능 - 앞쪽부터 채우기
+          const dbCompletedDays = data.total_completed; // 1~7
+
+          // days 배열 생성 (완료된 날짜 수만큼 앞에서부터 true로 채우기)
+          const days = [null, null, null, null, null, null, null];
+          for (let i = 0; i < dbCompletedDays && i < 7; i++) {
+            days[i] = true;
+          }
+
+          const weekData = {
+            challenge: data.content,
+            days: days,
+            startDate: thisMonday
+          };
+
+          const updatedProgress = { ...weeklyProgress, [thisMonday]: weekData };
+          setWeeklyProgress(updatedProgress);
+          localStorage.setItem('weeklyProgress', JSON.stringify(updatedProgress));
+
+          console.log(`   - 챌린지: ${data.content}`);
+          console.log(`   - 완료 횟수: ${data.total_completed}/7`);
+          console.log(`   ⚠️ 주의: 요일별 정보는 근사치입니다`);
+        }
+      } catch (error) {
+        console.error('주간 챌린지 로드 에러:', error);
+      }
+    };
+
+    loadWeeklyChallengeFromDB();
+  }, [weeklyProgress]); // weeklyProgress 변경 시에도 체크
 
   // 매주 월요일에 포인트 지급 및 리셋
   useEffect(() => {
@@ -564,7 +621,7 @@ const Challenge = ({
         setTotalPlasticSaved(newTotal);
       }
 
-      // Supabase에 데일리 챌린지 기록 저장
+      // ✅ Supabase에 주간 챌린지 기록 저장 (insert or update)
       try {
         // Supabase Auth 사용자 ID 가져오기 (UUID)
         const { data: { user }, error: userError } = await supabase.auth.getUser();
@@ -572,27 +629,25 @@ const Challenge = ({
         if (userError) {
           console.error('사용자 인증 오류:', userError);
         } else if (user) {
-          const { error } = await supabase
-            .from('daily_chal_data')
-            .insert({
-              record_id: crypto.randomUUID(),
-              user_id: user.id, // Supabase Auth UUID 사용
-              is_completed: true,
-              total_completed: 1,
-              created_at: new Date().toISOString().split('T')[0],
-              content: finalChallenge
-            });
+          // 주간 챌린지 완료 처리 (DB에 insert or update)
+          const { data, error } = await completeWeeklyChallenge(
+            user.id,
+            currentWeekStart, // 이번 주 월요일 날짜 (YYYY-MM-DD)
+            null, // chal_id (현재는 null, 나중에 daily_chal_list와 연동 가능)
+            finalChallenge // 챌린지 이름
+          );
 
           if (error) {
-            console.error('데일리 챌린지 기록 저장 실패:', error);
+            console.error('주간 챌린지 기록 저장 실패:', error);
           } else {
-            console.log('데일리 챌린지 기록 저장 성공');
+            console.log('✅ 주간 챌린지 기록 저장 성공:', data);
+            console.log(`   - 이번 주 완료 횟수: ${data.total_completed}/7`);
           }
         } else {
           console.warn('로그인된 사용자가 없습니다.');
         }
       } catch (error) {
-        console.error('데일리 챌린지 기록 저장 오류:', error);
+        console.error('주간 챌린지 기록 저장 오류:', error);
       }
 
       // 포인트 증가 및 토스트 메시지 표시

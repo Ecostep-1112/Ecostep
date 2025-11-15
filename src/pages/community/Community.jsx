@@ -43,7 +43,7 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
   const currentUserInList = globalRankingDataRaw.find(u => u.id === currentUserFId);
   if (!currentUserInList && currentUserFId) {
     globalRankingDataRaw.push({
-      name: '나',
+      name: currentUserName || '사용자',
       id: currentUserFId,
       score: myScore,
       grams: totalPlasticSaved
@@ -70,7 +70,7 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
   const meInFriends = friendsListRaw.find(f => f.id === currentUserFId);
   if (!meInFriends && currentUserFId) {
     friendsListRaw.push({
-      name: '나',
+      name: currentUserName || '사용자',
       id: currentUserFId,
       score: myScore,
       grams: totalPlasticSaved
@@ -347,7 +347,7 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
             {friendsList.slice(0, 3).map((friend, index) => {
               // 화면 표시 순위 (1, 2, 3)
               const displayRank = index + 1;
-              const isMe = friend.name === '나';
+              const isMe = friend.id === currentUserFId;
               
               return (
                 <div key={friend.rank}>
@@ -393,11 +393,31 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
                         </div>
                       )}
                       <div className="flex-1 flex flex-col items-start">
-                        <span className={`${displayRank === 1 ? 'text-sm' : displayRank === 2 ? 'text-[13px]' : 'text-xs'} ${isMe ? `font-medium ${textColor}` : isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>{friend.name}</span>
+                        <span
+                          className={`${displayRank === 1 ? 'text-sm' : displayRank === 2 ? 'text-[13px]' : 'text-xs'} ${isMe ? 'font-bold' : isDarkMode ? 'text-gray-300 font-normal' : 'text-gray-700 font-normal'}`}
+                          style={isMe ? {
+                            background: 'linear-gradient(135deg, #06b6d4 0%, #3b82f6 50%, #2563eb 100%)',
+                            WebkitBackgroundClip: 'text',
+                            WebkitTextFillColor: 'transparent',
+                            backgroundClip: 'text'
+                          } : {}}
+                        >
+                          {friend.name}
+                        </span>
                         {friend.id && <span className={`${displayRank === 1 ? 'text-[10px]' : displayRank === 2 ? 'text-[9px]' : 'text-[8px]'} ${isDarkMode ? 'text-gray-500' : 'text-gray-400'} ${displayRank === 1 ? '-mt-[1.5px]' : displayRank === 2 ? '-mt-[3px]' : '-mt-[1px]'}`}>@{friend.id}</span>}
                       </div>
                     </div>
-                    <span className={`${displayRank === 1 ? 'text-xs' : displayRank === 2 ? 'text-[11px]' : 'text-[10px]'} ${isMe ? `font-medium ${textColor}` : isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>{friend.score}</span>
+                    <span
+                      className={`${displayRank === 1 ? 'text-xs' : displayRank === 2 ? 'text-[11px]' : 'text-[10px]'} ${isMe ? 'font-bold' : isDarkMode ? 'text-gray-300 font-normal' : 'text-gray-700 font-normal'}`}
+                      style={isMe ? {
+                        background: 'linear-gradient(135deg, #06b6d4 0%, #3b82f6 50%, #2563eb 100%)',
+                        WebkitBackgroundClip: 'text',
+                        WebkitTextFillColor: 'transparent',
+                        backgroundClip: 'text'
+                      } : {}}
+                    >
+                      {friend.score}
+                    </span>
                   </div>
                   {index < 2 && <div className={`border-b ${borderColor}`}></div>}
                 </div>
@@ -421,11 +441,31 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
                       </div>
                     </div>
                     <div className="flex-1 flex flex-col items-start">
-                      <span className={`text-xs font-medium ${textColor}`}>나</span>
+                      <span
+                        className="text-xs font-bold"
+                        style={{
+                          background: 'linear-gradient(135deg, #06b6d4 0%, #3b82f6 50%, #2563eb 100%)',
+                          WebkitBackgroundClip: 'text',
+                          WebkitTextFillColor: 'transparent',
+                          backgroundClip: 'text'
+                        }}
+                      >
+                        {currentUserName || '사용자'}
+                      </span>
                       {currentUserFId && <span className={`text-[8px] ${isDarkMode ? 'text-gray-500' : 'text-gray-400'} -mt-[1px]`}>@{currentUserFId}</span>}
                     </div>
                   </div>
-                  <span className={`text-[10px] font-medium ${textColor}`}>{myScore}</span>
+                  <span
+                    className="text-[10px] font-bold"
+                    style={{
+                      background: 'linear-gradient(135deg, #06b6d4 0%, #3b82f6 50%, #2563eb 100%)',
+                      WebkitBackgroundClip: 'text',
+                      WebkitTextFillColor: 'transparent',
+                      backgroundClip: 'text'
+                    }}
+                  >
+                    {myScore}
+                  </span>
                 </div>
               </>
             )}
@@ -449,7 +489,7 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
               // 1등: 플래티넘, 2등: 골드, 3등: 실버
               const actualRank = index + 1; // 실제 순위
               const rankColor = actualRank === 1 ? '#ec4899' : actualRank === 2 ? '#fcd34d' : '#06b6d4';
-              const isMe = user.name === '나';
+              const isMe = user.id === currentUserFId;
               
               return (
                 <div key={index}>
@@ -495,11 +535,31 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
                         </div>
                       )}
                       <div className="flex-1 flex flex-col items-start">
-                        <span className={`${actualRank === 1 ? 'text-sm' : actualRank === 2 ? 'text-[13px]' : 'text-xs'} ${isMe ? `font-medium ${textColor}` : isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>{user.name}</span>
+                        <span
+                          className={`${actualRank === 1 ? 'text-sm' : actualRank === 2 ? 'text-[13px]' : 'text-xs'} ${isMe ? 'font-bold' : isDarkMode ? 'text-gray-300 font-normal' : 'text-gray-700 font-normal'}`}
+                          style={isMe ? {
+                            background: 'linear-gradient(135deg, #06b6d4 0%, #3b82f6 50%, #2563eb 100%)',
+                            WebkitBackgroundClip: 'text',
+                            WebkitTextFillColor: 'transparent',
+                            backgroundClip: 'text'
+                          } : {}}
+                        >
+                          {user.name}
+                        </span>
                         {user.id && <span className={`${actualRank === 1 ? 'text-[10px]' : actualRank === 2 ? 'text-[9px]' : 'text-[8px]'} ${isDarkMode ? 'text-gray-500' : 'text-gray-400'} ${actualRank === 1 ? '-mt-[1.5px]' : actualRank === 2 ? '-mt-[3px]' : '-mt-[1px]'}`}>@{user.id}</span>}
                       </div>
                     </div>
-                    <span className={`${actualRank === 1 ? 'text-xs' : actualRank === 2 ? 'text-[11px]' : 'text-[10px]'} ${isMe ? `font-medium ${textColor}` : isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>{user.score}</span>
+                    <span
+                      className={`${actualRank === 1 ? 'text-xs' : actualRank === 2 ? 'text-[11px]' : 'text-[10px]'} ${isMe ? 'font-bold' : isDarkMode ? 'text-gray-300 font-normal' : 'text-gray-700 font-normal'}`}
+                      style={isMe ? {
+                        background: 'linear-gradient(135deg, #06b6d4 0%, #3b82f6 50%, #2563eb 100%)',
+                        WebkitBackgroundClip: 'text',
+                        WebkitTextFillColor: 'transparent',
+                        backgroundClip: 'text'
+                      } : {}}
+                    >
+                      {user.score}
+                    </span>
                   </div>
                   {index < 2 && <div className={`border-b ${borderColor}`}></div>}
                 </div>
@@ -524,11 +584,29 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
                       </div>
                     </div>
                     <div className="flex-1 flex flex-col items-start">
-                      <span className={`text-xs font-medium ${textColor}`}>나</span>
+                      <span
+                        className="text-xs font-bold"
+                        style={{
+                          background: 'linear-gradient(135deg, #06b6d4 0%, #3b82f6 50%, #2563eb 100%)',
+                          WebkitBackgroundClip: 'text',
+                          WebkitTextFillColor: 'transparent',
+                          backgroundClip: 'text'
+                        }}
+                      >
+                        {currentUserName || '사용자'}
+                      </span>
                       {currentUserFId && <span className={`text-[8px] ${isDarkMode ? 'text-gray-500' : 'text-gray-400'} -mt-[1px]`}>@{currentUserFId}</span>}
                     </div>
                   </div>
-                  <span className={`text-[10px] font-medium ${textColor}`}>
+                  <span
+                    className="text-[10px] font-bold"
+                    style={{
+                      background: 'linear-gradient(135deg, #06b6d4 0%, #3b82f6 50%, #2563eb 100%)',
+                      WebkitBackgroundClip: 'text',
+                      WebkitTextFillColor: 'transparent',
+                      backgroundClip: 'text'
+                    }}
+                  >
                     상위 {topPercentage}%
                   </span>
                 </div>

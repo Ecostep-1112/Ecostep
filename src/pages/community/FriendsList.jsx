@@ -229,11 +229,31 @@ const FriendsList = ({ isDarkMode, onBack, isGlobalRanking = false, totalPlastic
                         </div>
                       )}
                       <div className="flex-1 flex flex-col items-start">
-                        <span className={`${friend.rank === 1 ? 'text-sm' : friend.rank === 2 ? 'text-[13px]' : 'text-xs'} ${isMe ? `font-medium ${textColor}` : isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>{friend.name}</span>
+                        <span
+                          className={`${friend.rank === 1 ? 'text-sm' : friend.rank === 2 ? 'text-[13px]' : 'text-xs'} ${isMe ? 'font-bold' : isDarkMode ? 'text-gray-300 font-normal' : 'text-gray-700 font-normal'}`}
+                          style={isMe ? {
+                            background: 'linear-gradient(135deg, #06b6d4 0%, #3b82f6 50%, #2563eb 100%)',
+                            WebkitBackgroundClip: 'text',
+                            WebkitTextFillColor: 'transparent',
+                            backgroundClip: 'text'
+                          } : {}}
+                        >
+                          {friend.name}
+                        </span>
                         {friend.id && <span className={`${friend.rank === 1 ? 'text-[10px]' : friend.rank === 2 ? 'text-[9px]' : 'text-[8px]'} ${isDarkMode ? 'text-gray-500' : 'text-gray-400'} ${friend.rank === 1 ? '-mt-[1.5px]' : friend.rank === 2 ? '-mt-[3px]' : '-mt-[1px]'}`}>@{friend.id}</span>}
                       </div>
                     </div>
-                    <span className={`${friend.rank === 1 ? 'text-xs' : friend.rank === 2 ? 'text-[11px]' : 'text-[10px]'} ${isMe ? `font-medium ${textColor}` : isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>{friend.score}</span>
+                    <span
+                      className={`${friend.rank === 1 ? 'text-xs' : friend.rank === 2 ? 'text-[11px]' : 'text-[10px]'} ${isMe ? 'font-bold' : isDarkMode ? 'text-gray-300 font-normal' : 'text-gray-700 font-normal'}`}
+                      style={isMe ? {
+                        background: 'linear-gradient(135deg, #06b6d4 0%, #3b82f6 50%, #2563eb 100%)',
+                        WebkitBackgroundClip: 'text',
+                        WebkitTextFillColor: 'transparent',
+                        backgroundClip: 'text'
+                      } : {}}
+                    >
+                      {friend.score}
+                    </span>
                   </div>
                   {index < filteredFriends.length - 1 && <div className={`border-b ${borderColor}`}></div>}
                 </div>

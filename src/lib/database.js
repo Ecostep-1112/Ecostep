@@ -634,6 +634,77 @@ export const getUserDailyChallengeRecords = async (userId) => {
   }
 };
 
+// 주간 챌린지 기록 가져오기 (특정 주의 챌린지)
+export const getWeeklyChallengeRecord = async (userId, weekStartDate) => {
+  try {
+    const { data, error } = await supabase
+      .from('daily_chal_data')
+      .select('*')
+      .eq('user_id', userId)
+      .eq('created_at', weekStartDate)
+      .maybeSingle(); // 0개 또는 1개 결과 (없으면 null 반환)
+
+    if (error) throw error;
+    return { data, error: null };
+  } catch (error) {
+    console.error('주간 챌린지 기록 가져오기 에러:', error);
+    return { data: null, error };
+  }
+};
+
+// 주간 챌린지 완료 (insert or update)
+// currentDayIndex: 0(월) ~ 6(일)
+export const completeWeeklyChallenge = async (userId, weekStartDate, challengeId, challengeName, currentDayIndex) => {
+  try {
+    // 먼저 이번 주 기록이 있는지 확인
+    const { data: existing } = await getWeeklyChallengeRecord(userId, weekStartDate);
+
+    if (existing) {
+      // 기존 기록이 있으면 total_completed 증가 (최대 7)
+      // ⚠️ 주의: 실제로는 Challenge.jsx에서 todayCompleted 체크로 중복 방지
+      const newTotal = Math.min(existing.total_completed + 1, 7);
+
+      const { data, error } = await supabase
+        .from('daily_chal_data')
+        .update({
+          total_completed: newTotal,
+          is_completed: newTotal === 7 // 7일 모두 완료하면 true
+        })
+        .eq('record_id', existing.record_id)
+        .select()
+        .single();
+
+      if (error) throw error;
+      console.log(`✅ 주간 챌린지 업데이트: ${newTotal}/7일 완료`);
+      return { data, error: null };
+    } else {
+      // 새로운 주 시작 - 새 레코드 생성
+      const recordId = `${userId}_${weekStartDate}_${Date.now()}`;
+
+      const { data, error } = await supabase
+        .from('daily_chal_data')
+        .insert({
+          record_id: recordId,
+          user_id: userId,
+          chal_id: challengeId,
+          content: challengeName,
+          is_completed: false,
+          total_completed: 1,
+          created_at: weekStartDate
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+      console.log(`✅ 주간 챌린지 생성: 1/7일 완료`);
+      return { data, error: null };
+    }
+  } catch (error) {
+    console.error('주간 챌린지 완료 에러:', error);
+    return { data: null, error };
+  }
+};
+
 // ======================== 제로 챌린지 (플라스틱 기록) 관련 함수 ========================
 
 // 제로 챌린지 플라스틱 기록 저장

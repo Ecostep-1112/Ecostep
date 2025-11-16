@@ -394,7 +394,7 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
                       )}
                       <div className="flex-1 flex flex-col items-start">
                         <span
-                          className={`${displayRank === 1 ? 'text-sm' : displayRank === 2 ? 'text-[13px]' : 'text-xs'} ${isMe ? 'font-bold' : isDarkMode ? 'text-gray-300 font-normal' : 'text-gray-700 font-normal'}`}
+                          className={`${displayRank === 1 ? 'text-sm' : displayRank === 2 ? 'text-[13px]' : 'text-xs'} ${isDarkMode ? 'text-gray-300 font-normal' : 'text-gray-700 font-normal'}`}
                           style={isMe ? {
                             background: 'linear-gradient(135deg, #06b6d4 0%, #3b82f6 50%, #2563eb 100%)',
                             WebkitBackgroundClip: 'text',
@@ -408,7 +408,7 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
                       </div>
                     </div>
                     <span
-                      className={`${displayRank === 1 ? 'text-xs' : displayRank === 2 ? 'text-[11px]' : 'text-[10px]'} ${isMe ? 'font-bold' : isDarkMode ? 'text-gray-300 font-normal' : 'text-gray-700 font-normal'}`}
+                      className={`${displayRank === 1 ? 'text-xs' : displayRank === 2 ? 'text-[11px]' : 'text-[10px]'} ${isDarkMode ? 'text-gray-300 font-normal' : 'text-gray-700 font-normal'}`}
                       style={isMe ? {
                         background: 'linear-gradient(135deg, #06b6d4 0%, #3b82f6 50%, #2563eb 100%)',
                         WebkitBackgroundClip: 'text',
@@ -428,12 +428,12 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
                 <div className={`border-t ${borderColor}`}></div>
                 <div className="flex items-center justify-between py-1.5">
                   <div className="flex items-center">
-                    <div className="flex items-center justify-center" style={{ 
+                    <div className="flex items-center justify-center" style={{
                       width: '28px',
                       height: '24px',
                       marginRight: '8px'
                     }}>
-                      <div 
+                      <div
                         className={`w-[20px] h-[20px] rounded-full border flex items-center justify-center text-[11px] font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
                         style={{ borderColor: isDarkMode ? '#9ca3af' : '#6b7280' }}
                       >
@@ -442,7 +442,7 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
                     </div>
                     <div className="flex-1 flex flex-col items-start">
                       <span
-                        className="text-xs font-bold"
+                        className="text-xs font-normal"
                         style={{
                           background: 'linear-gradient(135deg, #06b6d4 0%, #3b82f6 50%, #2563eb 100%)',
                           WebkitBackgroundClip: 'text',
@@ -456,7 +456,7 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
                     </div>
                   </div>
                   <span
-                    className="text-[10px] font-bold"
+                    className="text-[10px] font-normal"
                     style={{
                       background: 'linear-gradient(135deg, #06b6d4 0%, #3b82f6 50%, #2563eb 100%)',
                       WebkitBackgroundClip: 'text',
@@ -536,7 +536,7 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
                       )}
                       <div className="flex-1 flex flex-col items-start">
                         <span
-                          className={`${actualRank === 1 ? 'text-sm' : actualRank === 2 ? 'text-[13px]' : 'text-xs'} ${isMe ? 'font-bold' : isDarkMode ? 'text-gray-300 font-normal' : 'text-gray-700 font-normal'}`}
+                          className={`${actualRank === 1 ? 'text-sm' : actualRank === 2 ? 'text-[13px]' : 'text-xs'} ${isDarkMode ? 'text-gray-300 font-normal' : 'text-gray-700 font-normal'}`}
                           style={isMe ? {
                             background: 'linear-gradient(135deg, #06b6d4 0%, #3b82f6 50%, #2563eb 100%)',
                             WebkitBackgroundClip: 'text',
@@ -550,7 +550,7 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
                       </div>
                     </div>
                     <span
-                      className={`${actualRank === 1 ? 'text-xs' : actualRank === 2 ? 'text-[11px]' : 'text-[10px]'} ${isMe ? 'font-bold' : isDarkMode ? 'text-gray-300 font-normal' : 'text-gray-700 font-normal'}`}
+                      className={`${actualRank === 1 ? 'text-xs' : actualRank === 2 ? 'text-[11px]' : 'text-[10px]'} ${isDarkMode ? 'text-gray-300 font-normal' : 'text-gray-700 font-normal'}`}
                       style={isMe ? {
                         background: 'linear-gradient(135deg, #06b6d4 0%, #3b82f6 50%, #2563eb 100%)',
                         WebkitBackgroundClip: 'text',
@@ -585,7 +585,7 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
                     </div>
                     <div className="flex-1 flex flex-col items-start">
                       <span
-                        className="text-xs font-bold"
+                        className="text-xs font-normal"
                         style={{
                           background: 'linear-gradient(135deg, #06b6d4 0%, #3b82f6 50%, #2563eb 100%)',
                           WebkitBackgroundClip: 'text',
@@ -599,7 +599,7 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
                     </div>
                   </div>
                   <span
-                    className="text-[10px] font-bold"
+                    className="text-[10px] font-normal"
                     style={{
                       background: 'linear-gradient(135deg, #06b6d4 0%, #3b82f6 50%, #2563eb 100%)',
                       WebkitBackgroundClip: 'text',

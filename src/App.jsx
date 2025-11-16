@@ -486,6 +486,29 @@ const EcostepAppContent = () => {
             } catch (error) {
               console.error('기본 어항 추가 에러:', error);
             }
+
+            // 로그인 후 대기 중인 초대 코드 처리
+            const pendingCode = localStorage.getItem('pendingInviteCode');
+            if (pendingCode) {
+              console.log('대기 중인 초대 코드 처리:', pendingCode);
+              localStorage.removeItem('pendingInviteCode');
+
+              try {
+                const result = await processInviteCode(pendingCode);
+                if (result.success) {
+                  console.log('초대 코드 처리 성공:', result.inviterName);
+                  showToast(`${result.inviterName}님의 초대로 친구가 되었습니다! 500P 획득`, 'success');
+                } else {
+                  console.error('초대 코드 처리 실패:', result.error);
+                  if (result.error !== '본인의 초대 코드는 사용할 수 없습니다.' &&
+                      result.error !== '이미 친구입니다.') {
+                    showToast('초대 코드 처리 중 오류가 발생했습니다.', 'error');
+                  }
+                }
+              } catch (error) {
+                console.error('초대 코드 처리 에러:', error);
+              }
+            }
           } else {
             console.warn('프로필이 없지만 로그인은 성공했습니다. 데이터는 나중에 로드됩니다.');
             // 프로필이 없어도 앱 사용은 가능하도록 설정
@@ -500,6 +523,18 @@ const EcostepAppContent = () => {
     };
 
     checkUser();
+
+    // URL 파라미터에서 초대 코드 확인 (웹 환경)
+    const urlParams = new URLSearchParams(window.location.search);
+    const inviteCode = urlParams.get('code');
+
+    if (inviteCode) {
+      console.log('초대 코드 발견:', inviteCode);
+      // 초대 코드를 localStorage에 저장하여 로그인 후 처리
+      localStorage.setItem('pendingInviteCode', inviteCode);
+      // URL에서 파라미터 제거
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
 
     // 오늘의 환경 팁 생성 (자정 기준으로 하루에 한 번만 생성)
     generateDailyTip().catch(error => {
@@ -634,6 +669,24 @@ const EcostepAppContent = () => {
                       }
                     } catch (error) {
                       console.error('기본 어항 추가 에러:', error);
+                    }
+
+                    // 로그인 후 대기 중인 초대 코드 처리 (Deep link 경로)
+                    const pendingCode = localStorage.getItem('pendingInviteCode');
+                    if (pendingCode) {
+                      console.log('대기 중인 초대 코드 처리 (Deep link):', pendingCode);
+                      localStorage.removeItem('pendingInviteCode');
+
+                      try {
+                        const result = await processInviteCode(pendingCode);
+                        if (result.success) {
+                          console.log('초대 코드 처리 성공:', result.inviterName);
+                        } else {
+                          console.error('초대 코드 처리 실패:', result.error);
+                        }
+                      } catch (error) {
+                        console.error('초대 코드 처리 에러:', error);
+                      }
                     }
                   } else {
                     console.warn('프로필이 없지만 로그인은 성공했습니다. 데이터는 나중에 로드됩니다.');
@@ -984,7 +1037,7 @@ const EcostepAppContent = () => {
 
   // 로그인 화면 표시
   if (!isLoggedIn) {
-    return <Login onLogin={() => setIsLoggedIn(true)} />;
+    return <Login />;
   }
 
   // 데이터 로딩 중 (로그인 후)

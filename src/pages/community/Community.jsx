@@ -9,9 +9,10 @@ import { Share } from '@capacitor/share';
 
 const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast, userRanking, totalPlasticSaved = 0, currentUserId = '', currentUserFId = '', currentUserName = '' }) => {
   // 전역 데이터 컨텍스트에서 데이터 가져오기
-  const { allUsers, friendsList: friendsData } = useData();
+  const { allUsers, friendsList: friendsData, refreshUsers, refreshFriends } = useData();
 
   const [showSearchPage, setShowSearchPage] = useState(false);
+  const [currentUserPlasticSaved, setCurrentUserPlasticSaved] = useState(totalPlasticSaved);
 
   const bgColor = isDarkMode ? 'bg-gray-900' : 'bg-white';
   const textColor = isDarkMode ? 'text-white' : 'text-gray-900';
@@ -28,7 +29,7 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
     }
   };
 
-  const myScore = getDisplayScore(totalPlasticSaved);
+  const myScore = getDisplayScore(currentUserPlasticSaved);
 
   // 전체 랭킹 데이터 - 데이터베이스에서 가져온 상위 50명 사용
   let globalRankingDataRaw = allUsers.map(user => ({
@@ -46,7 +47,7 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
       name: currentUserName || '사용자',
       id: currentUserFId,
       score: myScore,
-      grams: totalPlasticSaved
+      grams: currentUserPlasticSaved
     });
     // 다시 정렬
     globalRankingDataRaw.sort((a, b) => b.grams - a.grams);
@@ -73,7 +74,7 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
       name: currentUserName || '사용자',
       id: currentUserFId,
       score: myScore,
-      grams: totalPlasticSaved
+      grams: currentUserPlasticSaved
     });
     // 다시 정렬
     friendsListRaw.sort((a, b) => b.grams - a.grams);
@@ -88,6 +89,34 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
   // 나의 친구 중 랭킹 찾기
   const myRank = friendsList.findIndex(f => f.id === currentUserFId) + 1;
   const isInTop3 = myRank <= 3 && myRank > 0;
+
+  // 컴포넌트 마운트 시 데이터 새로고침
+  useEffect(() => {
+    // 전체 사용자 목록과 친구 목록 새로고침
+    const refreshData = async () => {
+      await refreshUsers();
+      if (currentUserId) {
+        await refreshFriends(currentUserId);
+
+        // 현재 사용자의 실제 DB 데이터 가져오기
+        try {
+          const { data, error } = await supabase
+            .from('user_info')
+            .select('amount')
+            .eq('user_id', currentUserId)
+            .single();
+
+          if (!error && data) {
+            setCurrentUserPlasticSaved(data.amount || 0);
+          }
+        } catch (error) {
+          console.error('현재 사용자 데이터 로드 실패:', error);
+        }
+      }
+    };
+
+    refreshData();
+  }, [currentUserId]); // currentUserId가 변경될 때마다 실행
 
   // Initialize Kakao SDK when component mounts
   useEffect(() => {
@@ -155,7 +184,9 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
                     return;
                   }
 
-                  const inviteLink = `https://ecostep.app/invite?code=${userFId}`;
+                  // 환경에 따라 다른 URL 사용
+                  const baseUrl = window.location.origin; // 웹: 현재 도메인, 앱: 앱 URL
+                  const inviteLink = `${baseUrl}?code=${userFId}`;
                   const shareText = '🌱 EcoStep - Small Steps, Big Change. Why Not?';
 
                   // Capacitor 모바일 앱 환경인지 확인
@@ -272,7 +303,9 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
                   return;
                 }
 
-                const inviteLink = `https://ecostep.app/invite?code=${userFId}`;
+                // 환경에 따라 다른 URL 사용
+                const baseUrl = window.location.origin; // 웹: 현재 도메인, 앱: 앱 URL
+                const inviteLink = `${baseUrl}?code=${userFId}`;
 
                 // Copy to clipboard
                 navigator.clipboard.writeText(inviteLink).then(() => {

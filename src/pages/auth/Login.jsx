@@ -6,7 +6,7 @@ import { FiChevronRight } from 'react-icons/fi';
 import { signInWithGoogle, signInWithKakao, signInWithApple } from '../../lib/auth';
 import EarthStructure from '../../components/EarthStructure';
 
-function Login({ onLogin }) {
+function Login() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [stars, setStars] = useState([]);
@@ -114,9 +114,6 @@ function Login({ onLogin }) {
           console.log('애플 로그인 함수 호출');
           result = await signInWithApple();
           break;
-        case 'skip':
-          onLogin();
-          return;
         default:
           throw new Error('지원하지 않는 로그인 방식입니다.');
       }
@@ -235,14 +232,6 @@ function Login({ onLogin }) {
                 </div>
                 <FiChevronRight className="text-gray-400 text-lg flex-shrink-0" />
               </button>
-              </div>
-
-              
-              
-              <div className="mt-3 text-center">
-                <button onClick={() => handleLogin('skip')} className="text-white text-xs py-2">
-                  로그인 없이 둘러보기
-                </button>
               </div>
             </div>
     </div>

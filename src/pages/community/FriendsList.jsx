@@ -1,13 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ChevronRight, Search } from 'lucide-react';
 import { BronzeIcon, SilverIcon, GoldIcon, PlatinumIcon } from '../../components/RankIcons';
 import { useData } from '../../services/DataContext';
+import { supabase } from '../../lib/supabase';
 
 const FriendsList = ({ isDarkMode, onBack, isGlobalRanking = false, totalPlasticSaved = 0, currentUserId = '', currentUserFId = '', currentUserName = '' }) => {
   const [searchQuery, setSearchQuery] = useState('');
+  const [currentUserPlasticSaved, setCurrentUserPlasticSaved] = useState(totalPlasticSaved);
 
   // 전역 데이터 컨텍스트에서 데이터 가져오기
-  const { allUsers, friendsList: friendsData } = useData();
+  const { allUsers, friendsList: friendsData, refreshUsers, refreshFriends } = useData();
   
   // 나의 실제 플라스틱 절약량 반영
   const getDisplayScore = (grams) => {
@@ -18,7 +20,7 @@ const FriendsList = ({ isDarkMode, onBack, isGlobalRanking = false, totalPlastic
     }
   };
 
-  const myScore = getDisplayScore(totalPlasticSaved);
+  const myScore = getDisplayScore(currentUserPlasticSaved);
 
   // 전체 랭킹 데이터 - 데이터베이스에서 가져온 상위 50명 사용
   let globalRankingDataRaw = allUsers.map(user => ({
@@ -37,7 +39,7 @@ const FriendsList = ({ isDarkMode, onBack, isGlobalRanking = false, totalPlastic
       name: currentUserName || '나',
       id: currentUserFId,
       score: myScore,
-      grams: totalPlasticSaved
+      grams: currentUserPlasticSaved
     });
   }
 
@@ -90,7 +92,7 @@ const FriendsList = ({ isDarkMode, onBack, isGlobalRanking = false, totalPlastic
       name: currentUserName || '나',
       id: currentUserFId,
       score: myScore,
-      grams: totalPlasticSaved
+      grams: currentUserPlasticSaved
     });
     // 다시 정렬
     friendsRankingDataRaw.sort((a, b) => b.grams - a.grams);
@@ -132,7 +134,34 @@ const FriendsList = ({ isDarkMode, onBack, isGlobalRanking = false, totalPlastic
   const filteredFriends = displayFriends.filter(friend =>
     friend.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
-  
+
+  // 컴포넌트 마운트 시 데이터 새로고침
+  useEffect(() => {
+    const refreshData = async () => {
+      await refreshUsers();
+      if (currentUserId) {
+        await refreshFriends(currentUserId);
+
+        // 현재 사용자의 실제 DB 데이터 가져오기
+        try {
+          const { data, error } = await supabase
+            .from('user_info')
+            .select('amount')
+            .eq('user_id', currentUserId)
+            .single();
+
+          if (!error && data) {
+            setCurrentUserPlasticSaved(data.amount || 0);
+          }
+        } catch (error) {
+          console.error('현재 사용자 데이터 로드 실패:', error);
+        }
+      }
+    };
+
+    refreshData();
+  }, [currentUserId]); // currentUserId가 변경될 때마다 실행
+
   const bgColor = isDarkMode ? 'bg-gray-900' : 'bg-white';
   const textColor = isDarkMode ? 'text-white' : 'text-gray-900';
   const borderColor = isDarkMode ? 'border-gray-700' : 'border-gray-200';

@@ -92,7 +92,9 @@ function Login({ onLogin }) {
   }, []);
 
   const handleLogin = async (provider) => {
-    console.log(`${provider} 로그인 시도`);
+    if (import.meta.env.DEV) {
+      console.log(`${provider} 로그인 시도`);
+    }
     setIsLoading(true);
     setError(null);
     

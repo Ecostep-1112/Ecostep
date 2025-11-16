@@ -33,7 +33,9 @@ const generateRandomUserId = () => {
 // 아이디 중복 확인 함수 (user_f_id 기준)
 const checkUserFIdAvailability = async (userFId) => {
   try {
-    console.log('중복 확인할 아이디:', userFId);
+    if (import.meta.env.DEV) {
+      console.log('중복 확인할 아이디:', userFId);
+    }
     const { data, error } = await supabase
       .from('user_info')
       .select('user_f_id')
@@ -80,7 +82,9 @@ const generateUniqueUserFId = async () => {
 // 사용자 프로필 생성 또는 업데이트
 export const createOrUpdateUserProfile = async (user) => {
   try {
-    console.log('프로필 생성/업데이트 시작:', user.id);
+    if (import.meta.env.DEV) {
+      console.log('프로필 생성/업데이트 시작:', user.id);
+    }
 
     // 기존 프로필 확인 (user_info 테이블의 user_id는 auth.uid()::text)
     const { data: existingProfile, error: fetchError } = await supabase
@@ -89,12 +93,16 @@ export const createOrUpdateUserProfile = async (user) => {
       .eq('user_id', user.id)
       .maybeSingle(); // single() 대신 maybeSingle() 사용
 
-    console.log('기존 프로필:', existingProfile);
+    if (import.meta.env.DEV) {
+      console.log('기존 프로필:', existingProfile);
+    }
 
     if (existingProfile) {
       // 기존 프로필이 있지만 user_f_id가 없는 경우 자동 생성
       if (!existingProfile.user_f_id) {
-        console.log('user_f_id 없음, 자동 생성 시작');
+        if (import.meta.env.DEV) {
+          console.log('user_f_id 없음, 자동 생성 시작');
+        }
         const newUserFId = await generateUniqueUserFId();
 
         const { data: updatedProfile, error: updateError } = await supabase
@@ -109,12 +117,16 @@ export const createOrUpdateUserProfile = async (user) => {
           return { profile: existingProfile, error: null };
         }
 
-        console.log('user_f_id 자동 생성 완료:', newUserFId);
+        if (import.meta.env.DEV) {
+          console.log('user_f_id 자동 생성 완료:', newUserFId);
+        }
         return { profile: updatedProfile, error: null };
       }
 
       // 이미 프로필이 있으면 반환
-      console.log('기존 프로필 있음:', existingProfile.user_id);
+      if (import.meta.env.DEV) {
+        console.log('기존 프로필 있음:', existingProfile.user_id);
+      }
       return { profile: existingProfile, error: null };
     }
 
@@ -132,7 +144,9 @@ export const createOrUpdateUserProfile = async (user) => {
     if (retryProfile) {
       // 새로 생성된 프로필에 user_f_id가 없으면 추가
       if (!retryProfile.user_f_id) {
-        console.log('새 프로필에 user_f_id 추가');
+        if (import.meta.env.DEV) {
+          console.log('새 프로필에 user_f_id 추가');
+        }
         const newUserFId = await generateUniqueUserFId();
 
         const { data: updatedProfile, error: updateError } = await supabase
@@ -143,7 +157,9 @@ export const createOrUpdateUserProfile = async (user) => {
           .single();
 
         if (!updateError && updatedProfile) {
-          console.log('user_f_id 자동 생성 완료:', newUserFId);
+          if (import.meta.env.DEV) {
+            console.log('user_f_id 자동 생성 완료:', newUserFId);
+          }
           return { profile: updatedProfile, error: null };
         }
       }
@@ -265,7 +281,9 @@ export const onAuthStateChange = (callback) => {
 // user_f_id 업데이트 함수
 export const updateUserFId = async (newUserFId) => {
   try {
-    console.log('user_f_id 업데이트 시작:', newUserFId);
+    if (import.meta.env.DEV) {
+      console.log('user_f_id 업데이트 시작:', newUserFId);
+    }
 
     // 입력값 검증
     if (!newUserFId || newUserFId.trim() === '') {
@@ -299,7 +317,9 @@ export const updateUserFId = async (newUserFId) => {
       return { success: false, error: 'user_f_id 업데이트에 실패했습니다.' };
     }
 
-    console.log('user_f_id 저장 성공:', data);
+    if (import.meta.env.DEV) {
+      console.log('user_f_id 저장 성공:', data);
+    }
 
     return { success: true, data: { user_f_id: trimmedUserFId }, error: null };
   } catch (error) {
@@ -435,7 +455,9 @@ export const processInviteCode = async (inviteCode) => {
       return { success: false, error: '유효하지 않은 초대 코드입니다.' };
     }
 
-    console.log('초대자 찾음:', inviter.user_f_id);
+    if (import.meta.env.DEV) {
+      console.log('초대자 찾음:', inviter.user_f_id);
+    }
 
     // 이미 친구인지 확인
     const { data: existingFriend } = await supabase

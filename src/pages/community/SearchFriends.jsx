@@ -92,10 +92,12 @@ const SearchFriends = ({ isDarkMode, onBack, userRanking = 'bronze', showToast, 
     const userName = currentUserName || savedUserName;
 
     // 디버깅용 로그
-    console.log('User F_ID:', userFId);
-    console.log('User Name:', userName);
-    console.log('Search Term:', searchTerm);
-    console.log('All Users:', allUsers);
+    if (import.meta.env.DEV) {
+      console.log('User F_ID:', userFId);
+      console.log('User Name:', userName);
+      console.log('Search Term:', searchTerm);
+      console.log('All Users:', allUsers);
+    }
 
     // 프로필 아이디나 이름이 설정되지 않은 경우
     if (!userFId && !userName) {

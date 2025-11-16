@@ -63,7 +63,8 @@
       "Bash(/tmp/app_2509f67.jsx)",
       "Bash(/tmp/challenge_2509f67.jsx)",
       "Bash(npm run build:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(npx tsc:*)"
     ],
     "deny": [],
     "ask": [],

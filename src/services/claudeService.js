@@ -18,7 +18,8 @@ export const generateDailyTip = async () => {
     // 이미 오늘 생성했으면 스킵
     if (isTipGeneratedToday()) {
       console.log('오늘의 팁이 이미 생성되어 있습니다.');
-      return;
+      const existingTip = getTodayTip();
+      return { data: existingTip, error: null };
     }
 
     console.log('오늘의 새로운 팁 생성 중...');
@@ -59,6 +60,7 @@ export const generateDailyTip = async () => {
     localStorage.setItem('lastTipGeneratedDate', todayDate);
 
     console.log('오늘의 팁 생성 완료:', tipData.title);
+    return { data: tipData, error: null };
   } catch (error) {
     console.error('일일 팁 생성 실패:', error);
     // 에러 발생 시 기본 팁 저장
@@ -72,33 +74,30 @@ export const generateDailyTip = async () => {
     };
     localStorage.setItem('currentDailyTip', JSON.stringify(fallbackTip));
     localStorage.setItem('lastTipGeneratedDate', getTodayDateString());
+    return { data: fallbackTip, error };
   }
 };
 
 // 오늘의 팁 가져오기
 export const getTodayTip = () => {
+  const defaultTip = {
+    id: Date.now(),
+    title: '환경 보호 실천하기',
+    preview: '작은 실천이 큰 변화를 만듭니다',
+    content: '일회용품 사용을 줄이고, 재활용을 생활화하며, 에너지를 절약하는 것부터 시작해보세요. 매일 작은 노력이 모여 지구를 지킬 수 있습니다.',
+    category: '생활 습관'
+  };
+
   try {
     const tipStr = localStorage.getItem('currentDailyTip');
     if (!tipStr) {
       // 팁이 없으면 기본값 반환
-      return {
-        id: Date.now(),
-        title: '환경 보호 실천하기',
-        preview: '작은 실천이 큰 변화를 만듭니다',
-        content: '일회용품 사용을 줄이고, 재활용을 생활화하며, 에너지를 절약하는 것부터 시작해보세요. 매일 작은 노력이 모여 지구를 지킬 수 있습니다.',
-        category: '생활 습관'
-      };
+      return defaultTip;
     }
     return JSON.parse(tipStr);
   } catch (error) {
     console.error('팁 로드 실패:', error);
-    return {
-      id: Date.now(),
-      title: '환경 보호 실천하기',
-      preview: '작은 실천이 큰 변화를 만듭니다',
-      content: '일회용품 사용을 줄이고, 재활용을 생활화하며, 에너지를 절약하는 것부터 시작해보세요. 매일 작은 노력이 모여 지구를 지킬 수 있습니다.',
-      category: '생활 습관'
-    };
+    return defaultTip;
   }
 };
 

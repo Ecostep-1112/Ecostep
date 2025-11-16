@@ -1,19 +1,26 @@
-import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo, lazy, Suspense } from 'react';
 import { Settings, Home, Target, Gift, Users, MoreHorizontal, Bell } from 'lucide-react';
 import { debounce } from './utils/debounce';
-import HomePage from './pages/home/Home';
-import ChallengePage from './pages/challenge/Challenge';
-import RewardsPage from './pages/rewards/Rewards';
-import CommunityPage from './pages/community/Community';
-import MorePage from './pages/more/More';
-import SettingsScreen from './pages/settings/SettingsScreen';
-import ProfileScreen from './pages/settings/ProfileScreen';
-import FriendsList from './pages/community/FriendsList';
-import ChatBot from './pages/more/ChatBot';
-import NotificationsScreen from './pages/settings/NotificationsScreen';
-import { ThemeSettings, RankThemeSettings, LanguageSettings, NotificationSettings, LocationSettings, AquariumSettings } from './pages/settings/Settings';
 import Toast from './components/Toast';
 import Login from './pages/auth/Login';
+
+// Lazy loading으로 페이지 컴포넌트 로드 - 초기 번들 크기 감소
+const HomePage = lazy(() => import('./pages/home/Home'));
+const ChallengePage = lazy(() => import('./pages/challenge/Challenge'));
+const RewardsPage = lazy(() => import('./pages/rewards/Rewards'));
+const CommunityPage = lazy(() => import('./pages/community/Community'));
+const MorePage = lazy(() => import('./pages/more/More'));
+const SettingsScreen = lazy(() => import('./pages/settings/SettingsScreen'));
+const ProfileScreen = lazy(() => import('./pages/settings/ProfileScreen'));
+const FriendsList = lazy(() => import('./pages/community/FriendsList'));
+const ChatBot = lazy(() => import('./pages/more/ChatBot'));
+const NotificationsScreen = lazy(() => import('./pages/settings/NotificationsScreen'));
+const ThemeSettings = lazy(() => import('./pages/settings/Settings').then(module => ({ default: module.ThemeSettings })));
+const RankThemeSettings = lazy(() => import('./pages/settings/Settings').then(module => ({ default: module.RankThemeSettings })));
+const LanguageSettings = lazy(() => import('./pages/settings/Settings').then(module => ({ default: module.LanguageSettings })));
+const NotificationSettings = lazy(() => import('./pages/settings/Settings').then(module => ({ default: module.NotificationSettings })));
+const LocationSettings = lazy(() => import('./pages/settings/Settings').then(module => ({ default: module.LocationSettings })));
+const AquariumSettings = lazy(() => import('./pages/settings/Settings').then(module => ({ default: module.AquariumSettings })));
 import { onAuthStateChange, getCurrentUser, signOut, createOrUpdateUserProfile, processInviteCode } from './lib/auth';
 import { getUserInfo, saveUserInfo, getUserItems, getUserPurchasedItems, purchaseItem } from './lib/database';
 import { supabase } from './lib/supabase';
@@ -447,7 +454,9 @@ const EcostepAppContent = () => {
             const authUserId = user.id;
             // localStorage의 userFId를 우선적으로 사용
             const finalUserFId = currentData.userFId || prev.userFId || profile?.user_f_id || '';
-            console.log('App.jsx - userId:', authUserId, 'finalUserFId:', finalUserFId);
+            if (import.meta.env.DEV) {
+              console.log('App.jsx - userId:', authUserId, 'finalUserFId:', finalUserFId);
+            }
 
             return {
               ...prev,
@@ -1038,67 +1047,75 @@ const EcostepAppContent = () => {
 
           {/* 메인 콘텐츠 */}
           <div className={`flex-1 overflow-y-auto pt-[104px] ${isKeyboardVisible || showChatBot ? 'pb-0' : 'pb-24'} ${bgColor} scrollbar-hide`}>
-          {showNotifications ? (
-            <NotificationsScreen 
-              isDarkMode={isDarkMode} 
-              setShowNotifications={setShowNotifications}
-              notifications={notificationsList}
-              setNotifications={setNotificationsList}
-              points={points}
-              setPoints={setPoints}
-              earnPoints={earnPoints}
-              rankTheme={rankTheme}
-            />
-          ) : showSettings ? (
-            showProfile ? <ProfileScreen isDarkMode={isDarkMode} setShowProfile={setShowProfile} profileData={profileData} setProfileData={setProfileData} /> : 
-            showThemeSettings ? <ThemeSettings isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} setShowThemeSettings={setShowThemeSettings} /> :
-            showRankThemeSettings ? <RankThemeSettings isDarkMode={isDarkMode} userRanking={rankTheme} setUserRanking={setRankTheme} setShowRankThemeSettings={setShowRankThemeSettings} currentUserRank={userRanking} showToast={showToast} /> :
-            showLanguageSettings ? <LanguageSettings isDarkMode={isDarkMode} language={language} setLanguage={setLanguage} setShowLanguageSettings={setShowLanguageSettings} /> :
-            showNotificationSettings ? <NotificationSettings isDarkMode={isDarkMode} notifications={notificationEnabled} setNotifications={setNotificationEnabled} setShowNotificationSettings={setShowNotificationSettings} /> :
-            showLocationSettings ? <LocationSettings isDarkMode={isDarkMode} locationSharing={locationSharing} setLocationSharing={setLocationSharing} setShowLocationSettings={setShowLocationSettings} /> :
-            <SettingsScreen 
-              isDarkMode={isDarkMode}
-              setShowSettings={setShowSettings}
-              setShowProfile={setShowProfile}
-              setShowLanguageSettings={setShowLanguageSettings}
-              setShowNotificationSettings={setShowNotificationSettings}
-              setShowLocationSettings={setShowLocationSettings}
-              setShowThemeSettings={setShowThemeSettings}
-              setShowRankThemeSettings={setShowRankThemeSettings}
-              userRanking={rankTheme}
-              language={language}
-              notifications={notificationEnabled}
-              locationSharing={locationSharing}
-              userProfile={profileData}
-              onLogout={handleLogout}
-            />
-          ) : showAquariumSettings ? (
-            <AquariumSettings 
-              isDarkMode={isDarkMode}
-              setShowAquariumSettings={setShowAquariumSettings}
-              fishCount={fishCount}
-              setFishCount={setFishCount}
-              isRandomFish={isRandomFish}
-              setIsRandomFish={setIsRandomFish}
-              selectedFish={selectedFish}
-              setSelectedFish={setSelectedFish}
-              selectedDecorations={selectedDecorations}
-              setSelectedDecorations={setSelectedDecorations}
-              purchasedFish={purchasedFish}
-              currentTank={currentTank}
-              setCurrentTank={setCurrentTank}
-              unlockedTanks={unlockedTanks}
-              tankName={tankName}
-              setTankName={setTankName}
-              purchasedDecorations={purchasedDecorations}
-              decorationsData={decorationsData}
-              isRandomDecorations={isRandomDecorations}
-              setIsRandomDecorations={setIsRandomDecorations}
-              claimedTanks={claimedTanks}
-            />
-          ) : (
-            <>
-              {activeTab === 'home' && <HomePage
+            <Suspense fallback={
+              <div className="flex items-center justify-center min-h-screen">
+                <div className="text-center">
+                  <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-green-500 mb-4"></div>
+                  <p className={isDarkMode ? 'text-gray-300' : 'text-gray-600'}>로딩 중...</p>
+                </div>
+              </div>
+            }>
+              {showNotifications ? (
+                <NotificationsScreen
+                  isDarkMode={isDarkMode}
+                  setShowNotifications={setShowNotifications}
+                  notifications={notificationsList}
+                  setNotifications={setNotificationsList}
+                  points={points}
+                  setPoints={setPoints}
+                  earnPoints={earnPoints}
+                  rankTheme={rankTheme}
+                />
+              ) : showSettings ? (
+                showProfile ? <ProfileScreen isDarkMode={isDarkMode} setShowProfile={setShowProfile} profileData={profileData} setProfileData={setProfileData} /> :
+                showThemeSettings ? <ThemeSettings isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} setShowThemeSettings={setShowThemeSettings} /> :
+                showRankThemeSettings ? <RankThemeSettings isDarkMode={isDarkMode} userRanking={rankTheme} setUserRanking={setRankTheme} setShowRankThemeSettings={setShowRankThemeSettings} currentUserRank={userRanking} showToast={showToast} /> :
+                showLanguageSettings ? <LanguageSettings isDarkMode={isDarkMode} language={language} setLanguage={setLanguage} setShowLanguageSettings={setShowLanguageSettings} /> :
+                showNotificationSettings ? <NotificationSettings isDarkMode={isDarkMode} notifications={notificationEnabled} setNotifications={setNotificationEnabled} setShowNotificationSettings={setShowNotificationSettings} /> :
+                showLocationSettings ? <LocationSettings isDarkMode={isDarkMode} locationSharing={locationSharing} setLocationSharing={setLocationSharing} setShowLocationSettings={setShowLocationSettings} /> :
+                <SettingsScreen
+                  isDarkMode={isDarkMode}
+                  setShowSettings={setShowSettings}
+                  setShowProfile={setShowProfile}
+                  setShowLanguageSettings={setShowLanguageSettings}
+                  setShowNotificationSettings={setShowNotificationSettings}
+                  setShowLocationSettings={setShowLocationSettings}
+                  setShowThemeSettings={setShowThemeSettings}
+                  setShowRankThemeSettings={setShowRankThemeSettings}
+                  userRanking={rankTheme}
+                  language={language}
+                  notifications={notificationEnabled}
+                  locationSharing={locationSharing}
+                  userProfile={profileData}
+                  onLogout={handleLogout}
+                />
+              ) : showAquariumSettings ? (
+                <AquariumSettings
+                  isDarkMode={isDarkMode}
+                  setShowAquariumSettings={setShowAquariumSettings}
+                  fishCount={fishCount}
+                  setFishCount={setFishCount}
+                  isRandomFish={isRandomFish}
+                  setIsRandomFish={setIsRandomFish}
+                  selectedFish={selectedFish}
+                  setSelectedFish={setSelectedFish}
+                  selectedDecorations={selectedDecorations}
+                  setSelectedDecorations={setSelectedDecorations}
+                  purchasedFish={purchasedFish}
+                  currentTank={currentTank}
+                  setCurrentTank={setCurrentTank}
+                  unlockedTanks={unlockedTanks}
+                  tankName={tankName}
+                  setTankName={setTankName}
+                  purchasedDecorations={purchasedDecorations}
+                  decorationsData={decorationsData}
+                  isRandomDecorations={isRandomDecorations}
+                  setIsRandomDecorations={setIsRandomDecorations}
+                  claimedTanks={claimedTanks}
+                />
+              ) : (
+                <>
+                  {activeTab === 'home' && <HomePage
                 isDarkMode={isDarkMode}
                 setShowAquariumSettings={setShowAquariumSettings}
                 purchasedFish={purchasedFish}
@@ -1174,13 +1191,14 @@ const EcostepAppContent = () => {
                 spendPoints={spendPoints}
                 isActive={activeTab === 'reward'}
               />}
-              {activeTab === 'community' && !showFriendsList && !showGlobalList && <CommunityPage isDarkMode={isDarkMode} onShowFriendsList={() => setShowFriendsList(true)} onShowGlobalList={() => setShowGlobalList(true)} showToast={showToast} userRanking={rankTheme} totalPlasticSaved={testPlasticSaved > 0 ? testPlasticSaved : totalPlasticSaved} currentUserId={profileData.userId} currentUserFId={profileData.userFId} currentUserName={profileData.name} />}
-              {activeTab === 'community' && showFriendsList && <FriendsList isDarkMode={isDarkMode} onBack={() => setShowFriendsList(false)} isGlobalRanking={false} totalPlasticSaved={testPlasticSaved > 0 ? testPlasticSaved : totalPlasticSaved} currentUserId={profileData.userId} currentUserFId={profileData.userFId} currentUserName={profileData.name} />}
-              {activeTab === 'community' && showGlobalList && <FriendsList isDarkMode={isDarkMode} onBack={() => setShowGlobalList(false)} isGlobalRanking={true} totalPlasticSaved={testPlasticSaved > 0 ? testPlasticSaved : totalPlasticSaved} currentUserId={profileData.userId} currentUserFId={profileData.userFId} currentUserName={profileData.name} />}
-              {activeTab === 'more' && !showChatBot && <MorePage isDarkMode={isDarkMode} userPoints={points} setUserPoints={setPoints} onShowChatBot={() => setShowChatBot(true)} earnPoints={earnPoints} rankTheme={rankTheme} showToast={showToast} />}
-              {activeTab === 'more' && showChatBot && <ChatBot isDarkMode={isDarkMode} onBack={() => setShowChatBot(false)} platform={platform} isKeyboardVisible={isKeyboardVisible} />}
-            </>
-          )}
+                  {activeTab === 'community' && !showFriendsList && !showGlobalList && <CommunityPage isDarkMode={isDarkMode} onShowFriendsList={() => setShowFriendsList(true)} onShowGlobalList={() => setShowGlobalList(true)} showToast={showToast} userRanking={rankTheme} totalPlasticSaved={testPlasticSaved > 0 ? testPlasticSaved : totalPlasticSaved} currentUserId={profileData.userId} currentUserFId={profileData.userFId} currentUserName={profileData.name} />}
+                  {activeTab === 'community' && showFriendsList && <FriendsList isDarkMode={isDarkMode} onBack={() => setShowFriendsList(false)} isGlobalRanking={false} totalPlasticSaved={testPlasticSaved > 0 ? testPlasticSaved : totalPlasticSaved} currentUserId={profileData.userId} currentUserFId={profileData.userFId} currentUserName={profileData.name} />}
+                  {activeTab === 'community' && showGlobalList && <FriendsList isDarkMode={isDarkMode} onBack={() => setShowGlobalList(false)} isGlobalRanking={true} totalPlasticSaved={testPlasticSaved > 0 ? testPlasticSaved : totalPlasticSaved} currentUserId={profileData.userId} currentUserFId={profileData.userFId} currentUserName={profileData.name} />}
+                  {activeTab === 'more' && !showChatBot && <MorePage isDarkMode={isDarkMode} userPoints={points} setUserPoints={setPoints} onShowChatBot={() => setShowChatBot(true)} earnPoints={earnPoints} rankTheme={rankTheme} showToast={showToast} />}
+                  {activeTab === 'more' && showChatBot && <ChatBot isDarkMode={isDarkMode} onBack={() => setShowChatBot(false)} platform={platform} isKeyboardVisible={isKeyboardVisible} />}
+                </>
+              )}
+            </Suspense>
           </div>
 
           {/* 하단 네비게이션 - 글래스모피즘 효과 */}

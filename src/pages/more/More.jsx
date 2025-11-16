@@ -417,8 +417,20 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
     <div className={`flex-1 overflow-y-auto custom-scrollbar scrollbar-hide-idle pb-20 ${bgColor}`}>
       <div className="min-h-full">
         {/* 오늘의 환경 상식 */}
-        <div className={`mx-3 mt-4 ${cardBg} border ${borderColor} rounded-xl px-4 pt-4 pb-0`}>
-          <div className="flex justify-between items-center mb-3">
+        <div className={`mx-3 mt-4 ${cardBg} border ${borderColor} rounded-xl px-4 pt-4 pb-0 relative overflow-hidden`}>
+          {/* 블러 효과 오버레이 - 약하게 조정 */}
+          <div className="absolute inset-0 backdrop-blur-[2px] bg-black/5 z-10" />
+
+          {/* Coming Soon 메시지 */}
+          <div className="absolute inset-0 flex items-center justify-center z-20">
+            <span className={`text-xs font-medium ${
+              isDarkMode ? 'text-gray-400' : 'text-gray-600'
+            }`}>
+              Coming Soon
+            </span>
+          </div>
+
+          <div className="flex justify-between items-center mb-3 relative z-0">
             <div className="flex items-center">
               <h3 className={`${textColor} text-sm font-medium`}>오늘의 환경 상식</h3>
             </div>
@@ -459,17 +471,17 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
               </div>
             </div>
           </div>
-          
+
           {errorMessage && (
-            <div className="text-red-500 text-sm mb-3">{errorMessage}</div>
+            <div className="text-red-500 text-sm mb-3 relative z-0">{errorMessage}</div>
           )}
-          
+
           {isLoadingTip && !environmentalTip ? (
-            <div className="flex justify-center items-center h-16">
+            <div className="flex justify-center items-center h-16 relative z-0">
               <div className="text-gray-500">팁을 불러오는 중...</div>
             </div>
           ) : environmentalTip ? (
-            <div>
+            <div className="relative z-0">
               <div className="pb-3">
                 <div 
                   className="cursor-pointer"
@@ -536,7 +548,7 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
               </div>
             </div>
           ) : (
-            <div className="text-center py-4">
+            <div className="text-center py-4 relative z-0">
               <p className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} text-sm`}>
                 환경 팁을 불러올 수 없습니다.
               </p>
@@ -545,8 +557,20 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
         </div>
 
         {/* 제로웨이스트 맵 */}
-        <div className={`mx-3 mt-4 ${cardBg} border ${borderColor} rounded-xl p-4`}>
-          <div className="flex justify-between items-center mb-3">
+        <div className={`mx-3 mt-4 ${cardBg} border ${borderColor} rounded-xl p-4 relative overflow-hidden`}>
+          {/* 블러 효과 오버레이 - 약하게 조정 */}
+          <div className="absolute inset-0 backdrop-blur-[2px] bg-black/5 z-10" />
+
+          {/* Coming Soon 메시지 */}
+          <div className="absolute inset-0 flex items-center justify-center z-20">
+            <span className={`text-xs font-medium ${
+              isDarkMode ? 'text-gray-400' : 'text-gray-600'
+            }`}>
+              Coming Soon
+            </span>
+          </div>
+
+          <div className="flex justify-between items-center mb-3 relative z-0">
             <h3 className={`${textColor} text-sm font-medium`}>제로웨이스트 맵</h3>
             <div className="relative">
               <button
@@ -587,10 +611,10 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
               )}
             </div>
           </div>
-          
+
           {/* "선택" 카테고리 선택 시 */}
           {selectedPlaceCategory === '선택' ? (
-            <div className="flex flex-col items-center justify-center py-8">
+            <div className="flex flex-col items-center justify-center py-8 relative z-0">
               <p className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} text-sm text-center`}>
                 카테고리를 정해 주위의 장소를 찾아보세요
               </p>
@@ -721,14 +745,27 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
               <ChevronRight className={`w-4 h-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} relative z-0`} />
             </button>
             <button
-              onClick={onShowChatBot}
-              className={`w-full flex items-center justify-between p-2.5 ${inputBg} rounded-lg`}
+              onClick={() => {}}
+              className={`w-full flex items-center justify-between p-2.5 ${inputBg} rounded-lg relative overflow-hidden cursor-not-allowed opacity-60`}
+              disabled={true}
             >
-              <div className="flex items-center">
+              {/* 블러 효과 오버레이 - 약하게 조정 */}
+              <div className="absolute inset-0 backdrop-blur-[2px] bg-black/5 z-10" />
+
+              {/* Coming Soon 메시지 */}
+              <div className="absolute inset-0 flex items-center justify-center z-20">
+                <span className={`text-xs font-medium ${
+                  isDarkMode ? 'text-gray-400' : 'text-gray-600'
+                }`}>
+                  Coming Soon
+                </span>
+              </div>
+
+              <div className="flex items-center relative z-0">
                 <Phone className={`w-4 h-4 mr-2 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
                 <span className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>고객 센터</span>
               </div>
-              <ChevronRight className={`w-4 h-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
+              <ChevronRight className={`w-4 h-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} relative z-0`} />
             </button>
           </div>
         </div>

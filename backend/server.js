@@ -32,6 +32,10 @@ app.use(express.json());
 // Claude API configuration
 const CLAUDE_API_KEY = process.env.CLAUDE_API_KEY;
 
+// Naver API configuration
+const NAVER_CLIENT_ID = process.env.NAVER_CLIENT_ID;
+const NAVER_CLIENT_SECRET = process.env.NAVER_CLIENT_SECRET;
+
 // Initialize Anthropic client
 const anthropic = new Anthropic({
   apiKey: CLAUDE_API_KEY || 'dummy-key-for-mock',
@@ -98,7 +102,8 @@ app.get('/', (req, res) => {
     status: 'Running',
     endpoints: [
       'GET /api/health - Health check',
-      'POST /api/environmental-tip - Get environmental tip'
+      'POST /api/environmental-tip - Get environmental tip',
+      'POST /api/naver-local-search - Search nearby places'
     ]
   });
 });
@@ -544,6 +549,73 @@ app.post('/api/validate-plastic-item', async (req, res) => {
   }
 });
 
+// Naver Local Search API endpoint
+app.post('/api/naver-local-search', async (req, res) => {
+  try {
+    const { query, display = 100 } = req.body;
+
+    if (!query) {
+      return res.status(400).json({ error: 'Query is required' });
+    }
+
+    // Check if Naver API keys are configured
+    if (!NAVER_CLIENT_ID || !NAVER_CLIENT_SECRET) {
+      console.error('Naver API keys not configured');
+      return res.status(503).json({
+        error: 'NAVER_API_NOT_CONFIGURED',
+        message: '장소 검색 서비스가 일시적으로 사용 불가능합니다.',
+        retryable: false
+      });
+    }
+
+    console.log(`🔍 네이버 Local Search: "${query}" (최대 ${display}개)`);
+
+    // Call Naver Local Search API
+    const response = await fetch(
+      `https://openapi.naver.com/v1/search/local.json?query=${encodeURIComponent(query)}&display=${display}`,
+      {
+        headers: {
+          'X-Naver-Client-Id': NAVER_CLIENT_ID,
+          'X-Naver-Client-Secret': NAVER_CLIENT_SECRET
+        }
+      }
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Naver API error:', response.status, errorText);
+      return res.status(response.status).json({
+        error: 'NAVER_API_ERROR',
+        message: '장소 검색 중 오류가 발생했습니다.',
+        details: errorText
+      });
+    }
+
+    const data = await response.json();
+
+    // Transform Naver API response to our format
+    const places = data.items?.map(item => ({
+      name: item.title.replace(/<[^>]*>/g, ''), // Remove HTML tags
+      address: item.address,
+      roadAddress: item.roadAddress,
+      lat: parseFloat(item.mapy) / 10000000, // Naver uses coordinates multiplied by 10^7
+      lng: parseFloat(item.mapx) / 10000000,
+      category: item.category,
+      description: item.description?.replace(/<[^>]*>/g, '') || ''
+    })) || [];
+
+    console.log(`✅ 검색 완료: ${places.length}개 장소 발견`);
+    res.json({ places });
+  } catch (error) {
+    console.error('❌ 네이버 Local Search API 에러:', error.message);
+    res.status(500).json({
+      error: 'SEARCH_ERROR',
+      message: '장소 검색 중 오류가 발생했습니다.',
+      retryable: true
+    });
+  }
+});
+
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error('Server error:', err);
@@ -566,11 +638,18 @@ const server = app.listen(PORT, () => {
   console.log(`  POST ${baseUrl}/api/validate-plastic-challenge`);
   console.log(`  POST ${baseUrl}/api/classify-plastic-item`);
   console.log(`  POST ${baseUrl}/api/validate-plastic-item`);
+  console.log(`  POST ${baseUrl}/api/naver-local-search`);
 
   if (!CLAUDE_API_KEY || !CLAUDE_API_KEY.startsWith('sk-ant-')) {
     console.log('\n⚠️  Claude API key not configured - using mock data');
   } else {
     console.log('\n✅ Claude API key configured');
+  }
+
+  if (!NAVER_CLIENT_ID || !NAVER_CLIENT_SECRET) {
+    console.log('⚠️  Naver API keys not configured - place search unavailable');
+  } else {
+    console.log('✅ Naver API keys configured');
   }
 });
 

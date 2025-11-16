@@ -769,6 +769,13 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
             </button>
           </div>
         </div>
+
+        {/* 문의 사항 */}
+        <div className={`mx-3 mt-4 mb-4 p-3 text-center`}>
+          <p className={`text-xs ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+            문의 사항은 callmesongil@gmail.com으로 보내주세요.
+          </p>
+        </div>
       </div>
     </div>
   );

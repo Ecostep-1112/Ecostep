@@ -114,7 +114,15 @@ const SearchFriends = ({ isDarkMode, onBack, userRanking = 'bronze', showToast, 
       // user_f_id 또는 이름에 검색어가 포함된 모든 사용자 찾기 (부분 일치)
       let results = allUsers.filter(user => {
         const fIdMatch = user.fId && user.fId.toLowerCase().includes(searchLower);
-        const nameMatch = user.name && user.name.toLowerCase().includes(searchLower);
+
+        // 이름 검색: 띄어쓰기 있는 경우와 없는 경우 모두 처리
+        const nameWithoutSpaces = user.name ? user.name.toLowerCase().replace(/\s+/g, '') : '';
+        const searchWithoutSpaces = searchLower.replace(/\s+/g, '');
+        const nameMatch = user.name && (
+          user.name.toLowerCase().includes(searchLower) || // 원본 검색 (띄어쓰기 포함)
+          nameWithoutSpaces.includes(searchWithoutSpaces) // 띄어쓰기 제거 후 검색
+        );
+
         return fIdMatch || nameMatch;
       });
 
@@ -125,18 +133,34 @@ const SearchFriends = ({ isDarkMode, onBack, userRanking = 'bronze', showToast, 
 
       // 검색 결과를 관련성 순으로 정렬 (정확한 일치가 우선)
       results.sort((a, b) => {
+        const searchWithoutSpaces = searchLower.replace(/\s+/g, '');
+
         const aFIdExact = a.fId && a.fId.toLowerCase() === searchLower;
         const bFIdExact = b.fId && b.fId.toLowerCase() === searchLower;
-        const aNameExact = a.name && a.name.toLowerCase() === searchLower;
-        const bNameExact = b.name && b.name.toLowerCase() === searchLower;
+
+        // 이름 정확 일치: 띄어쓰기 있는 경우와 없는 경우 모두 확인
+        const aNameExact = a.name && (
+          a.name.toLowerCase() === searchLower ||
+          a.name.toLowerCase().replace(/\s+/g, '') === searchWithoutSpaces
+        );
+        const bNameExact = b.name && (
+          b.name.toLowerCase() === searchLower ||
+          b.name.toLowerCase().replace(/\s+/g, '') === searchWithoutSpaces
+        );
 
         // 정확한 일치가 있으면 우선
         if (aFIdExact || aNameExact) return -1;
         if (bFIdExact || bNameExact) return 1;
 
-        // 이름이 검색어로 시작하는 경우 우선
-        const aNameStarts = a.name && a.name.toLowerCase().startsWith(searchLower);
-        const bNameStarts = b.name && b.name.toLowerCase().startsWith(searchLower);
+        // 이름이 검색어로 시작하는 경우 우선 (띄어쓰기 제거 버전도 확인)
+        const aNameStarts = a.name && (
+          a.name.toLowerCase().startsWith(searchLower) ||
+          a.name.toLowerCase().replace(/\s+/g, '').startsWith(searchWithoutSpaces)
+        );
+        const bNameStarts = b.name && (
+          b.name.toLowerCase().startsWith(searchLower) ||
+          b.name.toLowerCase().replace(/\s+/g, '').startsWith(searchWithoutSpaces)
+        );
         if (aNameStarts && !bNameStarts) return -1;
         if (!aNameStarts && bNameStarts) return 1;
 

@@ -44,7 +44,7 @@ AuthKey_*.p8
 .yoyo/
 
 # Images
-*.png
+#*.png
 
 # Backup files
 *.backup

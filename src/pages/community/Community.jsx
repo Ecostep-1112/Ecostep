@@ -7,12 +7,12 @@ import { useData } from '../../services/DataContext';
 import { Capacitor } from '@capacitor/core';
 import { Share } from '@capacitor/share';
 
-const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast, userRanking, totalPlasticSaved = 0, currentUserId = '', currentUserFId = '', currentUserName = '' }) => {
+const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast, userRanking, currentUserId = '', currentUserFId = '', currentUserName = '' }) => {
   // 전역 데이터 컨텍스트에서 데이터 가져오기
   const { allUsers, friendsList: friendsData, refreshUsers, refreshFriends } = useData();
 
   const [showSearchPage, setShowSearchPage] = useState(false);
-  const [currentUserPlasticSaved, setCurrentUserPlasticSaved] = useState(totalPlasticSaved);
+  const [currentUserPlasticSaved, setCurrentUserPlasticSaved] = useState(0); // DB에서 로드할 때까지 0
 
   const bgColor = isDarkMode ? 'bg-gray-900' : 'bg-white';
   const textColor = isDarkMode ? 'text-white' : 'text-gray-900';

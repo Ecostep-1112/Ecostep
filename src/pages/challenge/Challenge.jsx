@@ -711,6 +711,9 @@ const Challenge = ({
       // 수질 100%로 회복 및 마지막 챌린지 날짜 업데이트
       if (setWaterQuality) {
         setWaterQuality(100);
+        // 오늘 수질이 업데이트되었음을 표시 (App.jsx의 자동 계산 방지)
+        const todayString = new Date().toISOString().split('T')[0];
+        localStorage.setItem('lastWaterQualityUpdate', todayString);
       }
 
       const today = new Date().toISOString();

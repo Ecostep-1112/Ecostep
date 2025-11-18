@@ -285,7 +285,8 @@ export const saveUserInfo = async (userId, userInfo) => {
       point_current: userInfo.point_current !== undefined ? userInfo.point_current : (userInfo.points || 0),
       points_total: userInfo.points_total !== undefined ? userInfo.points_total : (userInfo.totalPoints || 0),
       rank: userInfo.rank || 'bronze',
-      amount: userInfo.amount !== undefined ? userInfo.amount : (userInfo.plasticGoal || 0),
+      amount: userInfo.amount !== undefined ? userInfo.amount : 0, // 총 플라스틱 절약량 (totalPlasticSaved)
+      consecutive_days: userInfo.consecutive_days !== undefined ? userInfo.consecutive_days : 0, // 연속 달성 일수
       phone_num: userInfo.phone_num || userInfo.phone,
       user_password: userInfo.user_password
     };

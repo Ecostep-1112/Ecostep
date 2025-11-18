@@ -4,9 +4,9 @@ import { BronzeIcon, SilverIcon, GoldIcon, PlatinumIcon } from '../../components
 import { useData } from '../../services/DataContext';
 import { supabase } from '../../lib/supabase';
 
-const FriendsList = ({ isDarkMode, onBack, isGlobalRanking = false, totalPlasticSaved = 0, currentUserId = '', currentUserFId = '', currentUserName = '' }) => {
+const FriendsList = ({ isDarkMode, onBack, isGlobalRanking = false, currentUserId = '', currentUserFId = '', currentUserName = '' }) => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [currentUserPlasticSaved, setCurrentUserPlasticSaved] = useState(totalPlasticSaved);
+  const [currentUserPlasticSaved, setCurrentUserPlasticSaved] = useState(0); // DB에서 로드할 때까지 0
 
   // 전역 데이터 컨텍스트에서 데이터 가져오기
   const { allUsers, friendsList: friendsData, refreshUsers, refreshFriends } = useData();

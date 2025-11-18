@@ -141,7 +141,7 @@ const EcostepAppContent = () => {
         setPoints(data.point_current || 0);
         setTotalEarnedPoints(data.points_total || 0);
         setUserRanking(data.rank || 'bronze');
-        setPlasticGoal(data.amount || null);
+        setTotalPlasticSaved(data.amount || 0); // amount는 총 플라스틱 절약량
         setConsecutiveDays(data.consecutive_days || 0);
 
         // 프로필 데이터도 Supabase 데이터로 업데이트
@@ -198,7 +198,8 @@ const EcostepAppContent = () => {
         point_current: points,
         points_total: totalEarnedPoints,
         rank: userRanking,
-        amount: plasticGoal || 0
+        amount: totalPlasticSaved, // 총 플라스틱 절약량
+        consecutive_days: consecutiveDays // 연속 달성 일수
       };
 
       const { data, error } = await saveUserInfo(user.id, userInfo); // Auth UUID 사용
@@ -836,15 +837,25 @@ const EcostepAppContent = () => {
     return () => clearTimeout(timeoutId);
   }, [totalEarnedPoints]);
 
-  // plasticGoal 변경 시 Supabase에 저장
+  // totalPlasticSaved 변경 시 localStorage + Supabase에 저장
   useEffect(() => {
-    if (plasticGoal !== null) {
-      const timeoutId = setTimeout(() => {
-        saveUserDataToSupabase();
-      }, 1000); // 1초 디바운스
-      return () => clearTimeout(timeoutId);
-    }
-  }, [plasticGoal]);
+    localStorage.setItem('totalPlasticSaved', totalPlasticSaved.toString());
+    // Supabase에 저장 (디바운스 적용)
+    const timeoutId = setTimeout(() => {
+      saveUserDataToSupabase();
+    }, 1000); // 1초 디바운스
+    return () => clearTimeout(timeoutId);
+  }, [totalPlasticSaved]);
+
+  // consecutiveDays 변경 시 localStorage + Supabase에 저장
+  useEffect(() => {
+    localStorage.setItem('consecutiveDays', consecutiveDays.toString());
+    // Supabase에 저장 (디바운스 적용)
+    const timeoutId = setTimeout(() => {
+      saveUserDataToSupabase();
+    }, 1000); // 1초 디바운스
+    return () => clearTimeout(timeoutId);
+  }, [consecutiveDays]);
 
   // 프로필 데이터 변경 감지 (디버깅용)
   useEffect(() => {
@@ -856,10 +867,6 @@ const EcostepAppContent = () => {
       debouncedSaveToLocalStorage('lastChallengeDate', lastChallengeDate);
     }
   }, [lastChallengeDate, debouncedSaveToLocalStorage]);
-
-  useEffect(() => {
-    debouncedSaveToLocalStorage('consecutiveDays', consecutiveDays.toString());
-  }, [consecutiveDays, debouncedSaveToLocalStorage]);
 
   useEffect(() => {
     debouncedSaveToLocalStorage('challengeHistory', JSON.stringify(challengeHistory));
@@ -1244,9 +1251,9 @@ const EcostepAppContent = () => {
                 spendPoints={spendPoints}
                 isActive={activeTab === 'reward'}
               />}
-                  {activeTab === 'community' && !showFriendsList && !showGlobalList && <CommunityPage isDarkMode={isDarkMode} onShowFriendsList={() => setShowFriendsList(true)} onShowGlobalList={() => setShowGlobalList(true)} showToast={showToast} userRanking={rankTheme} totalPlasticSaved={testPlasticSaved > 0 ? testPlasticSaved : totalPlasticSaved} currentUserId={profileData.userId} currentUserFId={profileData.userFId} currentUserName={profileData.name} />}
-                  {activeTab === 'community' && showFriendsList && <FriendsList isDarkMode={isDarkMode} onBack={() => setShowFriendsList(false)} isGlobalRanking={false} totalPlasticSaved={testPlasticSaved > 0 ? testPlasticSaved : totalPlasticSaved} currentUserId={profileData.userId} currentUserFId={profileData.userFId} currentUserName={profileData.name} />}
-                  {activeTab === 'community' && showGlobalList && <FriendsList isDarkMode={isDarkMode} onBack={() => setShowGlobalList(false)} isGlobalRanking={true} totalPlasticSaved={testPlasticSaved > 0 ? testPlasticSaved : totalPlasticSaved} currentUserId={profileData.userId} currentUserFId={profileData.userFId} currentUserName={profileData.name} />}
+                  {activeTab === 'community' && !showFriendsList && !showGlobalList && <CommunityPage isDarkMode={isDarkMode} onShowFriendsList={() => setShowFriendsList(true)} onShowGlobalList={() => setShowGlobalList(true)} showToast={showToast} userRanking={rankTheme} currentUserId={profileData.userId} currentUserFId={profileData.userFId} currentUserName={profileData.name} />}
+                  {activeTab === 'community' && showFriendsList && <FriendsList isDarkMode={isDarkMode} onBack={() => setShowFriendsList(false)} isGlobalRanking={false} currentUserId={profileData.userId} currentUserFId={profileData.userFId} currentUserName={profileData.name} />}
+                  {activeTab === 'community' && showGlobalList && <FriendsList isDarkMode={isDarkMode} onBack={() => setShowGlobalList(false)} isGlobalRanking={true} currentUserId={profileData.userId} currentUserFId={profileData.userFId} currentUserName={profileData.name} />}
                   {activeTab === 'more' && !showChatBot && <MorePage isDarkMode={isDarkMode} userPoints={points} setUserPoints={setPoints} onShowChatBot={() => setShowChatBot(true)} earnPoints={earnPoints} rankTheme={rankTheme} showToast={showToast} />}
                   {activeTab === 'more' && showChatBot && <ChatBot isDarkMode={isDarkMode} onBack={() => setShowChatBot(false)} platform={platform} isKeyboardVisible={isKeyboardVisible} />}
                 </>

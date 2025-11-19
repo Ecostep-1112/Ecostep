@@ -67,10 +67,10 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
 
   // 카테고리별 검색어 매핑 (전체 제거)
   const categorySearchQueries = {
-    '제로웨이스트샵': ['제로웨이스트샵', '제로웨이스트'],
-    '리필스테이션': ['리필스테이션', '리필샵'],
-    '친환경매장': ['친환경매장', '친환경제품'],
-    '재활용센터': ['재활용센터', '재활용']
+    '제로웨이스트샵': ['제로웨이스트샵', '제로웨이스트', '무포장샵', '친환경샵', '알맹상점'],
+    '리필스테이션': ['리필스테이션', '리필샵', '세제리필', '샴푸리필', '무포장'],
+    '친환경매장': ['친환경매장', '친환경제품', '유기농', '친환경', '에코샵'],
+    '재활용센터': ['재활용센터', '재활용', '고물상', '폐기물수거', '자원회수']
   };
 
   // 네이버 지도 API에서 장소 데이터 불러오기 (캐싱 포함)
@@ -115,11 +115,15 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
       }
 
       // 모든 검색어로 장소 검색
+      console.log(`[제로웨이스트맵] 검색 시작 - 카테고리: ${selectedPlaceCategory}, 검색어:`, searchQueries);
+      console.log(`[제로웨이스트맵] 사용자 위치:`, userLocation);
+
       const searchPromises = searchQueries.map(query => searchPlaces(query, 20));
       const searchResults = await Promise.all(searchPromises);
 
       // 모든 결과 합치기
       const allPlaces = searchResults.flat();
+      console.log(`[제로웨이스트맵] API 응답 - 총 ${allPlaces.length}개 장소 검색됨`);
 
       // 중복 제거 (같은 이름과 주소를 가진 장소) - O(n) 성능 개선
       const seenKeys = new Set();
@@ -137,6 +141,11 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
 
       // 사용자 위치 기준 3km 반경 내 장소만 필터링 및 정렬
       const filteredPlaces = filterAndSortPlaces(uniquePlaces, userLocation, 3);
+      console.log(`[제로웨이스트맵] 중복 제거 후: ${uniquePlaces.length}개, 3km 반경 필터링 후: ${filteredPlaces.length}개`);
+
+      if (filteredPlaces.length > 0) {
+        console.log(`[제로웨이스트맵] 가장 가까운 장소:`, filteredPlaces[0]);
+      }
 
       setZeroWastePlaces(filteredPlaces);
 
@@ -168,11 +177,14 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
 
   // locationSharing 설정에 따라 위치 정보 가져오기
   useEffect(() => {
+    console.log(`[제로웨이스트맵] locationSharing 상태:`, locationSharing);
     if (locationSharing) {
       // 위치 설정이 켜져있으면 위치 정보 요청
+      console.log(`[제로웨이스트맵] 위치 정보 요청 시작`);
       getUserLocation();
     } else {
       // 위치 설정이 꺼져있으면 위치 거부 상태로 설정
+      console.log(`[제로웨이스트맵] 위치 설정이 꺼져있음`);
       setLocationPermissionDenied(true);
       setUserLocation(null);
       setZeroWastePlaces([]);
@@ -181,8 +193,12 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
 
   // 사용자 위치를 가져온 후 또는 카테고리 변경 시 장소 로드
   useEffect(() => {
+    console.log(`[제로웨이스트맵] userLocation 또는 카테고리 변경됨 - userLocation:`, userLocation, `카테고리: ${selectedPlaceCategory}`);
     if (userLocation) {
+      console.log(`[제로웨이스트맵] loadPlaces() 호출`);
       loadPlaces();
+    } else {
+      console.log(`[제로웨이스트맵] userLocation이 없어서 장소 로드 건너뜀`);
     }
   }, [userLocation, selectedPlaceCategory]);
 
@@ -195,14 +211,17 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
 
   const getUserLocation = () => {
     if (navigator.geolocation) {
+      console.log(`[제로웨이스트맵] Geolocation API 호출 중...`);
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const { latitude, longitude } = position.coords;
+          console.log(`[제로웨이스트맵] 위치 획득 성공:`, { lat: latitude, lng: longitude });
           setUserLocation({ lat: latitude, lng: longitude });
           setLocationPermissionDenied(false);
         },
         (error) => {
-          console.error('위치 정보를 가져올 수 없습니다:', error);
+          console.error('[제로웨이스트맵] 위치 정보를 가져올 수 없습니다:', error);
+          console.error('[제로웨이스트맵] 에러 코드:', error.code, '메시지:', error.message);
           // 위치 권한이 거부된 경우
           setLocationPermissionDenied(true);
           setUserLocation(null);
@@ -214,6 +233,7 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
         }
       );
     } else {
+      console.error('[제로웨이스트맵] Geolocation API를 지원하지 않는 브라우저입니다');
       // Geolocation을 지원하지 않는 경우
       setLocationPermissionDenied(true);
       setUserLocation(null);

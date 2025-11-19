@@ -1254,7 +1254,7 @@ const EcostepAppContent = () => {
                   {activeTab === 'community' && !showFriendsList && !showGlobalList && <CommunityPage isDarkMode={isDarkMode} onShowFriendsList={() => setShowFriendsList(true)} onShowGlobalList={() => setShowGlobalList(true)} showToast={showToast} userRanking={rankTheme} currentUserId={profileData.userId} currentUserFId={profileData.userFId} currentUserName={profileData.name} />}
                   {activeTab === 'community' && showFriendsList && <FriendsList isDarkMode={isDarkMode} onBack={() => setShowFriendsList(false)} isGlobalRanking={false} currentUserId={profileData.userId} currentUserFId={profileData.userFId} currentUserName={profileData.name} />}
                   {activeTab === 'community' && showGlobalList && <FriendsList isDarkMode={isDarkMode} onBack={() => setShowGlobalList(false)} isGlobalRanking={true} currentUserId={profileData.userId} currentUserFId={profileData.userFId} currentUserName={profileData.name} />}
-                  {activeTab === 'more' && !showChatBot && <MorePage isDarkMode={isDarkMode} userPoints={points} setUserPoints={setPoints} onShowChatBot={() => setShowChatBot(true)} earnPoints={earnPoints} rankTheme={rankTheme} showToast={showToast} />}
+                  {activeTab === 'more' && !showChatBot && <MorePage isDarkMode={isDarkMode} userPoints={points} setUserPoints={setPoints} onShowChatBot={() => setShowChatBot(true)} earnPoints={earnPoints} rankTheme={rankTheme} showToast={showToast} locationSharing={locationSharing} />}
                   {activeTab === 'more' && showChatBot && <ChatBot isDarkMode={isDarkMode} onBack={() => setShowChatBot(false)} platform={platform} isKeyboardVisible={isKeyboardVisible} />}
                 </>
               )}

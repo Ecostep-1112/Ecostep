@@ -302,25 +302,12 @@ export const LanguageSettings = ({ isDarkMode, language, setLanguage, setShowLan
         </button>
         
         <button
-          onClick={() => {}}
-          className={`w-full ${cardBg} border ${borderColor} rounded-xl p-3 flex items-center justify-between relative overflow-hidden cursor-not-allowed opacity-60`}
-          disabled={true}
+          onClick={() => setLanguage('en')}
+          className={`w-full ${cardBg} border ${borderColor} rounded-xl p-3 flex items-center justify-between`}
         >
-          {/* 블러 효과 오버레이 - 약하게 조정 */}
-          <div className="absolute inset-0 backdrop-blur-[2px] bg-black/5 z-10" />
-
-          {/* Coming Soon 메시지 - 테두리 제거 */}
-          <div className="absolute inset-0 flex items-center justify-center z-20">
-            <span className={`text-xs font-medium ${
-              isDarkMode ? 'text-gray-400' : 'text-gray-600'
-            }`}>
-              Coming Soon
-            </span>
-          </div>
-
-          <span className={`text-sm ${textColor} relative z-0`}>English</span>
+          <span className={`text-sm ${textColor}`}>English</span>
           {language === 'en' && (
-            <svg className="w-5 h-5 relative z-0" viewBox="0 0 24 24" fill="none">
+            <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none">
               <defs>
                 <linearGradient id="checkGradientEn" x1="0%" y1="0%" x2="100%" y2="100%">
                   <stop offset="0%" stopColor="#06b6d4" />

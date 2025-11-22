@@ -1484,43 +1484,6 @@ const Challenge = ({
                 </div>
               )}
             </div>
-            
-            {/* 테스트용 초기화 버튼 */}
-            <button
-              onClick={() => {
-                // 주간 진행 상황 초기화
-                setWeeklyProgress({});
-                localStorage.removeItem('weeklyProgress');
-                
-                // 완료된 챌린지 기록 초기화
-                setCompletedChallenges([]);
-                localStorage.removeItem('completedChallenges');
-                
-                // 현재 상태 초기화 및 다시 계산
-                setTodayCompleted(false);
-                setSelectedChallenge('텀블러 사용하기');
-                setShowChallengeSelect(false);
-                
-                // 새로운 주차 데이터 생성
-                const today = new Date(testDate || new Date());
-                const dayOfWeek = today.getDay();
-                const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
-                const monday = new Date(today);
-                monday.setDate(today.getDate() + mondayOffset);
-                monday.setHours(0, 0, 0, 0);
-                const weekKey = monday.toISOString().split('T')[0];
-                const currentDay = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
-                
-                setCurrentWeekStart(weekKey);
-                setCurrentDayIndex(currentDay);
-                
-                // 초기화 성공 메시지 (선택사항)
-                // alert('습관 챌린지 기록이 초기화되었습니다.');
-              }}
-              className="w-full py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg text-sm font-medium transition-colors mt-3"
-            >
-              🔄 테스트용 초기화 (습관 챌린지 기록 삭제)
-            </button>
           </div>
         ) : (
           <div className="mx-3 mt-4 space-y-4">
@@ -2832,52 +2795,6 @@ const Challenge = ({
                   </span>
                 </div>
               )}
-            </div>
-            
-            {/* 테스트용 기록 리셋 버튼 */}
-            <div className="mt-6 mx-3">
-              <button
-                onClick={resetTestData}
-                className={`w-full py-3 ${
-                  isDarkMode ? 'bg-red-600 hover:bg-red-700' : 'bg-red-500 hover:bg-red-600'
-                } text-white rounded-lg text-sm font-medium transition-colors`}
-              >
-                🔄 테스트용 기록 리셋
-              </button>
-            </div>
-            
-            {/* 테스트용 날짜 변경 컨트롤 - 제로 챌린지 하단에 배치 */}
-            <div className={`mt-4 mx-3 p-3 ${cardBg} border-[0.3px] ${borderColor} rounded-xl`}>
-              <div className="flex items-center justify-center gap-3">
-                <span className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                  테스트 날짜: {testDate ? testDate.toLocaleDateString('ko-KR') : new Date().toLocaleDateString('ko-KR')}
-                </span>
-                <button
-                  onClick={() => {
-                    const newDate = new Date();
-                    setTestDate(newDate);
-                    showToast('오늘 날짜로 변경됨', 'info');
-                  }}
-                  className={`px-3 py-1 rounded text-xs font-medium ${
-                    isDarkMode ? 'bg-gray-700 text-white hover:bg-gray-600' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                  } transition-colors`}
-                >
-                  오늘
-                </button>
-                <button
-                  onClick={() => {
-                    const newDate = new Date(testDate || new Date());
-                    newDate.setDate(newDate.getDate() + 1);
-                    setTestDate(newDate);
-                    showToast(`날짜 변경: ${newDate.toLocaleDateString('ko-KR')}`, 'info');
-                  }}
-                  className={`px-3 py-1 rounded text-xs font-medium ${
-                    isDarkMode ? 'bg-gray-700 text-white hover:bg-gray-600' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                  } transition-colors`}
-                >
-                  +1일
-                </button>
-              </div>
             </div>
           </div>
         )}

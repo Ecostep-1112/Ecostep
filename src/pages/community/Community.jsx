@@ -25,7 +25,7 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
     if (grams < 1000) {
       return `${Math.round(grams)}g`;
     } else {
-      return `${(grams / 1000).toFixed(1)}kg`;
+      return `${(grams / 1000).toFixed(2)}kg`;
     }
   };
 

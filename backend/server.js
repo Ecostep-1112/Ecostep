@@ -60,7 +60,7 @@ async function loadChatbotGuidelines() {
     const guidelines = [];
 
     for (const filename of guidelineFiles) {
-      const filePath = join(__dirname, '../chatbot_md', filename);
+      const filePath = join(__dirname, 'chatbot_md', filename);
       try {
         const content = await readFile(filePath, 'utf-8');
         guidelines.push(`\n\n=== ${filename} ===\n${content}`);

@@ -94,6 +94,17 @@ const ChatBot = ({ isDarkMode, onBack, platform, isKeyboardVisible }) => {
         data: { message: inputMessage }
       });
 
+      // HTTP 상태 코드 확인
+      if (response.status !== 200) {
+        const errorData = response.data || {};
+        throw {
+          isApiError: true,
+          errorCode: errorData.error || 'HTTP_ERROR',
+          message: errorData.message || `서버 오류가 발생했습니다 (${response.status})`,
+          retryable: errorData.retryable !== false
+        };
+      }
+
       const data = response.data;
 
       // API 에러 응답 처리
@@ -103,6 +114,16 @@ const ChatBot = ({ isDarkMode, onBack, platform, isKeyboardVisible }) => {
           errorCode: data.error,
           message: data.message,
           retryable: data.retryable
+        };
+      }
+
+      // 응답 데이터 유효성 검사
+      if (!data.response) {
+        throw {
+          isApiError: true,
+          errorCode: 'INVALID_RESPONSE',
+          message: '서버에서 유효하지 않은 응답을 받았습니다.',
+          retryable: true
         };
       }
 

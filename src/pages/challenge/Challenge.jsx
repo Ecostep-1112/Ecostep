@@ -364,9 +364,8 @@ const Challenge = ({
     loadPlasticRecordsFromDB();
   }, []); // 컴포넌트 마운트 시 한 번만 실행
 
-  // ✅ DB에서 이번 주 챌린지 데이터 로드
-  // 주의: DB는 total_completed만 저장 (요일별 정보 없음)
-  // localStorage가 primary source이고, DB는 summary/backup
+  // ✅ DB에서 이번 주 챌린지 데이터 로드 (DB 우선)
+  // 로그인 시 DB에서 데이터를 로드하여 localStorage를 덮어씁니다
   useEffect(() => {
     const loadWeeklyChallengeFromDB = async () => {
       try {
@@ -376,13 +375,7 @@ const Challenge = ({
         // 이번 주 월요일 날짜
         const thisMonday = getThisMonday();
 
-        // localStorage에 이미 데이터가 있으면 DB 로드 스킵
-        if (weeklyProgress[thisMonday]) {
-          console.log('📦 localStorage에 이번 주 데이터 존재 - DB 로드 스킵');
-          return;
-        }
-
-        // DB에서 이번 주 챌린지 기록 가져오기
+        // DB에서 이번 주 챌린지 기록 가져오기 (항상 DB 우선)
         const { data, error } = await getWeeklyChallengeRecord(user.id, thisMonday);
 
         if (error) {
@@ -409,13 +402,17 @@ const Challenge = ({
             startDate: thisMonday
           };
 
-          const updatedProgress = { ...weeklyProgress, [thisMonday]: weekData };
-          setWeeklyProgress(updatedProgress);
-          localStorage.setItem('weeklyProgress', JSON.stringify(updatedProgress));
+          // DB 데이터로 localStorage 업데이트 (DB 우선)
+          setWeeklyProgress(prev => {
+            const updatedProgress = { ...prev, [thisMonday]: weekData };
+            localStorage.setItem('weeklyProgress', JSON.stringify(updatedProgress));
+            return updatedProgress;
+          });
 
           console.log(`   - 챌린지: ${data.content}`);
           console.log(`   - 완료 횟수: ${data.total_completed}/7`);
-          console.log(`   ⚠️ 주의: 요일별 정보는 근사치입니다`);
+        } else {
+          console.log('📭 DB에 이번 주 챌린지 데이터 없음');
         }
       } catch (error) {
         console.error('주간 챌린지 로드 에러:', error);
@@ -423,7 +420,7 @@ const Challenge = ({
     };
 
     loadWeeklyChallengeFromDB();
-  }, [weeklyProgress]); // weeklyProgress 변경 시에도 체크
+  }, []); // 컴포넌트 마운트 시 한 번만 실행
 
   // 매주 월요일에 포인트 지급 및 리셋
   useEffect(() => {

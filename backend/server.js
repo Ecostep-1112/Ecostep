@@ -46,20 +46,14 @@ let chatbotKnowledgeBase = '';
 
 async function loadChatbotGuidelines() {
   try {
-    const guidelineFiles = [
-      'chatbot-guidelines.md',  // 가장 중요한 가이드라인
-      'app-overview.md',
-      'home.md',
-      'community.md',
-      'challenge.md',
-      'rewards.md',
-      'more.md',
-      'settings.md'
+    // 필수 가이드라인만 로드 (성능 최적화)
+    const essentialFiles = [
+      'chatbot-guidelines.md'  // 핵심 가이드라인만 포함
     ];
 
     const guidelines = [];
 
-    for (const filename of guidelineFiles) {
+    for (const filename of essentialFiles) {
       const filePath = join(__dirname, 'chatbot_md', filename);
       try {
         const content = await readFile(filePath, 'utf-8');
@@ -69,8 +63,35 @@ async function loadChatbotGuidelines() {
       }
     }
 
-    chatbotKnowledgeBase = guidelines.join('\n');
-    console.log(`✅ Loaded ${guidelineFiles.length} chatbot guideline files`);
+    // 앱 기능 요약 (간략화된 정보)
+    const appSummary = `
+
+=== 앱 기능 요약 ===
+에코스텝(EcoStep)은 환경 보호와 물고기 키우기를 결합한 모바일 앱입니다.
+
+주요 기능:
+1. 홈 화면: 아쿠아리움에서 물고기를 키우고, 환경 팁 카드를 확인
+2. 커뮤니티: 친구 추가, 랭킹 확인, 초대 코드 공유
+3. 챌린지:
+   - 제로챌린지: 주간 플라스틱 목표 설정 및 달성
+   - 일일챌린지: 매일 환경 챌린지 완료
+4. 보상: 포인트로 물고기, 배경, 장식품 구매
+5. 더보기: 고객센터, 앱 정보, 지도 검색
+
+포인트 획득:
+- 제로챌린지 완료: 10-100P (달성률에 따라)
+- 일일챌린지 완료: 10P
+- 친구 초대: 500P
+
+랭킹 시스템:
+- 브론즈(500P) → 실버(1,500P) → 골드(3,000P) → 플래티넘(5,000P)
+
+문의 관련:
+- 앱 내 고객센터에서 이메일로 연락 가능
+`;
+
+    chatbotKnowledgeBase = guidelines.join('\n') + appSummary;
+    console.log(`✅ Loaded ${essentialFiles.length} essential chatbot guideline files`);
     console.log(`📚 Total knowledge base size: ${Math.round(chatbotKnowledgeBase.length / 1024)}KB`);
   } catch (error) {
     console.error('Error loading chatbot guidelines:', error);

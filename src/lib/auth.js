@@ -242,6 +242,26 @@ export const signOut = async () => {
   try {
     const { error } = await supabase.auth.signOut();
     if (error) throw error;
+
+    // 챌린지 관련 localStorage 클리어 (계정별 데이터 분리)
+    const challengeKeys = [
+      'plasticRecords',
+      'weeklyProgress',
+      'plasticGoal',
+      'goalSetDate',
+      'userCustomGoals',
+      'completedChallenges',
+      'customChallengeSavings',
+      'totalPlasticSaved',
+      'lastWaterQualityUpdate',
+      'lastMondayCheck'
+    ];
+
+    challengeKeys.forEach(key => {
+      localStorage.removeItem(key);
+    });
+
+    console.log('✅ 로그아웃 완료 - 챌린지 데이터 클리어됨');
     return { error: null };
   } catch (error) {
     console.error('로그아웃 에러:', error);

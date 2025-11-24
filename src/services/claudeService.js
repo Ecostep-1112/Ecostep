@@ -53,7 +53,17 @@ export const generateDailyTip = async () => {
       }
     });
 
+    // API 응답 상태 확인
+    if (response.status !== 200) {
+      throw new Error(`API 응답 에러: ${response.status}`);
+    }
+
     const tipData = response.data;
+
+    // 응답 데이터 유효성 검사
+    if (!tipData || !tipData.title || !tipData.content) {
+      throw new Error('유효하지 않은 팁 데이터');
+    }
 
     // localStorage에 저장
     localStorage.setItem('currentDailyTip', JSON.stringify(tipData));
@@ -94,7 +104,23 @@ export const getTodayTip = () => {
       // 팁이 없으면 기본값 반환
       return defaultTip;
     }
-    return JSON.parse(tipStr);
+
+    const tip = JSON.parse(tipStr);
+
+    // 유효성 검사 - title, preview, content가 모두 있어야 함
+    if (!tip || !tip.title || !tip.content) {
+      console.warn('저장된 팁 데이터가 유효하지 않음, 기본값 사용');
+      localStorage.removeItem('currentDailyTip');
+      localStorage.removeItem('lastTipGeneratedDate');
+      return defaultTip;
+    }
+
+    // preview가 없으면 content에서 생성
+    if (!tip.preview) {
+      tip.preview = tip.content.substring(0, 40) + '...';
+    }
+
+    return tip;
   } catch (error) {
     console.error('팁 로드 실패:', error);
     return defaultTip;

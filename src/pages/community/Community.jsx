@@ -187,7 +187,7 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
                   // 환경에 따라 다른 URL 사용
                   const baseUrl = window.location.origin; // 웹: 현재 도메인, 앱: 앱 URL
                   const inviteLink = `${baseUrl}?code=${userFId}`;
-                  const shareText = '🌱 EcoStep - Small Steps, Big Change. Why Not?';
+                  const shareText = 'EcoStep:\nSmall Steps, Big Change. Why Not?';
 
                   // Capacitor 모바일 앱 환경인지 확인
                   const isNative = Capacitor.isNativePlatform();
@@ -244,7 +244,7 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
                         });
                       } else {
                         // 최종 대안: 링크 복사
-                        navigator.clipboard.writeText(inviteLink).then(() => {
+                        navigator.clipboard.writeText(shareText + '\n' + inviteLink).then(() => {
                           if (showToast) {
                             showToast('링크가 복사되었습니다. 카카오톡에서 직접 공유해주세요.', 'info');
                           }
@@ -306,16 +306,18 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
                 // 환경에 따라 다른 URL 사용
                 const baseUrl = window.location.origin; // 웹: 현재 도메인, 앱: 앱 URL
                 const inviteLink = `${baseUrl}?code=${userFId}`;
+                const shareText = 'EcoStep:\nSmall Steps, Big Change. Why Not?';
+                const copyText = shareText + '\n' + inviteLink;
 
                 // Copy to clipboard
-                navigator.clipboard.writeText(inviteLink).then(() => {
+                navigator.clipboard.writeText(copyText).then(() => {
                   if (showToast) {
                     showToast('링크가 복사되었습니다', 'success');
                   }
                 }).catch(() => {
                   // Fallback for older browsers
                   const textArea = document.createElement('textarea');
-                  textArea.value = inviteLink;
+                  textArea.value = copyText;
                   document.body.appendChild(textArea);
                   textArea.select();
                   document.execCommand('copy');

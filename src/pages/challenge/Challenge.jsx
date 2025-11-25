@@ -14,7 +14,8 @@ import {
   getUserZeroChallengeRecords,
   saveZeroChallengeRecord,
   getWeeklyChallengeRecord,
-  completeWeeklyChallenge
+  completeWeeklyChallenge,
+  saveChallengeCompletionDate
 } from '../../lib/database';
 import { getThisMonday, toDateString } from '../../utils/dateUtils';
 
@@ -47,7 +48,8 @@ const Challenge = ({
   setTotalPlasticSaved,
   testDate,
   setTestDate,
-  setNotificationsList
+  setNotificationsList,
+  userId
 }) => {
   const [customChallenge, setCustomChallenge] = useState('');
   const [showCustomChallenge, setShowCustomChallenge] = useState(false);
@@ -722,6 +724,14 @@ const Challenge = ({
       if (setChallengeHistory) {
         const newHistory = [...(challengeHistory || []), today];
         setChallengeHistory(newHistory);
+      }
+
+      // DB에 챌린지 완료 날짜 저장
+      if (userId) {
+        const dateString = new Date().toISOString().split('T')[0];
+        saveChallengeCompletionDate(userId, dateString).catch(error => {
+          console.error('챌린지 완료 날짜 저장 실패:', error);
+        });
       }
     }
   };

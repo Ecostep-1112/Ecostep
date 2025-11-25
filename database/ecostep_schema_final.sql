@@ -22,6 +22,14 @@ CREATE TABLE public.daily_chal_list (
   CONSTRAINT daily_chal_list_pkey PRIMARY KEY (chal_id),
   CONSTRAINT daily_chal_list_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.user_info(user_id)
 );
+CREATE TABLE public.daily_chal_record (
+  id bigint NOT NULL DEFAULT nextval('daily_chal_record_id_seq'::regclass),
+  user_id text NOT NULL,
+  challenge_date date NOT NULL,
+  created_at timestamp without time zone DEFAULT now(),
+  CONSTRAINT daily_chal_record_pkey PRIMARY KEY (id),
+  CONSTRAINT daily_chal_record_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.user_info(user_id)
+);
 CREATE TABLE public.places (
   latitude double precision NOT NULL,
   longitude double precision NOT NULL,
@@ -61,6 +69,7 @@ CREATE TABLE public.user_info (
   birthdate date,
   profile_image_url text,
   consecutive_days integer,
+  water_quality bigint DEFAULT '0'::bigint,
   CONSTRAINT user_info_pkey PRIMARY KEY (user_id)
 );
 CREATE TABLE public.user_item (

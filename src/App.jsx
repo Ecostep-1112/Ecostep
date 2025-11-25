@@ -22,7 +22,7 @@ const NotificationSettings = lazy(() => import('./pages/settings/Settings').then
 const LocationSettings = lazy(() => import('./pages/settings/Settings').then(module => ({ default: module.LocationSettings })));
 const AquariumSettings = lazy(() => import('./pages/settings/Settings').then(module => ({ default: module.AquariumSettings })));
 import { onAuthStateChange, getCurrentUser, signOut, createOrUpdateUserProfile, processInviteCode } from './lib/auth';
-import { getUserInfo, saveUserInfo, getUserItems, getUserPurchasedItems, purchaseItem } from './lib/database';
+import { getUserInfo, saveUserInfo, getUserItems, getUserPurchasedItems, purchaseItem, getUserChallengeHistory } from './lib/database';
 import { supabase } from './lib/supabase';
 import {
   appSettingsStorage,
@@ -143,6 +143,13 @@ const EcostepAppContent = () => {
         setUserRanking(data.rank || 'bronze');
         setTotalPlasticSaved(data.amount || 0); // amount는 총 플라스틱 절약량
         setConsecutiveDays(data.consecutive_days || 0);
+        setWaterQuality(data.water_quality !== undefined ? data.water_quality : 100); // 수질 DB에서 로드
+
+        // 챌린지 히스토리 로드
+        const { data: history } = await getUserChallengeHistory(userId);
+        if (history) {
+          setChallengeHistory(history);
+        }
 
         // 프로필 데이터도 Supabase 데이터로 업데이트
         console.log('DB에서 로드한 profile_image_url:', data.profile_image_url);
@@ -199,7 +206,8 @@ const EcostepAppContent = () => {
         points_total: totalEarnedPoints,
         rank: userRanking,
         amount: totalPlasticSaved, // 총 플라스틱 절약량
-        consecutive_days: consecutiveDays // 연속 달성 일수
+        consecutive_days: consecutiveDays, // 연속 달성 일수
+        water_quality: waterQuality // 수질
       };
 
       const { data, error } = await saveUserInfo(user.id, userInfo); // Auth UUID 사용
@@ -347,18 +355,7 @@ const EcostepAppContent = () => {
   const [lastChallengeDate, setLastChallengeDate] = useState(null);
   const [daysWithoutChallenge, setDaysWithoutChallenge] = useState(0);
   const [consecutiveDays, setConsecutiveDays] = useState(0);
-  const [challengeHistory, setChallengeHistory] = useState(() => {
-    const saved = localStorage.getItem('challengeHistory');
-    if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch (error) {
-        console.error('challengeHistory 파싱 에러:', error);
-        return [];
-      }
-    }
-    return [];
-  });
+  const [challengeHistory, setChallengeHistory] = useState([]); // Will be loaded from DB
   
   // 총 플라스틱 절약량 상태
   const [totalPlasticSaved, setTotalPlasticSaved] = useState(() => {
@@ -811,6 +808,11 @@ const EcostepAppContent = () => {
 
   useEffect(() => {
     debouncedSaveToLocalStorage('waterQuality', waterQuality.toString());
+    // Supabase에도 저장 (디바운스 적용)
+    const timeoutId = setTimeout(() => {
+      saveUserDataToSupabase();
+    }, 1000); // 1초 디바운스
+    return () => clearTimeout(timeoutId);
   }, [waterQuality, debouncedSaveToLocalStorage]);
 
   // 포인트 변경시 localStorage + Supabase에 저장
@@ -868,9 +870,8 @@ const EcostepAppContent = () => {
     }
   }, [lastChallengeDate, debouncedSaveToLocalStorage]);
 
-  useEffect(() => {
-    debouncedSaveToLocalStorage('challengeHistory', JSON.stringify(challengeHistory));
-  }, [challengeHistory, debouncedSaveToLocalStorage]);
+  // challengeHistory는 이제 DB에 저장되므로 localStorage 저장 불필요
+  // 저장은 Challenge.jsx에서 saveChallengeCompletionDate()로 처리
 
   useEffect(() => {
     debouncedSaveToLocalStorage('claimedTanks', JSON.stringify(claimedTanks));
@@ -1199,7 +1200,7 @@ const EcostepAppContent = () => {
                 isActive={activeTab === 'home'}
                 navbarHeight={navbarHeight}
               />}
-              {activeTab === 'challenge' && <ChallengePage 
+              {activeTab === 'challenge' && <ChallengePage
                 isDarkMode={isDarkMode}
                 activeSubTab={activeSubTab}
                 setActiveSubTab={setActiveSubTab}
@@ -1229,6 +1230,7 @@ const EcostepAppContent = () => {
                 testDate={testDate}
                 setTestDate={setTestDate}
                 setNotificationsList={setNotificationsList}
+                userId={profileData.userId}
               />}
               {activeTab === 'reward' && <RewardsPage
                 isDarkMode={isDarkMode}

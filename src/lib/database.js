@@ -287,6 +287,7 @@ export const saveUserInfo = async (userId, userInfo) => {
       rank: userInfo.rank || 'bronze',
       amount: userInfo.amount !== undefined ? userInfo.amount : 0, // 총 플라스틱 절약량 (totalPlasticSaved)
       consecutive_days: userInfo.consecutive_days !== undefined ? userInfo.consecutive_days : 0, // 연속 달성 일수
+      water_quality: userInfo.water_quality !== undefined ? userInfo.water_quality : 100, // 수질 (기본값 100)
       phone_num: userInfo.phone_num || userInfo.phone,
       user_password: userInfo.user_password
     };
@@ -753,5 +754,60 @@ export const getUserZeroChallengeRecords = async (userId, startDate = null, endD
   } catch (error) {
     console.error('플라스틱 기록 가져오기 에러:', error);
     return { data: null, error };
+  }
+};
+
+// ======================== 챌린지 히스토리 관련 함수 ========================
+
+// 챌린지 완료 날짜 저장 (challengeHistory)
+export const saveChallengeCompletionDate = async (userId, challengeDate = null) => {
+  try {
+    const dateToSave = challengeDate || new Date().toISOString().split('T')[0];
+
+    const { data, error } = await supabase
+      .from('daily_chal_record')
+      .insert({
+        user_id: userId,
+        challenge_date: dateToSave
+      })
+      .select()
+      .single();
+
+    if (error) {
+      // UNIQUE constraint violation (already exists for this date)
+      if (error.code === '23505') {
+        console.log('오늘 챌린지 기록이 이미 존재합니다.');
+        return { data: null, error: null }; // Not an error, just already recorded
+      }
+      throw error;
+    }
+
+    console.log('챌린지 완료 날짜 저장:', dateToSave);
+    return { data, error: null };
+  } catch (error) {
+    console.error('챌린지 날짜 저장 에러:', error);
+    return { data: null, error };
+  }
+};
+
+// 사용자의 챌린지 완료 기록 가져오기 (challengeHistory)
+export const getUserChallengeHistory = async (userId) => {
+  try {
+    const { data, error } = await supabase
+      .from('daily_chal_record')
+      .select('challenge_date')
+      .eq('user_id', userId)
+      .order('challenge_date', { ascending: true });
+
+    if (error) throw error;
+
+    // Convert to ISO string array format (matching current challengeHistory format)
+    const dates = data.map(record => new Date(record.challenge_date).toISOString());
+
+    console.log(`챌린지 히스토리 로드: ${dates.length}개 기록`);
+    return { data: dates, error: null };
+  } catch (error) {
+    console.error('챌린지 히스토리 가져오기 에러:', error);
+    return { data: [], error };
   }
 };

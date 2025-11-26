@@ -15,6 +15,7 @@ const TutorialModal = ({ isOpen, onClose, isDarkMode }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [touchStart, setTouchStart] = useState(null);
   const [touchEnd, setTouchEnd] = useState(null);
+  const [isTouchDevice, setIsTouchDevice] = useState(false);
   const imageContainerRef = useRef(null);
 
   const slides = [slide1, slide2, slide3, slide4, slide5, slide6, slide7, slide8];
@@ -42,6 +43,7 @@ const TutorialModal = ({ isOpen, onClose, isDarkMode }) => {
 
   // 터치 시작
   const onTouchStart = (e) => {
+    setIsTouchDevice(true);
     setTouchEnd(null);
     setTouchStart(e.targetTouches[0].clientX);
   };
@@ -53,6 +55,9 @@ const TutorialModal = ({ isOpen, onClose, isDarkMode }) => {
 
   // 터치 종료
   const onTouchEnd = (e) => {
+    // 마우스 이벤트 중복 방지
+    e.preventDefault();
+
     // 터치 스와이프가 없는 경우 (탭)
     if (!touchEnd) {
       handleTouchTap(e);
@@ -98,12 +103,16 @@ const TutorialModal = ({ isOpen, onClose, isDarkMode }) => {
   const [hasMoved, setHasMoved] = useState(false);
 
   const onMouseDown = (e) => {
+    // 터치 디바이스에서는 마우스 이벤트 무시
+    if (isTouchDevice) return;
     setIsDragging(true);
     setMouseStart(e.clientX);
     setHasMoved(false);
   };
 
   const onMouseMove = (e) => {
+    // 터치 디바이스에서는 마우스 이벤트 무시
+    if (isTouchDevice) return;
     if (!isDragging || !mouseStart) return;
     // 마우스가 조금이라도 움직이면 hasMoved를 true로 설정
     if (Math.abs(e.clientX - mouseStart) > 5) {
@@ -112,6 +121,8 @@ const TutorialModal = ({ isOpen, onClose, isDarkMode }) => {
   };
 
   const onMouseUp = (e) => {
+    // 터치 디바이스에서는 마우스 이벤트 무시
+    if (isTouchDevice) return;
     if (!isDragging || !mouseStart) return;
 
     // 드래그가 아니라 클릭인 경우 (움직임이 거의 없는 경우)

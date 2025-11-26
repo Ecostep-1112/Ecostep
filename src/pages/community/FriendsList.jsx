@@ -259,7 +259,7 @@ const FriendsList = ({ isDarkMode, onBack, isGlobalRanking = false, currentUserI
                       )}
                       <div className="flex-1 flex flex-col items-start">
                         <span
-                          className={`${friend.rank === 1 ? 'text-sm' : friend.rank === 2 ? 'text-[13px]' : 'text-xs'} ${isMe ? 'font-bold' : isDarkMode ? 'text-gray-300 font-normal' : 'text-gray-700 font-normal'}`}
+                          className={`${friend.rank === 1 ? 'text-sm' : friend.rank === 2 ? 'text-[13px]' : 'text-xs'} ${isDarkMode ? 'text-gray-300 font-normal' : 'text-gray-700 font-normal'}`}
                           style={isMe ? {
                             background: 'linear-gradient(135deg, #06b6d4 0%, #3b82f6 50%, #2563eb 100%)',
                             WebkitBackgroundClip: 'text',
@@ -273,7 +273,7 @@ const FriendsList = ({ isDarkMode, onBack, isGlobalRanking = false, currentUserI
                       </div>
                     </div>
                     <span
-                      className={`${friend.rank === 1 ? 'text-xs' : friend.rank === 2 ? 'text-[11px]' : 'text-[10px]'} ${isMe ? 'font-bold' : isDarkMode ? 'text-gray-300 font-normal' : 'text-gray-700 font-normal'}`}
+                      className={`${friend.rank === 1 ? 'text-xs' : friend.rank === 2 ? 'text-[11px]' : 'text-[10px]'} ${isDarkMode ? 'text-gray-300 font-normal' : 'text-gray-700 font-normal'}`}
                       style={isMe ? {
                         background: 'linear-gradient(135deg, #06b6d4 0%, #3b82f6 50%, #2563eb 100%)',
                         WebkitBackgroundClip: 'text',

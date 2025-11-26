@@ -2,10 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { Share2, ChevronDown, ChevronUp, Book, Phone, ChevronRight, ArrowRight, Check } from 'lucide-react';
 import { getTodayTip, generateDailyTip } from '../../services/claudeService';
 import { searchPlaces, filterAndSortPlaces } from '../../services/naverMapService';
+import TutorialModal from '../../components/TutorialModal';
 
 const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, showToast, onShowChatBot, locationSharing }) => {
   const [expandedTip, setExpandedTip] = useState(null);
-  
+  const [isTutorialOpen, setIsTutorialOpen] = useState(false);
+
   // 카카오톡 API 초기화
   useEffect(() => {
     if (window.Kakao && !window.Kakao.isInitialized() && import.meta.env.VITE_KAKAO_API_KEY) {
@@ -718,7 +720,7 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
           <h3 className={`${textColor} text-sm font-medium mb-2`}>도움말</h3>
           <div className="space-y-2">
             <button
-              onClick={() => {}}
+              onClick={() => setIsTutorialOpen(true)}
               className={`w-full flex items-center justify-between p-2.5 ${inputBg} rounded-lg`}
             >
               <div className="flex items-center">
@@ -747,6 +749,13 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
           </p>
         </div>
       </div>
+
+      {/* 튜토리얼 모달 */}
+      <TutorialModal
+        isOpen={isTutorialOpen}
+        onClose={() => setIsTutorialOpen(false)}
+        isDarkMode={isDarkMode}
+      />
     </div>
   );
 };

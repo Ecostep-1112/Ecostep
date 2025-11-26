@@ -3,9 +3,9 @@ import { Search, ChevronRight, X } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useData } from '../../services/DataContext';
 
-const SearchFriends = ({ isDarkMode, onBack, userRanking = 'bronze', showToast, currentUserId = '', currentUserFId = '', currentUserName = '' }) => {
+const SearchFriends = ({ isDarkMode, onBack, userRanking = 'bronze', showToast, currentUserId = '', currentUserFId = '', currentUserName = '', initialSearchTerm = '' }) => {
   const { refreshFriends } = useData();
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState(initialSearchTerm); // 초기 검색어로 설정
   const [searchResults, setSearchResults] = useState([]);
   const [hasSearched, setHasSearched] = useState(false);
   const [addedFriends, setAddedFriends] = useState([]);
@@ -68,6 +68,16 @@ const SearchFriends = ({ isDarkMode, onBack, userRanking = 'bronze', showToast, 
     loadUsers();
     loadFriends();
   }, [currentUserId]);
+
+  // 초기 검색어가 있으면 자동으로 검색 실행
+  useEffect(() => {
+    if (initialSearchTerm && allUsers.length > 0 && !hasSearched) {
+      console.log('초기 검색어로 자동 검색 실행:', initialSearchTerm);
+      handleSearch();
+      // localStorage에서 pendingInviteCode 제거
+      localStorage.removeItem('pendingInviteCode');
+    }
+  }, [initialSearchTerm, allUsers]);
 
   // 검색 함수
   const handleSearch = () => {

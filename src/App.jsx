@@ -351,6 +351,7 @@ const EcostepAppContent = () => {
   const [showFriendsList, setShowFriendsList] = useState(false);
   const [rankingInitialTab, setRankingInitialTab] = useState('friends');
   const [showGlobalList, setShowGlobalList] = useState(false);
+  const [pendingInviteSearch, setPendingInviteSearch] = useState(null); // 초대 코드로 검색할 user_f_id
   const [waterQuality, setWaterQuality] = useState(100);
   const [lastChallengeDate, setLastChallengeDate] = useState(null);
   const [daysWithoutChallenge, setDaysWithoutChallenge] = useState(0);
@@ -488,24 +489,15 @@ const EcostepAppContent = () => {
             // 로그인 후 대기 중인 초대 코드 처리
             const pendingCode = localStorage.getItem('pendingInviteCode');
             if (pendingCode) {
-              console.log('대기 중인 초대 코드 처리:', pendingCode);
-              localStorage.removeItem('pendingInviteCode');
+              console.log('대기 중인 초대 코드 발견:', pendingCode);
+              // localStorage에서 제거하지 않음 (검색 화면에서 사용 후 제거)
 
-              try {
-                const result = await processInviteCode(pendingCode);
-                if (result.success) {
-                  console.log('초대 코드 처리 성공:', result.inviterName);
-                  showToast(`${result.inviterName}님의 초대로 친구가 되었습니다! 500P 획득`, 'success');
-                } else {
-                  console.error('초대 코드 처리 실패:', result.error);
-                  if (result.error !== '본인의 초대 코드는 사용할 수 없습니다.' &&
-                      result.error !== '이미 친구입니다.') {
-                    showToast('초대 코드 처리 중 오류가 발생했습니다.', 'error');
-                  }
-                }
-              } catch (error) {
-                console.error('초대 코드 처리 에러:', error);
-              }
+              // 커뮤니티 탭으로 자동 이동
+              setActiveTab('community');
+              // 검색할 user_f_id 설정 (SearchFriends에 전달)
+              setPendingInviteSearch(pendingCode);
+
+              console.log('커뮤니티 탭으로 이동 + 검색 화면 자동 열림 설정');
             }
           } else {
             console.warn('프로필이 없지만 로그인은 성공했습니다. 데이터는 나중에 로드됩니다.');
@@ -672,19 +664,15 @@ const EcostepAppContent = () => {
                     // 로그인 후 대기 중인 초대 코드 처리 (Deep link 경로)
                     const pendingCode = localStorage.getItem('pendingInviteCode');
                     if (pendingCode) {
-                      console.log('대기 중인 초대 코드 처리 (Deep link):', pendingCode);
-                      localStorage.removeItem('pendingInviteCode');
+                      console.log('대기 중인 초대 코드 발견 (Deep link):', pendingCode);
+                      // localStorage에서 제거하지 않음 (검색 화면에서 사용 후 제거)
 
-                      try {
-                        const result = await processInviteCode(pendingCode);
-                        if (result.success) {
-                          console.log('초대 코드 처리 성공:', result.inviterName);
-                        } else {
-                          console.error('초대 코드 처리 실패:', result.error);
-                        }
-                      } catch (error) {
-                        console.error('초대 코드 처리 에러:', error);
-                      }
+                      // 커뮤니티 탭으로 자동 이동
+                      setActiveTab('community');
+                      // 검색할 user_f_id 설정 (SearchFriends에 전달)
+                      setPendingInviteSearch(pendingCode);
+
+                      console.log('커뮤니티 탭으로 이동 + 검색 화면 자동 열림 설정 (Deep link)');
                     }
                   } else {
                     console.warn('프로필이 없지만 로그인은 성공했습니다. 데이터는 나중에 로드됩니다.');
@@ -1253,7 +1241,7 @@ const EcostepAppContent = () => {
                 spendPoints={spendPoints}
                 isActive={activeTab === 'reward'}
               />}
-                  {activeTab === 'community' && !showFriendsList && !showGlobalList && <CommunityPage isDarkMode={isDarkMode} onShowFriendsList={() => setShowFriendsList(true)} onShowGlobalList={() => setShowGlobalList(true)} showToast={showToast} userRanking={rankTheme} currentUserId={profileData.userId} currentUserFId={profileData.userFId} currentUserName={profileData.name} />}
+                  {activeTab === 'community' && !showFriendsList && !showGlobalList && <CommunityPage isDarkMode={isDarkMode} onShowFriendsList={() => setShowFriendsList(true)} onShowGlobalList={() => setShowGlobalList(true)} showToast={showToast} userRanking={rankTheme} currentUserId={profileData.userId} currentUserFId={profileData.userFId} currentUserName={profileData.name} pendingInviteSearch={pendingInviteSearch} setPendingInviteSearch={setPendingInviteSearch} />}
                   {activeTab === 'community' && showFriendsList && <FriendsList isDarkMode={isDarkMode} onBack={() => setShowFriendsList(false)} isGlobalRanking={false} currentUserId={profileData.userId} currentUserFId={profileData.userFId} currentUserName={profileData.name} />}
                   {activeTab === 'community' && showGlobalList && <FriendsList isDarkMode={isDarkMode} onBack={() => setShowGlobalList(false)} isGlobalRanking={true} currentUserId={profileData.userId} currentUserFId={profileData.userFId} currentUserName={profileData.name} />}
                   {activeTab === 'more' && !showChatBot && <MorePage isDarkMode={isDarkMode} userPoints={points} setUserPoints={setPoints} onShowChatBot={() => setShowChatBot(true)} earnPoints={earnPoints} rankTheme={rankTheme} showToast={showToast} locationSharing={locationSharing} />}

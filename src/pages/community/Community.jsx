@@ -7,11 +7,12 @@ import { useData } from '../../services/DataContext';
 import { Capacitor } from '@capacitor/core';
 import { Share } from '@capacitor/share';
 
-const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast, userRanking, currentUserId = '', currentUserFId = '', currentUserName = '' }) => {
+const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast, userRanking, currentUserId = '', currentUserFId = '', currentUserName = '', pendingInviteSearch, setPendingInviteSearch }) => {
   // 전역 데이터 컨텍스트에서 데이터 가져오기
   const { allUsers, friendsList: friendsData, refreshUsers, refreshFriends } = useData();
 
   const [showSearchPage, setShowSearchPage] = useState(false);
+  const [initialSearchTerm, setInitialSearchTerm] = useState(''); // 초기 검색어
   const [currentUserPlasticSaved, setCurrentUserPlasticSaved] = useState(0); // DB에서 로드할 때까지 0
 
   const bgColor = isDarkMode ? 'bg-gray-900' : 'bg-white';
@@ -149,8 +150,22 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
     initKakao();
   }, []);
 
+  // 초대 코드로 검색 화면 자동 열기
+  useEffect(() => {
+    if (pendingInviteSearch) {
+      console.log('초대 코드로 검색 화면 자동 열기:', pendingInviteSearch);
+      setInitialSearchTerm(pendingInviteSearch);
+      setShowSearchPage(true);
+      // pendingInviteSearch 상태 초기화 (한 번만 실행)
+      setPendingInviteSearch(null);
+    }
+  }, [pendingInviteSearch, setPendingInviteSearch]);
+
   if (showSearchPage) {
-    return <SearchFriends isDarkMode={isDarkMode} onBack={() => setShowSearchPage(false)} userRanking={userRanking} showToast={showToast} currentUserId={currentUserId} currentUserFId={currentUserFId} currentUserName={currentUserName} />;
+    return <SearchFriends isDarkMode={isDarkMode} onBack={() => {
+      setShowSearchPage(false);
+      setInitialSearchTerm(''); // 검색어 초기화
+    }} userRanking={userRanking} showToast={showToast} currentUserId={currentUserId} currentUserFId={currentUserFId} currentUserName={currentUserName} initialSearchTerm={initialSearchTerm} />;
   }
 
   return (
@@ -184,8 +199,8 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
                     return;
                   }
 
-                  // 환경에 따라 다른 URL 사용
-                  const baseUrl = window.location.origin; // 웹: 현재 도메인, 앱: 앱 URL
+                  // Railway 배포 URL 사용 (웹/앱 모두 동일)
+                  const baseUrl = import.meta.env.VITE_WEB_URL || window.location.origin;
                   const inviteLink = `${baseUrl}?code=${userFId}`;
                   const shareText = 'EcoStep:\nSmall Steps, Big Change. Why Not?';
 
@@ -303,8 +318,8 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
                   return;
                 }
 
-                // 환경에 따라 다른 URL 사용
-                const baseUrl = window.location.origin; // 웹: 현재 도메인, 앱: 앱 URL
+                // Railway 배포 URL 사용 (웹/앱 모두 동일)
+                const baseUrl = import.meta.env.VITE_WEB_URL || window.location.origin;
                 const inviteLink = `${baseUrl}?code=${userFId}`;
                 const shareText = 'EcoStep:\nSmall Steps, Big Change. Why Not?';
                 const copyText = shareText + '\n' + inviteLink;

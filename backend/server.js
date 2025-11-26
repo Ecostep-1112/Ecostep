@@ -29,6 +29,9 @@ app.use(cors({
 }));
 app.use(express.json());
 
+// Serve static files from the frontend build (dist folder)
+app.use(express.static(join(__dirname, '../dist')));
+
 // Claude API configuration
 const CLAUDE_API_KEY = process.env.CLAUDE_API_KEY;
 
@@ -115,19 +118,6 @@ const plasticKeywords = [
   '세제', '리필', '패키지', '포장재', '택배', '박스',
   '버블랩', '에어캡', '완충재', '아이스팩', '보냉', '도시락'
 ];
-
-// Root endpoint
-app.get('/', (req, res) => {
-  res.json({ 
-    message: 'EcoStep Backend API Server', 
-    status: 'Running',
-    endpoints: [
-      'GET /api/health - Health check',
-      'POST /api/environmental-tip - Get environmental tip',
-      'POST /api/naver-local-search - Search nearby places'
-    ]
-  });
-});
 
 // API Endpoints
 app.get('/api/health', (req, res) => {
@@ -643,6 +633,11 @@ app.post('/api/naver-local-search', async (req, res) => {
   }
 });
 
+// Catch-all route: serve index.html for any non-API requests (SPA routing support)
+app.get('*', (req, res) => {
+  res.sendFile(join(__dirname, '../dist/index.html'));
+});
+
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error('Server error:', err);
@@ -655,10 +650,10 @@ const server = app.listen(PORT, () => {
     ? `https://${process.env.RAILWAY_PUBLIC_DOMAIN}`
     : `http://localhost:${PORT}`;
 
-  console.log(`\n🚀 Backend server running on ${baseUrl}`);
+  console.log(`\n🚀 EcoStep Server running on ${baseUrl}`);
   console.log(`📱 Port: ${PORT}`);
-  console.log(`\nAvailable endpoints:`);
-  console.log(`  GET  ${baseUrl}/`);
+  console.log(`\n✅ Serving frontend app from /dist`);
+  console.log(`\nAvailable API endpoints:`);
   console.log(`  GET  ${baseUrl}/api/health`);
   console.log(`  POST ${baseUrl}/api/chatbot`);
   console.log(`  POST ${baseUrl}/api/environmental-tip`);

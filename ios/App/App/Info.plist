@@ -59,6 +59,7 @@
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>com.ecostep.app</string>
+				<string>ecostep</string>
 			</array>
 		</dict>
 	</array>

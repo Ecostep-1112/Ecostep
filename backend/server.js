@@ -30,7 +30,40 @@ app.use(cors({
 app.use(express.json());
 
 // Serve static files from the frontend build (dist folder)
-app.use(express.static(join(__dirname, '../dist')));
+// dotfiles: 'allow' enables serving .well-known folder for deep links
+app.use(express.static(join(__dirname, '../dist'), { dotfiles: 'allow' }));
+
+// Serve .well-known files for deep links (Android App Links & iOS Universal Links)
+app.get('/.well-known/assetlinks.json', (req, res) => {
+  res.setHeader('Content-Type', 'application/json');
+  res.json([
+    {
+      relation: ['delegate_permission/common.handle_all_urls'],
+      target: {
+        namespace: 'android_app',
+        package_name: 'com.ecostep.app',
+        sha256_cert_fingerprints: [
+          'A9:3A:F9:86:FF:49:A7:F3:5A:38:5E:37:85:D7:69:C2:5F:37:5C:5C:2D:40:CB:CB:47:35:B3:F2:8E:AF:3D:78'
+        ]
+      }
+    }
+  ]);
+});
+
+app.get('/.well-known/apple-app-site-association', (req, res) => {
+  res.setHeader('Content-Type', 'application/json');
+  res.json({
+    applinks: {
+      apps: [],
+      details: [
+        {
+          appID: 'T3CJMD5FX4.com.ecostep.app',
+          paths: ['*']
+        }
+      ]
+    }
+  });
+});
 
 // Claude API configuration
 const CLAUDE_API_KEY = process.env.CLAUDE_API_KEY;

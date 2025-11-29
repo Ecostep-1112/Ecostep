@@ -202,47 +202,13 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
                   // Railway 배포 URL 사용 (VITE_WEB_URL 우선, fallback: hardcoded Railway URL)
                   const baseUrl = import.meta.env.VITE_WEB_URL || 'https://ecostep-production.up.railway.app';
                   const inviteLink = `${baseUrl}?code=${userFId}`;
-                  const shareText = 'EcoStep:\nSmall Steps, Big Change. Why Not?';
+                  const shareText = '🌱 EcoStep - Small Steps, Big Change. Why Not?';
 
-                  console.log('Generated invite link:', inviteLink); // 디버깅용
-
-                  // 웹/앱 모두 Kakao SDK 우선 사용 (카드 형태 공유)
-                  if (window.Kakao && window.Kakao.isInitialized()) {
-                    try {
-                      window.Kakao.Share.sendDefault({
-                        objectType: 'feed',
-                        content: {
-                          title: 'EcoStep',
-                          description: 'Small Steps, Big Change. Why Not?',
-                          imageUrl: 'https://via.placeholder.com/300x200?text=EcoStep',
-                          link: {
-                            mobileWebUrl: inviteLink,
-                            webUrl: inviteLink,
-                          },
-                        },
-                        buttons: [
-                          {
-                            title: '앱 시작하기',
-                            link: {
-                              mobileWebUrl: inviteLink,
-                              webUrl: inviteLink,
-                            },
-                          },
-                        ],
-                      });
-                      console.log('Kakao share sent successfully');
-                      return; // 성공하면 여기서 종료
-                    } catch (error) {
-                      console.error('Kakao share error:', error);
-                      // Kakao 실패 시 fallback 계속 진행
-                    }
-                  }
-
-                  // Kakao SDK가 없거나 실패한 경우 fallback
+                  // Capacitor 모바일 앱 환경인지 확인
                   const isNative = Capacitor.isNativePlatform();
 
                   if (isNative) {
-                    // 모바일 앱: Capacitor Share API 사용 (네이티브 공유)
+                    // 모바일 앱: Capacitor Share API 사용 (네이티브 공유 기능)
                     try {
                       await Share.share({
                         title: 'EcoStep',
@@ -258,29 +224,51 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
                       }
                     }
                   } else {
-                    // 웹 환경: Web Share API 또는 클립보드 복사
-                    if (navigator.share) {
-                      try {
+                    // 웹 환경: Kakao SDK 사용
+                    if (window.Kakao && window.Kakao.isInitialized()) {
+                      window.Kakao.Share.sendDefault({
+                        objectType: 'feed',
+                        content: {
+                          title: 'EcoStep',
+                          description: 'Small Steps, Big Change. Why Not?',
+                          imageUrl: 'https://via.placeholder.com/300x200?text=EcoStep',
+                          link: {
+                            mobileWebUrl: inviteLink,
+                            webUrl: inviteLink,
+                          },
+                        },
+                        buttons: [
+                          {
+                            title: '앱에서 열기',
+                            link: {
+                              mobileWebUrl: inviteLink,
+                              webUrl: inviteLink,
+                            },
+                          },
+                        ],
+                      });
+                      console.log('Kakao share sent successfully');
+                    } else {
+                      console.warn('Kakao SDK not initialized, using Web Share API');
+                      // Web Share API 사용
+                      if (navigator.share) {
                         await navigator.share({
                           title: 'EcoStep',
                           text: shareText,
                           url: inviteLink,
                         });
-                      } catch (error) {
-                        console.error('Web share error:', error);
-                        // 사용자가 취소한 경우는 에러 메시지 표시 안 함
+                      } else {
+                        // 최종 대안: 링크 복사
+                        navigator.clipboard.writeText(inviteLink).then(() => {
+                          if (showToast) {
+                            showToast('링크가 복사되었습니다. 카카오톡에서 직접 공유해주세요.', 'info');
+                          }
+                        }).catch(() => {
+                          if (showToast) {
+                            showToast('공유 기능을 사용할 수 없습니다.', 'error');
+                          }
+                        });
                       }
-                    } else {
-                      // 최종 대안: 링크 복사
-                      navigator.clipboard.writeText(shareText + '\n' + inviteLink).then(() => {
-                        if (showToast) {
-                          showToast('링크가 복사되었습니다. 카카오톡에서 직접 공유해주세요.', 'info');
-                        }
-                      }).catch(() => {
-                        if (showToast) {
-                          showToast('공유 기능을 사용할 수 없습니다.', 'error');
-                        }
-                      });
                     }
                   }
                 } catch (error) {
@@ -333,20 +321,16 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
                 // Railway 배포 URL 사용 (VITE_WEB_URL 우선, fallback: hardcoded Railway URL)
                 const baseUrl = import.meta.env.VITE_WEB_URL || 'https://ecostep-production.up.railway.app';
                 const inviteLink = `${baseUrl}?code=${userFId}`;
-                const shareText = 'EcoStep:\nSmall Steps, Big Change. Why Not?';
-                const copyText = shareText + '\n' + inviteLink;
 
-                console.log('Copy link:', inviteLink); // 디버깅용
-
-                // Copy to clipboard
-                navigator.clipboard.writeText(copyText).then(() => {
+                // Copy to clipboard (링크만 복사)
+                navigator.clipboard.writeText(inviteLink).then(() => {
                   if (showToast) {
                     showToast('링크가 복사되었습니다', 'success');
                   }
                 }).catch(() => {
                   // Fallback for older browsers
                   const textArea = document.createElement('textarea');
-                  textArea.value = copyText;
+                  textArea.value = inviteLink;
                   document.body.appendChild(textArea);
                   textArea.select();
                   document.execCommand('copy');

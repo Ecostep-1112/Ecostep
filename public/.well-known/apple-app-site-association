@@ -1,0 +1,11 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appID": "T3CJMD5FX4.com.ecostep.app",
+        "paths": ["*"]
+      }
+    ]
+  }
+}

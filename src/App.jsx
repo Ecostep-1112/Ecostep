@@ -522,6 +522,49 @@ const EcostepAppContent = () => {
       console.log('초대 코드 발견:', inviteCode);
       // 초대 코드를 localStorage에 저장하여 로그인 후 처리
       localStorage.setItem('pendingInviteCode', inviteCode);
+
+      // 웹 브라우저에서 접근한 경우 앱/스토어로 이동 시도
+      const isNative = Capacitor.isNativePlatform();
+      if (!isNative) {
+        // 모바일 기기인지 확인
+        const userAgent = navigator.userAgent || navigator.vendor;
+        const isAndroid = /android/i.test(userAgent);
+        const isIOS = /iPad|iPhone|iPod/.test(userAgent);
+
+        if (isAndroid) {
+          // Android: Intent URL 사용 - 앱 없으면 즉시 스토어로 이동
+          const storeUrl = 'https://play.google.com/store/apps/details?id=com.ecostep.app';
+          const intentUrl = `intent://invite?code=${inviteCode}#Intent;scheme=ecostep;package=com.ecostep.app;S.browser_fallback_url=${encodeURIComponent(storeUrl)};end`;
+          window.location.href = intentUrl;
+          return;
+        } else if (isIOS) {
+          // iOS: Universal Links 또는 Custom Scheme 시도 후 fallback
+          const appScheme = `ecostep://invite?code=${inviteCode}`;
+          const storeUrl = 'https://apps.apple.com/app/ecostep/id0000000000'; // TODO: 실제 앱스토어 ID로 교체
+
+          // 페이지 visibility 변화 감지로 앱 열림 확인
+          let appOpened = false;
+          const handleVisibility = () => {
+            if (document.hidden) {
+              appOpened = true;
+            }
+          };
+          document.addEventListener('visibilitychange', handleVisibility);
+
+          window.location.href = appScheme;
+
+          // 500ms 후 앱이 안 열렸으면 스토어로 이동
+          setTimeout(() => {
+            document.removeEventListener('visibilitychange', handleVisibility);
+            if (!appOpened && !document.hidden) {
+              window.location.href = storeUrl;
+            }
+          }, 500);
+
+          return;
+        }
+      }
+
       // URL에서 파라미터 제거
       window.history.replaceState({}, document.title, window.location.pathname);
     }

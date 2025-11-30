@@ -321,16 +321,18 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
                 // Railway 배포 URL 사용 (VITE_WEB_URL 우선, fallback: hardcoded Railway URL)
                 const baseUrl = import.meta.env.VITE_WEB_URL || 'https://ecostep-production.up.railway.app';
                 const inviteLink = `${baseUrl}?code=${userFId}`;
+                const shareText = 'Small Steps, Big Change. Why Not?';
+                const copyText = shareText + '\n' + inviteLink;
 
-                // Copy to clipboard (링크만 복사)
-                navigator.clipboard.writeText(inviteLink).then(() => {
+                // Copy to clipboard (메시지 + 링크 복사)
+                navigator.clipboard.writeText(copyText).then(() => {
                   if (showToast) {
                     showToast('링크가 복사되었습니다', 'success');
                   }
                 }).catch(() => {
                   // Fallback for older browsers
                   const textArea = document.createElement('textarea');
-                  textArea.value = inviteLink;
+                  textArea.value = copyText;
                   document.body.appendChild(textArea);
                   textArea.select();
                   document.execCommand('copy');

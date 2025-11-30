@@ -574,6 +574,38 @@ const EcostepAppContent = () => {
       console.error('일일 팁 생성 실패:', error);
     });
 
+    // Capacitor Deep Link 리스너 추가
+    const isNative = Capacitor.isNativePlatform();
+    if (isNative) {
+      // 앱이 이미 열려있을 때 Deep Link로 재진입하는 경우 처리
+      const removeListener = CapacitorApp.addListener('appUrlOpen', (data) => {
+        console.log('App opened with URL:', data.url);
+
+        // ecostep://invite?code=userId 형식 처리
+        if (data.url && data.url.includes('invite')) {
+          const match = data.url.match(/code=([^&]+)/);
+          if (match && match[1]) {
+            const inviteCode = match[1];
+            console.log('Deep link 초대 코드 발견:', inviteCode);
+            localStorage.setItem('pendingInviteCode', inviteCode);
+
+            // 로그인 상태 확인 후 처리
+            if (isLoggedIn) {
+              // 이미 로그인된 상태면 바로 친구 검색 화면으로 이동
+              setActiveTab('community');
+              setPendingInviteSearch(inviteCode);
+            }
+            // 로그인하지 않은 경우는 로그인 후 처리됨
+          }
+        }
+      });
+
+      // Cleanup
+      return () => {
+        removeListener();
+      };
+    }
+
     // 인증 상태 변경 리스너 설정
     const { data: { subscription } } = onAuthStateChange((event, session) => {
       if (event === 'SIGNED_IN' && session?.user) {

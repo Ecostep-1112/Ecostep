@@ -199,10 +199,37 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
                     return;
                   }
 
-                  // Railway 배포 URL 사용 (VITE_WEB_URL 우선, fallback: hardcoded Railway URL)
-                  const baseUrl = import.meta.env.VITE_WEB_URL || 'https://ecostep-production.up.railway.app';
-                  const inviteLink = `${baseUrl}?code=${userFId}`;
-                  const shareText = 'Small Steps, Big Change. Why Not?';
+                  // 초대 메시지와 링크 설정
+                  const shareText = `Small Steps, Big Change. Why Not?\n\n초대 코드: ${userFId}`;
+
+                  // 카카오톡용 웹 URL (앱스토어 링크 사용)
+                  const isAndroid = /android/i.test(navigator.userAgent);
+                  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+
+                  // 카카오톡용 스토어 링크
+                  let kakaoLink;
+                  if (isAndroid) {
+                    kakaoLink = 'https://play.google.com/store/apps/details?id=com.ecostep.app';
+                  } else if (isIOS) {
+                    kakaoLink = 'https://apps.apple.com/app/ecostep/id0000000000'; // TODO: 실제 iOS 앱 ID로 변경
+                  } else {
+                    // PC 또는 기타 환경: Play Store 링크를 기본으로 사용
+                    kakaoLink = 'https://play.google.com/store/apps/details?id=com.ecostep.app';
+                  }
+
+                  // 일반 공유용 Custom URL Scheme
+                  let inviteLink;
+                  if (isAndroid) {
+                    // Android: Intent URL 사용 (앱 없으면 Play Store로 자동 이동)
+                    const playStoreUrl = 'https://play.google.com/store/apps/details?id=com.ecostep.app';
+                    inviteLink = `intent://invite?code=${userFId}#Intent;scheme=ecostep;package=com.ecostep.app;S.browser_fallback_url=${encodeURIComponent(playStoreUrl)};end`;
+                  } else if (isIOS) {
+                    // iOS: Custom Scheme URL
+                    inviteLink = `ecostep://invite?code=${userFId}`;
+                  } else {
+                    // 데스크톱 또는 기타: Custom Scheme URL
+                    inviteLink = `ecostep://invite?code=${userFId}`;
+                  }
 
                   // Capacitor 모바일 앱 환경인지 확인
                   const isNative = Capacitor.isNativePlatform();
@@ -230,24 +257,24 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
                         objectType: 'feed',
                         content: {
                           title: 'EcoStep',
-                          description: 'Small Steps, Big Change. Why Not?',
+                          description: `Small Steps, Big Change. Why Not?\n\n초대 코드: ${userFId}`,
                           imageUrl: 'https://via.placeholder.com/300x200?text=EcoStep',
                           link: {
-                            mobileWebUrl: inviteLink,
-                            webUrl: inviteLink,
+                            mobileWebUrl: kakaoLink,
+                            webUrl: kakaoLink,
                           },
                         },
                         buttons: [
                           {
-                            title: '앱에서 열기',
+                            title: '앱 다운로드',
                             link: {
-                              mobileWebUrl: inviteLink,
-                              webUrl: inviteLink,
+                              mobileWebUrl: kakaoLink,
+                              webUrl: kakaoLink,
                             },
                           },
                         ],
                       });
-                      console.log('Kakao share sent successfully');
+                      console.log('Kakao share sent successfully with invite code:', userFId);
                     } else {
                       console.warn('Kakao SDK not initialized, using Web Share API');
                       // Web Share API 사용
@@ -318,10 +345,25 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
                   return;
                 }
 
-                // Railway 배포 URL 사용 (VITE_WEB_URL 우선, fallback: hardcoded Railway URL)
-                const baseUrl = import.meta.env.VITE_WEB_URL || 'https://ecostep-production.up.railway.app';
-                const inviteLink = `${baseUrl}?code=${userFId}`;
+                // 링크 버튼용 Custom URL Scheme
                 const shareText = 'Small Steps, Big Change. Why Not?';
+                let inviteLink;
+
+                // 플랫폼 감지
+                const isAndroid = /android/i.test(navigator.userAgent);
+                const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+
+                if (isAndroid) {
+                  // Android: Intent URL 사용 (앱 없으면 Play Store로 자동 이동)
+                  const playStoreUrl = 'https://play.google.com/store/apps/details?id=com.ecostep.app';
+                  inviteLink = `intent://invite?code=${userFId}#Intent;scheme=ecostep;package=com.ecostep.app;S.browser_fallback_url=${encodeURIComponent(playStoreUrl)};end`;
+                } else if (isIOS) {
+                  // iOS: Custom Scheme URL
+                  inviteLink = `ecostep://invite?code=${userFId}`;
+                } else {
+                  // 데스크톱 또는 기타: Custom Scheme URL
+                  inviteLink = `ecostep://invite?code=${userFId}`;
+                }
 
                 // Capacitor 모바일 앱 환경인지 확인
                 const isNative = Capacitor.isNativePlatform();

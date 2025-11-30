@@ -296,7 +296,7 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
               카톡
             </button>
             <button
-              onClick={() => {
+              onClick={async () => {
                 // localStorage에서 user_f_id 가져오기
                 const savedProfileData = localStorage.getItem('profileData');
                 let userFId = '';
@@ -322,25 +322,50 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
                 const baseUrl = import.meta.env.VITE_WEB_URL || 'https://ecostep-production.up.railway.app';
                 const inviteLink = `${baseUrl}?code=${userFId}`;
                 const shareText = 'Small Steps, Big Change. Why Not?';
-                const copyText = shareText + '\n' + inviteLink;
 
-                // Copy to clipboard (메시지 + 링크 복사)
-                navigator.clipboard.writeText(copyText).then(() => {
-                  if (showToast) {
-                    showToast('링크가 복사되었습니다', 'success');
+                // Capacitor 모바일 앱 환경인지 확인
+                const isNative = Capacitor.isNativePlatform();
+
+                try {
+                  if (isNative) {
+                    // 모바일 앱: Capacitor Share API 사용 (네이티브 공유 기능)
+                    await Share.share({
+                      title: 'EcoStep',
+                      text: shareText,
+                      url: inviteLink,
+                      dialogTitle: '친구 초대하기',
+                    });
+                    console.log('Native share successful');
+                  } else if (navigator.share) {
+                    // 웹 환경: Web Share API 사용 (브라우저 네이티브 공유)
+                    await navigator.share({
+                      title: 'EcoStep',
+                      text: shareText,
+                      url: inviteLink,
+                    });
+                    console.log('Web share successful');
+                  } else {
+                    // Fallback: URL만 복사 (메시지 텍스트 제외)
+                    await navigator.clipboard.writeText(inviteLink);
+                    if (showToast) {
+                      showToast('링크가 복사되었습니다', 'success');
+                    }
                   }
-                }).catch(() => {
-                  // Fallback for older browsers
-                  const textArea = document.createElement('textarea');
-                  textArea.value = copyText;
-                  document.body.appendChild(textArea);
-                  textArea.select();
-                  document.execCommand('copy');
-                  document.body.removeChild(textArea);
-                  if (showToast) {
-                    showToast('링크가 복사되었습니다', 'success');
+                } catch (error) {
+                  console.error('Share error:', error);
+                  // 공유 취소나 에러 시 fallback으로 URL만 복사
+                  try {
+                    await navigator.clipboard.writeText(inviteLink);
+                    if (showToast) {
+                      showToast('링크가 복사되었습니다', 'success');
+                    }
+                  } catch (clipboardError) {
+                    console.error('Clipboard error:', clipboardError);
+                    if (showToast) {
+                      showToast('공유 기능을 사용할 수 없습니다', 'error');
+                    }
                   }
-                });
+                }
               }}
               className={`flex-1 relative overflow-hidden py-2 rounded-xl text-sm font-medium flex items-center justify-center transition-all transform hover:scale-[1.02]`}
               style={{

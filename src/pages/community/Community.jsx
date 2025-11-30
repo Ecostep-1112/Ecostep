@@ -202,7 +202,7 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
                   // Railway 배포 URL 사용 (VITE_WEB_URL 우선, fallback: hardcoded Railway URL)
                   const baseUrl = import.meta.env.VITE_WEB_URL || 'https://ecostep-production.up.railway.app';
                   const inviteLink = `${baseUrl}?code=${userFId}`;
-                  const shareText = '🌱 EcoStep - Small Steps, Big Change. Why Not?';
+                  const shareText = 'Small Steps, Big Change. Why Not?';
 
                   // Capacitor 모바일 앱 환경인지 확인
                   const isNative = Capacitor.isNativePlatform();

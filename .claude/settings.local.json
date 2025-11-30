@@ -65,7 +65,9 @@
       "Bash(npm run build:*)",
       "Bash(find:*)",
       "Bash(npx tsc:*)",
-      "Bash(npm run dev:all:*)"
+      "Bash(npm run dev:all:*)",
+      "Bash(dir:*)",
+      "Bash(npx cap sync:*)"
     ],
     "deny": [],
     "ask": [],

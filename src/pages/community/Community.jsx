@@ -231,34 +231,16 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
                     inviteLink = `ecostep://invite?code=${userFId}`;
                   }
 
-                  // Capacitor 모바일 앱 환경인지 확인
-                  const isNative = Capacitor.isNativePlatform();
-
-                  if (isNative) {
-                    // 모바일 앱: Capacitor Share API 사용 (네이티브 공유 기능)
+                  // 모든 환경에서 카카오 SDK를 먼저 시도 (카드 형식 공유)
+                  if (window.Kakao && window.Kakao.isInitialized()) {
                     try {
-                      await Share.share({
-                        title: 'EcoStep',
-                        text: shareText,
-                        url: inviteLink,
-                        dialogTitle: '친구 초대하기',
-                      });
-                      console.log('Native share successful');
-                    } catch (error) {
-                      console.error('Native share error:', error);
-                      if (showToast) {
-                        showToast('공유 기능을 사용할 수 없습니다.', 'error');
-                      }
-                    }
-                  } else {
-                    // 웹 환경: Kakao SDK 사용
-                    if (window.Kakao && window.Kakao.isInitialized()) {
-                      window.Kakao.Share.sendDefault({
+                      // Kakao SDK 사용 - 카드 형식으로 공유
+                      await window.Kakao.Share.sendDefault({
                         objectType: 'feed',
                         content: {
                           title: 'EcoStep',
                           description: `Small Steps, Big Change. Why Not?\n\n초대 코드: ${userFId}`,
-                          imageUrl: 'https://via.placeholder.com/300x200?text=EcoStep',
+                          imageUrl: 'https://ecostep-production.up.railway.app/og-image.png', // 실제 이미지 URL로 변경
                           link: {
                             mobileWebUrl: kakaoLink,
                             webUrl: kakaoLink,
@@ -275,18 +257,36 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
                         ],
                       });
                       console.log('Kakao share sent successfully with invite code:', userFId);
-                    } else {
-                      console.warn('Kakao SDK not initialized, using Web Share API');
-                      // Web Share API 사용
-                      if (navigator.share) {
+                    } catch (kakaoError) {
+                      console.error('Kakao SDK share error:', kakaoError);
+
+                      // Kakao SDK 실패 시 네이티브 공유 API 사용
+                      const isNative = Capacitor.isNativePlatform();
+                      if (isNative) {
+                        try {
+                          await Share.share({
+                            title: 'EcoStep',
+                            text: shareText,
+                            url: kakaoLink, // 스토어 링크 사용
+                            dialogTitle: '친구 초대하기',
+                          });
+                          console.log('Native share successful');
+                        } catch (error) {
+                          console.error('Native share error:', error);
+                          if (showToast) {
+                            showToast('공유 기능을 사용할 수 없습니다.', 'error');
+                          }
+                        }
+                      } else if (navigator.share) {
+                        // Web Share API 사용
                         await navigator.share({
                           title: 'EcoStep',
                           text: shareText,
-                          url: inviteLink,
+                          url: kakaoLink,
                         });
                       } else {
                         // 최종 대안: 링크 복사
-                        navigator.clipboard.writeText(inviteLink).then(() => {
+                        navigator.clipboard.writeText(`${shareText}\n\n${kakaoLink}`).then(() => {
                           if (showToast) {
                             showToast('링크가 복사되었습니다. 카카오톡에서 직접 공유해주세요.', 'info');
                           }
@@ -296,6 +296,46 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
                           }
                         });
                       }
+                    }
+                  } else {
+                    // Kakao SDK가 초기화되지 않은 경우
+                    console.warn('Kakao SDK not initialized');
+                    const isNative = Capacitor.isNativePlatform();
+
+                    if (isNative) {
+                      // 네이티브 앱: Capacitor Share API 사용
+                      try {
+                        await Share.share({
+                          title: 'EcoStep',
+                          text: shareText,
+                          url: kakaoLink, // 스토어 링크 사용
+                          dialogTitle: '친구 초대하기',
+                        });
+                        console.log('Native share successful');
+                      } catch (error) {
+                        console.error('Native share error:', error);
+                        if (showToast) {
+                          showToast('공유 기능을 사용할 수 없습니다.', 'error');
+                        }
+                      }
+                    } else if (navigator.share) {
+                      // Web Share API 사용
+                      await navigator.share({
+                        title: 'EcoStep',
+                        text: shareText,
+                        url: kakaoLink,
+                      });
+                    } else {
+                      // 최종 대안: 링크 복사
+                      navigator.clipboard.writeText(`${shareText}\n\n${kakaoLink}`).then(() => {
+                        if (showToast) {
+                          showToast('링크가 복사되었습니다. 카카오톡에서 직접 공유해주세요.', 'info');
+                        }
+                      }).catch(() => {
+                        if (showToast) {
+                          showToast('공유 기능을 사용할 수 없습니다.', 'error');
+                        }
+                      });
                     }
                   }
                 } catch (error) {

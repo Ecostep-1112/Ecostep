@@ -56,6 +56,14 @@
         </provider>
     </application>
 
+    <!-- 스마트폰 전용 (태블릿 제외) -->
+    <supports-screens
+        android:smallScreens="true"
+        android:normalScreens="true"
+        android:largeScreens="false"
+        android:xlargeScreens="false"
+        android:requiresSmallestWidthDp="320" />
+
     <!-- Permissions -->
 
     <uses-permission android:name="android.permission.INTERNET" />

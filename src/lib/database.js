@@ -303,6 +303,30 @@ export const saveUserInfo = async (userId, userInfo) => {
     if (error) throw error;
     return { data, error: null };
   } catch (error) {
+    // 이메일 중복 에러(23505) 처리
+    if (error.code === '23505' && error.message.includes('user_info_email_key')) {
+      console.log('이메일 중복 감지, email 필드 제외하고 업데이트 시도...');
+
+      try {
+        // email 필드를 제외하고 UPDATE 수행
+        const { email, ...updateInfo } = mappedInfo;
+
+        const { data, error: updateError } = await supabase
+          .from('user_info')
+          .update(updateInfo)
+          .eq('user_id', userId)
+          .select()
+          .single();
+
+        if (updateError) throw updateError;
+        console.log('사용자 정보 업데이트 완료 (email 제외)');
+        return { data, error: null };
+      } catch (retryError) {
+        console.error('재시도 실패:', retryError);
+        return { data: null, error: retryError };
+      }
+    }
+
     console.error('사용자 정보 저장 에러:', error);
     return { data: null, error };
   }

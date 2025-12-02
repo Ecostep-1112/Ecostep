@@ -37,6 +37,7 @@ import { App as CapacitorApp } from '@capacitor/app';
 import { Capacitor } from '@capacitor/core';
 import { Keyboard } from '@capacitor/keyboard';
 import { generateDailyTip } from './services/claudeService';
+import packageJson from '../package.json';
 
 const EcostepAppContent = () => {
   // 전역 데이터 컨텍스트 사용
@@ -186,6 +187,79 @@ const EcostepAppContent = () => {
     await preloadAllData(userId);
     setHasLoadedData(true);
   }, [hasLoadedData, preloadAllData]);
+
+  // 앱 버전 체크 함수 (Step 2 & 3: 버전 체크 및 중복 알림 방지)
+  const checkAppVersion = useCallback(async () => {
+    try {
+      // 현재 앱 버전 (package.json에서)
+      const currentVersion = packageJson.version;
+
+      // localStorage에서 마지막으로 확인한 버전 가져오기 (중복 알림 방지)
+      const lastCheckedVersion = localStorage.getItem('lastCheckedVersion');
+
+      console.log('버전 체크 시작:', {
+        currentVersion,
+        lastCheckedVersion
+      });
+
+      // Supabase에서 최신 버전 정보 조회
+      const { data, error } = await supabase
+        .from('app_config')
+        .select('value')
+        .eq('key', 'latest_version')
+        .single();
+
+      if (error) {
+        console.error('버전 체크 실패:', error);
+        console.error('에러 상세:', {
+          message: error.message,
+          code: error.code,
+          details: error.details,
+          hint: error.hint
+        });
+        return;
+      }
+
+      if (!data || !data.value) {
+        console.log('버전 정보가 없습니다.');
+        return;
+      }
+
+      const latestVersionInfo = data.value;
+      const latestVersion = latestVersionInfo.version;
+
+      console.log('최신 버전:', latestVersion);
+
+      // 버전 비교: 현재 버전과 다르고, 아직 이 버전에 대한 알림을 보지 않았으면
+      if (currentVersion !== latestVersion && lastCheckedVersion !== latestVersion) {
+        console.log(`새 버전 발견! ${currentVersion} → ${latestVersion}`);
+
+        // 알림 추가
+        setNotificationsList(prev => [{
+          id: `update-${latestVersion}-${Date.now()}`, // 고유 ID
+          title: latestVersionInfo.title || '새 버전 업데이트!',
+          message: latestVersionInfo.message || `EcoStep ${latestVersion}이 출시되었습니다. 새로운 기능을 확인해보세요!`,
+          timestamp: new Date(),
+          read: false,
+          type: 'update', // 업데이트 알림임을 표시
+          version: latestVersion,
+          releaseNotes: latestVersionInfo.release_notes || [],
+          isReward: false
+        }, ...prev]);
+
+        // localStorage에 이 버전을 확인했다고 저장 (중복 알림 방지)
+        localStorage.setItem('lastCheckedVersion', latestVersion);
+
+        console.log('버전 업데이트 알림 추가 완료');
+      } else if (currentVersion === latestVersion) {
+        console.log('현재 최신 버전 사용 중');
+      } else if (lastCheckedVersion === latestVersion) {
+        console.log('이미 확인한 버전입니다.');
+      }
+    } catch (error) {
+      console.error('버전 체크 에러:', error);
+    }
+  }, []); // setState 함수는 안정적이므로 dependency에 포함하지 않음
 
   // Supabase에 유저 데이터 저장
   const saveUserDataToSupabase = async () => {
@@ -665,6 +739,14 @@ const EcostepAppContent = () => {
       subscription?.unsubscribe();
     };
   }, []);
+
+  // 로그인 후 버전 체크 (Step 2 & 3 실행)
+  useEffect(() => {
+    if (isLoggedIn && currentUser) {
+      console.log('로그인 완료, 버전 체크 시작...');
+      checkAppVersion();
+    }
+  }, [isLoggedIn, currentUser, checkAppVersion]);
 
   // Deep link 처리 (모바일 앱에서 OAuth callback 처리)
   useEffect(() => {

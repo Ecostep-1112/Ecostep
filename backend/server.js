@@ -65,6 +65,11 @@ app.get('/.well-known/apple-app-site-association', (req, res) => {
   });
 });
 
+// Serve privacy policy
+app.get('/privacy', (req, res) => {
+  res.sendFile(join(__dirname, '../docs/privacy-policy.html'));
+});
+
 // Claude API configuration
 const CLAUDE_API_KEY = process.env.CLAUDE_API_KEY;
 

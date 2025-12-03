@@ -1,5 +1,6 @@
 import { supabase } from './supabase';
 import { Capacitor } from '@capacitor/core';
+import { Browser } from '@capacitor/browser';
 
 // 플랫폼에 따른 redirect URL 반환
 const getRedirectUrl = () => {
@@ -181,10 +182,13 @@ export const createOrUpdateUserProfile = async (user) => {
 // 구글 로그인
 export const signInWithGoogle = async () => {
   try {
+    const platform = Capacitor.getPlatform();
+
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
         redirectTo: getRedirectUrl(),
+        skipBrowserRedirect: platform !== 'web', // 모바일에서는 수동으로 브라우저 열기
         queryParams: {
           access_type: 'offline',
           prompt: 'consent',
@@ -193,6 +197,12 @@ export const signInWithGoogle = async () => {
     });
 
     if (error) throw error;
+
+    // 모바일 앱에서는 인앱 브라우저 사용 (Safari View Controller)
+    if (data?.url && platform !== 'web') {
+      await Browser.open({ url: data.url });
+    }
+
     return { data, error: null };
   } catch (error) {
     console.error('구글 로그인 에러:', error);
@@ -204,14 +214,23 @@ export const signInWithGoogle = async () => {
 export const signInWithKakao = async () => {
   try {
     console.log('카카오 로그인 시작');
+    const platform = Capacitor.getPlatform();
+
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'kakao',
       options: {
         redirectTo: getRedirectUrl(),
+        skipBrowserRedirect: platform !== 'web', // 모바일에서는 수동으로 브라우저 열기
       },
     });
 
     if (error) throw error;
+
+    // 모바일 앱에서는 인앱 브라우저 사용 (Safari View Controller)
+    if (data?.url && platform !== 'web') {
+      await Browser.open({ url: data.url });
+    }
+
     return { data, error: null };
   } catch (error) {
     console.error('카카오 로그인 에러:', error);
@@ -222,14 +241,23 @@ export const signInWithKakao = async () => {
 // 애플 로그인
 export const signInWithApple = async () => {
   try {
+    const platform = Capacitor.getPlatform();
+
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'apple',
       options: {
         redirectTo: getRedirectUrl(),
+        skipBrowserRedirect: platform !== 'web', // 모바일에서는 수동으로 브라우저 열기
       },
     });
 
     if (error) throw error;
+
+    // 모바일 앱에서는 인앱 브라우저 사용 (Safari View Controller)
+    if (data?.url && platform !== 'web') {
+      await Browser.open({ url: data.url });
+    }
+
     return { data, error: null };
   } catch (error) {
     console.error('애플 로그인 에러:', error);

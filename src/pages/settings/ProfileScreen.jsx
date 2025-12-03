@@ -3,6 +3,8 @@ import { ChevronRight, ChevronLeft, X, Camera, Plus, AlertTriangle, Check, Trash
 import { updateUserFId, checkUserFIdDuplicate, deleteAccount } from '../../lib/auth';
 import { supabase } from '../../lib/supabase';
 import Toast from '../../components/Toast';
+import { Camera as CapacitorCamera, CameraResultType, CameraSource } from '@capacitor/camera';
+import { Capacitor } from '@capacitor/core';
 
 const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData }) => {
   const [showToast, setShowToast] = useState(false);
@@ -131,7 +133,123 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
     }
   };
 
-  // 이미지 업로드 핸들러
+  // 네이티브 갤러리에서 이미지 선택 (카메라 없이 갤러리만)
+  const handleNativeImagePick = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        console.error('사용자 인증 정보가 없습니다.');
+        setToastMessage('로그인이 필요합니다.');
+        setToastType('error');
+        setShowToast(true);
+        return;
+      }
+
+      // 갤러리에서만 이미지 선택 (카메라 옵션 없음)
+      const image = await CapacitorCamera.getPhoto({
+        quality: 90,
+        resultType: CameraResultType.Uri,
+        source: CameraSource.Photos, // 갤러리에서만 선택 (카메라 X)
+        width: 800,
+        height: 800
+      });
+
+      if (!image || !image.webPath) {
+        console.log('이미지 선택 취소됨');
+        return;
+      }
+
+      console.log('선택된 이미지:', image.webPath);
+
+      // 미리보기 표시
+      setProfileData(prev => ({
+        ...prev,
+        profileImage: image.webPath
+      }));
+
+      // 이미지를 Blob으로 변환하여 업로드
+      const response = await fetch(image.webPath);
+      const blob = await response.blob();
+
+      // 파일 크기 체크 (5MB 제한)
+      if (blob.size > 5 * 1024 * 1024) {
+        console.error('파일 크기가 너무 큽니다:', blob.size);
+        setToastMessage('이미지 크기는 5MB 이하여야 합니다.');
+        setToastType('error');
+        setShowToast(true);
+        return;
+      }
+
+      const fileExt = image.format || 'jpeg';
+      const fileName = `${user.id}/${Date.now()}.${fileExt}`;
+      console.log('이미지 업로드 시작:', fileName, 'Size:', blob.size, 'bytes');
+
+      // Supabase Storage에 업로드
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('Profile_pic')
+        .upload(fileName, blob, {
+          cacheControl: '3600',
+          upsert: true,
+          contentType: `image/${fileExt}`
+        });
+
+      if (uploadError) {
+        console.error('이미지 업로드 실패:', uploadError);
+        setToastMessage(`업로드 실패: ${uploadError.message}`);
+        setToastType('error');
+        setShowToast(true);
+        return;
+      }
+
+      console.log('이미지 업로드 성공:', uploadData);
+
+      // 공개 URL 가져오기
+      const { data: urlData } = supabase.storage
+        .from('Profile_pic')
+        .getPublicUrl(fileName);
+
+      const publicUrl = urlData.publicUrl;
+      console.log('공개 URL:', publicUrl);
+
+      // DB에 URL 저장
+      const { error: dbError } = await supabase
+        .from('user_info')
+        .update({ profile_image_url: publicUrl })
+        .eq('user_id', user.id);
+
+      if (dbError) {
+        console.error('DB 저장 실패:', dbError);
+        setToastMessage('DB 저장에 실패했습니다.');
+        setToastType('error');
+        setShowToast(true);
+        return;
+      }
+
+      // profileData 업데이트
+      setProfileData(prev => {
+        const updated = { ...prev, profileImage: publicUrl };
+        localStorage.setItem('profileData', JSON.stringify(updated));
+        return updated;
+      });
+
+      console.log('프로필 이미지 DB 저장 완료');
+      setToastMessage('프로필 이미지가 업데이트되었습니다.');
+      setToastType('success');
+      setShowToast(true);
+    } catch (error) {
+      // 사용자가 취소한 경우
+      if (error.message?.includes('cancelled') || error.message?.includes('canceled')) {
+        console.log('이미지 선택 취소됨');
+        return;
+      }
+      console.error('프로필 이미지 선택 에러:', error);
+      setToastMessage('이미지 선택 중 오류가 발생했습니다.');
+      setToastType('error');
+      setShowToast(true);
+    }
+  };
+
+  // 웹용 이미지 업로드 핸들러
   const handleImageUpload = async (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -244,6 +362,18 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
         setToastType('error');
         setShowToast(true);
       }
+    }
+  };
+
+  // 플랫폼에 따라 적절한 이미지 선택 방법 사용
+  const handleProfileImageClick = () => {
+    const platform = Capacitor.getPlatform();
+    if (platform === 'ios' || platform === 'android') {
+      // 네이티브: Capacitor Camera 사용 (갤러리만)
+      handleNativeImagePick();
+    } else {
+      // 웹: 파일 input 클릭
+      document.getElementById('profile-upload')?.click();
     }
   };
 
@@ -777,7 +907,7 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
       {/* 프로필 사진 업로드 섹션 */}
       <div className="p-4 pb-24 overflow-y-auto flex-1">
         <div className="flex flex-col items-center mb-6">
-          <label htmlFor="profile-upload" className="cursor-pointer relative">
+          <button onClick={handleProfileImageClick} className="cursor-pointer relative">
             <div className={`w-20 h-20 ${cardBg} rounded-full flex items-center justify-center border-2 ${borderColor} overflow-hidden`}>
               {profileImage ? (
                 <img src={profileImage} alt="Profile" className="w-full h-full object-cover" />
@@ -789,14 +919,15 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
             <div className={`absolute bottom-1 right-1 w-5 h-5 ${isDarkMode ? 'bg-white' : 'bg-gray-800'} rounded-full flex items-center justify-center`}>
               <Plus className={`w-2.5 h-2.5 ${isDarkMode ? 'text-gray-800' : 'text-white'}`} />
             </div>
-            <input
-              id="profile-upload"
-              type="file"
-              accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
-              onChange={handleImageUpload}
-              className="hidden"
-            />
-          </label>
+          </button>
+          {/* 웹용 숨겨진 파일 input */}
+          <input
+            id="profile-upload"
+            type="file"
+            accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
+            onChange={handleImageUpload}
+            className="hidden"
+          />
           {/* 이미지 삭제 버튼 (이미지가 있을 때만 표시) */}
           {profileImage && (
             <button

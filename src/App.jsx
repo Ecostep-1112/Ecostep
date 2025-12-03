@@ -36,6 +36,7 @@ import { DataProvider, useData } from './services/DataContext';
 import { App as CapacitorApp } from '@capacitor/app';
 import { Capacitor } from '@capacitor/core';
 import { Keyboard } from '@capacitor/keyboard';
+import { Browser } from '@capacitor/browser';
 import { generateDailyTip } from './services/claudeService';
 import packageJson from '../package.json';
 
@@ -770,6 +771,14 @@ const EcostepAppContent = () => {
 
             if (accessToken) {
               console.log('Deep link에서 토큰 발견, 세션 설정 중...');
+
+              // 인앱 브라우저 닫기 (Safari View Controller)
+              try {
+                await Browser.close();
+                console.log('인앱 브라우저 닫기 완료');
+              } catch (browserError) {
+                console.log('브라우저 닫기 에러 (무시):', browserError);
+              }
 
               try {
                 // Supabase 세션 설정

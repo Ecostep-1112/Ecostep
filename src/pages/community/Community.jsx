@@ -199,149 +199,125 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
                     return;
                   }
 
-                  // 초대 메시지와 링크 설정
+                  // 공유 콘텐츠 설정
+                  const shareTitle = 'EcoStep';
                   const shareText = `Small Steps, Big Change. Why Not?\n\n초대 코드: ${userFId}`;
 
-                  // 카카오톡용 웹 URL (앱스토어 링크 사용)
+                  // 플랫폼 감지
                   const isAndroid = /android/i.test(navigator.userAgent);
                   const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+                  const isNative = Capacitor.isNativePlatform();
 
-                  // 카카오톡용 스토어 링크
-                  let kakaoLink;
+                  // 스토어 링크 설정
+                  let shareUrl;
                   if (isAndroid) {
-                    kakaoLink = 'https://play.google.com/store/apps/details?id=com.ecostep.app';
+                    shareUrl = 'https://play.google.com/store/apps/details?id=com.ecostep.app';
                   } else if (isIOS) {
-                    kakaoLink = 'https://apps.apple.com/app/ecostep/id0000000000'; // TODO: 실제 iOS 앱 ID로 변경
+                    shareUrl = 'https://apps.apple.com/app/ecostep/id0000000000'; // TODO: 실제 iOS 앱 ID로 변경
                   } else {
-                    // PC 또는 기타 환경: Play Store 링크를 기본으로 사용
-                    kakaoLink = 'https://play.google.com/store/apps/details?id=com.ecostep.app';
+                    shareUrl = 'https://play.google.com/store/apps/details?id=com.ecostep.app';
                   }
 
-                  // 일반 공유용 Custom URL Scheme
-                  let inviteLink;
-                  if (isAndroid) {
-                    // Android: Intent URL 사용 (앱 없으면 Play Store로 자동 이동)
-                    const playStoreUrl = 'https://play.google.com/store/apps/details?id=com.ecostep.app';
-                    inviteLink = `intent://invite?code=${userFId}#Intent;scheme=ecostep;package=com.ecostep.app;S.browser_fallback_url=${encodeURIComponent(playStoreUrl)};end`;
-                  } else if (isIOS) {
-                    // iOS: Custom Scheme URL
-                    inviteLink = `ecostep://invite?code=${userFId}`;
-                  } else {
-                    // 데스크톱 또는 기타: Custom Scheme URL
-                    inviteLink = `ecostep://invite?code=${userFId}`;
-                  }
-
-                  // 모든 환경에서 카카오 SDK를 먼저 시도 (카드 형식 공유)
-                  if (window.Kakao && window.Kakao.isInitialized()) {
+                  if (isNative) {
+                    // 모바일 앱: Native Share API 사용 (공유 시트에서 카카오톡 선택)
                     try {
-                      // Kakao SDK 사용 - 카드 형식으로 공유
-                      await window.Kakao.Share.sendDefault({
-                        objectType: 'feed',
-                        content: {
-                          title: 'EcoStep',
-                          description: `Small Steps, Big Change. Why Not?\n\n초대 코드: ${userFId}`,
-                          imageUrl: 'https://ecostep-production.up.railway.app/og-image.png', // 실제 이미지 URL로 변경
-                          link: {
-                            mobileWebUrl: kakaoLink,
-                            webUrl: kakaoLink,
-                          },
-                        },
-                        buttons: [
-                          {
-                            title: '앱 다운로드',
-                            link: {
-                              mobileWebUrl: kakaoLink,
-                              webUrl: kakaoLink,
-                            },
-                          },
-                        ],
+                      await Share.share({
+                        title: shareTitle,
+                        text: shareText,
+                        url: shareUrl,
+                        dialogTitle: '친구 초대하기',
                       });
-                      console.log('Kakao share sent successfully with invite code:', userFId);
-                    } catch (kakaoError) {
-                      console.error('Kakao SDK share error:', kakaoError);
-
-                      // Kakao SDK 실패 시 네이티브 공유 API 사용
-                      const isNative = Capacitor.isNativePlatform();
-                      if (isNative) {
-                        try {
-                          await Share.share({
-                            title: 'EcoStep',
-                            text: shareText,
-                            url: kakaoLink, // 스토어 링크 사용
-                            dialogTitle: '친구 초대하기',
-                          });
-                          console.log('Native share successful');
-                        } catch (error) {
-                          console.error('Native share error:', error);
-                          if (showToast) {
-                            showToast('공유 기능을 사용할 수 없습니다.', 'error');
-                          }
+                      console.log('Native share opened successfully');
+                    } catch (error) {
+                      // 사용자가 취소한 경우 에러 표시하지 않음
+                      if (error && error.message && !error.message.includes('cancel')) {
+                        console.error('Native share error:', error);
+                        if (showToast) {
+                          showToast('공유 기능을 사용할 수 없습니다', 'error');
                         }
-                      } else if (navigator.share) {
-                        // Web Share API 사용
-                        await navigator.share({
-                          title: 'EcoStep',
-                          text: shareText,
-                          url: kakaoLink,
-                        });
-                      } else {
-                        // 최종 대안: 링크 복사
-                        navigator.clipboard.writeText(`${shareText}\n\n${kakaoLink}`).then(() => {
-                          if (showToast) {
-                            showToast('링크가 복사되었습니다. 카카오톡에서 직접 공유해주세요.', 'info');
-                          }
-                        }).catch(() => {
-                          if (showToast) {
-                            showToast('공유 기능을 사용할 수 없습니다.', 'error');
-                          }
-                        });
                       }
                     }
                   } else {
-                    // Kakao SDK가 초기화되지 않은 경우
-                    console.warn('Kakao SDK not initialized');
-                    const isNative = Capacitor.isNativePlatform();
-
-                    if (isNative) {
-                      // 네이티브 앱: Capacitor Share API 사용
+                    // 웹: Kakao SDK 시도, 실패 시 fallback
+                    if (window.Kakao && window.Kakao.isInitialized()) {
                       try {
-                        await Share.share({
-                          title: 'EcoStep',
-                          text: shareText,
-                          url: kakaoLink, // 스토어 링크 사용
-                          dialogTitle: '친구 초대하기',
+                        await window.Kakao.Share.sendDefault({
+                          objectType: 'feed',
+                          content: {
+                            title: 'EcoStep',
+                            description: `Small Steps, Big Change. Why Not?\n\n초대 코드: ${userFId}`,
+                            imageUrl: 'https://ecostep-production.up.railway.app/og-image.png',
+                            link: {
+                              mobileWebUrl: shareUrl,
+                              webUrl: shareUrl,
+                            },
+                          },
+                          buttons: [
+                            {
+                              title: '앱 다운로드',
+                              link: {
+                                mobileWebUrl: shareUrl,
+                                webUrl: shareUrl,
+                              },
+                            },
+                          ],
                         });
-                        console.log('Native share successful');
-                      } catch (error) {
-                        console.error('Native share error:', error);
-                        if (showToast) {
-                          showToast('공유 기능을 사용할 수 없습니다.', 'error');
+                        console.log('Kakao share sent successfully');
+                      } catch (kakaoError) {
+                        console.error('Kakao SDK error:', kakaoError);
+                        // Fallback: Web Share API 또는 클립보드
+                        if (navigator.share) {
+                          try {
+                            await navigator.share({
+                              title: shareTitle,
+                              text: shareText,
+                              url: shareUrl,
+                            });
+                          } catch (shareError) {
+                            if (shareError && !shareError.message?.includes('cancel')) {
+                              await navigator.clipboard.writeText(`${shareText}\n\n${shareUrl}`);
+                              if (showToast) {
+                                showToast('링크가 복사되었습니다', 'info');
+                              }
+                            }
+                          }
+                        } else {
+                          await navigator.clipboard.writeText(`${shareText}\n\n${shareUrl}`);
+                          if (showToast) {
+                            showToast('링크가 복사되었습니다', 'info');
+                          }
                         }
                       }
-                    } else if (navigator.share) {
-                      // Web Share API 사용
-                      await navigator.share({
-                        title: 'EcoStep',
-                        text: shareText,
-                        url: kakaoLink,
-                      });
                     } else {
-                      // 최종 대안: 링크 복사
-                      navigator.clipboard.writeText(`${shareText}\n\n${kakaoLink}`).then(() => {
-                        if (showToast) {
-                          showToast('링크가 복사되었습니다. 카카오톡에서 직접 공유해주세요.', 'info');
+                      // Kakao SDK 미초기화: Web Share API 또는 클립보드
+                      console.warn('Kakao SDK not initialized');
+                      if (navigator.share) {
+                        try {
+                          await navigator.share({
+                            title: shareTitle,
+                            text: shareText,
+                            url: shareUrl,
+                          });
+                        } catch (error) {
+                          if (error && !error.message?.includes('cancel')) {
+                            await navigator.clipboard.writeText(`${shareText}\n\n${shareUrl}`);
+                            if (showToast) {
+                              showToast('링크가 복사되었습니다', 'info');
+                            }
+                          }
                         }
-                      }).catch(() => {
+                      } else {
+                        await navigator.clipboard.writeText(`${shareText}\n\n${shareUrl}`);
                         if (showToast) {
-                          showToast('공유 기능을 사용할 수 없습니다.', 'error');
+                          showToast('링크가 복사되었습니다', 'info');
                         }
-                      });
+                      }
                     }
                   }
                 } catch (error) {
                   console.error('Share error:', error);
                   if (showToast) {
-                    showToast('공유 중 오류가 발생했습니다.', 'error');
+                    showToast('공유 중 오류가 발생했습니다', 'error');
                   }
                 }
               }}
@@ -386,7 +362,6 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
                 }
 
                 // 링크 버튼용 Custom URL Scheme
-                const shareText = 'Small Steps, Big Change. Why Not?';
                 let inviteLink;
 
                 // 플랫폼 감지
@@ -405,47 +380,16 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
                   inviteLink = `ecostep://invite?code=${userFId}`;
                 }
 
-                // Capacitor 모바일 앱 환경인지 확인
-                const isNative = Capacitor.isNativePlatform();
-
+                // 클립보드에 직접 복사 (공유 시트 없이)
                 try {
-                  if (isNative) {
-                    // 모바일 앱: Capacitor Share API 사용 (네이티브 공유 기능)
-                    await Share.share({
-                      title: 'EcoStep',
-                      text: shareText,
-                      url: inviteLink,
-                      dialogTitle: '친구 초대하기',
-                    });
-                    console.log('Native share successful');
-                  } else if (navigator.share) {
-                    // 웹 환경: Web Share API 사용 (브라우저 네이티브 공유)
-                    await navigator.share({
-                      title: 'EcoStep',
-                      text: shareText,
-                      url: inviteLink,
-                    });
-                    console.log('Web share successful');
-                  } else {
-                    // Fallback: URL만 복사 (메시지 텍스트 제외)
-                    await navigator.clipboard.writeText(inviteLink);
-                    if (showToast) {
-                      showToast('링크가 복사되었습니다', 'success');
-                    }
+                  await navigator.clipboard.writeText(inviteLink);
+                  if (showToast) {
+                    showToast('링크가 복사되었습니다', 'success');
                   }
-                } catch (error) {
-                  console.error('Share error:', error);
-                  // 공유 취소나 에러 시 fallback으로 URL만 복사
-                  try {
-                    await navigator.clipboard.writeText(inviteLink);
-                    if (showToast) {
-                      showToast('링크가 복사되었습니다', 'success');
-                    }
-                  } catch (clipboardError) {
-                    console.error('Clipboard error:', clipboardError);
-                    if (showToast) {
-                      showToast('공유 기능을 사용할 수 없습니다', 'error');
-                    }
+                } catch (clipboardError) {
+                  console.error('Clipboard error:', clipboardError);
+                  if (showToast) {
+                    showToast('링크 복사에 실패했습니다', 'error');
                   }
                 }
               }}

@@ -3,6 +3,8 @@ import { Share2, ChevronDown, ChevronUp, Book, Phone, ChevronRight, ArrowRight, 
 import { getTodayTip, generateDailyTip } from '../../services/claudeService';
 import { searchPlaces, filterAndSortPlaces } from '../../services/naverMapService';
 import TutorialModal from '../../components/TutorialModal';
+import { Capacitor } from '@capacitor/core';
+import { Share } from '@capacitor/share';
 
 const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, showToast, onShowChatBot, locationSharing }) => {
   const [expandedTip, setExpandedTip] = useState(null);
@@ -293,44 +295,60 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
     }
   };
 
-  const handleShareTip = () => {
+  const handleShareTip = async () => {
     if (!environmentalTip) return;
 
-    console.log('공유 버튼 클릭됨');
-    console.log('Kakao 객체:', window.Kakao);
-    console.log('Kakao.Share:', window.Kakao?.Share);
+    const isNative = Capacitor.isNativePlatform();
+    const shareTitle = 'EcoStep - ' + environmentalTip.title;
+    const shareText = `${environmentalTip.title}\n\n${environmentalTip.content}\n\n- EcoStep에서`;
 
-    if (window.Kakao && window.Kakao.Share) {
+    if (isNative) {
+      // 모바일 앱: Native Share API 사용 (공유 시트에서 카카오톡 선택)
       try {
-        console.log('카카오톡 공유 시도');
-        window.Kakao.Share.sendDefault({
-          objectType: 'feed',
-          content: {
-            title: '🌱 EcoStep - ' + environmentalTip.title,
-            description: environmentalTip.content,
-            imageUrl: 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=500',
-            link: {
-              mobileWebUrl: window.location.origin,
-              webUrl: window.location.origin,
-            },
-          },
+        await Share.share({
+          title: shareTitle,
+          text: shareText,
+          dialogTitle: '환경 상식 공유하기',
         });
       } catch (error) {
-        console.error('카카오톡 공유 에러:', error);
-        fallbackShare();
+        // 사용자가 취소한 경우 에러 표시하지 않음
+        if (error && error.message && !error.message.includes('cancel')) {
+          console.error('공유 에러:', error);
+          if (showToast) {
+            showToast('공유 기능을 사용할 수 없습니다', 'error');
+          }
+        }
       }
     } else {
-      console.log('카카오톡 사용 불가, 대체 방법 사용');
-      fallbackShare();
+      // 웹: Kakao SDK 시도
+      if (window.Kakao && window.Kakao.isInitialized() && window.Kakao.Share) {
+        try {
+          window.Kakao.Share.sendDefault({
+            objectType: 'feed',
+            content: {
+              title: '🌱 ' + shareTitle,
+              description: environmentalTip.content,
+              imageUrl: 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=500',
+              link: {
+                mobileWebUrl: window.location.origin,
+                webUrl: window.location.origin,
+              },
+            },
+          });
+        } catch (error) {
+          console.error('카카오톡 공유 에러:', error);
+          fallbackShare(shareText);
+        }
+      } else {
+        fallbackShare(shareText);
+      }
     }
   };
 
-  const fallbackShare = () => {
-    const shareText = `🌱 ${environmentalTip.title}\n\n${environmentalTip.content}\n\n- EcoStep에서`;
-    
+  const fallbackShare = (shareText) => {
     if (navigator.share) {
       navigator.share({
-        title: '🌱 EcoStep - ' + environmentalTip.title,
+        title: '🌱 EcoStep - 환경 상식',
         text: shareText,
       }).catch(err => {
         console.log('Web Share API 실패:', err);
@@ -339,7 +357,6 @@ const More = ({ isDarkMode, userPoints, setUserPoints, earnPoints, rankTheme, sh
     } else if (navigator.clipboard) {
       copyToClipboard(shareText);
     } else {
-      console.log('공유 기능을 사용할 수 없습니다');
       if (showToast) {
         showToast('공유 기능을 사용할 수 없습니다', 'error');
       }

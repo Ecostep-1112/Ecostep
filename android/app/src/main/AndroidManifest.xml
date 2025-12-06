@@ -37,14 +37,15 @@
                 <data android:scheme="ecostep" />
             </intent-filter>
 
-            <!-- App Links (https://ecostep-production.up.railway.app) -->
+            <!-- App Links - HTTPS (비활성화됨 - custom URL scheme 사용 중) -->
+            <!--
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-
                 <data android:scheme="https" android:host="ecostep-production.up.railway.app" />
             </intent-filter>
+            -->
         </activity>
 
         <provider

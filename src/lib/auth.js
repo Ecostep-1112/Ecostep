@@ -200,7 +200,11 @@ export const signInWithGoogle = async () => {
 
     // 모바일 앱에서는 인앱 브라우저 사용 (Safari View Controller)
     if (data?.url && platform !== 'web') {
-      await Browser.open({ url: data.url });
+      await Browser.open({
+        url: data.url,
+        presentationStyle: 'popover', // iOS에서 fullScreen 버그 우회
+        toolbarColor: '#ffffff'
+      });
     }
 
     return { data, error: null };
@@ -228,7 +232,11 @@ export const signInWithKakao = async () => {
 
     // 모바일 앱에서는 인앱 브라우저 사용 (Safari View Controller)
     if (data?.url && platform !== 'web') {
-      await Browser.open({ url: data.url });
+      await Browser.open({
+        url: data.url,
+        presentationStyle: 'popover', // iOS에서 fullScreen 버그 우회
+        toolbarColor: '#ffffff'
+      });
     }
 
     return { data, error: null };
@@ -255,7 +263,11 @@ export const signInWithApple = async () => {
 
     // 모바일 앱에서는 인앱 브라우저 사용 (Safari View Controller)
     if (data?.url && platform !== 'web') {
-      await Browser.open({ url: data.url });
+      await Browser.open({
+        url: data.url,
+        presentationStyle: 'popover', // iOS에서 fullScreen 버그 우회
+        toolbarColor: '#ffffff'
+      });
     }
 
     return { data, error: null };

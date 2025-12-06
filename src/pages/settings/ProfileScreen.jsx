@@ -145,14 +145,51 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
         return;
       }
 
-      // 갤러리에서만 이미지 선택 (카메라 옵션 없음)
-      const image = await CapacitorCamera.getPhoto({
-        quality: 90,
-        resultType: CameraResultType.Uri,
-        source: CameraSource.Photos, // 갤러리에서만 선택 (카메라 X)
-        width: 800,
-        height: 800
-      });
+      // iPad 여부 확인
+      const isIPad = /iPad/i.test(navigator.userAgent) ||
+        (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
+      // 카메라 플러그인 사용 가능 여부 확인
+      const platform = Capacitor.getPlatform();
+      if (platform !== 'ios' && platform !== 'android') {
+        console.log('네이티브 플랫폼이 아닙니다. 웹 파일 선택기 사용');
+        document.getElementById('profile-upload')?.click();
+        return;
+      }
+
+      let image;
+      try {
+        // 갤러리에서만 이미지 선택 (카메라 옵션 없음)
+        image = await CapacitorCamera.getPhoto({
+          quality: 90,
+          resultType: CameraResultType.Uri,
+          source: CameraSource.Photos, // 갤러리에서만 선택 (카메라 X)
+          width: 800,
+          height: 800,
+          correctOrientation: true,
+          presentationStyle: isIPad ? 'popover' : 'fullscreen', // iPad에서 popover 사용
+          promptLabelHeader: '사진 선택',
+          promptLabelPhoto: '갤러리에서 선택',
+          promptLabelPicture: '갤러리에서 선택'
+        });
+      } catch (cameraError) {
+        // 카메라 플러그인 에러 처리 (카메라 접근 시도 시 크래시 방지)
+        console.error('카메라 플러그인 에러:', cameraError);
+
+        // 사용자 취소가 아닌 경우에만 fallback
+        if (cameraError.message?.includes('cancelled') ||
+            cameraError.message?.includes('canceled') ||
+            cameraError.message?.includes('User cancelled') ||
+            cameraError.message?.includes('dismiss')) {
+          console.log('사용자가 취소함');
+          return;
+        }
+
+        // 플러그인 에러 시 웹 파일 선택기로 fallback
+        console.log('카메라 플러그인 에러, 웹 파일 선택기로 fallback');
+        document.getElementById('profile-upload')?.click();
+        return;
+      }
 
       if (!image || !image.webPath) {
         console.log('이미지 선택 취소됨');
@@ -238,10 +275,32 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
       setShowToast(true);
     } catch (error) {
       // 사용자가 취소한 경우
-      if (error.message?.includes('cancelled') || error.message?.includes('canceled')) {
+      if (error.message?.includes('cancelled') || error.message?.includes('canceled') ||
+          error.message?.includes('User cancelled') || error.message?.includes('dismiss')) {
         console.log('이미지 선택 취소됨');
         return;
       }
+
+      // 카메라 관련 에러 (iPad에서 발생 가능)
+      if (error.message?.includes('camera') || error.message?.includes('Camera') ||
+          error.message?.includes('photo') || error.message?.includes('Photo')) {
+        console.error('카메라/사진 관련 에러:', error);
+        setToastMessage('갤러리에서 사진을 선택해주세요.');
+        setToastType('warning');
+        setShowToast(true);
+        return;
+      }
+
+      // 권한 관련 에러
+      if (error.message?.includes('permission') || error.message?.includes('Permission') ||
+          error.message?.includes('denied') || error.message?.includes('Denied')) {
+        console.error('권한 에러:', error);
+        setToastMessage('사진 접근 권한이 필요합니다. 설정에서 권한을 허용해주세요.');
+        setToastType('error');
+        setShowToast(true);
+        return;
+      }
+
       console.error('프로필 이미지 선택 에러:', error);
       setToastMessage('이미지 선택 중 오류가 발생했습니다.');
       setToastType('error');

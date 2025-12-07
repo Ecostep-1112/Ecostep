@@ -82,8 +82,6 @@ const ChatBot = ({ isDarkMode, onBack, platform, isKeyboardVisible }) => {
 
     try {
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5176';
-      console.log('API_URL:', API_URL);
-      console.log('Sending message:', inputMessage);
 
       // Use Capacitor HTTP for better mobile compatibility
       const response = await CapacitorHttp.post({

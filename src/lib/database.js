@@ -305,7 +305,6 @@ export const saveUserInfo = async (userId, userInfo) => {
   } catch (error) {
     // 이메일 중복 에러(23505) 처리
     if (error.code === '23505' && error.message.includes('user_info_email_key')) {
-      console.log('이메일 중복 감지, email 필드 제외하고 업데이트 시도...');
 
       try {
         // email 필드를 제외하고 UPDATE 수행
@@ -319,7 +318,6 @@ export const saveUserInfo = async (userId, userInfo) => {
           .single();
 
         if (updateError) throw updateError;
-        console.log('사용자 정보 업데이트 완료 (email 제외)');
         return { data, error: null };
       } catch (retryError) {
         console.error('재시도 실패:', retryError);
@@ -649,7 +647,6 @@ export const completeWeeklyChallenge = async (userId, weekStartDate, challengeId
         .single();
 
       if (error) throw error;
-      console.log(`✅ 주간 챌린지 업데이트: ${newTotal}/7일 완료`);
       return { data, error: null };
     } else {
       // 새로운 주 시작 - 새 레코드 생성
@@ -670,7 +667,6 @@ export const completeWeeklyChallenge = async (userId, weekStartDate, challengeId
         .single();
 
       if (error) throw error;
-      console.log(`✅ 주간 챌린지 생성: 1/7일 완료`);
       return { data, error: null };
     }
   } catch (error) {
@@ -723,7 +719,6 @@ export const saveZeroChallengeRecord = async (userId, plasticData) => {
 
       if (error) throw error;
       result = data;
-      console.log('플라스틱 기록 업데이트:', result);
     } else {
       // 2-B. 기존 데이터가 없으면 새로 생성
       const { data, error } = await supabase
@@ -744,7 +739,6 @@ export const saveZeroChallengeRecord = async (userId, plasticData) => {
 
       if (error) throw error;
       result = data;
-      console.log('플라스틱 기록 생성:', result);
     }
 
     return { data: result, error: null };
@@ -800,13 +794,11 @@ export const saveChallengeCompletionDate = async (userId, challengeDate = null) 
     if (error) {
       // UNIQUE constraint violation (already exists for this date)
       if (error.code === '23505') {
-        console.log('오늘 챌린지 기록이 이미 존재합니다.');
         return { data: null, error: null }; // Not an error, just already recorded
       }
       throw error;
     }
 
-    console.log('챌린지 완료 날짜 저장:', dateToSave);
     return { data, error: null };
   } catch (error) {
     console.error('챌린지 날짜 저장 에러:', error);
@@ -828,7 +820,6 @@ export const getUserChallengeHistory = async (userId) => {
     // Convert to ISO string array format (matching current challengeHistory format)
     const dates = data.map(record => new Date(record.challenge_date).toISOString());
 
-    console.log(`챌린지 히스토리 로드: ${dates.length}개 기록`);
     return { data: dates, error: null };
   } catch (error) {
     console.error('챌린지 히스토리 가져오기 에러:', error);

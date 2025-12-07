@@ -54,7 +54,6 @@ const Rewards = ({
   // DataContext의 구매 목록과 props의 구매 목록 동기화 체크
   useEffect(() => {
     if (contextPurchasedFish.length > 0 && purchasedFish.length === 0) {
-      console.log('구매 목록 동기화 필요:', contextPurchasedFish);
     }
   }, [contextPurchasedFish, purchasedFish]);
 

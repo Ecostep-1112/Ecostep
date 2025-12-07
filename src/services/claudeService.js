@@ -17,12 +17,10 @@ export const generateDailyTip = async () => {
 
     // 이미 오늘 생성했으면 스킵
     if (isTipGeneratedToday()) {
-      console.log('오늘의 팁이 이미 생성되어 있습니다.');
       const existingTip = getTodayTip();
       return { data: existingTip, error: null };
     }
 
-    console.log('오늘의 새로운 팁 생성 중...');
 
     // 🧹 오래된 팁 캐시 정리 (1일 이상 된 캐시 삭제)
     cleanOldCache('env-tip', 1);
@@ -69,7 +67,6 @@ export const generateDailyTip = async () => {
     localStorage.setItem('currentDailyTip', JSON.stringify(tipData));
     localStorage.setItem('lastTipGeneratedDate', todayDate);
 
-    console.log('오늘의 팁 생성 완료:', tipData.title);
     return { data: tipData, error: null };
   } catch (error) {
     console.error('일일 팁 생성 실패:', error);
@@ -138,7 +135,6 @@ export const generateEnvironmentalTip = async (category = null) => {
     // 캐시 확인
     const cachedTip = localStorage.getItem(cacheKey);
     if (cachedTip) {
-      console.log('캐시에서 팁 로드:', category);
       try {
         return JSON.parse(cachedTip);
       } catch (error) {
@@ -148,7 +144,6 @@ export const generateEnvironmentalTip = async (category = null) => {
       }
     }
 
-    console.log('새로운 팁 생성 중:', category);
 
     // 백엔드 서버를 통해 Claude API 호출
     const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5176';

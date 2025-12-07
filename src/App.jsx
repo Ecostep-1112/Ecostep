@@ -135,7 +135,6 @@ const EcostepAppContent = () => {
     try {
       const { data, error } = await getUserInfo(userId);
       if (error) {
-        console.log('유저 정보 없음, 새로 생성 필요');
         return null;
       }
       if (data) {
@@ -154,10 +153,8 @@ const EcostepAppContent = () => {
         }
 
         // 프로필 데이터도 Supabase 데이터로 업데이트
-        console.log('DB에서 로드한 profile_image_url:', data.profile_image_url);
 
         setProfileData(prev => {
-          console.log('기존 캐시된 profileImage:', prev.profileImage);
           return {
             ...prev,
             name: data.name || prev.name,
@@ -169,7 +166,6 @@ const EcostepAppContent = () => {
           };
         });
 
-        console.log('Supabase에서 유저 정보 로드 완료:', data);
         return data;
       }
     } catch (error) {
@@ -181,10 +177,10 @@ const EcostepAppContent = () => {
   // 데이터 로딩 래퍼 - 한 번만 로드하도록 보장
   const loadDataOnce = useCallback(async (userId) => {
     if (hasLoadedData) {
-      console.log('데이터 이미 로드됨, 스킵');
+      
       return;
     }
-    console.log('데이터 로딩 시작...');
+    
     await preloadAllData(userId);
     setHasLoadedData(true);
   }, [hasLoadedData, preloadAllData]);
@@ -197,11 +193,6 @@ const EcostepAppContent = () => {
 
       // localStorage에서 마지막으로 확인한 버전 가져오기 (중복 알림 방지)
       const lastCheckedVersion = localStorage.getItem('lastCheckedVersion');
-
-      console.log('버전 체크 시작:', {
-        currentVersion,
-        lastCheckedVersion
-      });
 
       // Supabase에서 최신 버전 정보 조회
       const { data, error } = await supabase
@@ -222,18 +213,15 @@ const EcostepAppContent = () => {
       }
 
       if (!data || !data.value) {
-        console.log('버전 정보가 없습니다.');
         return;
       }
 
       const latestVersionInfo = data.value;
       const latestVersion = latestVersionInfo.version;
 
-      console.log('최신 버전:', latestVersion);
 
       // 버전 비교: 현재 버전과 다르고, 아직 이 버전에 대한 알림을 보지 않았으면
       if (currentVersion !== latestVersion && lastCheckedVersion !== latestVersion) {
-        console.log(`새 버전 발견! ${currentVersion} → ${latestVersion}`);
 
         // 알림 추가
         setNotificationsList(prev => [{
@@ -251,11 +239,8 @@ const EcostepAppContent = () => {
         // localStorage에 이 버전을 확인했다고 저장 (중복 알림 방지)
         localStorage.setItem('lastCheckedVersion', latestVersion);
 
-        console.log('버전 업데이트 알림 추가 완료');
       } else if (currentVersion === latestVersion) {
-        console.log('현재 최신 버전 사용 중');
       } else if (lastCheckedVersion === latestVersion) {
-        console.log('이미 확인한 버전입니다.');
       }
     } catch (error) {
       console.error('버전 체크 에러:', error);
@@ -269,7 +254,6 @@ const EcostepAppContent = () => {
       const { data: { user }, error: authError } = await supabase.auth.getUser();
 
       if (authError || !user) {
-        console.log('로그인된 사용자가 없습니다.');
         return;
       }
 
@@ -289,7 +273,6 @@ const EcostepAppContent = () => {
       if (error) {
         console.error('유저 정보 저장 에러:', error);
       } else {
-        console.log('Supabase에 유저 정보 저장 완료:', data);
       }
     } catch (error) {
       console.error('유저 데이터 저장 에러:', error);
@@ -506,7 +489,6 @@ const EcostepAppContent = () => {
           
           // 프로필 생성 또는 업데이트 (아이디가 없을 때만 새로 생성)
           const { profile, error: profileError } = await createOrUpdateUserProfile(user);
-          console.log('App.jsx - 프로필 생성 결과:', profile);
 
           if (profileError) {
             console.error('App.jsx - 프로필 생성 에러:', profileError);
@@ -529,7 +511,6 @@ const EcostepAppContent = () => {
             // localStorage의 userFId를 우선적으로 사용
             const finalUserFId = currentData.userFId || prev.userFId || profile?.user_f_id || '';
             if (import.meta.env.DEV) {
-              console.log('App.jsx - userId:', authUserId, 'finalUserFId:', finalUserFId);
             }
 
             return {
@@ -554,7 +535,6 @@ const EcostepAppContent = () => {
               const { data: purchasedItems } = await getUserPurchasedItems(user.id);
               const hasBackground = purchasedItems?.some(item => item.item_id?.startsWith('background_'));
               if (!hasBackground) {
-                console.log('신규 사용자: 기본 어항 추가');
                 await purchaseItem(user.id, 'background_01');
               }
             } catch (error) {
@@ -564,7 +544,6 @@ const EcostepAppContent = () => {
             // 로그인 후 대기 중인 초대 코드 처리
             const pendingCode = localStorage.getItem('pendingInviteCode');
             if (pendingCode) {
-              console.log('대기 중인 초대 코드 발견:', pendingCode);
               // localStorage에서 제거하지 않음 (검색 화면에서 사용 후 제거)
 
               // 커뮤니티 탭으로 자동 이동
@@ -572,7 +551,6 @@ const EcostepAppContent = () => {
               // 검색할 user_f_id 설정 (SearchFriends에 전달)
               setPendingInviteSearch(pendingCode);
 
-              console.log('커뮤니티 탭으로 이동 + 검색 화면 자동 열림 설정');
             }
           } else {
             console.warn('프로필이 없지만 로그인은 성공했습니다. 데이터는 나중에 로드됩니다.');
@@ -594,7 +572,6 @@ const EcostepAppContent = () => {
     const inviteCode = urlParams.get('code');
 
     if (inviteCode) {
-      console.log('초대 코드 발견:', inviteCode);
       // 초대 코드를 localStorage에 저장하여 로그인 후 처리
       localStorage.setItem('pendingInviteCode', inviteCode);
 
@@ -654,14 +631,12 @@ const EcostepAppContent = () => {
     if (isNative) {
       // 앱이 이미 열려있을 때 Deep Link로 재진입하는 경우 처리
       const removeListener = CapacitorApp.addListener('appUrlOpen', (data) => {
-        console.log('App opened with URL:', data.url);
 
         // ecostep://invite?code=userId 형식 처리
         if (data.url && data.url.includes('invite')) {
           const match = data.url.match(/code=([^&]+)/);
           if (match && match[1]) {
             const inviteCode = match[1];
-            console.log('Deep link 초대 코드 발견:', inviteCode);
             localStorage.setItem('pendingInviteCode', inviteCode);
 
             // 로그인 상태 확인 후 처리
@@ -744,7 +719,6 @@ const EcostepAppContent = () => {
   // 로그인 후 버전 체크 (Step 2 & 3 실행)
   useEffect(() => {
     if (isLoggedIn && currentUser) {
-      console.log('로그인 완료, 버전 체크 시작...');
       checkAppVersion();
     }
   }, [isLoggedIn, currentUser, checkAppVersion]);
@@ -756,7 +730,6 @@ const EcostepAppContent = () => {
     if (platform === 'android' || platform === 'ios') {
       // 앱 URL 리스너 설정 (OAuth callback 처리)
       const listener = CapacitorApp.addListener('appUrlOpen', async (data) => {
-        console.log('App opened with URL:', data.url);
 
         // com.ecostep.app://callback?... 형태의 URL 처리
         if (data.url.includes('callback')) {
@@ -770,14 +743,11 @@ const EcostepAppContent = () => {
             const refreshToken = hashParams.get('refresh_token');
 
             if (accessToken) {
-              console.log('Deep link에서 토큰 발견, 세션 설정 중...');
 
               // 인앱 브라우저 닫기 (Safari View Controller)
               try {
                 await Browser.close();
-                console.log('인앱 브라우저 닫기 완료');
               } catch (browserError) {
-                console.log('브라우저 닫기 에러 (무시):', browserError);
               }
 
               try {
@@ -793,7 +763,6 @@ const EcostepAppContent = () => {
                   return;
                 }
 
-                console.log('세션 설정 성공:', sessionData);
 
                 // 세션 설정 성공 후 사용자 상태 업데이트
                 if (sessionData?.user) {
@@ -802,7 +771,6 @@ const EcostepAppContent = () => {
 
                   // 프로필 생성 또는 업데이트
                   const { profile, error: profileError } = await createOrUpdateUserProfile(sessionData.user);
-                  console.log('Deep link - 프로필 생성 결과:', profile);
 
                   if (profileError) {
                     console.error('프로필 생성 에러:', profileError);
@@ -820,7 +788,6 @@ const EcostepAppContent = () => {
                       const { data: purchasedItems } = await getUserPurchasedItems(sessionData.user.id);
                       const hasBackground = purchasedItems?.some(item => item.item_id?.startsWith('background_'));
                       if (!hasBackground) {
-                        console.log('신규 사용자: 기본 어항 추가');
                         await purchaseItem(sessionData.user.id, 'background_01');
                       }
                     } catch (error) {
@@ -830,7 +797,6 @@ const EcostepAppContent = () => {
                     // 로그인 후 대기 중인 초대 코드 처리 (Deep link 경로)
                     const pendingCode = localStorage.getItem('pendingInviteCode');
                     if (pendingCode) {
-                      console.log('대기 중인 초대 코드 발견 (Deep link):', pendingCode);
                       // localStorage에서 제거하지 않음 (검색 화면에서 사용 후 제거)
 
                       // 커뮤니티 탭으로 자동 이동
@@ -838,7 +804,6 @@ const EcostepAppContent = () => {
                       // 검색할 user_f_id 설정 (SearchFriends에 전달)
                       setPendingInviteSearch(pendingCode);
 
-                      console.log('커뮤니티 탭으로 이동 + 검색 화면 자동 열림 설정 (Deep link)');
                     }
                   } else {
                     console.warn('프로필이 없지만 로그인은 성공했습니다. 데이터는 나중에 로드됩니다.');
@@ -962,22 +927,30 @@ const EcostepAppContent = () => {
 
   useEffect(() => {
     debouncedSaveToLocalStorage('waterQuality', waterQuality.toString());
+    // DB에서 데이터 로드 전에는 Supabase에 저장하지 않음 (기본값으로 덮어쓰기 방지)
+    if (!hasLoadedData) {
+      return;
+    }
     // Supabase에도 저장 (디바운스 적용)
     const timeoutId = setTimeout(() => {
       saveUserDataToSupabase();
     }, 1000); // 1초 디바운스
     return () => clearTimeout(timeoutId);
-  }, [waterQuality, debouncedSaveToLocalStorage]);
+  }, [waterQuality, hasLoadedData, debouncedSaveToLocalStorage]);
 
   // 포인트 변경시 localStorage + Supabase에 저장
   useEffect(() => {
     localStorage.setItem('userPoints', points.toString());
+    // DB에서 데이터 로드 전에는 Supabase에 저장하지 않음 (0으로 덮어쓰기 방지)
+    if (!hasLoadedData) {
+      return;
+    }
     // Supabase에 저장 (디바운스 적용)
     const timeoutId = setTimeout(() => {
       saveUserDataToSupabase();
     }, 1000); // 1초 디바운스
     return () => clearTimeout(timeoutId);
-  }, [points]);
+  }, [points, hasLoadedData]);
 
   // 누적 포인트 변경시 localStorage + Supabase에 저장 및 랭크 업데이트
   useEffect(() => {
@@ -986,37 +959,45 @@ const EcostepAppContent = () => {
     if (newRank !== userRanking) {
       setUserRanking(newRank);
     }
+    // DB에서 데이터 로드 전에는 Supabase에 저장하지 않음 (0으로 덮어쓰기 방지)
+    if (!hasLoadedData) {
+      return;
+    }
     // Supabase에 저장 (디바운스 적용)
     const timeoutId = setTimeout(() => {
       saveUserDataToSupabase();
     }, 1000); // 1초 디바운스
     return () => clearTimeout(timeoutId);
-  }, [totalEarnedPoints]);
+  }, [totalEarnedPoints, hasLoadedData]);
 
   // totalPlasticSaved 변경 시 localStorage + Supabase에 저장
   useEffect(() => {
     localStorage.setItem('totalPlasticSaved', totalPlasticSaved.toString());
+    // DB에서 데이터 로드 전에는 Supabase에 저장하지 않음 (0으로 덮어쓰기 방지)
+    if (!hasLoadedData) {
+      return;
+    }
     // Supabase에 저장 (디바운스 적용)
     const timeoutId = setTimeout(() => {
       saveUserDataToSupabase();
     }, 1000); // 1초 디바운스
     return () => clearTimeout(timeoutId);
-  }, [totalPlasticSaved]);
+  }, [totalPlasticSaved, hasLoadedData]);
 
   // consecutiveDays 변경 시 localStorage + Supabase에 저장
   useEffect(() => {
     localStorage.setItem('consecutiveDays', consecutiveDays.toString());
+    // DB에서 데이터 로드 전에는 Supabase에 저장하지 않음 (0으로 덮어쓰기 방지)
+    if (!hasLoadedData) {
+      return;
+    }
     // Supabase에 저장 (디바운스 적용)
     const timeoutId = setTimeout(() => {
       saveUserDataToSupabase();
     }, 1000); // 1초 디바운스
     return () => clearTimeout(timeoutId);
-  }, [consecutiveDays]);
+  }, [consecutiveDays, hasLoadedData]);
 
-  // 프로필 데이터 변경 감지 (디버깅용)
-  useEffect(() => {
-    console.log('profileData 업데이트됨:', profileData);
-  }, [profileData]);
 
   useEffect(() => {
     if (lastChallengeDate) {

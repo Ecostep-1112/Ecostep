@@ -91,10 +91,11 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
   const myRank = friendsList.findIndex(f => f.id === currentUserFId) + 1;
   const isInTop3 = myRank <= 3 && myRank > 0;
 
-  // 컴포넌트 마운트 시 데이터 새로고침
+  // 컴포넌트 마운트 시 데이터 새로고침 (탭 전환 시마다 실행)
   useEffect(() => {
     // 전체 사용자 목록과 친구 목록 새로고침
     const refreshData = async () => {
+      // 항상 최신 데이터를 DB에서 가져옴
       await refreshUsers();
       if (currentUserId) {
         await refreshFriends(currentUserId);
@@ -117,7 +118,7 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
     };
 
     refreshData();
-  }, [currentUserId]); // currentUserId가 변경될 때마다 실행
+  }, []); // 컴포넌트 마운트 시 실행
 
   // Initialize Kakao SDK when component mounts
   useEffect(() => {

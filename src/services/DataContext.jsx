@@ -56,7 +56,7 @@ export const DataProvider = ({ children }) => {
 
       if (error) throw error;
 
-      const formattedUsers = data.map(user => ({
+      const formattedUsers = (data || []).map(user => ({
         id: user.user_f_id || user.user_id, // user_f_id 우선, 없으면 user_id
         name: user.name,
         profileImage: user.profile_image_url || null,
@@ -67,7 +67,6 @@ export const DataProvider = ({ children }) => {
       return formattedUsers;
     } catch (error) {
       console.error('사용자 목록 로드 실패:', error);
-      // 에러 발생 시 빈 배열 반환
       setAllUsers([]);
       return [];
     }
@@ -81,17 +80,19 @@ export const DataProvider = ({ children }) => {
     }
 
     try {
-      // user_id가 현재 사용자인 친구 관계
+      // user_id가 현재 사용자인 친구 관계 (status가 accepted인 것만)
       const { data: friendsAsUser, error: error1 } = await supabase
         .from('user_friend')
         .select('friend_id')
-        .eq('user_id', userId);
+        .eq('user_id', userId)
+        .eq('status', 'accepted');
 
-      // friend_id가 현재 사용자인 친구 관계
+      // friend_id가 현재 사용자인 친구 관계 (상대방이 나를 추가한 경우, status가 accepted인 것만)
       const { data: friendsAsFriend, error: error2 } = await supabase
         .from('user_friend')
         .select('user_id')
-        .eq('friend_id', userId);
+        .eq('friend_id', userId)
+        .eq('status', 'accepted');
 
       if (error1 || error2) throw error1 || error2;
 
@@ -100,6 +101,11 @@ export const DataProvider = ({ children }) => {
         ...(friendsAsUser || []).map(f => f.friend_id),
         ...(friendsAsFriend || []).map(f => f.user_id)
       ]);
+
+      if (friendIds.size === 0) {
+        setFriendsList([]);
+        return [];
+      }
 
       // 친구들의 정보를 user_info에서 가져오기 (amount 기준 내림차순)
       const { data: friendsInfo, error: error3 } = await supabase

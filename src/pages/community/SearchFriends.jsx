@@ -72,7 +72,6 @@ const SearchFriends = ({ isDarkMode, onBack, userRanking = 'bronze', showToast, 
   // 초기 검색어가 있으면 자동으로 검색 실행
   useEffect(() => {
     if (initialSearchTerm && allUsers.length > 0 && !hasSearched) {
-      console.log('초기 검색어로 자동 검색 실행:', initialSearchTerm);
       handleSearch();
       // localStorage에서 pendingInviteCode 제거
       localStorage.removeItem('pendingInviteCode');
@@ -103,10 +102,6 @@ const SearchFriends = ({ isDarkMode, onBack, userRanking = 'bronze', showToast, 
 
     // 디버깅용 로그
     if (import.meta.env.DEV) {
-      console.log('User F_ID:', userFId);
-      console.log('User Name:', userName);
-      console.log('Search Term:', searchTerm);
-      console.log('All Users:', allUsers);
     }
 
     // 프로필 아이디나 이름이 설정되지 않은 경우

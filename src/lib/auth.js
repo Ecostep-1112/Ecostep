@@ -35,7 +35,6 @@ const generateRandomUserId = () => {
 const checkUserFIdAvailability = async (userFId) => {
   try {
     if (import.meta.env.DEV) {
-      console.log('중복 확인할 아이디:', userFId);
     }
     const { data, error } = await supabase
       .from('user_info')
@@ -49,7 +48,6 @@ const checkUserFIdAvailability = async (userFId) => {
       return true;
     }
 
-    console.log('중복 확인 결과:', data);
     // 데이터가 없으면 사용 가능
     return !data;
   } catch (error) {
@@ -84,7 +82,6 @@ const generateUniqueUserFId = async () => {
 export const createOrUpdateUserProfile = async (user) => {
   try {
     if (import.meta.env.DEV) {
-      console.log('프로필 생성/업데이트 시작:', user.id);
     }
 
     // 기존 프로필 확인 (user_info 테이블의 user_id는 auth.uid()::text)
@@ -95,14 +92,12 @@ export const createOrUpdateUserProfile = async (user) => {
       .maybeSingle(); // single() 대신 maybeSingle() 사용
 
     if (import.meta.env.DEV) {
-      console.log('기존 프로필:', existingProfile);
     }
 
     if (existingProfile) {
       // 기존 프로필이 있지만 user_f_id가 없는 경우 자동 생성
       if (!existingProfile.user_f_id) {
         if (import.meta.env.DEV) {
-          console.log('user_f_id 없음, 자동 생성 시작');
         }
         const newUserFId = await generateUniqueUserFId();
 
@@ -119,14 +114,12 @@ export const createOrUpdateUserProfile = async (user) => {
         }
 
         if (import.meta.env.DEV) {
-          console.log('user_f_id 자동 생성 완료:', newUserFId);
         }
         return { profile: updatedProfile, error: null };
       }
 
       // 이미 프로필이 있으면 반환
       if (import.meta.env.DEV) {
-        console.log('기존 프로필 있음:', existingProfile.user_id);
       }
       return { profile: existingProfile, error: null };
     }
@@ -146,7 +139,6 @@ export const createOrUpdateUserProfile = async (user) => {
       // 새로 생성된 프로필에 user_f_id가 없으면 추가
       if (!retryProfile.user_f_id) {
         if (import.meta.env.DEV) {
-          console.log('새 프로필에 user_f_id 추가');
         }
         const newUserFId = await generateUniqueUserFId();
 
@@ -159,7 +151,6 @@ export const createOrUpdateUserProfile = async (user) => {
 
         if (!updateError && updatedProfile) {
           if (import.meta.env.DEV) {
-            console.log('user_f_id 자동 생성 완료:', newUserFId);
           }
           return { profile: updatedProfile, error: null };
         }
@@ -217,7 +208,6 @@ export const signInWithGoogle = async () => {
 // 카카오 로그인
 export const signInWithKakao = async () => {
   try {
-    console.log('카카오 로그인 시작');
     const platform = Capacitor.getPlatform();
 
     const { data, error } = await supabase.auth.signInWithOAuth({
@@ -301,7 +291,6 @@ export const signOut = async () => {
       localStorage.removeItem(key);
     });
 
-    console.log('✅ 로그아웃 완료 - 챌린지 데이터 클리어됨');
     return { error: null };
   } catch (error) {
     console.error('로그아웃 에러:', error);
@@ -342,7 +331,6 @@ export const onAuthStateChange = (callback) => {
 export const updateUserFId = async (newUserFId) => {
   try {
     if (import.meta.env.DEV) {
-      console.log('user_f_id 업데이트 시작:', newUserFId);
     }
 
     // 입력값 검증
@@ -378,7 +366,6 @@ export const updateUserFId = async (newUserFId) => {
     }
 
     if (import.meta.env.DEV) {
-      console.log('user_f_id 저장 성공:', data);
     }
 
     return { success: true, data: { user_f_id: trimmedUserFId }, error: null };
@@ -484,7 +471,6 @@ export const getUserProfile = async () => {
 // 초대 코드 처리 함수
 export const processInviteCode = async (inviteCode) => {
   try {
-    console.log('초대 코드 처리 시작:', inviteCode);
 
     // 현재 로그인한 사용자 가져오기
     const { data: { user }, error: authError } = await supabase.auth.getUser();
@@ -516,7 +502,6 @@ export const processInviteCode = async (inviteCode) => {
     }
 
     if (import.meta.env.DEV) {
-      console.log('초대자 찾음:', inviter.user_f_id);
     }
 
     // 이미 친구인지 확인
@@ -590,7 +575,6 @@ export const processInviteCode = async (inviteCode) => {
       // 포인트는 이미 지급되었으므로 에러는 무시하고 성공 처리
     }
 
-    console.log('초대 코드 처리 완료');
     return { success: true, inviterName: inviter.user_f_id, error: null };
   } catch (error) {
     console.error('초대 코드 처리 에러:', error);

@@ -356,7 +356,6 @@ const Challenge = ({
           setPlasticRecords(finalRecords);
           localStorage.setItem('plasticRecords', JSON.stringify(finalRecords));
 
-          console.log('플라스틱 기록 로드 완료:', finalRecords.length, '개 (DB:', formattedRecords.length, ', Local:', localOnlyRecords.length, ')');
         }
       } catch (error) {
         console.error('플라스틱 기록 로드 에러:', error);
@@ -386,7 +385,6 @@ const Challenge = ({
         }
 
         if (data) {
-          console.log('✅ DB에서 주간 챌린지 로드:', data);
 
           // ⚠️ DB에는 total_completed만 있고 요일별 정보가 없음
           // 따라서 정확한 복원은 불가능 - 앞쪽부터 채우기
@@ -411,10 +409,7 @@ const Challenge = ({
             return updatedProgress;
           });
 
-          console.log(`   - 챌린지: ${data.content}`);
-          console.log(`   - 완료 횟수: ${data.total_completed}/7`);
         } else {
-          console.log('📭 DB에 이번 주 챌린지 데이터 없음');
         }
       } catch (error) {
         console.error('주간 챌린지 로드 에러:', error);
@@ -429,14 +424,7 @@ const Challenge = ({
     const checkMonday = () => {
       const now = new Date(testDate || new Date());
       const dayOfWeek = now.getDay();
-      
-      console.log('[제로챌린지] 체크 시작:', {
-        요일: dayOfWeek,
-        날짜: now.toISOString(),
-        plasticGoal,
-        setNotificationsList: !!setNotificationsList
-      });
-      
+
       // 🔄 개선: goalSetDate 기준으로 주간 리셋 (localStorage lastMondayCheck 불필요)
       if (goalSetDate) {
         const todayString = toDateString(now);
@@ -445,23 +433,11 @@ const Challenge = ({
 
         // 목표 설정일이 이번 주 월요일보다 이전이면 (= 지난 주에 설정됨)
         if (goalSetString < thisMonday) {
-          console.log('[제로챌린지] 새로운 주 감지 - 목표 리셋:', {
-            목표설정일: goalSetString,
-            이번주월요일: thisMonday,
-            오늘: todayString
-          });
-
           // 플라스틱 목표가 있었다면 달성률 체크
           if (plasticGoal && plasticGoal > 0) {
             // 지난 주 데이터로 달성률 계산
             const weeklyUsage = getWeeklyPlasticUsage(true); // true = 지난 주 데이터
             const achievementPercent = Math.max(0, 100 - (weeklyUsage / plasticGoal * 100));
-
-            console.log('[제로챌린지] 달성률 계산:', {
-              목표: plasticGoal,
-              지난주_사용량: weeklyUsage,
-              달성률: achievementPercent
-            });
 
             // 달성률 1% 이상이면 알림
             if (achievementPercent >= 1) {
@@ -476,19 +452,11 @@ const Challenge = ({
                   claimed: false,
                   pointsAmount: 700
                 };
-                console.log('[제로챌린지] 알림 생성:', newNotification);
                 setNotificationsList(prev => {
-                  console.log('[제로챌린지] 알림 추가 전:', prev);
                   return [newNotification, ...prev];
                 });
-              } else {
-                console.log('[제로챌린지] setNotificationsList가 없음!');
               }
-            } else {
-              console.log('[제로챌린지] 달성 실패 (달성률 1% 미만)');
             }
-          } else {
-            console.log('[제로챌린지] 목표 없음 또는 0');
           }
 
           // 새로운 주 시작 - 목표 리셋
@@ -499,7 +467,6 @@ const Challenge = ({
           localStorage.removeItem('plasticGoal');
           setSelectedChallenge(null);
 
-          console.log('[제로챌린지] 주간 목표 리셋 완료');
         }
       }
     };
@@ -681,8 +648,6 @@ const Challenge = ({
           if (error) {
             console.error('주간 챌린지 기록 저장 실패:', error);
           } else {
-            console.log('✅ 주간 챌린지 기록 저장 성공:', data);
-            console.log(`   - 이번 주 완료 횟수: ${data.total_completed}/7`);
           }
         } else {
           console.warn('로그인된 사용자가 없습니다.');
@@ -1828,7 +1793,6 @@ const Challenge = ({
                                       tag: 'custom',
                                       plastic_amount: parseInt(customPlasticWeight)
                                     });
-                                  console.log('커스텀 아이템을 zero_chal_item에 추가했습니다');
                                 } catch (error) {
                                   console.error('커스텀 아이템 추가 실패:', error);
                                 }
@@ -1886,7 +1850,6 @@ const Challenge = ({
                                     tag: 'custom',
                                     plastic_amount: parseInt(customPlasticWeight)
                                   });
-                                console.log('커스텀 아이템을 zero_chal_item에 추가했습니다');
                               } catch (error) {
                                 console.error('커스텀 아이템 추가 실패:', error);
                               }
@@ -2142,7 +2105,6 @@ const Challenge = ({
                           if (error) {
                             console.error('플라스틱 기록 저장 에러:', error);
                           } else {
-                            console.log('플라스틱 기록 저장 성공:', data);
                             // DB에서 반환된 record_id를 newRecord에 추가
                             if (data && data.record_id) {
                               newRecord.recordId = data.record_id;

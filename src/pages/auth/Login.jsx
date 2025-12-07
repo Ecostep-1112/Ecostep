@@ -93,7 +93,6 @@ function Login() {
 
   const handleLogin = async (provider) => {
     if (import.meta.env.DEV) {
-      console.log(`${provider} 로그인 시도`);
     }
     setIsLoading(true);
     setError(null);
@@ -103,29 +102,24 @@ function Login() {
       
       switch(provider) {
         case 'Google':
-          console.log('구글 로그인 함수 호출');
           result = await signInWithGoogle();
           break;
         case 'Kakao':
-          console.log('카카오 로그인 함수 호출');
           result = await signInWithKakao();
           break;
         case 'Apple':
-          console.log('애플 로그인 함수 호출');
           result = await signInWithApple();
           break;
         default:
           throw new Error('지원하지 않는 로그인 방식입니다.');
       }
       
-      console.log('로그인 결과:', result);
       
       if (result.error) {
         throw result.error;
       }
       
       // 로그인 성공 시 처리는 리다이렉트 후 App.jsx에서 처리됨
-      console.log('로그인 성공, 리다이렉트 대기중...');
     } catch (err) {
       console.error(`${provider} 로그인 에러:`, err);
       setError(err.message || '로그인 중 오류가 발생했습니다.');

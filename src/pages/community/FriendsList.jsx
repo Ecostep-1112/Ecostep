@@ -135,9 +135,10 @@ const FriendsList = ({ isDarkMode, onBack, isGlobalRanking = false, currentUserI
     friend.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  // 컴포넌트 마운트 시 데이터 새로고침
+  // 컴포넌트 마운트 시 데이터 새로고침 (페이지 열릴 때마다 실행)
   useEffect(() => {
     const refreshData = async () => {
+      // 항상 최신 데이터를 DB에서 가져옴
       await refreshUsers();
       if (currentUserId) {
         await refreshFriends(currentUserId);
@@ -160,7 +161,7 @@ const FriendsList = ({ isDarkMode, onBack, isGlobalRanking = false, currentUserI
     };
 
     refreshData();
-  }, [currentUserId]); // currentUserId가 변경될 때마다 실행
+  }, []); // 컴포넌트 마운트 시 실행
 
   const bgColor = isDarkMode ? 'bg-gray-900' : 'bg-white';
   const textColor = isDarkMode ? 'text-white' : 'text-gray-900';

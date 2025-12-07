@@ -45,8 +45,6 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
         try {
           // URL 디코딩 및 파싱
           const imageUrl = profileImage.includes('%2F') ? decodeURIComponent(profileImage) : profileImage;
-          console.log('Original URL:', profileImage);
-          console.log('Decoded URL:', imageUrl);
 
           // 여러 URL 패턴 시도
           // 패턴 1: /Profile_pic/user_id/file.jpg
@@ -69,7 +67,6 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
           }
 
           if (filePath) {
-            console.log('Extracted file path:', filePath);
 
             // Storage에서 삭제
             const { data: deleteData, error: deleteError } = await supabase.storage
@@ -84,7 +81,6 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
                 console.warn('파일 삭제에 실패했지만 계속 진행합니다.');
               }
             } else {
-              console.log('Storage 삭제 성공:', deleteData);
             }
           } else {
             console.warn('파일 경로를 추출할 수 없습니다. DB만 업데이트합니다.');
@@ -121,7 +117,6 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
         return updated;
       });
 
-      console.log('프로필 이미지 삭제 완료');
       setToastMessage('프로필 이미지가 삭제되었습니다.');
       setToastType('success');
       setShowToast(true);
@@ -152,7 +147,6 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
       // 카메라 플러그인 사용 가능 여부 확인
       const platform = Capacitor.getPlatform();
       if (platform !== 'ios' && platform !== 'android') {
-        console.log('네이티브 플랫폼이 아닙니다. 웹 파일 선택기 사용');
         document.getElementById('profile-upload')?.click();
         return;
       }
@@ -181,22 +175,18 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
             cameraError.message?.includes('canceled') ||
             cameraError.message?.includes('User cancelled') ||
             cameraError.message?.includes('dismiss')) {
-          console.log('사용자가 취소함');
           return;
         }
 
         // 플러그인 에러 시 웹 파일 선택기로 fallback
-        console.log('카메라 플러그인 에러, 웹 파일 선택기로 fallback');
         document.getElementById('profile-upload')?.click();
         return;
       }
 
       if (!image || !image.webPath) {
-        console.log('이미지 선택 취소됨');
         return;
       }
 
-      console.log('선택된 이미지:', image.webPath);
 
       // 미리보기 표시
       setProfileData(prev => ({
@@ -219,7 +209,6 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
 
       const fileExt = image.format || 'jpeg';
       const fileName = `${user.id}/${Date.now()}.${fileExt}`;
-      console.log('이미지 업로드 시작:', fileName, 'Size:', blob.size, 'bytes');
 
       // Supabase Storage에 업로드
       const { data: uploadData, error: uploadError } = await supabase.storage
@@ -238,7 +227,6 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
         return;
       }
 
-      console.log('이미지 업로드 성공:', uploadData);
 
       // 공개 URL 가져오기
       const { data: urlData } = supabase.storage
@@ -246,7 +234,6 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
         .getPublicUrl(fileName);
 
       const publicUrl = urlData.publicUrl;
-      console.log('공개 URL:', publicUrl);
 
       // DB에 URL 저장
       const { error: dbError } = await supabase
@@ -269,7 +256,6 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
         return updated;
       });
 
-      console.log('프로필 이미지 DB 저장 완료');
       setToastMessage('프로필 이미지가 업데이트되었습니다.');
       setToastType('success');
       setShowToast(true);
@@ -277,7 +263,6 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
       // 사용자가 취소한 경우
       if (error.message?.includes('cancelled') || error.message?.includes('canceled') ||
           error.message?.includes('User cancelled') || error.message?.includes('dismiss')) {
-        console.log('이미지 선택 취소됨');
         return;
       }
 
@@ -345,7 +330,6 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
 
         // 고유한 파일명 생성 (user_id/timestamp)
         const fileName = `${user.id}/${Date.now()}.${fileExt}`;
-        console.log('이미지 업로드 시작:', fileName, 'Size:', file.size, 'bytes');
 
         // 먼저 로컬 미리보기 표시 (즉시 피드백)
         const reader = new FileReader();
@@ -358,7 +342,6 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
         reader.readAsDataURL(file);
 
         // Supabase Storage에 업로드
-        console.log('Uploading to bucket: Profile_pic');
         const { data: uploadData, error: uploadError } = await supabase.storage
           .from('Profile_pic')
           .upload(fileName, file, {
@@ -375,7 +358,6 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
           return;
         }
 
-        console.log('이미지 업로드 성공:', uploadData);
 
         // 업로드된 이미지의 공개 URL 가져오기
         const { data: urlData } = supabase.storage
@@ -383,7 +365,6 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
           .getPublicUrl(fileName);
 
         const publicUrl = urlData.publicUrl;
-        console.log('공개 URL:', publicUrl);
 
         // DB에 URL 저장
         const { error: dbError } = await supabase
@@ -407,11 +388,9 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
           };
           // localStorage 즉시 업데이트
           localStorage.setItem('profileData', JSON.stringify(updated));
-          console.log('프로필 이미지 localStorage 업데이트:', updated);
           return updated;
         });
 
-        console.log('프로필 이미지 DB 저장 완료');
         setToastMessage('프로필 이미지가 업데이트되었습니다.');
         setToastType('success');
         setShowToast(true);
@@ -771,19 +750,14 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
     const handleUserIdSave = async () => {
       // 이미 처리 중이면 무시
       if (isLoading) {
-        console.log('이미 저장 처리 중');
         return;
       }
 
-      console.log('=== 아이디 저장 시작 ===');
-      console.log('입력값:', inputValue);
 
       const trimmedValue = inputValue.trim();
-      console.log('trim된 값:', trimmedValue);
 
       // 유효성 검사
       if (!trimmedValue) {
-        console.log('빈 값으로 인한 에러');
         setError('invalid');
         if (showToast) {
           showToast('아이디를 입력해주세요.', 'error');
@@ -793,7 +767,6 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
 
       // 아이디는 이미 입력 시점에 필터링되므로 길이만 체크
       if (trimmedValue.length < 1 || trimmedValue.length > 15) {
-        console.log('길이 조건 미충족:', trimmedValue.length);
         setError('invalid');
         if (showToast) {
           showToast('아이디는 1~15자여야 합니다.', 'error');
@@ -803,23 +776,18 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
 
       // 현재 값과 동일한지 체크
       if (trimmedValue === value) {
-        console.log('기존 값과 동일함');
         onClose();
         return;
       }
 
-      console.log('유효성 검사 통과, 저장 시도');
       setIsLoading(true);
       setError('');
 
       try {
         // 아이디 업데이트
-        console.log('아이디 업데이트 시작');
         const { success, error: updateError, data } = await updateUserFId(trimmedValue);
-        console.log('업데이트 결과:', { success, error: updateError });
 
         if (success) {
-          console.log('저장 성공');
 
           // 상태 업데이트
           onSave(trimmedValue);
@@ -1173,7 +1141,6 @@ const ProfileScreen = ({ isDarkMode, setShowProfile, profileData, setProfileData
                   setToastType('error');
                   setShowToast(true);
                 } else {
-                  console.log('생년월일 저장 성공');
                 }
               }
             } catch (error) {

@@ -144,6 +144,5 @@ export const cleanOldCache = (prefix, maxAgeDays = 1) => {
   keysToRemove.forEach(key => localStorage.removeItem(key));
 
   if (keysToRemove.length > 0) {
-    console.log(`🧹 ${keysToRemove.length}개의 오래된 캐시 삭제됨`);
   }
 };

@@ -70,6 +70,192 @@ app.get('/privacy', (req, res) => {
   res.sendFile(join(__dirname, '../docs/privacy-policy.html'));
 });
 
+// Invite page - Smart App Banner style redirect
+// 앱이 설치되어 있으면 딥링크로 열고, 없으면 스토어로 이동
+app.get('/invite', (req, res) => {
+  const { code } = req.query;
+  const userAgent = req.headers['user-agent'] || '';
+  const isAndroid = /android/i.test(userAgent);
+  const isIOS = /iphone|ipad|ipod/i.test(userAgent);
+
+  // 스토어 URL
+  const playStoreUrl = 'https://play.google.com/store/apps/details?id=com.ecostep.app';
+  const appStoreUrl = 'https://apps.apple.com/app/ecostep/id6746597882';
+
+  // 딥링크 스킴
+  const deepLink = `ecostep://invite?code=${code || ''}`;
+
+  // Intent URL (Android용 - 앱 없으면 Play Store로 자동 이동)
+  const intentUrl = `intent://invite?code=${code || ''}#Intent;scheme=ecostep;package=com.ecostep.app;S.browser_fallback_url=${encodeURIComponent(playStoreUrl)};end`;
+
+  // 플랫폼별 스토어 URL 선택
+  const storeUrl = isIOS ? appStoreUrl : playStoreUrl;
+
+  const html = `
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EcoStep 친구 초대</title>
+  <meta property="og:title" content="EcoStep 친구 초대" />
+  <meta property="og:description" content="Small Steps, Big Change. Why Not? 친구가 EcoStep에서 함께하고 싶어해요!" />
+  <meta property="og:image" content="https://ecostep-production.up.railway.app/og-image.png" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 50%, #2563eb 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      color: white;
+    }
+    .container {
+      text-align: center;
+      max-width: 320px;
+    }
+    .logo {
+      width: 80px;
+      height: 80px;
+      background: white;
+      border-radius: 20px;
+      margin: 0 auto 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+    }
+    h1 {
+      font-size: 24px;
+      margin-bottom: 8px;
+    }
+    .subtitle {
+      font-size: 14px;
+      opacity: 0.9;
+      margin-bottom: 24px;
+    }
+    .invite-box {
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(10px);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 24px;
+    }
+    .invite-text {
+      font-size: 14px;
+      margin-bottom: 12px;
+    }
+    .invite-code {
+      font-size: 18px;
+      font-weight: bold;
+      background: rgba(255,255,255,0.2);
+      padding: 8px 16px;
+      border-radius: 8px;
+      display: inline-block;
+    }
+    .button {
+      display: block;
+      width: 100%;
+      padding: 16px;
+      background: white;
+      color: #2563eb;
+      font-size: 16px;
+      font-weight: 600;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      text-decoration: none;
+      margin-bottom: 12px;
+    }
+    .button:active {
+      transform: scale(0.98);
+    }
+    .button.secondary {
+      background: rgba(255,255,255,0.2);
+      color: white;
+    }
+    .loading {
+      font-size: 14px;
+      opacity: 0.8;
+      margin-top: 16px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="logo">🌍</div>
+    <h1>EcoStep</h1>
+    <p class="subtitle">Small Steps, Big Change. Why Not?</p>
+
+    <div class="invite-box">
+      <p class="invite-text">친구가 EcoStep에서 함께하고 싶어해요!</p>
+      ${code ? `<div class="invite-code">친구 아이디: ${code}</div>` : ''}
+    </div>
+
+    <a href="${storeUrl}" class="button" id="openBtn">앱에서 열기</a>
+    <a href="${storeUrl}" class="button secondary">앱 다운로드</a>
+
+    <p class="loading" id="loadingText">앱을 여는 중...</p>
+  </div>
+
+  <script>
+    (function() {
+      var isAndroid = ${isAndroid};
+      var isIOS = ${isIOS};
+      var deepLink = '${deepLink}';
+      var intentUrl = '${intentUrl}';
+      var storeUrl = '${storeUrl}';
+      var loadingText = document.getElementById('loadingText');
+      var openBtn = document.getElementById('openBtn');
+
+      // 앱 열기 시도
+      function tryOpenApp() {
+        var startTime = Date.now();
+
+        if (isAndroid) {
+          // Android: Intent URL 사용 (앱 없으면 자동으로 Play Store 이동)
+          window.location.href = intentUrl;
+        } else if (isIOS) {
+          // iOS: 딥링크 시도 후 타이머로 스토어 이동
+          window.location.href = deepLink;
+
+          setTimeout(function() {
+            // 2초 후에도 페이지가 보이면 앱이 없는 것
+            if (Date.now() - startTime < 2500) {
+              loadingText.textContent = '앱이 설치되어 있지 않습니다. 스토어로 이동합니다...';
+              setTimeout(function() {
+                window.location.href = storeUrl;
+              }, 500);
+            }
+          }, 2000);
+        } else {
+          // 데스크톱: 스토어 페이지로 안내
+          loadingText.textContent = '모바일에서 접속해주세요.';
+        }
+      }
+
+      // 버튼 클릭 이벤트
+      openBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        tryOpenApp();
+      });
+
+      // 페이지 로드 시 자동으로 앱 열기 시도
+      setTimeout(tryOpenApp, 500);
+    })();
+  </script>
+</body>
+</html>
+  `;
+
+  res.setHeader('Content-Type', 'text/html');
+  res.send(html);
+});
+
 // Claude API configuration
 const CLAUDE_API_KEY = process.env.CLAUDE_API_KEY;
 

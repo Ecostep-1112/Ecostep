@@ -133,12 +133,10 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
         if (!window.Kakao.isInitialized()) {
           try {
             window.Kakao.init(kakaoApiKey);
-            console.log('Kakao SDK initialized successfully');
           } catch (error) {
             console.error('Failed to initialize Kakao SDK:', error);
           }
         } else {
-          console.log('Kakao SDK already initialized');
         }
       } else {
         console.warn('Kakao SDK not loaded yet, retrying...');
@@ -153,7 +151,6 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
   // 초대 코드로 검색 화면 자동 열기
   useEffect(() => {
     if (pendingInviteSearch) {
-      console.log('초대 코드로 검색 화면 자동 열기:', pendingInviteSearch);
       setInitialSearchTerm(pendingInviteSearch);
       setShowSearchPage(true);
       // pendingInviteSearch 상태 초기화 (한 번만 실행)
@@ -201,22 +198,13 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
 
                   // 공유 콘텐츠 설정
                   const shareTitle = 'EcoStep';
-                  const shareText = `Small Steps, Big Change. Why Not?\n\n초대 코드: ${userFId}`;
+                  const shareText = `Small Steps, Big Change. Why Not?\n\n친구 아이디: ${userFId}`;
 
                   // 플랫폼 감지
-                  const isAndroid = /android/i.test(navigator.userAgent);
-                  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
                   const isNative = Capacitor.isNativePlatform();
 
-                  // 스토어 링크 설정
-                  let shareUrl;
-                  if (isAndroid) {
-                    shareUrl = 'https://play.google.com/store/apps/details?id=com.ecostep.app';
-                  } else if (isIOS) {
-                    shareUrl = 'https://apps.apple.com/app/ecostep/id0000000000'; // TODO: 실제 iOS 앱 ID로 변경
-                  } else {
-                    shareUrl = 'https://play.google.com/store/apps/details?id=com.ecostep.app';
-                  }
+                  // 초대 웹 페이지 URL (앱이 없으면 스토어로 자동 이동)
+                  const shareUrl = `https://ecostep-production.up.railway.app/invite?code=${userFId}`;
 
                   if (isNative) {
                     // 모바일 앱: Native Share API 사용 (공유 시트에서 카카오톡 선택)
@@ -227,7 +215,6 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
                         url: shareUrl,
                         dialogTitle: '친구 초대하기',
                       });
-                      console.log('Native share opened successfully');
                     } catch (error) {
                       // 사용자가 취소한 경우 에러 표시하지 않음
                       if (error && error.message && !error.message.includes('cancel')) {
@@ -244,8 +231,8 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
                         await window.Kakao.Share.sendDefault({
                           objectType: 'feed',
                           content: {
-                            title: 'EcoStep',
-                            description: `Small Steps, Big Change. Why Not?\n\n초대 코드: ${userFId}`,
+                            title: 'EcoStep 친구 초대',
+                            description: `Small Steps, Big Change. Why Not?\n\n친구 아이디: ${userFId}`,
                             imageUrl: 'https://ecostep-production.up.railway.app/og-image.png',
                             link: {
                               mobileWebUrl: shareUrl,
@@ -254,7 +241,7 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
                           },
                           buttons: [
                             {
-                              title: '앱 다운로드',
+                              title: '친구 추가하기',
                               link: {
                                 mobileWebUrl: shareUrl,
                                 webUrl: shareUrl,
@@ -262,7 +249,6 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
                             },
                           ],
                         });
-                        console.log('Kakao share sent successfully');
                       } catch (kakaoError) {
                         console.error('Kakao SDK error:', kakaoError);
                         // Fallback: Web Share API 또는 클립보드
@@ -361,24 +347,8 @@ const Community = ({ isDarkMode, onShowFriendsList, onShowGlobalList, showToast,
                   return;
                 }
 
-                // 링크 버튼용 Custom URL Scheme
-                let inviteLink;
-
-                // 플랫폼 감지
-                const isAndroid = /android/i.test(navigator.userAgent);
-                const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
-
-                if (isAndroid) {
-                  // Android: Intent URL 사용 (앱 없으면 Play Store로 자동 이동)
-                  const playStoreUrl = 'https://play.google.com/store/apps/details?id=com.ecostep.app';
-                  inviteLink = `intent://invite?code=${userFId}#Intent;scheme=ecostep;package=com.ecostep.app;S.browser_fallback_url=${encodeURIComponent(playStoreUrl)};end`;
-                } else if (isIOS) {
-                  // iOS: Custom Scheme URL
-                  inviteLink = `ecostep://invite?code=${userFId}`;
-                } else {
-                  // 데스크톱 또는 기타: Custom Scheme URL
-                  inviteLink = `ecostep://invite?code=${userFId}`;
-                }
+                // 초대 웹 페이지 URL (앱이 없으면 스토어로 자동 이동)
+                const inviteLink = `https://ecostep-production.up.railway.app/invite?code=${userFId}`;
 
                 // 클립보드에 직접 복사 (공유 시트 없이)
                 try {

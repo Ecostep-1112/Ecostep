@@ -202,13 +202,13 @@ const EcostepAppContent = () => {
         .single();
 
       if (error) {
-        console.error('버전 체크 실패:', error);
-        console.error('에러 상세:', {
-          message: error.message,
-          code: error.code,
-          details: error.details,
-          hint: error.hint
-        });
+        // RLS 정책으로 인한 접근 제한은 정상적인 상황일 수 있음 (조용히 처리)
+        if (error.code === 'PGRST116' || error.code === '42501') {
+          // PGRST116: 행이 없음, 42501: RLS 권한 없음
+          console.log('버전 정보 조회 불가 (RLS 정책 또는 데이터 없음)');
+        } else {
+          console.error('버전 체크 실패:', error.message);
+        }
         return;
       }
 
